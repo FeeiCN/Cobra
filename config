@@ -1,0 +1,9 @@
+[cobra]
+debug: false
+
+[mysql]
+host: localhost
+username: root
+password:
+database: cobra
+port: 3306
