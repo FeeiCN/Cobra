@@ -1,9 +1,22 @@
 [cobra]
 debug: false
 
-[mysql]
-host: localhost
-username: root
+#
+# Database
+#
+[database]
+mysql: mysql+mysqldb://root:@127.0.0.1:3306/cobra
+
+#
+# Subversion Account
+#
+[svn]
+username:
 password:
-database: cobra
-port: 3306
+
+#
+# Git Account
+#
+[git]
+username:
+password:

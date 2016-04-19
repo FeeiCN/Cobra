@@ -12,26 +12,55 @@
 # See the file 'doc/COPYING' for copying permission
 #
 from flask import Flask
-import sqlalchemy
+from flask.ext.sqlalchemy import SQLAlchemy
 import ConfigParser
 
-app = Flask(__name__)
+web = Flask(__name__)
 
 
-@app.route('/')
+@web.route('/')
 def hello_world():
     return 'Hello Cobra!'
 
 
-@app.route('/add')
+@web.route('/add')
 def add_task():
     return 'Success'
 
 
-@app.route('/status')
+@web.route('/status')
 def status_task():
     return 'pending'
 
 
 def run():
-    app.run()
+    config = ConfigParser.ConfigParser()
+    config.read('config')
+    web.config['SQLALCHEMY_DATABASE_URI'] = config.get('database', 'mysql')
+    db = SQLAlchemy(web)
+
+    #
+    # Whitelist Table
+    #
+    class Whitelist(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        url = db.Column(db.String(256))
+        remark = db.Column(db.String(56))
+        status = db.Column(db.Integer)
+        created = db.Column(db.Integer)
+        updated = db.Column(db.Integer)
+
+        def __repr__(self):
+            return self.url
+
+    #
+    # Result Table
+    #
+    class Result(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+
+    #
+    # Log Table
+    #
+    class Log(db.Model):
+        id = db.Column(db.Integer, primary_key=True)

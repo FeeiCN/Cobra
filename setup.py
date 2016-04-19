@@ -11,13 +11,13 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
+from distutils.core import setup
 
-from app import route
-
-
-def main():
-    route.start()
-
-
-if __name__ == '__main__':
-    main()
+setup(name='Cobra',
+      version='1.0',
+      description='Code Security Scan System',
+      author='Feei',
+      author_email='wufeifei@wufeifei.com',
+      url='https://github.com/edge-security/cobra',
+      packages=['distutils', 'distutils.command'],
+      )

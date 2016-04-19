@@ -11,17 +11,10 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import ConfigParser
 
-import sqlalchemy
 
 from app.controller import api
 
 
 def start():
-    # API
     api.run()
-    config = ConfigParser.ConfigParser()
-    config.read('config')
-    print config.get('mysql', 'username')
-    db = sqlalchemy.create_engine('mysql+mysqldb://root:@127.0.0.1:3306/cobra', echo=True)

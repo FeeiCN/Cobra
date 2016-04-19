@@ -12,12 +12,12 @@
 # See the file 'doc/COPYING' for copying permission
 #
 
-from app import route
 
+class Whitelist(db.Model):
+    id = db.Cloum(db.Integer, primary_key=True)
+    url = db.Column(db.String(256))
+    remark = db.Column(db.String(56))
+    status = db.Column(db.Integer(2))
 
-def main():
-    route.start()
-
-
-if __name__ == '__main__':
-    main()
+    def __repr__(self):
+        return self.url
