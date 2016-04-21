@@ -11,3 +11,21 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
+from engine import rules
+
+
+def scan(code, language):
+    if language == 'php':
+        return scan_php(code)
+    elif language == 'java':
+        return scan_php(code)
+    else:
+        return 'not support language:' + language
+
+
+def scan_php(code):
+    functions = rules.php_function()
+    for func in functions:
+        if func in code:
+            return 1
+    return 0

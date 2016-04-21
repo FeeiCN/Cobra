@@ -11,3 +11,7 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
+
+
+def php_function():
+    return ['exec', '$_POST', '$_GET'];
