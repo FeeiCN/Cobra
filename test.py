@@ -28,7 +28,10 @@ class Test(unittest.TestCase):
     def test_svn_diff(self):
         filename = self.project + '/appbeta/classes/controller/safe/admin.php'
         svn = Subversion.Subversion(filename, 'r717849', 'r718083')
-        svn.diff()
+        diff = svn.diff()
+        # Print Result
+        for event, values in diff.iteritems():
+            print('{0} : {1}'.format(event, len(values)))
 
     def test_git(self):
         self.assertEqual('Test'.upper(), 'TEST')

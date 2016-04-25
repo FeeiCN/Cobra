@@ -14,7 +14,17 @@
 
 
 from app.controller import api
+import argparse
+
+
+def parse_option():
+    parser = argparse.ArgumentParser(description='Cobra is a open source Code Security Scan System')
+    parser.add_argument('string', metavar='project/path', type=str, nargs='+', help='Project Path')
+    parser.add_argument('--version', help='Cobra Version')
+    args = parser.parse_args()
+    print args.string[0]
 
 
 def start():
+    parse_option()
     api.run()

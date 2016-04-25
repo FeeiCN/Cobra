@@ -40,6 +40,7 @@ class Directory:
                 self.file_nums += 1
 
     def collect_files(self):
+        result = {}
         t1 = time.clock()
         self.files(self.path)
         t2 = time.clock()
@@ -47,6 +48,6 @@ class Directory:
         for extension, values in self.type_nums.iteritems():
             print('{0} : {1}'.format(extension, len(values)))
 
-    def read_file(self, filename):
-        f = open(filename, 'r').readlines()
+    def read_file(self):
+        f = open(self.filename, 'r').readlines()
         return f

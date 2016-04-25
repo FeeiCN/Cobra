@@ -37,11 +37,13 @@ class Subversion:
             stdout=subprocess.PIPE).communicate()[0]
 
         added, removed, changed = [], [], []
+        diff = {}
         for line in svn_diff.split("\n"):
             if line[:3] in ('---', '+++', '==='):
                 continue
             else:
                 if len(line) > 0:
+                    diff.setdefault(line[0], []).append(line[1:].strip())
                     if line[0] == '-':
                         removed.append(line[1:].strip())
                     elif line[0] == '+':
@@ -50,5 +52,11 @@ class Subversion:
                         changed.append(line[1:].strip())
                     else:
                         continue
+        diff['code'] = svn_diff
+        return diff
 
-        print added
+    def commit(self):
+        svn_log = subprocess.Popen(
+            [self.svn, 'log', self.filename],
+            stdout=subprocess.PIPE).communicate()[0]
+        return svn_log
