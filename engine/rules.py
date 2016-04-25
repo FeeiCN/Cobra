@@ -14,4 +14,4 @@
 
 
 def php_function():
-    return ['exec', '$_POST', '$_GET'];
+    return ['exec', '$_POST', '$_GET']

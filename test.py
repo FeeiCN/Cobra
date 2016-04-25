@@ -13,23 +13,29 @@
 #
 
 import unittest
-from pickup import subversion
+from pickup import Subversion, Gitlab, Directory
 
 
 class Test(unittest.TestCase):
+    project = '/Volumes/Statics/Project/Company/mogujie'
+
     def test_svn_log(self):
-        project = '/Volumes/Statics/Project/Company/mogujie'
-        file = project + '/appbeta/classes/controller/safe/admin.php'
-        subversion.log(file)
+        filename = self.project + '/appbeta/classes/controller/safe/admin.php'
+        svn = Subversion.Subversion(filename)
+        svn.log()
         self.assertEqual('foo'.upper(), 'FOO')
 
     def test_svn_diff(self):
-        project = '/Volumes/Statics/Project/Company/mogujie'
-        file = project + '/appbeta/classes/controller/safe/admin.php'
-        diff = subversion.diff(file, 'r717849', 'r718083')
+        filename = self.project + '/appbeta/classes/controller/safe/admin.php'
+        svn = Subversion.Subversion(filename, 'r717849', 'r718083')
+        svn.diff()
 
     def test_git(self):
         self.assertEqual('Test'.upper(), 'TEST')
+
+    def test_directory(self):
+        directory = Directory.Directory(self.project)
+        directory.collect_files()
 
 
 if __name__ == '__main__':
