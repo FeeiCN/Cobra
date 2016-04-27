@@ -13,6 +13,7 @@
 #
 
 from app import route
+import logging
 
 
 def main():
@@ -20,4 +21,5 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.debug('Starting...')
     main()

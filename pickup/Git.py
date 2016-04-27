@@ -14,24 +14,17 @@
 import subprocess
 
 
-class Subversion:
-    """Subversion Utility Class"""
-    svn = '/usr/bin/svn'
+class Git:
+    git = '/usr/bin/git'
 
     def __init__(self, filename, current_version=None, online_version=None):
         self.filename = filename
         self.current_version = current_version
         self.online_version = online_version
 
-    def log(self):
-        svn_log = subprocess.Popen(
-            [self.svn, 'log', self.filename],
-            stdout=subprocess.PIPE).communicate()[0]
-        return svn_log
-
     def diff(self):
         svn_diff = subprocess.Popen(
-            [self.svn, 'diff', '-r', self.current_version + ':' + self.online_version, self.filename],
+            [self.git, 'diff', '-r', self.current_version + ':' + self.online_version, self.filename],
             stdout=subprocess.PIPE).communicate()[0]
 
         added, removed, changed = [], [], []
@@ -52,9 +45,3 @@ class Subversion:
                         continue
         diff['code'] = svn_diff
         return diff
-
-    def commit(self):
-        svn_log = subprocess.Popen(
-            [self.svn, 'log', self.filename],
-            stdout=subprocess.PIPE).communicate()[0]
-        return svn_log

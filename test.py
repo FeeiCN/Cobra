@@ -13,7 +13,7 @@
 #
 
 import unittest
-from pickup import Subversion, Gitlab, Directory
+from pickup import Subversion, Git, Directory
 
 
 class Test(unittest.TestCase):
@@ -32,6 +32,12 @@ class Test(unittest.TestCase):
         # Print Result
         for event, values in diff.iteritems():
             print('{0} : {1}'.format(event, len(values)))
+
+    def test_git_diff(self):
+        filename = 'test.php'
+        git = Git.Git(filename, '123', '124')
+        git_diff = git.diff()
+        print git_diff
 
     def test_git(self):
         self.assertEqual('Test'.upper(), 'TEST')
