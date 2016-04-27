@@ -47,7 +47,3 @@ class Directory:
         print('Scan Files: {0}, Total Time: {1}s'.format(self.file_nums, t2 - t1))
         for extension, values in self.type_nums.iteritems():
             print('{0} : {1}'.format(extension, len(values)))
-
-    def read_file(self):
-        f = open(self.filename, 'r').readlines()
-        return f

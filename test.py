@@ -13,7 +13,7 @@
 #
 
 import unittest
-from pickup import Subversion, Git, Directory
+from pickup import subversion, git, directory
 
 
 class Test(unittest.TestCase):
@@ -21,13 +21,13 @@ class Test(unittest.TestCase):
 
     def test_svn_log(self):
         filename = self.project + '/appbeta/classes/controller/safe/admin.php'
-        svn = Subversion.Subversion(filename)
+        svn = subversion.Subversion(filename)
         svn.log()
         self.assertEqual('foo'.upper(), 'FOO')
 
     def test_svn_diff(self):
         filename = self.project + '/appbeta/classes/controller/safe/admin.php'
-        svn = Subversion.Subversion(filename, 'r717849', 'r718083')
+        svn = subversion.Subversion(filename, 'r717849', 'r718083')
         diff = svn.diff()
         # Print Result
         for event, values in diff.iteritems():
@@ -35,7 +35,7 @@ class Test(unittest.TestCase):
 
     def test_git_diff(self):
         filename = 'test.php'
-        git = Git.Git(filename, '123', '124')
+        git = git.Git(filename, '123', '124')
         git_diff = git.diff()
         print git_diff
 
@@ -43,7 +43,7 @@ class Test(unittest.TestCase):
         self.assertEqual('Test'.upper(), 'TEST')
 
     def test_directory(self):
-        directory = Directory.Directory(self.project)
+        directory = directory.Directory(self.project)
         directory.collect_files()
 
 
