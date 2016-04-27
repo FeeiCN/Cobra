@@ -11,7 +11,7 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import subprocess
+import subprocess, sys, logging, ConfigParser
 
 
 class Subversion:
@@ -23,20 +23,52 @@ class Subversion:
         self.current_version = current_version
         self.online_version = online_version
 
+        config = ConfigParser.ConfigParser()
+        config.read('config')
+        self.username = config.get('svn', 'username')
+        self.password = config.get('svn', 'password')
+
+        # Test SVN
+        cmd = self.svn + " info --no-auth-cache --non-interactive --username='%s' --password='%s' %s" % (
+            self.username,
+            self.password,
+            self.filename
+        )
+        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        (diff_out, diff_err) = p.communicate()
+        if len(diff_err) == 0:
+            logging.debug("svn diff success")
+        elif 'authorization failed' in diff_err:
+            logging.warning("svn diff auth failed")
+            sys.exit(1)
+        elif 'Not a valid URL' in diff_err:
+            logging.warning("svn diff url not a valid")
+            sys.exit(1)
+
     def log(self):
-        svn_log = subprocess.Popen(
-            [self.svn, 'log', self.filename],
-            stdout=subprocess.PIPE).communicate()[0]
-        return svn_log
+        cmd = self.svn + " log --no-auth-cache --non-interactive --username='%s' --password='%s' %s" % (
+            self.username,
+            self.password,
+            self.filename
+        )
+        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        log_out = p.communicate()[0]
+        return log_out
 
     def diff(self):
-        svn_diff = subprocess.Popen(
-            [self.svn, 'diff', '-r', self.current_version + ':' + self.online_version, self.filename],
-            stdout=subprocess.PIPE).communicate()[0]
+        cmd = self.svn + " diff --no-auth-cache --non-interactive --username='%s' --password='%s' -r %s:%s %s" % (
+            self.username,
+            self.password,
+            self.current_version,
+            self.online_version,
+            self.filename
+        )
+        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        diff_out = p.communicate()[0]
 
         added, removed, changed = [], [], []
         diff = {}
-        for line in svn_diff.split("\n"):
+        for line in diff_out.split("\n"):
             if line[:3] in ('---', '+++', '==='):
                 continue
             else:
@@ -50,7 +82,7 @@ class Subversion:
                         changed.append(line[1:].strip())
                     else:
                         continue
-        diff['code'] = svn_diff
+        diff['code'] = diff_out
         return diff
 
     def commit(self):

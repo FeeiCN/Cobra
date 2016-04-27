@@ -11,8 +11,8 @@ mysql: mysql+mysqldb://root:@127.0.0.1:3306/cobra
 # Subversion Account
 #
 [svn]
-username:zhijie
-password:!qaz@wsxCptbtptpFeei12
+username:
+password:
 
 #
 # Git Account
