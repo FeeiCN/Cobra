@@ -96,49 +96,56 @@
 <section id="search_container">
     <div id="search">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#tours" data-toggle="tab">Gitlab</a></li>
-            <li><a href="#hotels" data-toggle="tab">Github</a></li>
-            <li><a href="#transfers" data-toggle="tab">Subversion</a></li>
-            <li><a href="#restaurants" data-toggle="tab">Online Upload</a></li>
+            <li class="active"><a href="#scan" data-toggle="tab">Scan & Analyse</a></li>
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="tours">
+            <div class="tab-pane active" id="scan">
                 <h3>Gitlab Scan & Analyse Configuration</h3>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Gitlab URL</label>
-                            <input type="text" class="form-control" id="firstname_booking" name="firstname_booking"
-                                   placeholder="Type your gitlab url">
+                        <div class="col-md-12" style="padding-left:0;padding-right:0;">
+                            <div class="form-group">
+                                <label>Gitlab URL</label>
+                                <input type="text" class="form-control" id="firstname_booking" name="firstname_booking"
+                                       placeholder="Type your gitlab url">
+                            </div>
+                        </div>
+                        <div class="col-md-12" style="padding-right:0;padding-left:0;">
+                            <div class="col-md-6" style="padding-left:0;">
+                                <div class="form-group">
+                                    <label><i class="icon-user"></i> Username</label>
+                                    <input class="form-control" type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="padding-right:0;">
+                                <div class="form-group">
+                                    <label><i class=" icon-lock-2"></i> Password</label>
+                                    <input class="form-control" type="password">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Scan vulnerabilities</label>
-                            <select class="ddslick" name="category">
-                                <option value="0" data-imagesrc="img/icons_search/all_tours.png" selected>All
-                                    vulnerabilities
-                                </option>
-                                <option value="1" data-imagesrc="img/icons_search/sightseeing.png">General
-                                    vulnerabilities
-                                </option>
-                                <option value="2" data-imagesrc="img/icons_search/museums.png">Code Syntax</option>
-                            </select>
+                        <div class="box_style_2">
+                            <i class="icon-upload-cloud"></i>
+                            <h4><span>Drag and Drop</span> File Uploading</h4>
+                            <small>Support: tar.gz/rar/zip</small>
                         </div>
                     </div>
                 </div><!-- End row -->
+                <hr>
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
-                            <label><i class="icon-location"></i> Proxy</label>
-                            <input class="form-control" type="text">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label><i class=" icon-user"></i> Username/Password</label>
-                            <input class="form-control" type="text">
+                            <label class="select-label">Scan vulnerabilities</label>
+                            <select class="form-control">
+                                <option value="orly_airport">All
+                                    vulnerabilities</option>
+                                <option value="gar_du_nord">General
+                                    vulnerabilities</option>
+                                <option value="hotel_rivoli">Code Syntax</option>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-2 col-sm-3 col-xs-6">
@@ -149,211 +156,41 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2 col-sm-3 col-xs-6">
-                        <div class="form-group">
-                            <label>Log</label>
-                            <div class="numbers-row">
-                                <input type="text" value="0" id="children" class="qty2 form-control" name="children">
-                            </div>
-                        </div>
-                    </div>
-
                 </div><!-- End row -->
                 <hr>
-                <button class="btn_1 green"><i class="icon-search"></i>Scan now</button>
-            </div><!-- End rab -->
-            <div class="tab-pane" id="hotels">
-                <h3>Search Hotels in Paris</h3>
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label><i class="icon-calendar-7"></i> Check in</label>
-                            <input class="form-control" data-date-format="M d, D" type="text" id="check_in"
-                                   placeholder="Check in">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label><i class="icon-calendar-7"></i> Check out</label>
-                            <input class="form-control" data-date-format="M d, D" type="text" id="check_out"
-                                   placeholder="Check out">
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-sm-3 col-xs-5">
-                        <div class="form-group">
-                            <label>Adults</label>
-                            <div class="numbers-row">
-                                <input type="text" value="1" id="adults" class="qty2 form-control" name="adults_2">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-sm-3 col-xs-5">
-                        <div class="form-group">
-                            <label>Children</label>
-                            <div class="numbers-row">
-                                <input type="text" value="0" id="children" class="qty2 form-control" name="children_2">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-sm-3 col-xs-12">
-                        <div class="form-group">
-                            <label>Rooms</label>
-                            <div class="numbers-row">
-                                <input type="text" value="1" id="children" class="qty2 form-control" name="rooms">
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- End row -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Hotel name</label>
-                            <input type="text" class="form-control" id="hotel_name" name="hotel_name"
-                                   placeholder="Optionally type hotel name">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Preferred city area</label>
-                            <select class="form-control" name="area">
-                                <option value="Centre" selected>Centre</option>
-                                <option value="Gar du Nord Station">Gar du Nord Station</option>
-                                <option value="La Defance">La Defance</option>
-                            </select>
-                        </div>
-                    </div>
-                </div> <!-- End row -->
-                <hr>
-                <button class="btn_1 green"><i class="icon-search"></i>Search now</button>
-            </div>
-            <div class="tab-pane" id="transfers">
-                <h3>Search Transfers in Paris</h3>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="select-label">Pick up location</label>
-                            <select class="form-control">
-                                <option value="orly_airport">Orly airport</option>
-                                <option value="gar_du_nord">Gar du Nord Station</option>
-                                <option value="hotel_rivoli">Hotel Rivoli</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="select-label">Drop off location</label>
-                            <select class="form-control">
-                                <option value="orly_airport">Orly airport</option>
-                                <option value="gar_du_nord">Gar du Nord Station</option>
-                                <option value="hotel_rivoli">Hotel Rivoli</option>
-                            </select>
-                        </div>
-                    </div>
-                </div><!-- End row -->
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label><i class="icon-calendar-7"></i> Date</label>
-                            <input class="date-pick form-control" data-date-format="M d, D" type="text">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label><i class=" icon-clock"></i> Time</label>
-                            <input class="time-pick form-control" value="12:00 AM" type="text">
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-sm-3">
-                        <div class="form-group">
-                            <label>Adults</label>
-                            <div class="numbers-row">
-                                <input type="text" value="1" id="adults" class="qty2 form-control" name="quantity">
-                            </div>
-                        </div>
-                    </div>
                     <div class="col-md-4 col-sm-9">
                         <div class="form-group">
                             <div class="radio_fix">
                                 <label class="radio-inline" style="padding-left:0">
                                     <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"
-                                           checked> One Way
+                                           checked> Full Scan
                                 </label>
                             </div>
                             <div class="radio_fix">
                                 <label class="radio-inline">
                                     <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                                    Return
+                                    Diff Scan
                                 </label>
                             </div>
                         </div>
                     </div>
-                </div><!-- End row -->
-                <hr>
-                <button class="btn_1 green"><i class="icon-search"></i>Search now</button>
-            </div>
-            <div class="tab-pane" id="restaurants">
-                <h3>Search Restaurants in Paris</h3>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Search by name</label>
-                            <input type="text" class="form-control" id="restaurant_name" name="restaurant_name"
-                                   placeholder="Type your search terms">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Food type</label>
-                            <select class="ddslick" name="category_2">
-                                <option value="0" data-imagesrc="img/icons_search/all_restaurants.png" selected>All
-                                    restaurants
-                                </option>
-                                <option value="1" data-imagesrc="img/icons_search/fast_food.png">Fast food</option>
-                                <option value="2" data-imagesrc="img/icons_search/pizza_italian.png">Pizza / Italian
-                                </option>
-                                <option value="3" data-imagesrc="img/icons_search/international.png">International
-                                </option>
-                                <option value="4" data-imagesrc="img/icons_search/japanese.png">Japanese</option>
-                                <option value="5" data-imagesrc="img/icons_search/chinese.png">Chinese</option>
-                                <option value="6" data-imagesrc="img/icons_search/bar.png">Coffee Bar</option>
-                            </select>
-                        </div>
-                    </div>
-                </div><!-- End row -->
-                <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label><i class="icon-calendar-7"></i> Date</label>
-                            <input class="date-pick form-control" data-date-format="M d, D" type="text">
+                            <label><i class="icon-backward"></i> Old Version</label>
+                            <input class="form-control" type="text">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label><i class=" icon-clock"></i> Time</label>
-                            <input class="time-pick form-control" value="12:00 AM" type="text">
+                            <label><i class="icon-forward-3"></i> New Version</label>
+                            <input class="form-control" type="password">
                         </div>
                     </div>
-                    <div class="col-md-2 col-sm-3 col-xs-6">
-                        <div class="form-group">
-                            <label>Adults</label>
-                            <div class="numbers-row">
-                                <input type="text" value="1" id="adults" class="qty2 form-control" name="adults">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-sm-3 col-xs-6">
-                        <div class="form-group">
-                            <label>Children</label>
-                            <div class="numbers-row">
-                                <input type="text" value="0" id="children" class="qty2 form-control" name="children">
-                            </div>
-                        </div>
-                    </div>
-
-                </div><!-- End row -->
+                </div>
                 <hr>
-                <button class="btn_1 green"><i class="icon-search"></i>Search now</button>
-            </div>
+                <button class="btn_1 green"><i class="icon-search"></i>Scan now</button>
+            </div><!-- End rab -->
         </div>
     </div>
 </section><!-- End hero -->

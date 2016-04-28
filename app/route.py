@@ -29,6 +29,10 @@ class Route:
         def hello_world():
             return render_template('index.html')
 
+        @self.web.route('/blank')
+        def blank_page():
+            return render_template('blank.html')
+
         @self.web.route('/add')
         def add_task():
             if request.method == "POST":
