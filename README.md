@@ -1,4 +1,6 @@
-# Cobra - static code security scan & analyse
+# Cobra
+
+Static code analysis common security issues and scan common security vulnerabilities
 
 ### Scan Types
 
