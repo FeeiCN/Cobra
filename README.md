@@ -63,6 +63,9 @@ Weak Password	|
 XML Injection	|
 Brute Force	|
 
+### Screenshot
+![Cobra](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/SCREENSHOT.gif)
+
 
 ### Links
 - Documents: https://github.com/wufeifei/cobra/wiki
