@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html class="ie ie8"> <![endif]-->
+<!--[if IE 9]>
+<html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="code security scan, static code analyse"/>
+    <meta name="description" content="Cobra - Static Code security scan & analyse">
+    <meta name="author" content="Ansonika">
+    <title>Cobra - Static Code security scan & analyse</title>
+
+    <!-- Favicons-->
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="img/apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114"
+          href="img/apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144"
+          href="img/apple-touch-icon-144x144-precomposed.png">
+
+    <!-- CSS -->
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+
+    <!-- SPECIFIC CSS -->
+    <link href="asset/css/skins/square/grey.css" rel="stylesheet">
+    <link href="asset/css/date_time_picker.css" rel="stylesheet">
+
+    <!-- Google web fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+
+    <!--[if lt IE 9]>
+    <script src="asset/js/html5shiv.min.js"></script>
+    <script src="asset/js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+
+<!--[if lte IE 8]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a>.</p>
+<![endif]-->
+
+<div id="preloader">
+    <div class="sk-spinner sk-spinner-wave">
+        <div class="sk-rect1"></div>
+        <div class="sk-rect2"></div>
+        <div class="sk-rect3"></div>
+        <div class="sk-rect4"></div>
+        <div class="sk-rect5"></div>
+    </div>
+</div>
+<!-- End Preload -->
+
+<div class="layer"></div>
+<!-- Mobile menu overlay mask -->
+
+<!-- Header================================================== -->
+<header>
+    <div id="top_line">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6"><i class="icon-clock"></i><strong>Static Code security scan &
+                    analyse</strong></div>
+
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <ul id="top_links">
+                        <li><a href="https://github.com/wufeifei/cobra" id="wishlist_link">Github</a></li>
+                    </ul>
+                </div>
+            </div><!-- End row -->
+        </div><!-- End container-->
+    </div><!-- End top line-->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-3">
+                <div id="logo">
+                    <a href="index.html"><img src="{{ url_for('static', filename='img/logo.png') }}" width="160"
+                                              height="34" alt="City tours" data-retina="true" class="logo_normal"></a>
+                    <a href="index.html"><img src="{{ url_for('static', filename='img/logo_sticky.png') }}" width="160"
+                                              height="34" alt="City tours" data-retina="true" class="logo_sticky"></a>
+                </div>
+            </div>
+        </div>
+    </div><!-- container -->
+</header><!-- End Header -->
+
+<section id="search_container">
+    <div id="search">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tours" data-toggle="tab">Gitlab</a></li>
+            <li><a href="#hotels" data-toggle="tab">Github</a></li>
+            <li><a href="#transfers" data-toggle="tab">Subversion</a></li>
+            <li><a href="#restaurants" data-toggle="tab">Online Upload</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="tours">
+                <h3>Gitlab Scan & Analyse Configuration</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Gitlab URL</label>
+                            <input type="text" class="form-control" id="firstname_booking" name="firstname_booking"
+                                   placeholder="Type your gitlab url">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Scan vulnerabilities</label>
+                            <select class="ddslick" name="category">
+                                <option value="0" data-imagesrc="img/icons_search/all_tours.png" selected>All
+                                    vulnerabilities
+                                </option>
+                                <option value="1" data-imagesrc="img/icons_search/sightseeing.png">General
+                                    vulnerabilities
+                                </option>
+                                <option value="2" data-imagesrc="img/icons_search/museums.png">Code Syntax</option>
+                            </select>
+                        </div>
+                    </div>
+                </div><!-- End row -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class="icon-location"></i> Proxy</label>
+                            <input class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class=" icon-user"></i> Username/Password</label>
+                            <input class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <label>Level</label>
+                            <div class="numbers-row">
+                                <input type="text" value="1" id="adults" class="qty2 form-control" name="adults">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <label>Log</label>
+                            <div class="numbers-row">
+                                <input type="text" value="0" id="children" class="qty2 form-control" name="children">
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- End row -->
+                <hr>
+                <button class="btn_1 green"><i class="icon-search"></i>Scan now</button>
+            </div><!-- End rab -->
+            <div class="tab-pane" id="hotels">
+                <h3>Search Hotels in Paris</h3>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class="icon-calendar-7"></i> Check in</label>
+                            <input class="form-control" data-date-format="M d, D" type="text" id="check_in"
+                                   placeholder="Check in">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class="icon-calendar-7"></i> Check out</label>
+                            <input class="form-control" data-date-format="M d, D" type="text" id="check_out"
+                                   placeholder="Check out">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-5">
+                        <div class="form-group">
+                            <label>Adults</label>
+                            <div class="numbers-row">
+                                <input type="text" value="1" id="adults" class="qty2 form-control" name="adults_2">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-5">
+                        <div class="form-group">
+                            <label>Children</label>
+                            <div class="numbers-row">
+                                <input type="text" value="0" id="children" class="qty2 form-control" name="children_2">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-12">
+                        <div class="form-group">
+                            <label>Rooms</label>
+                            <div class="numbers-row">
+                                <input type="text" value="1" id="children" class="qty2 form-control" name="rooms">
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End row -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Hotel name</label>
+                            <input type="text" class="form-control" id="hotel_name" name="hotel_name"
+                                   placeholder="Optionally type hotel name">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Preferred city area</label>
+                            <select class="form-control" name="area">
+                                <option value="Centre" selected>Centre</option>
+                                <option value="Gar du Nord Station">Gar du Nord Station</option>
+                                <option value="La Defance">La Defance</option>
+                            </select>
+                        </div>
+                    </div>
+                </div> <!-- End row -->
+                <hr>
+                <button class="btn_1 green"><i class="icon-search"></i>Search now</button>
+            </div>
+            <div class="tab-pane" id="transfers">
+                <h3>Search Transfers in Paris</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="select-label">Pick up location</label>
+                            <select class="form-control">
+                                <option value="orly_airport">Orly airport</option>
+                                <option value="gar_du_nord">Gar du Nord Station</option>
+                                <option value="hotel_rivoli">Hotel Rivoli</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="select-label">Drop off location</label>
+                            <select class="form-control">
+                                <option value="orly_airport">Orly airport</option>
+                                <option value="gar_du_nord">Gar du Nord Station</option>
+                                <option value="hotel_rivoli">Hotel Rivoli</option>
+                            </select>
+                        </div>
+                    </div>
+                </div><!-- End row -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class="icon-calendar-7"></i> Date</label>
+                            <input class="date-pick form-control" data-date-format="M d, D" type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class=" icon-clock"></i> Time</label>
+                            <input class="time-pick form-control" value="12:00 AM" type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3">
+                        <div class="form-group">
+                            <label>Adults</label>
+                            <div class="numbers-row">
+                                <input type="text" value="1" id="adults" class="qty2 form-control" name="quantity">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-9">
+                        <div class="form-group">
+                            <div class="radio_fix">
+                                <label class="radio-inline" style="padding-left:0">
+                                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"
+                                           checked> One Way
+                                </label>
+                            </div>
+                            <div class="radio_fix">
+                                <label class="radio-inline">
+                                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                    Return
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End row -->
+                <hr>
+                <button class="btn_1 green"><i class="icon-search"></i>Search now</button>
+            </div>
+            <div class="tab-pane" id="restaurants">
+                <h3>Search Restaurants in Paris</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Search by name</label>
+                            <input type="text" class="form-control" id="restaurant_name" name="restaurant_name"
+                                   placeholder="Type your search terms">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Food type</label>
+                            <select class="ddslick" name="category_2">
+                                <option value="0" data-imagesrc="img/icons_search/all_restaurants.png" selected>All
+                                    restaurants
+                                </option>
+                                <option value="1" data-imagesrc="img/icons_search/fast_food.png">Fast food</option>
+                                <option value="2" data-imagesrc="img/icons_search/pizza_italian.png">Pizza / Italian
+                                </option>
+                                <option value="3" data-imagesrc="img/icons_search/international.png">International
+                                </option>
+                                <option value="4" data-imagesrc="img/icons_search/japanese.png">Japanese</option>
+                                <option value="5" data-imagesrc="img/icons_search/chinese.png">Chinese</option>
+                                <option value="6" data-imagesrc="img/icons_search/bar.png">Coffee Bar</option>
+                            </select>
+                        </div>
+                    </div>
+                </div><!-- End row -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class="icon-calendar-7"></i> Date</label>
+                            <input class="date-pick form-control" data-date-format="M d, D" type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><i class=" icon-clock"></i> Time</label>
+                            <input class="time-pick form-control" value="12:00 AM" type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <label>Adults</label>
+                            <div class="numbers-row">
+                                <input type="text" value="1" id="adults" class="qty2 form-control" name="adults">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <label>Children</label>
+                            <div class="numbers-row">
+                                <input type="text" value="0" id="children" class="qty2 form-control" name="children">
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- End row -->
+                <hr>
+                <button class="btn_1 green"><i class="icon-search"></i>Search now</button>
+            </div>
+        </div>
+    </div>
+</section><!-- End hero -->
+<div class="white_bg">
+    <div class="container margin_60">
+        <div class="main_title">
+            <h2>Scan & Analyse <span>Statistic</span> Sort</h2>
+        </div>
+        <div class="row add_bottom_45">
+            <div class="col-md-4 other_tours">
+                <ul>
+                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Tour Eiffel<span
+                            class="other_tours_price">$42</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-30"></i>Shopping tour<span
+                            class="other_tours_price">$35</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Versailles tour<span
+                            class="other_tours_price">$20</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Montparnasse skyline<span
+                            class="other_tours_price">$26</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Pompidue<span class="other_tours_price">$26</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Senna River tour<span
+                            class="other_tours_price">$32</span></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4 other_tours">
+                <ul>
+                    <li><a href="#"><i class="icon_set_1_icon-1"></i>Notredame<span class="other_tours_price">$48</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-4"></i>Lafaiette<span class="other_tours_price">$55</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-30"></i>Trocadero<span
+                            class="other_tours_price">$76</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Open Bus tour<span
+                            class="other_tours_price">$55</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-30"></i>Louvre museum<span
+                            class="other_tours_price">$24</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Madlene Cathedral<span class="other_tours_price">$24</span></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4 other_tours">
+                <ul>
+                    <li><a href="#"><i class="icon_set_1_icon-37"></i>Montparnasse<span
+                            class="other_tours_price">$36</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-1"></i>D'Orsey museum<span
+                            class="other_tours_price">$28</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-50"></i>Gioconda Louvre musuem<span
+                            class="other_tours_price">$44</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Tour Eiffel<span
+                            class="other_tours_price">$56</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-50"></i>Ladefanse<span
+                            class="other_tours_price">$16</span></a>
+                    </li>
+                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Notredame<span
+                            class="other_tours_price">$26</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div><!-- End row -->
+
+        <div class="banner colored add_bottom_30">
+            <h4>Discover our Top tours <span>from $34</span></h4>
+            <p>
+                Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in.
+            </p>
+            <a href="single_tour.html" class="btn_1 white">Read more</a>
+        </div>
+    </div><!-- End container -->
+</div><!-- End white_bg -->
+
+<div class="container margin_60">
+
+    <div class="main_title">
+        <h2>Some <span>good</span> reasons</h2>
+        <p>
+            Quisque at tortor a libero posuere laoreet vitae sed arcu. Curabitur consequat.
+        </p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-4 wow zoomIn" data-wow-delay="0.2s">
+            <div class="feature_home">
+                <i class="icon_set_1_icon-41"></i>
+                <h3><span>+120</span> Premium tours</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in. Nec id tempor
+                    imperdiet deterruisset.
+                </p>
+                <a href="about.html" class="btn_1 outline">Read more</a>
+            </div>
+        </div>
+
+        <div class="col-md-4 wow zoomIn" data-wow-delay="0.4s">
+            <div class="feature_home">
+                <i class="icon_set_1_icon-30"></i>
+                <h3><span>+1000</span> Customers</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in. Nec id tempor
+                    imperdiet deterruisset.
+                </p>
+                <a href="about.html" class="btn_1 outline">Read more</a>
+            </div>
+        </div>
+
+        <div class="col-md-4 wow zoomIn" data-wow-delay="0.6s">
+            <div class="feature_home">
+                <i class="icon_set_1_icon-57"></i>
+                <h3><span>H24 </span> Support</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in. Nec id tempor
+                    imperdiet deterruisset.
+                </p>
+                <a href="about.html" class="btn_1 outline">Read more</a>
+            </div>
+        </div>
+
+    </div><!--End row -->
+
+</div><!-- End container -->
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <p>Copyright &copy; 2016 Cobra. All Righsts Reserved</p>
+                </div>
+            </div>
+        </div><!-- End row -->
+    </div><!-- End container -->
+</footer><!-- End footer -->
+
+<div id="toTop"></div><!-- Back to top button -->
+
+<!-- Common scripts -->
+<script src="asset/js/jquery-1.11.2.min.js"></script>
+<script src="asset/js/common_scripts_min.js"></script>
+<script src="asset/js/functions.js"></script>
+
+<!-- Specific scripts -->
+<script src="asset/js/icheck.js"></script>
+<script>
+    $('input').iCheck({
+        checkboxClass: 'icheckbox_square-grey',
+        radioClass: 'iradio_square-grey'
+    });
+</script>
+<script src="asset/js/bootstrap-datepicker.js"></script>
+<script src="asset/js/bootstrap-timepicker.js"></script>
+<script>
+    $('input.date-pick').datepicker('setDate', 'today');
+    $('input.time-pick').timepicker({
+        minuteStep: 15,
+        showInpunts: false
+    })
+</script>
+<script src="asset/js/jquery.ddslick.js"></script>
+<script>
+    $("select.ddslick").each(function () {
+        $(this).ddslick({
+            showSelectedHTML: true
+        });
+    });
+</script>
+<script src="asset/js/datepicker_advanced.js"></script>
+
+<script type="text/javascript">/* <![CDATA[ */
+(function (d, s, a, i, j, r, l, m, t) {
+    try {
+        l = d.getElementsByTagName('a');
+        t = d.createElement('textarea');
+        for (i = 0; l.length - i; i++) {
+            try {
+                a = l[i].href;
+                s = a.indexOf('/cdn-cgi/l/email-protection');
+                m = a.length;
+                if (a && s > -1 && m > 28) {
+                    j = 28 + s;
+                    s = '';
+                    if (j < m) {
+                        r = '0x' + a.substr(j, 2) | 0;
+                        for (j += 2; j < m && a.charAt(j) != 'X'; j += 2)s += '%' + ('0' + ('0x' + a.substr(j, 2) ^ r).toString(16)).slice(-2);
+                        j++;
+                        s = decodeURIComponent(s) + a.substr(j, m - j)
+                    }
+                    t.innerHTML = s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    l[i].href = 'mailto:' + t.value
+                }
+            } catch (e) {
+            }
+        }
+    } catch (e) {
+    }
+})(document);
+/* ]]> */</script>
+</body>
+</html>

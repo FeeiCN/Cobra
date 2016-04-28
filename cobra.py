@@ -17,7 +17,8 @@ import logging
 
 
 def main():
-    route.start()
+    r = route.Route()
+    r.start()
 
 
 if __name__ == '__main__':
