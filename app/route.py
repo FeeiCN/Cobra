@@ -54,14 +54,12 @@ class Route:
         self.web.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
         self.web.config['SQLALCHEMY_DATABASE_URI'] = config.get('database', 'mysql')
         db = SQLAlchemy(self.web)
-        self.web.run()
-
-    def parse_option():
-        parser = argparse.ArgumentParser(description='Cobra is a open source Code Security Scan System')
-        parser.add_argument('string', metavar='project/path', type=str, nargs='+', help='Project Path')
-        parser.add_argument('--version', help='Cobra Version')
-        args = parser.parse_args()
-        print args.string[0]
+        host = config.get('cobra', 'host')
+        port = config.get('cobra', 'port')
+        port = int(port)
+        debug = config.get('cobra', 'debug')
+        debug = bool(debug)
+        self.web.run(host=host, port=port, debug=debug)
 
         #
         # Whitelist Table
@@ -88,3 +86,10 @@ class Route:
         #
         class Log(db.Model):
             id = db.Column(db.Integer, primary_key=True)
+
+    def parse_option(self):
+        parser = argparse.ArgumentParser(description='Cobra is a open source Code Security Scan System')
+        parser.add_argument('string', metavar='project/path', type=str, nargs='+', help='Project Path')
+        parser.add_argument('--version', help='Cobra Version')
+        args = parser.parse_args()
+        print args.string[0]

@@ -96,19 +96,20 @@
 <section id="search_container">
     <div id="search">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#scan" data-toggle="tab">Scan & Analyse</a></li>
+            <li class="active"><a href="#config" data-toggle="tab">Config</a></li>
+            <li><a href="#log" data-toggle="tab">Log</a></li>
+            <li><a href="#report" data-toggle="tab">Report</a></li>
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="scan">
-                <h3>Gitlab Scan & Analyse Configuration</h3>
+            <div class="tab-pane active" id="config">
+                <h3>Scan & Analyse Configuration</h3>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
                                 <label>Gitlab URL</label>
-                                <input type="text" class="form-control" id="firstname_booking" name="firstname_booking"
-                                       placeholder="Type your gitlab url">
+                                <input type="text" class="form-control" name="url" placeholder="Type your gitlab url">
                             </div>
                         </div>
                         <div class="col-md-12" style="padding-right:0;padding-left:0;">
@@ -139,11 +140,13 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="select-label">Scan vulnerabilities</label>
-                            <select class="form-control">
+                            <select name="scan_type" class="form-control">
                                 <option value="orly_airport">All
-                                    vulnerabilities</option>
+                                    vulnerabilities
+                                </option>
                                 <option value="gar_du_nord">General
-                                    vulnerabilities</option>
+                                    vulnerabilities
+                                </option>
                                 <option value="hotel_rivoli">Code Syntax</option>
                             </select>
                         </div>
@@ -152,7 +155,7 @@
                         <div class="form-group">
                             <label>Level</label>
                             <div class="numbers-row">
-                                <input type="text" value="1" id="adults" class="qty2 form-control" name="adults">
+                                <input name="level" type="text" value="1" id="adults" class="qty2 form-control">
                             </div>
                         </div>
                     </div>
@@ -163,13 +166,13 @@
                         <div class="form-group">
                             <div class="radio_fix">
                                 <label class="radio-inline" style="padding-left:0">
-                                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"
+                                    <input type="radio" name="scan_way" id="inlineRadio1" value="option1"
                                            checked> Full Scan
                                 </label>
                             </div>
                             <div class="radio_fix">
                                 <label class="radio-inline">
-                                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                    <input type="radio" name="scan_way" id="inlineRadio2" value="option2">
                                     Diff Scan
                                 </label>
                             </div>
@@ -178,19 +181,22 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label><i class="icon-backward"></i> Old Version</label>
-                            <input class="form-control" type="text">
+                            <input name="old_version" class="form-control" type="text">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label><i class="icon-forward-3"></i> New Version</label>
-                            <input class="form-control" type="password">
+                            <input name="new_version" class="form-control" type="password">
                         </div>
                     </div>
                 </div>
                 <hr>
-                <button class="btn_1 green"><i class="icon-search"></i>Scan now</button>
+                <button class="btn_1 green" id="scan"><i class="icon-search"></i>Scan now</button>
             </div><!-- End rab -->
+            <div class="tab-pane" id="analyse">
+
+            </div>
         </div>
     </div>
 </section><!-- End hero -->
@@ -343,6 +349,23 @@
 <script src="asset/js/jquery-1.11.2.min.js"></script>
 <script src="asset/js/common_scripts_min.js"></script>
 <script src="asset/js/functions.js"></script>
+<script>
+    $(function () {
+        $("#scan").on('click', function (e) {
+            e.preventDefault();
+            var data = {
+                'url': $("input[name=url]").val()
+            };
+            $.post('/add', data, function (result) {
+                if (result.code == '1001') {
+                    alert(result.msg)
+                } else {
+                    alert(result.msg);
+                }
+            }, 'JSON')
+        })
+    })
+</script>
 
 <!-- Specific scripts -->
 <script src="asset/js/icheck.js"></script>
@@ -352,53 +375,5 @@
         radioClass: 'iradio_square-grey'
     });
 </script>
-<script src="asset/js/bootstrap-datepicker.js"></script>
-<script src="asset/js/bootstrap-timepicker.js"></script>
-<script>
-    $('input.date-pick').datepicker('setDate', 'today');
-    $('input.time-pick').timepicker({
-        minuteStep: 15,
-        showInpunts: false
-    })
-</script>
-<script src="asset/js/jquery.ddslick.js"></script>
-<script>
-    $("select.ddslick").each(function () {
-        $(this).ddslick({
-            showSelectedHTML: true
-        });
-    });
-</script>
-<script src="asset/js/datepicker_advanced.js"></script>
-
-<script type="text/javascript">/* <![CDATA[ */
-(function (d, s, a, i, j, r, l, m, t) {
-    try {
-        l = d.getElementsByTagName('a');
-        t = d.createElement('textarea');
-        for (i = 0; l.length - i; i++) {
-            try {
-                a = l[i].href;
-                s = a.indexOf('/cdn-cgi/l/email-protection');
-                m = a.length;
-                if (a && s > -1 && m > 28) {
-                    j = 28 + s;
-                    s = '';
-                    if (j < m) {
-                        r = '0x' + a.substr(j, 2) | 0;
-                        for (j += 2; j < m && a.charAt(j) != 'X'; j += 2)s += '%' + ('0' + ('0x' + a.substr(j, 2) ^ r).toString(16)).slice(-2);
-                        j++;
-                        s = decodeURIComponent(s) + a.substr(j, m - j)
-                    }
-                    t.innerHTML = s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    l[i].href = 'mailto:' + t.value
-                }
-            } catch (e) {
-            }
-        }
-    } catch (e) {
-    }
-})(document);
-/* ]]> */</script>
 </body>
 </html>
