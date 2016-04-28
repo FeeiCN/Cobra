@@ -11,16 +11,19 @@ Static code analysis common security issues and scan common security vulnerabili
 
 By comparing with the online code or the previous submission to find out the change code, and then only the changes to scan the code.
 
-Advantages and disadvantages: 
+##### Advantages and disadvantages
 Scanning speed, can immediately know the results of the scan. But the scanning range is small.
 
-Scene: 
+##### Scene
 for the daily release, we need to quickly know that this is the existence of the risk of the code, using the contrast scan will be able to know the results for the first time.
 
 #### 2. Full Scan
-Description: by playing the compression package or send Git/SVN address, decompression, download the project will be all the code for the full scan.
-Advantages and disadvantages: the scan speed is slow, but a comprehensive scan.
-Scene: the whole volume scan can be used for items that are not frequently published in history.
+By playing the compression package or send Git/SVN address, decompression, download the project will be all the code for the full scan.
+
+##### Advantages and disadvantages
+The scan speed is slow, but a comprehensive scan.
+##### Scene
+The whole volume scan can be used for items that are not frequently published in history.
 
 ### The development of language and support framework
 In view of our current online projects mainly for PHP and JAVA, so we will support the two languages in a period.
