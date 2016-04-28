@@ -96,9 +96,9 @@
 <section id="search_container">
     <div id="search">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#config" data-toggle="tab">Config</a></li>
-            <li><a href="#log" data-toggle="tab">Log</a></li>
-            <li><a href="#report" data-toggle="tab">Report</a></li>
+            <li class="active"><a href="#config" data-toggle="tab">1.Config</a></li>
+            <li><a href="#log" data-toggle="tab">2.Log</a></li>
+            <li><a href="#report" data-toggle="tab">3.Report</a></li>
         </ul>
 
         <div class="tab-content">
@@ -194,8 +194,11 @@
                 <hr>
                 <button class="btn_1 green" id="scan"><i class="icon-search"></i>Scan now</button>
             </div><!-- End rab -->
-            <div class="tab-pane" id="analyse">
-
+            <div class="tab-pane" id="log">
+                <h3>Set config on step1</h3>
+            </div>
+            <div class="tab-pane" id="report">
+                <h3>Wait for the analyse & scan completed</h3>
             </div>
         </div>
     </div>
@@ -351,6 +354,7 @@
 <script src="asset/js/functions.js"></script>
 <script>
     $(function () {
+
         $("#scan").on('click', function (e) {
             e.preventDefault();
             var data = {
@@ -358,7 +362,8 @@
             };
             $.post('/add', data, function (result) {
                 if (result.code == '1001') {
-                    alert(result.msg)
+                    $("#log > h3").text('Logging...');
+                    $("ul.nav-tabs > li").eq(1).find('a').trigger('click');
                 } else {
                     alert(result.msg);
                 }

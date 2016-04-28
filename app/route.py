@@ -25,23 +25,20 @@ class Route:
     web = Flask(__name__, template_folder=template, static_folder=asset)
 
     def __init__(self):
-        @self.web.route('/')
-        def hello_world():
+        @self.web.route('/', methods=['GET'])
+        def homepage():
             return render_template('index.html')
 
         @self.web.route('/blank')
-        def blank_page():
+        def blank():
             return render_template('blank.html')
 
-        @self.web.route('/add')
-        def add_task():
-            if request.method == "POST":
-                return jsonify(code=1001, msg='success', id=123)
-            else:
-                abort(404)
+        @self.web.route('/add', methods=['POST'])
+        def add():
+            return jsonify(code=1001, msg='success', id=123)
 
-        @self.web.route('/status')
-        def status_task():
+        @self.web.route('/status/<int:id>', methods=['GET'])
+        def status(id):
             return jsonify(code=1001, msg='success', status='running')
 
         @self.web.errorhandler(404)
