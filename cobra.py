@@ -13,7 +13,7 @@
 #
 
 from app import route
-import logging
+from utils import log
 
 
 def main():
@@ -22,5 +22,5 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.debug('Starting...')
+    log.info('Starting Cobra...')
     main()

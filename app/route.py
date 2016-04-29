@@ -13,6 +13,7 @@
 #
 import os
 import argparse
+from utils import log
 from flask import request, Flask, jsonify, render_template, abort
 from flask.ext.sqlalchemy import SQLAlchemy
 import ConfigParser
@@ -21,28 +22,34 @@ import ConfigParser
 class Route:
     template = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
     asset = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates/asset')
-    print template
     web = Flask(__name__, template_folder=template, static_folder=asset)
 
     def __init__(self):
+        log.info('Initialization HTTP Server')
+
         @self.web.route('/', methods=['GET'])
         def homepage():
+            log.debug('In homepage Route')
             return render_template('index.html')
 
         @self.web.route('/blank')
         def blank():
+            log.debug('In blank Route')
             return render_template('blank.html')
 
         @self.web.route('/add', methods=['POST'])
         def add():
+            log.debug('In add Route')
             return jsonify(code=1001, msg='success', id=123)
 
         @self.web.route('/status/<int:id>', methods=['GET'])
         def status(id):
+            log.debug('In status Route')
             return jsonify(code=1001, msg='success', status='running')
 
         @self.web.errorhandler(404)
         def page_not_found(e):
+            log.debug('In 404 Route')
             return render_template('404.html'), 404
 
     def start(self):
@@ -57,6 +64,7 @@ class Route:
         debug = config.get('cobra', 'debug')
         debug = bool(debug)
         self.web.run(host=host, port=port, debug=debug)
+        log.info('Cobra HTTP Server Started')
 
         #
         # Whitelist Table
