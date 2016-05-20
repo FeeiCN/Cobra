@@ -11,14 +11,19 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
+import ConfigParser
 
-from app import route
+from app import web, manager
 from utils import log
 
 
 def main():
-    r = route.Route()
-    r.start()
+    config = ConfigParser.ConfigParser()
+    config.read('config')
+    debug = config.get('cobra', 'debug')
+    debug = bool(debug)
+    web.debug = debug
+    manager.run()
 
 
 if __name__ == '__main__':
