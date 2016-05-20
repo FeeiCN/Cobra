@@ -63,3 +63,5 @@ target/
 
 .idea/
 config
+uploads/*
+logs/*

@@ -12,89 +12,115 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import os
+import time
 import argparse
+
+import magic
 from utils import log
-from flask import request, Flask, jsonify, render_template, abort
-from flask.ext.sqlalchemy import SQLAlchemy
-import ConfigParser
+from flask import request, jsonify, render_template
+
+from app import web, CobraTaskInfo, db
 
 
-class Route:
-    template = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-    asset = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates/asset')
-    web = Flask(__name__, template_folder=template, static_folder=asset)
+@web.route('/', methods=['GET'])
+@web.route('/index', methods=['GET'])
+def homepage():
+    log.debug('In homepage Route')
+    return render_template('index.html')
 
-    def __init__(self):
-        log.info('Initialization HTTP Server')
 
-        @self.web.route('/', methods=['GET'])
-        def homepage():
-            log.debug('In homepage Route')
-            return render_template('index.html')
+@web.route('/blank')
+def blank():
+    log.debug('In blank Route')
+    return render_template('blank.html')
 
-        @self.web.route('/blank')
-        def blank():
-            log.debug('In blank Route')
-            return render_template('blank.html')
 
-        @self.web.route('/add', methods=['POST'])
-        def add():
-            log.debug('In add Route')
-            return jsonify(code=1001, msg='success', id=123)
+@web.route('/add', methods=['POST'])
+def add():
+    log.debug('In add Route')
+    # url, username, password, scan_type, level, scan_way, old_version, new_version
+    # if user upload a file, so we set the scan type to file scan
+    # if there is no upload file, we set the scan type to gitlab scan
 
-        @self.web.route('/status/<int:id>', methods=['GET'])
-        def status(id):
-            log.debug('In status Route')
-            return jsonify(code=1001, msg='success', status='running')
+    # check scan type and level
+    scan_type = request.form['scan_type']
+    level = request.form['level']
+    if not scan_type or not level or not scan_type.isdigit() or not level.isdigit():
+        return jsonify(code=1002, msg=u'please select Scan vulnerabilities and Level')
+    if scan_type not in [str(x) for x in range(1, 4)]:
+        return jsonify(code=1002, msg=u'scan type error.')
 
-        @self.web.errorhandler(404)
-        def page_not_found(e):
-            log.debug('In 404 Route')
-            return render_template('404.html'), 404
+    # check scan way and version
+    scan_way = request.form['scan_way']
+    old_version = request.form['old_version']
+    new_version = request.form['new_version']
+    if not scan_way or not scan_way.isdigit():
+        return jsonify(code=1002, msg=u'please select scan method.')
 
-    def start(self):
-        config = ConfigParser.ConfigParser()
-        config.read('config')
-        self.web.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-        self.web.config['SQLALCHEMY_DATABASE_URI'] = config.get('database', 'mysql')
-        db = SQLAlchemy(self.web)
-        host = config.get('cobra', 'host')
-        port = config.get('cobra', 'port')
-        port = int(port)
-        debug = config.get('cobra', 'debug')
-        debug = bool(debug)
-        self.web.run(host=host, port=port, debug=debug)
-        log.info('Cobra HTTP Server Started')
+    if scan_way == '2':
+        if not old_version or not new_version:
+            return jsonify(code=1002, msg=u'in diff mode, please provide new version and old version.')
+    elif scan_way == '1':
+        old_version = None
+        new_version = None
+    else:
+        return jsonify(code=1002, msg=u'scan method error.')
 
-        #
-        # Whitelist Table
-        #
-        class Whitelist(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
-            url = db.Column(db.String(256))
-            remark = db.Column(db.String(56))
-            status = db.Column(db.Integer)
-            created = db.Column(db.Integer)
-            updated = db.Column(db.Integer)
+    task_type = 1
+    # check if there is a file or gitlab url
+    if len(request.files) == 0:
+        # no files, should check username and password
+        task_type = 1
+        url = request.form['url']
+        username = request.form['username']
+        password = request.form['password']
 
-            def __repr__(self):
-                return self.url
+        if not url or not username or not password:
+            return jsonify(code=1002, msg=u'please support username, password and gitlab.')
 
-        #
-        # Result Table
-        #
-        class Result(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
+        # insert into db
+        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, username, password, scan_type, level,
+                                 scan_way, old_version, new_version)
+        db.session.add(new_task)
+        db.session.commit()
+    else:
+        # there is a file, check file format and uncompress it.
+        task_type = 2
+        upload_src = request.files['file']
+        filename = str(int(time.time())) + '_' + upload_src.filename
+        filepath = 'uploads/' + filename
+        upload_src.save(filepath)
 
-        #
-        # Log Table
-        #
-        class Log(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
+        # if you upload a rar file, upload_src.mimetype will returns "application/octet-stream"
+        # rather than "application/x-rar"
+        # check file type via mime type
+        file_type = magic.from_file(filepath, mime=True)
+        if file_type != 'application/x-rar' and file_type != 'application/x-gzip' and file_type != 'application/zip':
+            os.remove(filepath)
+            return jsonify(code=1002, msg=u'only rar, zip and tar.gz supported.')
 
-    def parse_option(self):
-        parser = argparse.ArgumentParser(description='Cobra is a open source Code Security Scan System')
-        parser.add_argument('string', metavar='project/path', type=str, nargs='+', help='Project Path')
-        parser.add_argument('--version', help='Cobra Version')
-        args = parser.parse_args()
-        print args.string[0]
+        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, None, scan_type, level,
+                                 scan_way, old_version, new_version)
+        db.session.add(new_task)
+        db.session.commit()
+    return jsonify(code=1001, msg=u'success', id=123)
+
+
+@web.route('/status/<int:id>', methods=['GET'])
+def status(id):
+    log.debug('In status Route')
+    return jsonify(code=1001, msg='success', status='running')
+
+
+@web.errorhandler(404)
+def page_not_found(e):
+    log.debug('In 404 Route')
+    return render_template('404.html'), 404
+
+
+def parse_option(self):
+    parser = argparse.ArgumentParser(description='Cobra is a open source Code Security Scan System')
+    parser.add_argument('string', metavar='project/path', type=str, nargs='+', help='Project Path')
+    parser.add_argument('--version', help='Cobra Version')
+    args = parser.parse_args()
+    print args.string[0]
