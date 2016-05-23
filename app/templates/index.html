@@ -396,42 +396,36 @@
         $("#scan").on('click', function (e) {
             e.preventDefault();
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("post", "add", true);
-            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-
-            var fd = new FormData();
-            fd.append('url', $("input[name=url]").val());
-            fd.append('username', $("input[name=username]").val());
-            fd.append('password', $("input[name=password]").val());
-            fd.append('scan_type', $('select[name=scan_type]').val());
-            fd.append('level', $("input[name=level]").val());
-            fd.append('scan_way', $("input[name=scan_way]:checked").val());
-            fd.append('old_version', $("input[name=old_version]").val());
-            fd.append('new_version', $("input[name=new_version]").val());
+            var data = new FormData();
+            data.append('url', $("input[name=url]").val());
+            data.append('username', $("input[name=username]").val());
+            data.append('password', $("input[name=password]").val());
+            data.append('scan_type', $('select[name=scan_type]').val());
+            data.append('level', $("input[name=level]").val());
+            data.append('scan_way', $("input[name=scan_way]:checked").val());
+            data.append('old_version', $("input[name=old_version]").val());
+            data.append('new_version', $("input[name=new_version]").val());
             if (fileList && fileList.length != 0) {
-                fd.append('file', fileList[0]);
+                data.append('file', fileList[0]);
             } else if (files && files.length != 0) {
-                fd.append('file', files[0])
+                data.append('file', files[0])
             }
 
-            // console.log('scan way: ' + $("input[name=scan_way]").parent('.checked').children()[0].value);
-            // console.log('scan type: ' + $('select[name=scan_type]').val());
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    var result = xhr.responseText;
-                    result = JSON.parse(result);
-                    if (result.code == '1001') {
-                        $("#log > h3").text('Logging...');
-                        $("ul.nav-tabs > li").eq(1).find('a').trigger('click');
-                    } else {
-                        alert(result.msg);
-                    }
+            $.ajax({
+                url: 'add',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: data,
+            }).done(function (result) {
+                if (result.code == '1001') {
+                    $("#log > h3").text('Logging...');
+                    $("ul.nav-tabs > li").eq(1).find('a').trigger('click');
+                } else {
+                    alert(result.msg);
                 }
-            };
+            });
 
-            xhr.send(fd);
         });
     });
 
