@@ -21,7 +21,7 @@ from utils.decompress import Decompress
 
 # load an compressed file. only tar.gz, rar, zip supported.
 dc = Decompress('222_test.tar.gz')
-# decompress it.
+# decompress it. And there will create a directory named "222_test.tar".
 dc.decompress()
 """
 
