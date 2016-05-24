@@ -18,6 +18,7 @@ import argparse
 import magic
 from utils import log
 from flask import request, jsonify, render_template
+from werkzeug import secure_filename
 
 from app import web, CobraTaskInfo, db
 
@@ -87,7 +88,7 @@ def add():
         # there is a file, check file format and uncompress it.
         task_type = 2
         upload_src = request.files['file']
-        filename = str(int(time.time())) + '_' + upload_src.filename
+        filename = str(int(time.time())) + '_' + secure_filename(upload_src.filename)
         filepath = 'uploads/' + filename
         upload_src.save(filepath)
 
