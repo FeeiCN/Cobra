@@ -14,6 +14,7 @@
 import os
 import time
 import argparse
+import ConfigParser
 
 import magic
 from utils import log
@@ -86,10 +87,15 @@ def add():
         db.session.commit()
     else:
         # there is a file, check file format and uncompress it.
+        # get uploads directory
+        config = ConfigParser.ConfigParser()
+        config.read('config')
+        upload_directory = config.get('cobra', 'upload_directory') + os.sep
+
         task_type = 2
         upload_src = request.files['file']
         filename = str(int(time.time())) + '_' + secure_filename(upload_src.filename)
-        filepath = 'uploads/' + filename
+        filepath = upload_directory + filename
         upload_src.save(filepath)
 
         # if you upload a rar file, upload_src.mimetype will returns "application/octet-stream"

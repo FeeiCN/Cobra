@@ -14,6 +14,7 @@
 
 import os
 import subprocess
+import ConfigParser
 from urllib import quote
 
 from utils import log
@@ -63,6 +64,9 @@ class Git:
     # https://github.com/<username>/<reponame>
 
     def __init__(self, repo_address, username, password):
+        config = ConfigParser.ConfigParser()
+        config.read('config')
+        self.upload_directory = config.get('cobra', 'upload_directory') + os.sep
         self.repo_address = repo_address
         self.repo_username = username
         self.repo_password = password
@@ -73,7 +77,7 @@ class Git:
         else:
             repo_name = repo_name.split('.')[0]
 
-        self.repo_directory = 'uploads/' + repo_user + '_' + repo_name
+        self.repo_directory = self.upload_directory + repo_user + '_' + repo_name
 
         log.info('Git class init.')
 

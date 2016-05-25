@@ -4,6 +4,7 @@ import os
 import shutil
 import zipfile
 import tarfile
+import ConfigParser
 
 import rarfile
 import magic
@@ -43,8 +44,11 @@ class Decompress:
         """
         :param filename: a file name without path.
         """
+        config = ConfigParser.ConfigParser()
+        config.read('config')
+        self.upload_directory = config.get('cobra', 'upload_directory') + os.sep
         self.filename = filename
-        self.filepath = 'uploads/' + filename
+        self.filepath = self.upload_directory + filename
         self.filetype = magic.from_file(self.filepath, mime=True)
         self.dir_name = os.path.splitext(self.filename)[0]
 
@@ -75,9 +79,9 @@ class Decompress:
         self.__check_filename_dir()
 
         # create the file directory to store the extract file.
-        os.mkdir('uploads/' + self.dir_name)
+        os.mkdir(self.upload_directory + self.dir_name)
 
-        zip_file.extractall('uploads/' + self.dir_name)
+        zip_file.extractall(self.upload_directory + self.dir_name)
         zip_file.close()
 
         return {'code': 1, 'msg': u'Success', 'dir_name': self.dir_name}
@@ -88,9 +92,9 @@ class Decompress:
         # check if there is a filename directory
         self.__check_filename_dir()
 
-        os.mkdir('uploads/' + self.dir_name)
+        os.mkdir(self.upload_directory + self.dir_name)
 
-        rar_file.extractall('uploads/' + self.dir_name)
+        rar_file.extractall(self.upload_directory + self.dir_name)
         rar_file.close()
 
         return {'code': 1, 'msg': u'Success', 'dir_name': self.dir_name}
@@ -101,16 +105,16 @@ class Decompress:
         # check if there is a filename directory
         self.__check_filename_dir()
 
-        os.mkdir('uploads/' + self.dir_name)
+        os.mkdir(self.upload_directory + self.dir_name)
 
-        tar_file.extractall('uploads/' + self.dir_name)
+        tar_file.extractall(self.upload_directory + self.dir_name)
         tar_file.close()
 
         return {'code': 1, 'msg': u'Success', 'dir_name': self.dir_name}
 
     def __check_filename_dir(self):
-        if os.path.isdir('uploads/' + self.dir_name):
-            shutil.rmtree('uploads/' + self.dir_name)
+        if os.path.isdir(self.upload_directory + self.dir_name):
+            shutil.rmtree(self.upload_directory + self.dir_name)
 
     def __repr__(self):
         return "<decompress - %r>" % self.filename
