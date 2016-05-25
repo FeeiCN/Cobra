@@ -13,7 +13,7 @@
 #
 
 import unittest
-from pickup import subversion, git, directory
+from pickup import subversion, GitTools, directory
 
 
 class Test(unittest.TestCase):
