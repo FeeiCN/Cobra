@@ -7,6 +7,7 @@ from flask import Flask
 from flask.ext.migrate import MigrateCommand, Migrate
 from flask.ext.script import Manager, Server
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.bootstrap import Bootstrap
 
 from utils import log
 
@@ -22,6 +23,8 @@ config = ConfigParser.ConfigParser()
 config.read('config')
 web.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 web.config['SQLALCHEMY_DATABASE_URI'] = config.get('database', 'mysql')
+
+bootstrap = Bootstrap(web)
 
 db = SQLAlchemy(web)
 
