@@ -428,10 +428,9 @@
                     return false;
                 }
             } else {
-                // TODO: if the repo is public, username and password is unnecessary.
-                // username and password
-                if (!username || !password || !url) {
-                    alert("please provide username, password and gitlab url.");
+                // check if url provide.
+                if (!url) {
+                    alert("Please provide gitlab url. If your repo is public, username and password is unnecessary.");
                     return false;
                 }
             }

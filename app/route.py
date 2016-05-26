@@ -74,12 +74,13 @@ def add():
         # no files, should check username and password
         task_type = 1
         url = request.form['url']
-        username = request.form['username']
-        password = request.form['password']
-        branch = request.form['branch'] if request.form['branch'] else 'master'
+        username = request.form['username'] if request.form['username'] != '' else None
+        password = request.form['password'] if request.form['password'] != '' else None
+        branch = request.form['branch'] if request.form['branch'] != '' else 'master'
 
-        if not url or not username or not password:
-            return jsonify(code=1002, msg=u'please support username, password and gitlab.')
+        if not url:
+            return jsonify(code=1002, msg=u'please support gitlab url. '
+                                          u'If this is a public repo, just leave username and password blank')
 
         # insert into db
         new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, username, password, scan_type, level,
