@@ -1,15 +1,14 @@
 # coding: utf-8
-import sys
-import os
 import ConfigParser
+import os
+import sys
 
 from flask import Flask
+from flask.ext.migrate import MigrateCommand, Migrate
 from flask.ext.script import Manager, Server
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.migrate import MigrateCommand, Migrate
 
 from utils import log
-
 
 log.info('Initialization HTTP Server')
 reload(sys)
@@ -41,7 +40,9 @@ port = int(port)
 manager.add_command('db', MigrateCommand)
 manager.add_command('runserver', Server(host=host, port=port))
 
-from app import route
+from app.controller import route
+from app.controller import RulesAdmin
+
 log.info('Cobra HTTP Server Started')
 
 
