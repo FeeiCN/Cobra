@@ -112,17 +112,23 @@
                                 <input type="text" class="form-control" name="url" placeholder="Type your gitlab url">
                             </div>
                         </div>
+                        <div class="col-md-12" style="padding-left:0;padding-right:0;">
+                            <div class="form-group">
+                                <label>Gitlab Branch/Tag</label>
+                                <input type="text" class="form-control" name="branch" placeholder="Type your branch;Default master">
+                            </div>
+                        </div>
                         <div class="col-md-12" style="padding-right:0;padding-left:0;">
                             <div class="col-md-6" style="padding-left:0;">
                                 <div class="form-group">
                                     <label><i class="icon-user"></i> Username</label>
-                                    <input class="form-control" type="text" name="username">
+                                    <input class="form-control" type="text" name="username" placeholder="Type your username">
                                 </div>
                             </div>
                             <div class="col-md-6" style="padding-right:0;">
                                 <div class="form-group">
                                     <label><i class=" icon-lock-2"></i> Password</label>
-                                    <input class="form-control" type="password" name="password">
+                                    <input class="form-control" type="password" name="password" placeholder="Type your password">
                                 </div>
                             </div>
                         </div>
@@ -401,6 +407,7 @@
             var url = $("input[name=url]").val();
             var username = $("input[name=username]").val();
             var password = $("input[name=password]").val();
+            var branch = $("input[name=branch]").val();
             var file = null;
             if (fileList && fileList.length != 0) {
                 file = fileList[0];
@@ -421,6 +428,7 @@
                     return false;
                 }
             } else {
+                // TODO: if the repo is public, username and password is unnecessary.
                 // username and password
                 if (!username || !password || !url) {
                     alert("please provide username, password and gitlab url.");
@@ -447,6 +455,7 @@
             data.append('url', url);
             data.append('username', username);
             data.append('password', password);
+            data.append('branch', branch);
             data.append('scan_type', scan_type);
             data.append('level', level);
             data.append('scan_way', scan_way);
@@ -472,8 +481,6 @@
                     alert(result.msg);
                 }
             });
-
-
 
         });
     });
