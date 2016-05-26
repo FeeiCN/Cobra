@@ -38,10 +38,19 @@ gg.get_repo()
 # gg.clone()
 # gg.pull()
 
-# diff(new_version, old_version) method will diff the two version.
+# diff(new_version, old_version, raw_output) method will diff the two version.
 # and return the diff result in str.
 diff_result = gg.diff('ef8ab030a54e3', '4640bc08a08f4')
 print diff_result
+
+# the third param "raw_output" will control the return format. default is False.
+# If it set True, it will return the "git diff" raw output, if it set to False (default is False),
+# it will return a dict which stores the formatted increment content.
+#
+# example output
+# {'bb.txt': ['hhhhhhh'], 'aa.txt': ['ccccc', 'ddddd']}
+# bb.txt add a line, the content is 'hhhhhhh'.
+# aa.txt add two line, the content is 'ccccc' and 'ddddd'.
 """
 
 
@@ -97,12 +106,19 @@ class Git:
 
         # change work directory back.
         os.chdir(current_dir)
-        log.info('pull done.')
+
+        if 'Updating' in pull_out or 'up-to-date' in pull_out:
+            log.info('pull done.')
+            return True
+        else:
+            return False
 
     def clone(self):
-        """Clone a repo from repo_address"""
+        """Clone a repo from repo_address
+        :return: True - clone success, False - clone error.
+        """
         log.info('start clone repo')
-        clone_address = self.repo_address.split('://')[0] + '://' + self.repo_username + '@' + \
+        clone_address = self.repo_address.split('://')[0] + '://' + quote(self.repo_username) + '@' + \
                         self.repo_address.split('://')[1]
 
         # clone repo with username and password
@@ -110,20 +126,30 @@ class Git:
         # if add password in the url, .git/config will log your url with password
         # so only set username in the url, and echo password to "git clone"
         # "echo password | git clone http[s]://username@gitlab.com/username/reponame"
-        cmd = 'echo ' + quote(self.repo_password) + ' | ' + 'git clone ' + \
+        cmd = 'echo "' + quote(self.repo_password) + '" | ' + 'git clone ' + \
               clone_address + ' "' + self.repo_directory + '"'
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
         log.info(clone_err)
-        log.info('clone done.')
 
-    def diff(self, new_version, old_version):
+        if 'not found' in clone_err or 'Not found' in clone_err:
+            log.info("repo doesn't exist.")
+            return False
+        elif 'already exists' in clone_err:
+            log.info("repo has already cloned.")
+            return False
+        else:
+            log.info('clone done.')
+            return True
+
+    def diff(self, new_version, old_version, raw_output=False):
         """
         Diff between two version, in SHA hex.
         :param new_version: the new version in SHA hex.
         :param old_version: the old version in SHA hex.
-        :return: the diff result in str.
+        :param raw_output: True-return raw git diff result, False-return parsed result, only add content
+        :return: the diff result in str, raw or formatted.
         """
 
         # change the work directory to the repo.
@@ -139,19 +165,43 @@ class Git:
         # change the work directory back.
         os.chdir(current_dir)
         log.info('diff done.')
-
-        return diff_out
+        if raw_output:
+            return diff_out
+        else:
+            return self.__parse_diff_result(diff_out)
 
     def __check_exist(self):
         """check if the repo has already cloned.
         :returns bool
-            true : the repo already exist.
-            false : the repo do not exist.
+            True : the repo already exist.
+            False : the repo do not exist.
         """
         if os.path.isdir(self.repo_directory):
             return True
         else:
             return False
+
+    def __parse_diff_result(self, content):
+        """parse git diff output, return the format result
+        :return: a dict, each key is the filename which has changed.
+                 each value is a list store every changes.
+        example:
+                {'bb.txt': ['hhhhhhh'], 'aa.txt': ['ccccc', 'ddddd']}
+                bb.txt add a line, the content is 'hhhhhhh'.
+                aa.txt add two line, the content is 'ccccc' and 'ddddd'.
+        """
+        result = {}
+        content = content.split('\n')
+        tmp_filename = ''
+        for x in content:
+            if x != '' and x[0:3] == '+++':
+                tmp_filename = x.split('/')[-1]
+                result[tmp_filename] = []
+            elif x != '' and x[0] == '+':
+                if x[1:] != '':
+                    result[tmp_filename].append(x[1:])
+
+        return result
 
     def get_repo(self):
         """
@@ -162,9 +212,9 @@ class Git:
         """
         if self.__check_exist():
             log.info('repo already exist. Try to pull the repo')
-            self.pull()
+            return self.pull()
         else:
-            self.clone()
+            return self.clone()
 
     def __repr__(self):
         return "<Git - %r@%r>" % (self.repo_username, self.repo_address)
