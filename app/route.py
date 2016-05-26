@@ -76,12 +76,13 @@ def add():
         url = request.form['url']
         username = request.form['username']
         password = request.form['password']
+        branch = request.form['branch'] if request.form['branch'] else 'master'
 
         if not url or not username or not password:
             return jsonify(code=1002, msg=u'please support username, password and gitlab.')
 
         # insert into db
-        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, username, password, scan_type, level,
+        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, username, password, scan_type, level,
                                  scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
@@ -106,7 +107,7 @@ def add():
             os.remove(filepath)
             return jsonify(code=1002, msg=u'only rar, zip and tar.gz supported.')
 
-        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, None, scan_type, level,
+        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, None, None, scan_type, level,
                                  scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
