@@ -12,7 +12,7 @@
 # See the file 'doc/COPYING' for copying permission
 #
 
-from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy.dialects.mysql import TINYINT, INTEGER
 
 from app import db
 
@@ -36,7 +36,7 @@ class CobraTaskInfo(db.Model):
 
     __tablename__ = 'cobra_task_info'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     task_type = db.Column(db.SmallInteger, nullable=False)
     create_time = db.Column(db.Integer, nullable=False)
     filename = db.Column(db.String(255), nullable=True)
@@ -70,10 +70,10 @@ class CobraTaskInfo(db.Model):
                                         "username/password on gitlab" if self.scan_type == 1 else "file upload")
 
 
-class cobra_rules(db.Model):
+class CobraRules(db.Model):
     __tablename__ = 'rules'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     vul_id = db.Column(TINYINT(unsigned=False), nullable=True, default=None)
     language = db.Column(TINYINT(unsigned=False), nullable=True, default=None)
     regex = db.Column(db.String(512), nullable=True, default=None)
@@ -90,4 +90,23 @@ class cobra_rules(db.Model):
         self.updated_at = updated_at
 
     def __repr__(self):
-        return "<cobra_rules %r - %r: %r>" % (self.id, self.language, self.regex)
+        return "<CobraRules %r - %r: %r>" % (self.id, self.language, self.regex)
+
+
+class CobraVuls(db.Model):
+    __tablename__ = 'vuls'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(56), nullable=True, default=None)
+    description = db.Column(db.String(512), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+
+    def __init__(self, name, description, created_at, updated_at):
+        self.name = name
+        self.description = description
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraVuls %r - %r>" % (self.id, self.name)
+
