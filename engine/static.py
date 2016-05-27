@@ -71,7 +71,7 @@ class Static:
 
         try:
             log.info('Scan Rule ID: 1')
-            srcdir = '/Volumes/Statics/Project/Company/mogujie/appbeta/classes/controller'
+            srcdir = '/Volumes/Statics/Project/Company/mogujie/'
             proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [greps, srcdir],
                                     stdout=subprocess.PIPE)
             result = proc.communicate()
