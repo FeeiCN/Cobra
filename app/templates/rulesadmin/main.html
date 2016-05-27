@@ -16,8 +16,10 @@
 	<div class="row clearfix">
 		<div class="col-md-2 column">
             <button type="button" class="btn btn-primary btn-block btn-default" id="show_all_rules">Show All Rules</button>
-            <br>
+            <br />
             <button type="button" class="btn btn-default btn-block btn-primary" id="add_new_rules">Add New Rules</button>
+            <br />
+            <button type="button" class="btn btn-default btn-block btn-primary" id="add_new_vuls">Add New Vuls</button>
 		</div>
 		<div class="col-md-10 column" id="main-div">
             <h2>Welcome to cobra rules management.</h2>
@@ -37,8 +39,45 @@
             });
         });
         $("#add_new_rules").click(function () {
-            $.get('add_new', function (data) {
+            $.get('add_new_rule', function (data) {
                 $("#main-div").html(data);
+            });
+        });
+        $("#add_new_vuls").click(function () {
+            $.get('add_new_vul', function (data) {
+                $("#main-div").html(data);
+                $("#add-new-vul-button").click(function () {
+                    var name = $("#name").val();
+                    var description = $("#description").val();
+                    var result = '';
+                    if (name == "" || !name) {
+                        result += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        result += '<span aria-hidden="true">&times;</span></button>';
+                        result += '<strong>name is empty!</strong></div>';
+                        $("#add-new-vul-result").html(result).fadeIn(1000);
+                        return false;
+                    }
+                    if (description == "" || !description) {
+                        result += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        result += '<span aria-hidden="true">&times;</span></button>';
+                        result += '<strong>description is empty!</strong></div>';
+                        $("#add-new-vul-result").html(result).fadeIn(1000);
+                        return false;
+                    }
+                    var data = {
+                        'name': name,
+                        'description': description
+                    };
+                    $.post('add_new_vul', data, function (res) {
+                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
+                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        tres += '<span aria-hidden="true">&times;</span></button>';
+                        tres += '<strong>' + res.msg + '</strong></div>';
+                        $("#add-new-vul-result").html(tres).fadeIn(1000);
+                    });
+                });
             })
         });
     </script>

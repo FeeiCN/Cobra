@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+import time
 
-from flask import render_template
+from flask import render_template, request, jsonify
 
-from app import web, CobraRules
+from app import web, CobraRules, CobraVuls, db
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -34,9 +35,33 @@ def rules():
 
 
 # add new rules button
-@web.route(ADMIN_URL + '/add_new', methods=['GET'])
-def add_new():
-    return 'admin/add_new'
+@web.route(ADMIN_URL + '/add_new_rule', methods=['GET'])
+def add_new_rule():
+    return render_template('rulesadmin/add_new_rule.html')
+
+
+# add new vuls button
+@web.route(ADMIN_URL + '/add_new_vul', methods=['GET', 'POST'])
+def add_new_vul():
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        if not name or name == "":
+            return jsonify(tag='danger', msg='name is empty')
+        if not description or description == "":
+            return jsonify(tag='danger', msg='description is empty')
+
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+        vul = CobraVuls(name, description, current_time, current_time)
+        try:
+            db.session.add(vul)
+            db.session.commit()
+            return jsonify(tag='success', msg='Add Success.')
+        except:
+            return jsonify(tag='danger', msg='Add failed. Please try again later.')
+
+    else:
+        return render_template('rulesadmin/add_new_vul.html')
 
 
 # api: get all rules count
