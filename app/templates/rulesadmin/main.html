@@ -15,14 +15,24 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-2 column">
-            <button type="button" class="btn btn-primary btn-block btn-default" id="show_all_rules">Show All Rules</button>
-            <br />
-            <button type="button" class="btn btn-default btn-block btn-primary" id="add_new_rules">Add New Rules</button>
-            <br />
-            <button type="button" class="btn btn-default btn-block btn-primary" id="add_new_vuls">Add New Vuls</button>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Rules Manage</div>
+                <div class="panel-body">
+                    <button type="button" class="btn btn-primary btn-block" id="show_all_rules">Show All Rules</button>
+                    <button type="button" class="btn btn-primary btn-block" id="add_new_rules">Add New Rules</button>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Vuls Manage</div>
+                <div class="panel-body">
+                    <button type="button" class="btn btn-primary btn-block" id="show_all_vuls">Show All Vuls</button>
+                    <button type="button" class="btn btn-primary btn-block" id="add_new_vuls">Add New Vuls</button>
+                </div>
+            </div>
 		</div>
-		<div class="col-md-10 column" id="main-div">
-            <h2>Welcome to cobra rules management.</h2>
+        <div hidden class="col-md-10 column" id="vul_operate_result"></div>
+		<div class="col-md-10 column" id="main-div" hidden>
+            <h3>Welcome to cobra rules management.</h3>
             <h3>Click left button to select function.</h3>
 		</div>
 	</div>
@@ -32,20 +42,97 @@
 {% block scripts %}
     {{ super() }}
     <script>
-        var ADMIN_URL = 'admin';
+
+        $("#main-div").fadeIn(1000);
+
+        // show all rules
         $("#show_all_rules").click(function () {
             $.get('rules', function (data) {
                 $("#main-div").html(data);
             });
         });
+
+        // add new rules
         $("#add_new_rules").click(function () {
             $.get('add_new_rule', function (data) {
                 $("#main-div").html(data);
             });
         });
+
+        // show all vuls
+        $("#show_all_vuls").click(function () {
+            $.get('vuls', function (data) {
+                $("#main-div").html(data);
+                // delete the special vul
+                $("[id^=del-vul]").click(function () {
+                    var current_id = $(this).attr('id');
+                    var vul_id = current_id.split('-')[2];
+
+                    $.post('del_vul', {'vul_id':vul_id}, function (result) {
+                        var tt = '<div class="alert alert-' + result.tag +' alert-dismissible" role="alert">';
+                        tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        tt += '<span aria-hidden="true">&times;</span></button>';
+                        tt += '<strong>' + result.msg + '</strong></div>';
+                        $("#vul_operate_result").html(tt).fadeIn(1000);
+                        $("#show_all_vuls").click();
+                    });
+                });
+                // edit the special vul
+                $("[id^=edit-vul]").click(function () {
+                    console.log('edit click');
+                    console.log($(this).attr('id'));
+                    var current_id = $(this).attr('id');
+                    var vul_id = current_id.split('-')[2];
+                    console.log(vul_id);
+
+                    $.get('edit_vul/'+vul_id, function (data) {
+                        $("#main-div").html(data);
+
+                        $("#edit-vul-button").click(function () {
+                            var name = $("#name").val();
+                            var description = $("#description").val();
+                            if (!name || !description || name == "" || description == "") {
+                                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
+                                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                                result += '<span aria-hidden="true">&times;</span></button>';
+                                result += '<strong>name or description can not be empty!</strong></div>';
+                                $("#edit-vul-result").html(result).fadeIn(1000);
+                            }
+                            data = {
+                                'vul_id': vul_id,
+                                'name': name,
+                                'description': description
+                            };
+                            $.post('edit_vul/' + vul_id, data, function (res) {
+                                var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
+                                tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                                tres += '<span aria-hidden="true">&times;</span></button>';
+                                tres += '<strong>' + res.msg + '</strong></div>';
+                                $("#edit-vul-result").html(tres).fadeIn(1000);
+                            });
+
+                        });
+
+                    });
+
+                });
+
+
+            });
+        });
+
+        // Add new vuls.
         $("#add_new_vuls").click(function () {
             $.get('add_new_vul', function (data) {
                 $("#main-div").html(data);
+
+                $("#name").focus(function () {
+                    $("#add-new-vul-result").fadeOut(1000);
+                });
+                $("#description").focus(function () {
+                    $("#add-new-vul-result").fadeOut(1000);
+                });
+
                 $("#add-new-vul-button").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();

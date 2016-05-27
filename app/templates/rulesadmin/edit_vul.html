@@ -1,0 +1,21 @@
+<div class="row clearfix">
+    <div class="col-md-12 column">
+        <div class="page-header">
+            <h3>
+                Edit vul type <small></small>
+            </h3>
+        </div>
+    </div>
+</div>
+<form role="form">
+    <div class="form-group">
+        <label for="name">Vul Name</label>
+        <input type="text" class="form-control" id="name" value="{{ data.name }}"/>
+    </div>
+    <div class="form-group">
+        <label for="description">Vul Description</label>
+        <input type="text" class="form-control" id="description" value="{{ data.description }}"/>
+    </div>
+    <div id="edit-vul-result" hidden></div>
+    <button type="button" class="btn btn-success" id="edit-vul-button">Save</button>
+</form>
