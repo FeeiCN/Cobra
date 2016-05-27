@@ -1,0 +1,45 @@
+{% extends "bootstrap/base.html"  %}
+
+{% block title %}Rules Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1>
+					Cobra Rules Manage <small></small>
+				</h1>
+			</div>
+		</div>
+	</div>
+	<div class="row clearfix">
+		<div class="col-md-2 column">
+            <button type="button" class="btn btn-primary btn-block btn-default" id="show_all_rules">Show All Rules</button>
+            <br>
+            <button type="button" class="btn btn-default btn-block btn-primary" id="add_new_rules">Add New Rules</button>
+		</div>
+		<div class="col-md-10 column" id="main-div">
+            <h2>Welcome to cobra rules management.</h2>
+            <h3>Click left button to select function.</h3>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var ADMIN_URL = 'admin';
+        $("#show_all_rules").click(function () {
+            $.get('rules', function (data) {
+                $("#main-div").html(data);
+            });
+        });
+        $("#add_new_rules").click(function () {
+            $.get('add_new', function (data) {
+                $("#main-div").html(data);
+            })
+        });
+    </script>
+{% endblock %}

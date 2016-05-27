@@ -1,0 +1,24 @@
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>language</th>
+            <th>regex</th>
+            <th>description</th>
+            <th>last update time</th>
+            <th>Operation</th>
+        </tr>
+    </thead>
+    <tbody id="main-table">
+    {% for rule in data.rules %}
+        <tr>
+            <td>{{ rule.id }}</td>
+            <td>{{ rule.language }}</td>
+            <td>{{ rule.regex }}</td>
+            <td>{{ rule.description }}</td>
+            <td>{{ rule.updated_at }}</td>
+            <td>Edit | Delete | View </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
