@@ -110,3 +110,14 @@ class CobraVuls(db.Model):
     def __repr__(self):
         return "<CobraVuls %r - %r>" % (self.id, self.name)
 
+
+class CobraSupportLanguage(db.Model):
+    __tablename__ = 'languages'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    language = db.Column(db.String(32), nullable=False)
+
+    def __init__(self, language):
+        self.language = language
+
+    def __repr__(self):
+        return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)
