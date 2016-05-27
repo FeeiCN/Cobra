@@ -3,7 +3,7 @@ import time
 
 from flask import render_template, request, jsonify
 
-from app import web, CobraRules, CobraVuls, db
+from app import web, CobraRules, CobraVuls, db, CobraSupportLanguage
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -26,6 +26,26 @@ def main():
 def rules():
     # cobra_rules = CobraRules.query.paginate(1, per_page=5, error_out=False)
     cobra_rules = CobraRules.query.all()
+    cobra_vuls = CobraVuls.query.all()
+    cobra_lang = CobraSupportLanguage.query.all()
+    all_vuls = {}
+    all_language = {}
+    for vul in cobra_vuls:
+        all_vuls[vul.id] = vul.name
+    for lang in cobra_lang:
+        all_language[lang.id] = lang.language
+
+    # replace id with real name
+    for rule in cobra_rules:
+        try:
+            rule.vul_id = all_vuls[rule.vul_id]
+        except KeyError:
+            rule.vul_id = 'Unknown Type'
+        try:
+            rule.language = all_language[rule.language]
+        except KeyError:
+            rule.language = 'Unknown Language'
+
     data = {
         # 'paginate': cobra_rules,
         'rules': cobra_rules,
@@ -37,13 +57,97 @@ def rules():
 # add new rules button
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
 def add_new_rule():
-
     if request.method == 'POST':
-        return '123'
+        vul_type = request.form['vul_type']
+        lang = request.form['language']
+        regex = request.form['regex']
+        description = request.form['description']
+
+        if not vul_type or vul_type == "":
+            return jsonify(tag='danger', msg='vul type error.')
+        if not lang or lang == "":
+            return jsonify(tag='danger', msg='language error.')
+        if not regex or regex == "":
+            return jsonify(tag='danger', msg='regex can not be blank')
+        if not description or description == "":
+            return jsonify(tag='danger', msg='description can not be blank')
+
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+        rule = CobraRules(vul_type, lang, regex, description, current_time, current_time)
+        try:
+            db.session.add(rule)
+            db.session.commit()
+            return jsonify(tag='success', msg='add success.')
+        except:
+            return jsonify(tag='danger', msg='add failed, try again later?')
     else:
         vul_type = CobraVuls.query.all()
-        print vul_type
-        return render_template('rulesadmin/add_new_rule.html')
+        languages = CobraSupportLanguage.query.all()
+        data = {
+            'vul_type': vul_type,
+            'languages': languages
+        }
+        return render_template('rulesadmin/add_new_rule.html', data=data)
+
+
+# del special rule
+@web.route(ADMIN_URL + '/del_rule', methods=['POST'])
+def del_rule():
+    vul_id = request.form['rule_id']
+    if vul_id:
+        r = CobraRules.query.filter_by(id=vul_id).first()
+        try:
+            db.session.delete(r)
+            db.session.commit()
+            return jsonify(tag='success', msg='delete success.')
+        except:
+            return jsonify(tag='danger', msg='delete failed. Try again later?')
+    else:
+        return jsonify(tag='danger', msg='wrong id')
+
+
+# edit special rule
+@web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
+def edit_rule(rule_id):
+    if request.method == 'POST':
+        vul_type = request.form['vul_type']
+        lang = request.form['language']
+        regex = request.form['regex']
+        description = request.form['description']
+        rule_id = request.form['rule_id']
+
+        if not vul_type or vul_type == "":
+            return jsonify(tag='danger', msg='vul type error.')
+        if not lang or lang == "":
+            return jsonify(tag='danger', msg='language error.')
+        if not regex or regex == "":
+            return jsonify(tag='danger', msg='regex can not be blank')
+        if not description or description == "":
+            return jsonify(tag='danger', msg='description can not be blank')
+
+        r = CobraRules.query.filter_by(id=rule_id).first()
+        r.vul_id = vul_type
+        r.language = lang
+        r.regex = regex
+        r.description = description
+        try:
+            db.session.add(r)
+            db.session.commit()
+            return jsonify(tag='success', msg='save success.')
+        except:
+            return jsonify(tag='danger', msg='save failed. Try again later?')
+    else:
+        r = CobraRules.query.filter_by(id=rule_id).first()
+        vul_type = CobraVuls.query.all()
+        languages = CobraSupportLanguage.query.all()
+        return render_template('rulesadmin/edit_rule.html', data={
+            'vul_type': r.vul_id,
+            'language': r.language,
+            'regex': r.regex,
+            'description': r.description,
+            'all_vuls': vul_type,
+            'all_lang': languages,
+        })
 
 
 # add new vuls button
