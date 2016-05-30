@@ -12,6 +12,8 @@
 # See the file 'doc/COPYING' for copying permission
 #
 
+from sqlalchemy.dialects.mysql import TINYINT, INTEGER
+
 from app import db
 
 
@@ -34,25 +36,27 @@ class CobraTaskInfo(db.Model):
 
     __tablename__ = 'cobra_task_info'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     task_type = db.Column(db.SmallInteger, nullable=False)
     create_time = db.Column(db.Integer, nullable=False)
     filename = db.Column(db.String(255), nullable=True)
     url = db.Column(db.String(255), nullable=True)
-    username = db.Column(db.String(255), nullable=True)
-    password = db.Column(db.String(255), nullable=True)
+    branch = db.Column(db.String(64), nullable=True)
+    username = db.Column(db.String(64), nullable=True)
+    password = db.Column(db.String(64), nullable=True)
     scan_type = db.Column(db.SmallInteger, nullable=False)
     level = db.Column(db.SmallInteger, nullable=False)
     scan_way = db.Column(db.SmallInteger, nullable=False)
     old_version = db.Column(db.String(40), nullable=True)
     new_version = db.Column(db.String(40), nullable=True)
 
-    def __init__(self, task_type, create_time, filename, url, username, password, scan_type, level, scan_way,
+    def __init__(self, task_type, create_time, filename, url, branch, username, password, scan_type, level, scan_way,
                  old_version, new_version):
         self.task_type = task_type
         self.create_time = create_time
         self.filename = filename
         self.url = url
+        self.branch = branch
         self.username = username
         self.password = password
         self.scan_type = scan_type
@@ -65,3 +69,55 @@ class CobraTaskInfo(db.Model):
         return '<task_info %r - %r>' % (self.id,
                                         "username/password on gitlab" if self.scan_type == 1 else "file upload")
 
+
+class CobraRules(db.Model):
+    __tablename__ = 'rules'
+
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    vul_id = db.Column(TINYINT(unsigned=False), nullable=True, default=None)
+    language = db.Column(TINYINT(unsigned=False), nullable=True, default=None)
+    regex = db.Column(db.String(512), nullable=True, default=None)
+    description = db.Column(db.String(256), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+
+    def __init__(self, vul_id, language, regex, description, created_at, updated_at):
+        self.vul_id = vul_id
+        self.language = language
+        self.regex = regex
+        self.description = description
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraRules %r - %r: %r>" % (self.id, self.language, self.regex)
+
+
+class CobraVuls(db.Model):
+    __tablename__ = 'vuls'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(56), nullable=True, default=None)
+    description = db.Column(db.String(512), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+
+    def __init__(self, name, description, created_at, updated_at):
+        self.name = name
+        self.description = description
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraVuls %r - %r>" % (self.id, self.name)
+
+
+class CobraSupportLanguage(db.Model):
+    __tablename__ = 'languages'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    language = db.Column(db.String(32), nullable=False)
+
+    def __init__(self, language):
+        self.language = language
+
+    def __repr__(self):
+        return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)

@@ -1,0 +1,32 @@
+<form role="form">
+    <div class="form-group">
+        <label for="vul_id">Vul type</label>
+        <select id="vul_type" class="form-control">
+            {% for vul in data.vul_type %}
+                <option value="{{ vul.id }}">
+                {{ vul.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="language">Language</label>
+        <select id="language" class="form-control">
+            {% for lang in data.languages %}
+                <option value="{{ lang.id }}">
+                {{ lang.language }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="regex">Regex in perl mode</label>
+        <input type="text" class="form-control" id="regex" />
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" />
+    </div>
+    <div id="add-new-rule-result" hidden></div>
+    <button type="button" class="btn btn-success" id="add-new-rule-button">Add</button>
+</form>
