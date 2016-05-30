@@ -7,7 +7,9 @@ from flask import request, jsonify
 
 from app import web
 from app import CobraTaskInfo
+from app import CobraProject
 from app import db
+from pickup import GitTools
 
 
 # default api url
@@ -66,12 +68,29 @@ def add_new_task():
     if not level or level == "":
         return jsonify(code=1002, msg=u'level can not be empty')
 
-    current_time = int(time.time())
-    task_info = CobraTaskInfo(task_type=1, create_time=current_time, filename=None, url=url, branch=branch,
+    current_timestamp = int(time.time())
+    current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+    gg = GitTools.Git(url, branch=branch, username=username, password=password)
+    repo_name = gg.repo_directory.split('/')[-1]
+    repo_name = repo_name.split('_')[-1]
+
+    new_version = None if new_version == "" else new_version
+    old_version = None if old_version == "" else old_version
+    username = None if username == "" else username
+    password = None if password == "" else password
+
+    # insert into task info table.
+    task_info = CobraTaskInfo(task_type=1, create_time=current_timestamp, filename=None, url=url, branch=branch,
                               username=username, password=password, scan_type=scan_type, level=level, scan_way=scan_way,
                               old_version=old_version, new_version=new_version)
+
+    # insert into project table.
+    project = CobraProject(name=repo_name, repo_type=1, repository=url, branch=branch, username=username,
+                           password=password, scan_at=None, created_at=current_time, updated_at=current_time)
+
     try:
         db.session.add(task_info)
+        db.session.add(project)
         db.session.commit()
         return jsonify(code=1001, msg=u'task add success.')
     except:
