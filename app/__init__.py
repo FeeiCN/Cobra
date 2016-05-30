@@ -45,6 +45,7 @@ manager.add_command('runserver', Server(host=host, port=port))
 
 from app.controller import route
 from app.controller import RulesAdmin
+from app.controller import api
 
 log.info('Cobra HTTP Server Started')
 
