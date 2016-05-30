@@ -126,6 +126,9 @@ class CobraSupportLanguage(db.Model):
 
 
 class CobraProject(db.Model):
+
+    __tablename__ = 'projects'
+
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(128), default=None, nullable=True)
     repo_type = db.Column(TINYINT(2), nullable=False)
