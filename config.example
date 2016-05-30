@@ -2,6 +2,7 @@
 host: 127.0.0.1
 port: 5000
 debug: 0
+logs_directory: logs
 
 # upload src store path, default: uploads
 # NOTE: no '/' or '\' at the end of the direcotry name.
