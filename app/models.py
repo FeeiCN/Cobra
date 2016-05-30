@@ -121,3 +121,49 @@ class CobraSupportLanguage(db.Model):
 
     def __repr__(self):
         return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)
+
+
+# CREATE TABLE `projects` (
+#   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'project id',
+#   `name` varchar(128) DEFAULT NULL COMMENT 'project name',
+#   `repo_type` tinyint(2) NOT NULL COMMENT 'repository type: 1git/2svn'
+#   `repository` varchar(256) DEFAULT NULL COMMENT 'repository url',
+#   `branch` varchar(128) DEFAULT NULL COMMENT 'branch',
+#   `username` varchat(128) DEFAULT NULL COMMENT 'username',
+#   `password` varchar(128) DEFAULT NULL COMMENT 'password',
+#   `scan_at` datetime DEFAULT NULL COMMENT 'last scan time',
+#   `created_at` datetime DEFAULT NULL COMMENT 'create time',
+#   `updated_at` datetime DEFAULT NULL COMMENT 'update time',
+#   PRIMARY KEY (`id`)
+# ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='projects';
+
+
+class CobraProject(db.Model):
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(128), default=None, nullable=True)
+    repo_type = db.Column(TINYINT(2), nullable=False)
+    repository = db.Column(db.String(256), default=None, nullable=True)
+    branch = db.Column(db.String(128), default=None, nullable=True)
+    username = db.Column(db.String(128), default=None, nullable=True)
+    password = db.Column(db.String(128), default=None, nullable=True)
+    scan_at = db.Column(db.DateTime, default=None, nullable=True)
+    created_at = db.Column(db.DateTime, default=None, nullable=True)
+    updated_at = db.Column(db.DateTime, default=None, nullable=True)
+
+    def __init__(self, name, repo_type, repository, branch, username, password, scan_at, created_at, updated_at):
+        self.name = name
+        self.repo_type = repo_type
+        self.repository = repository
+        self.branch = branch
+        self.username = username
+        self.password = password
+        self.scan_at = scan_at
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraProject %r>" % self.repository
+
+
+
+
