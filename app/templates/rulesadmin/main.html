@@ -44,16 +44,16 @@
             </div>
 		</div>
         <div hidden class="col-md-10 column" id="vul_operate_result"></div>
-        <div class="modal fade" id="view-rule-modal">
+        <div class="modal fade" id="view-modal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="view-rule-title">View rule details.</h4>
+                        <h4 class="modal-title" id="view-title"></h4>
                     </div>
                     <div class="modal-body">
-                        <p id="view-rule-body">One fine body&hellip;</p>
+                        <p id="view-body">One fine body&hellip;</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -72,8 +72,4 @@
 {% block scripts %}
     {{ super() }}
     <script src="/asset/js/admin.js"></script>
-    <script>
-
-
-    </script>
 {% endblock %}
