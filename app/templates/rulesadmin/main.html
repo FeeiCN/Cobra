@@ -31,6 +31,23 @@
             </div>
 		</div>
         <div hidden class="col-md-10 column" id="vul_operate_result"></div>
+        <div class="modal fade" id="view-rule-modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="view-rule-title">View rule details.</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="view-rule-body">One fine body&hellip;</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
 		<div class="col-md-10 column" id="main-div" hidden>
             <h3>Welcome to cobra rules management.</h3>
             <h3>Click left button to select function.</h3>
@@ -44,7 +61,6 @@
     <script>
 
         $("#main-div").fadeIn(1000);
-        $('[data-toggle="popover"]').popover()
 
         // show all rules
         $("#show_all_rules").click(function () {
@@ -134,9 +150,9 @@
 
                 // view the special rule
                 $("[id^=view-rule]").click(function () {
-                    console.log('view rule.');
                     var cur_id = $(this).attr('id').split('-')[2];
-                    console.log(cur_id);
+                    var regex = $("<div/>").text($("#rule-regex-" + cur_id).text()).html();
+                    $("#view-rule-body").html("<b>Regex in Perl: </b>" + regex);
                 });
 
             });
