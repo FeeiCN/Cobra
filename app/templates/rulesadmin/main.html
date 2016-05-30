@@ -83,9 +83,7 @@
 
                 // edit the special rule
                 $("[id^=edit-rule]").click(function () {
-                    console.log('edit rule.');
                     var cur_id = $(this).attr('id').split('-')[2];
-                    console.log(cur_id);
                     $.get('edit_rule/' + cur_id, function (result) {
                         $('#main-div').html(result);
 
@@ -217,12 +215,7 @@
                         tres += '<strong>' + res.msg + '</strong></div>';
                         $("#add-new-rule-result").html(tres).fadeIn(1000);
                     });
-
                 });
-
-
-
-
             });
         });
 
@@ -248,11 +241,8 @@
 
                 // edit the special vul
                 $("[id^=edit-vul]").click(function () {
-                    console.log('edit click');
-                    console.log($(this).attr('id'));
                     var current_id = $(this).attr('id');
                     var vul_id = current_id.split('-')[2];
-                    console.log(vul_id);
 
                     $.get('edit_vul/'+vul_id, function (data) {
                         $("#main-div").html(data);
@@ -280,14 +270,9 @@
                                 tres += '<strong>' + res.msg + '</strong></div>';
                                 $("#edit-vul-result").html(tres).fadeIn(1000);
                             });
-
                         });
-
                     });
-
                 });
-
-
             });
         });
 
