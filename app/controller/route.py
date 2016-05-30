@@ -14,10 +14,12 @@
 import os
 import time
 import argparse
+import ConfigParser
 
 import magic
 from utils import log
 from flask import request, jsonify, render_template
+from werkzeug import secure_filename
 
 from app import web, CobraTaskInfo, db
 
@@ -72,23 +74,30 @@ def add():
         # no files, should check username and password
         task_type = 1
         url = request.form['url']
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['username'] if request.form['username'] != '' else None
+        password = request.form['password'] if request.form['password'] != '' else None
+        branch = request.form['branch'] if request.form['branch'] != '' else 'master'
 
-        if not url or not username or not password:
-            return jsonify(code=1002, msg=u'please support username, password and gitlab.')
+        if not url:
+            return jsonify(code=1002, msg=u'please support gitlab url. '
+                                          u'If this is a public repo, just leave username and password blank')
 
         # insert into db
-        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, username, password, scan_type, level,
+        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, username, password, scan_type, level,
                                  scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
     else:
         # there is a file, check file format and uncompress it.
+        # get uploads directory
+        config = ConfigParser.ConfigParser()
+        config.read('config')
+        upload_directory = config.get('cobra', 'upload_directory') + os.sep
+
         task_type = 2
         upload_src = request.files['file']
-        filename = str(int(time.time())) + '_' + upload_src.filename
-        filepath = 'uploads/' + filename
+        filename = str(int(time.time())) + '_' + secure_filename(upload_src.filename)
+        filepath = upload_directory + filename
         upload_src.save(filepath)
 
         # if you upload a rar file, upload_src.mimetype will returns "application/octet-stream"
@@ -99,7 +108,7 @@ def add():
             os.remove(filepath)
             return jsonify(code=1002, msg=u'only rar, zip and tar.gz supported.')
 
-        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, None, scan_type, level,
+        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, None, None, scan_type, level,
                                  scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
