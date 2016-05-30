@@ -121,3 +121,27 @@ class CobraSupportLanguage(db.Model):
 
     def __repr__(self):
         return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)
+
+
+class CobraResults(db.Model):
+    __tablename__ = 'results'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    scan_id = db.Column(INTEGER(11), nullable=True, default=None)
+    rule_id = db.Column(INTEGER(11), nullable=True, default=None)
+    file = db.Column(db.String(512), nullable=True, default=None)
+    line = db.Column(INTEGER(11), nullable=True, default=None)
+    code = db.Column(db.String(512), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+
+    def __init__(self, scan_id, rule_id, file, line, code, created_at, updated_at):
+        self.scan_id = scan_id
+        self.rule_id = rule_id
+        self.file = file
+        self.line = line
+        self.code = code
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraResults %r - %r>" % (self.id, self.scan_id)
