@@ -27,7 +27,7 @@ class CobraTaskInfo(db.Model):
     url:            url, if user provide gitlab account, this is the project url on gitlab
     username:       username, gitlab username
     password:       password, gitlab password
-    scan_type:      scan type, 1-all vulnerabislities, 2-general vulnerabilities, 3-code syntax,
+    scan_type:      scan type, 1-all vulnerabilities, 2-general vulnerabilities, 3-code syntax,
     level:          level, scan level
     scan_way:       scan way, 1-full scan, 2-diff scan
     old_version:    old version, if user select diff scan, this is the old version of the project
@@ -115,27 +115,14 @@ class CobraSupportLanguage(db.Model):
     __tablename__ = 'languages'
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     language = db.Column(db.String(32), nullable=False)
+    suffix = db.Column(db.String(256), nullable=False)
 
-    def __init__(self, language):
+    def __init__(self, language, suffix):
         self.language = language
+        self.suffix = suffix
 
     def __repr__(self):
         return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)
-
-
-# CREATE TABLE `projects` (
-#   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'project id',
-#   `name` varchar(128) DEFAULT NULL COMMENT 'project name',
-#   `repo_type` tinyint(2) NOT NULL COMMENT 'repository type: 1git/2svn'
-#   `repository` varchar(256) DEFAULT NULL COMMENT 'repository url',
-#   `branch` varchar(128) DEFAULT NULL COMMENT 'branch',
-#   `username` varchat(128) DEFAULT NULL COMMENT 'username',
-#   `password` varchar(128) DEFAULT NULL COMMENT 'password',
-#   `scan_at` datetime DEFAULT NULL COMMENT 'last scan time',
-#   `created_at` datetime DEFAULT NULL COMMENT 'create time',
-#   `updated_at` datetime DEFAULT NULL COMMENT 'update time',
-#   PRIMARY KEY (`id`)
-# ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='projects';
 
 
 class CobraProject(db.Model):
