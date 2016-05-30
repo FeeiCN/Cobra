@@ -11,10 +11,12 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
+import os
 import sys
 import time
 import logging
 import logging.handlers
+import ConfigParser
 
 __all__ = ['set_logger', 'debug', 'info', 'warning', 'error',
            'critical', 'exception']
@@ -89,7 +91,12 @@ def add_file_handler(level, fmt, filename, mode, backup_count, limit, when):
 
     # If the filename is not set, use the default filename
     if filename is None:
-        filename = 'logs/' + time.strftime("%Y-%m-%d") + '.log'
+        config = ConfigParser.ConfigParser()
+        config.read('config')
+        logs_directory = config.get('cobra', 'logs_directory')
+        if os.path.isdir(logs_directory) is not True:
+            os.mkdir(logs_directory)
+        filename = logs_directory + '/' + time.strftime("%Y-%m-%d") + '.log'
 
     kwargs['filename'] = filename
 
