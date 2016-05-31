@@ -18,7 +18,7 @@ $("#show_all_rules").click(function () {
                 tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
                 tt += '<span aria-hidden="true">&times;</span></button>';
                 tt += '<strong>' + data.msg + '</strong></div>';
-                $("#vul_operate_result").html(tt).fadeIn(1000);
+                $("#operate_result").html(tt).fadeIn(1000);
                 $("#show_all_rules").click();
             });
 
@@ -93,7 +93,8 @@ $("#show_all_rules").click(function () {
         $("[id^=view-rule]").click(function () {
             var cur_id = $(this).attr('id').split('-')[2];
             var regex = $("<div/>").text($("#rule-regex-" + cur_id).text()).html();
-            $("#view-rule-body").html("<b>Regex in Perl: </b>" + regex);
+            $("#view-title").html("Rule Details.");
+            $("#view-body").html("<b>Regex in Perl: </b>" + regex);
         });
 
     });
@@ -177,7 +178,7 @@ $("#show_all_vuls").click(function () {
                 tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
                 tt += '<span aria-hidden="true">&times;</span></button>';
                 tt += '<strong>' + result.msg + '</strong></div>';
-                $("#vul_operate_result").html(tt).fadeIn(1000);
+                $("#operate_result").html(tt).fadeIn(1000);
                 $("#show_all_vuls").click();
             });
         });
@@ -263,6 +264,39 @@ $("#add_new_vuls").click(function () {
                 $("#add-new-vul-result").html(tres).fadeIn(1000);
             });
         });
-    })
+    });
 });
 
+
+// show all projects click
+$("#show_all_projects").click(function () {
+    $.get('projects', function (data) {
+        $("#main-div").html(data);
+
+        // edit project click
+
+        // view project click
+
+        // delete project click
+        $("[id^=del-project]").click(function () {
+            var cur_project_id = $(this).attr('id');
+            cur_project_id = cur_project_id.split('-')[2];
+            
+            $.post("del_project", {"id":cur_project_id}, function (result) {
+                var tt = '<div class="alert alert-' + result.tag +' alert-dismissible" role="alert">';
+                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                tt += '<span aria-hidden="true">&times;</span></button>';
+                tt += '<strong>' + result.msg + '</strong></div>';
+                $("#operate_result").html(tt).fadeIn(1000);
+            });
+            $("#show_all_projects").click();
+        });
+
+    });
+});
+
+
+// show all white lists click
+$("#show_all_whitelists").click(function () {
+    console.log('show all white list');
+});

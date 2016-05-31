@@ -4,6 +4,7 @@ import time
 from flask import render_template, request, jsonify
 
 from app import web, CobraRules, CobraVuls, db, CobraSupportLanguage
+from app import CobraProject
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -233,4 +234,31 @@ def all_rules_count():
     rules_count = CobraRules.query.count()
     return str(rules_count)
 
+
+# show all projects
+@web.route(ADMIN_URL + '/projects', methods=['GET'])
+def projects():
+    project = CobraProject.query.all()
+    data = {
+        'projects': project,
+    }
+    return render_template("rulesadmin/projects.html", data=data)
+
+
+# del the special projects
+@web.route(ADMIN_URL + '/del_project', methods=['POST'])
+def del_project():
+    if request.method == 'POST':
+        project_id = request.form.get('id')
+        if not project_id or project_id == "":
+            return jsonify(tag='danger', msg='project id error.')
+        project = CobraProject.query.filter_by(id=project_id).first()
+        try:
+            db.session.delete(project)
+            db.session.commit()
+            return jsonify(tag='success', msg='delete success.')
+        except:
+            return jsonify(tag='danger', msg='unknown error. please try later?')
+    else:
+        return 'Method error!'
 
