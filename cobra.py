@@ -12,20 +12,23 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import ConfigParser
-
 from app import web, manager
 from utils import log
 
 
 def main():
-    config = ConfigParser.ConfigParser()
-    config.read('config')
-    debug = config.get('cobra', 'debug')
-    debug = bool(debug)
+    try:
+        config = ConfigParser.ConfigParser()
+        config.read('config')
+        debug = config.get('cobra', 'debug')
+        debug = bool(debug)
+    except ConfigParser.Error:
+        debug = True
+        print("/config File Not Found, copy config.example to config please!")
     web.debug = debug
+    log.info('Starting Cobra...')
     manager.run()
 
 
 if __name__ == '__main__':
-    log.info('Starting Cobra...')
     main()
