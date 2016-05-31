@@ -37,21 +37,21 @@ def blank():
     return render_template('blank.html')
 
 
-@web.route('/api/add', methods=['POST'])
-def add():
-    log.debug('In api/add Route')
-    key = request.form['key']
-    name = request.form['name']
-    type = request.form['type']
-    repository = request.form['repository']
-    branch = request.form['branch']
-    version = request.form['version']
-    old_version = request.form['old_version']
-    files = request.form['files']
-    author = request.form['author']
-
-    repo_type = 1
-    CobraProjects(name, repo_type, repository, branch)
+# @web.route('/api/add', methods=['POST'])
+# def add():
+#     log.debug('In api/add Route')
+#     key = request.form['key']
+#     name = request.form['name']
+#     type = request.form['type']
+#     repository = request.form['repository']
+#     branch = request.form['branch']
+#     version = request.form['version']
+#     old_version = request.form['old_version']
+#     files = request.form['files']
+#     author = request.form['author']
+#
+#     repo_type = 1
+#     CobraProjects(name, repo_type, repository, branch)
 
 
 @web.route('/add', methods=['POST'])
