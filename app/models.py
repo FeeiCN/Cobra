@@ -42,23 +42,19 @@ class CobraTaskInfo(db.Model):
     filename = db.Column(db.String(255), nullable=True)
     url = db.Column(db.String(255), nullable=True)
     branch = db.Column(db.String(64), nullable=True)
-    username = db.Column(db.String(64), nullable=True)
-    password = db.Column(db.String(64), nullable=True)
     scan_type = db.Column(db.SmallInteger, nullable=False)
     level = db.Column(db.SmallInteger, nullable=False)
     scan_way = db.Column(db.SmallInteger, nullable=False)
     old_version = db.Column(db.String(40), nullable=True)
     new_version = db.Column(db.String(40), nullable=True)
 
-    def __init__(self, task_type, create_time, filename, url, branch, username, password, scan_type, level, scan_way,
+    def __init__(self, task_type, create_time, filename, url, branch, scan_type, level, scan_way,
                  old_version, new_version):
         self.task_type = task_type
         self.create_time = create_time
         self.filename = filename
         self.url = url
         self.branch = branch
-        self.username = username
-        self.password = password
         self.scan_type = scan_type
         self.level = level
         self.scan_way = scan_way

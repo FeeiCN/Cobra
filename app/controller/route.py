@@ -100,7 +100,7 @@ def add():
                                           u'If this is a public repo, just leave username and password blank')
 
         # insert into db
-        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, username, password, scan_type, level,
+        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, scan_type, level,
                                  scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
