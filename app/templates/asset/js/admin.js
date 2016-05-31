@@ -4,6 +4,13 @@
 
 
 $("#main-div").fadeIn(1000);
+function showAlert(tag, msg) {
+    var tt = '<div class="alert alert-' + tag +' alert-dismissible" role="alert">';
+    tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+    tt += '<span aria-hidden="true">&times;</span></button>';
+    tt += '<strong>' + msg + '</strong></div>';
+    $("#add-new-whitelist-result").html(tt).fadeIn(1000);
+}
 
 // show all rules
 $("#show_all_rules").click(function () {
@@ -294,6 +301,7 @@ $("#show_all_projects").click(function () {
                         tres += '<span aria-hidden="true">&times;</span></button>';
                         tres += '<strong>name cannot be empty!</strong></div>';
                         $("#edit-project-result").html(tres).fadeIn(1000);
+                        return false;
                     }
 
                     if (!repo_type || repo_type == "") {
@@ -302,6 +310,7 @@ $("#show_all_projects").click(function () {
                         tres += '<span aria-hidden="true">&times;</span></button>';
                         tres += '<strong>repo type error.</strong></div>';
                         $("#edit-project-result").html(tres).fadeIn(1000);
+                        return false;
                     }
 
                     if (!repository || repository == "") {
@@ -310,6 +319,7 @@ $("#show_all_projects").click(function () {
                         tres += '<span aria-hidden="true">&times;</span></button>';
                         tres += '<strong>repository cannot be empty!</strong></div>';
                         $("#edit-project-result").html(tres).fadeIn(1000);
+                        return false;
                     }
 
                     if (!branch || branch == "") {
@@ -318,6 +328,7 @@ $("#show_all_projects").click(function () {
                         tres += '<span aria-hidden="true">&times;</span></button>';
                         tres += '<strong>branch cannot be empty!</strong></div>';
                         $("#edit-project-result").html(tres).fadeIn(1000);
+                        return false;
                     }
 
                     data = {
@@ -336,14 +347,14 @@ $("#show_all_projects").click(function () {
                         tres += '<strong>' + res.msg + '</strong></div>';
                         $("#edit-project-result").html(tres).fadeIn(1000);
                     });
-
                 });
-
-
             });
         });
 
         // view project click
+        $("[id^=view-project]").click(function () {
+            var cur_project_id = $(this).attr('id').split('-')[2];
+        });
 
         // delete project click
         $("[id^=del-project]").click(function () {
@@ -367,4 +378,50 @@ $("#show_all_projects").click(function () {
 // show all white lists click
 $("#show_all_whitelists").click(function () {
     console.log('show all white list');
+});
+
+// add new white list click
+$("#add_new_whitelist").click(function () {
+    $.get('add_whitelist', function (data) {
+        $("#main-div").html(data);
+
+        $("#add-new-whitelist-button").click(function () {
+            var project_id = $("#project").val();
+            var rule_id = $("#rule").val();
+            var file = $("#file").val();
+            var reason = $("#reason").val();
+
+            if (!project_id || project_id == "") {
+                showAlert('danger', 'project error.');
+                return false;
+            }
+
+            if (!rule_id || rule_id == "") {
+                showAlert('danger', 'rule error.');
+                return false;
+            }
+
+            if (!file || file == "") {
+                showAlert('danger', 'file cannot be empty.');
+                return false;
+            }
+
+            if (!reason || reason == "") {
+                showAlert('danger', 'reason can not be empty');
+                return false;
+            }
+
+            data = {
+                'project_id': project_id,
+                'rule_id': rule_id,
+                'file': file,
+                'reason': reason
+            };
+
+            $.post('add_whitelist', data, function (result) {
+                showAlert(result.tag, result.msg);
+            });
+        });
+
+    });
 });

@@ -4,7 +4,7 @@ import time
 from flask import render_template, request, jsonify
 
 from app import web, CobraRules, CobraVuls, db, CobraSupportLanguage
-from app import CobraProject
+from app import CobraProject, CobraWhiteList
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -314,6 +314,61 @@ def edit_project(project_id):
             'project': project
         })
 
+
+# show all white lists
+@web.route(ADMIN_URL + '/whitelists', methods=['GET'])
+def whitelists():
+    pass
+
+
+# add new white list
+@web.route(ADMIN_URL + '/add_whitelist', methods=['GET', 'POST'])
+def add_whitelist():
+    if request.method == 'POST':
+        project_id = request.form.get('project_id')
+        rule_id = request.form.get('rule_id')
+        file = request.form.get('file')
+        reason = request.form.get('reason')
+
+        if not project_id or project_id == "":
+            return jsonify(tag='danger', msg='project id error.')
+        if not rule_id or rule_id == "":
+            return jsonify(tag='danger', msg='rule id error.')
+        if not file or file == "":
+            return jsonify(tag='danger', msg='file error.')
+        if not reason or reason == "":
+            return jsonify(tag='danger', msg='reason error.')
+
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+        if file[0] != '/':
+            file = '/' + file
+        whitelist = CobraWhiteList(project_id, rule_id, file, reason, current_time, current_time)
+        try:
+            db.session.add(whitelist)
+            db.session.commit()
+            return jsonify(tag='success', msg='add success.')
+        except:
+            return jsonify(tag='danger', msg='unknown error. Try again later?')
+    else:
+        rules = CobraRules.query.all()
+        projects = CobraProject.query.all()
+        data = {
+            'rules': rules,
+            'projects': projects,
+        }
+        return render_template('rulesadmin/add_new_whitelist.html', data=data)
+
+
+# del the special white list
+@web.route(ADMIN_URL + '/del_whitelist', methods=['POST'])
+def del_whitelist():
+    pass
+
+
+# edit the special white list
+@web.route(ADMIN_URL + '/edit_whitelist/<int:whitelist_id>', methods=['GET', 'POST'])
+def edit_whitelist():
+    pass
 
 
 
