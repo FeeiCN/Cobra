@@ -95,10 +95,10 @@ class Static:
                                   datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
                         try:
                             print('In Insert')
-                            # results = CobraResults(scan_id, rule_id, rr[0], code[0], str(code[1].strip()), current_time,
-                            #                        current_time)
-                            # db.session.add(results)
-                            # db.session.commit()
+                            results = CobraResults(scan_id, rule_id, rr[0], code[0], str(code[1].strip()), current_time,
+                                                   current_time)
+                            db.session.add(results)
+                            db.session.commit()
                             print('Insert Results Success')
                         except:
                             print('Insert Results Failed')
