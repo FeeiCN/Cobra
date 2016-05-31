@@ -262,3 +262,58 @@ def del_project():
     else:
         return 'Method error!'
 
+
+# edit the special projects
+@web.route(ADMIN_URL + '/edit_project/<int:project_id>', methods=['GET', 'POST'])
+def edit_project(project_id):
+    if request.method == "POST":
+        # get data from request
+        project_id = request.form.get('project_id')
+        name = request.form.get('name')
+        repo_type = request.form.get('repo_type')
+        repository = request.form.get('repository')
+        branch = request.form.get('branch')
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # check data
+        if not project_id or project_id == "":
+            return jsonify(tag='danger', msg='wrong project id.')
+        if not name or name == "":
+            return jsonify(tag='danger', msg='name cannot be empty')
+        if not repo_type or repo_type == "":
+            return jsonify(tag='danger', msg='repo type cannot be empty')
+        if not repository or repository == "":
+            return jsonify(tag='danger', msg='repository can not be empty')
+        if not branch or branch == "":
+            return jsonify(tag='danger', msg="branch can not be empty")
+
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+        repo_type = 1 if repo_type == "git" else 2
+        project = CobraProject.query.filter_by(id=project_id).first()
+        if not project:
+            return jsonify(tag='danger', msg='wrong project id.')
+
+        # update project data
+        project.name = name
+        project.repo_type = 1 if repo_type == 'git' else 2
+        project.repository = repository
+        project.branch = branch
+        project.username = username if username and username != "" else None
+        project.password = password if password and password != "" else None
+        project.updated_at = current_time
+        try:
+            db.session.add(project)
+            db.session.commit()
+            return jsonify(tag='success', msg='save success.')
+        except:
+            return jsonify(tag='danger', msg='Unknown error.')
+    else:
+        project = CobraProject.query.filter_by(id=project_id).first()
+        return render_template('rulesadmin/edit_project.html', data={
+            'project': project
+        })
+
+
+
+

@@ -274,6 +274,74 @@ $("#show_all_projects").click(function () {
         $("#main-div").html(data);
 
         // edit project click
+        $("[id^=edit-project]").click(function () {
+            var cur_project_id = $(this).attr('id');
+            cur_project_id = cur_project_id.split('-')[2];
+            $.get("edit_project/"+cur_project_id, function (data) {
+                $("#main-div").html(data);
+
+                $("#edit-project-button").click(function () {
+                    var name = $("#name").val();
+                    var repo_type = $("input[name=repo_type]:checked").val();
+                    var repository = $("#repository").val();
+                    var branch = $("#branch").val();
+                    var username = $("#username").val();
+                    var password = $("#password").val();
+
+                    if (!name || name == "") {
+                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
+                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        tres += '<span aria-hidden="true">&times;</span></button>';
+                        tres += '<strong>name cannot be empty!</strong></div>';
+                        $("#edit-project-result").html(tres).fadeIn(1000);
+                    }
+
+                    if (!repo_type || repo_type == "") {
+                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
+                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        tres += '<span aria-hidden="true">&times;</span></button>';
+                        tres += '<strong>repo type error.</strong></div>';
+                        $("#edit-project-result").html(tres).fadeIn(1000);
+                    }
+
+                    if (!repository || repository == "") {
+                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
+                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        tres += '<span aria-hidden="true">&times;</span></button>';
+                        tres += '<strong>repository cannot be empty!</strong></div>';
+                        $("#edit-project-result").html(tres).fadeIn(1000);
+                    }
+
+                    if (!branch || branch == "") {
+                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
+                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        tres += '<span aria-hidden="true">&times;</span></button>';
+                        tres += '<strong>branch cannot be empty!</strong></div>';
+                        $("#edit-project-result").html(tres).fadeIn(1000);
+                    }
+
+                    data = {
+                        'project_id': cur_project_id,
+                        'name': name,
+                        'repo_type': repo_type,
+                        'repository' : repository,
+                        'branch' : branch,
+                        'username': username,
+                        'password': password
+                    };
+                    $.post('edit_project/'+cur_project_id, data, function (res) {
+                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
+                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        tres += '<span aria-hidden="true">&times;</span></button>';
+                        tres += '<strong>' + res.msg + '</strong></div>';
+                        $("#edit-project-result").html(tres).fadeIn(1000);
+                    });
+
+                });
+
+
+            });
+        });
 
         // view project click
 
