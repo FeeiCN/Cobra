@@ -34,7 +34,7 @@ class CobraTaskInfo(db.Model):
     new_version:    new version, if user select diff scan, this is the new version of the project
     '''
 
-    __tablename__ = 'cobra_task_info'
+    __tablename__ = 'tasks'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     task_type = db.Column(db.SmallInteger, nullable=False)
@@ -145,3 +145,25 @@ class CobraResults(db.Model):
 
     def __repr__(self):
         return "<CobraResults %r - %r>" % (self.id, self.scan_id)
+
+
+class CobraProjects(db.Model):
+    __tablename__ = 'projects'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(128), nullable=True, default=None)
+    repo_type = db.Column(TINYINT(2), nullable=True, default=None)
+    repository = db.Column(db.String(256), nullable=True, default=None)
+    scan_at = db.Column(db.String(128), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+
+    def __init__(self, name, repo_type, repository, scan_at, created_at, updated_at):
+        self.name = name
+        self.repo_type = repo_type
+        self.repository = repository
+        self.scan_at = scan_at
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraProjects %r - %r>" % (self.id, self.name)

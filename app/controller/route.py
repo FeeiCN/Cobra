@@ -21,7 +21,7 @@ from utils import log
 from flask import request, jsonify, render_template
 from werkzeug import secure_filename
 
-from app import web, CobraTaskInfo, db
+from app import web, CobraTaskInfo, db, CobraProjects
 
 
 @web.route('/', methods=['GET'])
@@ -35,6 +35,23 @@ def homepage():
 def blank():
     log.debug('In blank Route')
     return render_template('blank.html')
+
+
+@web.route('/api/add', methods=['POST'])
+def add():
+    log.debug('In api/add Route')
+    key = request.form['key']
+    name = request.form['name']
+    type = request.form['type']
+    repository = request.form['repository']
+    branch = request.form['branch']
+    version = request.form['version']
+    old_version = request.form['old_version']
+    files = request.form['files']
+    author = request.form['author']
+
+    repo_type = 1
+    CobraProjects(name, repo_type, repository, branch)
 
 
 @web.route('/add', methods=['POST'])
