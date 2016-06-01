@@ -135,9 +135,9 @@ class Static:
         rules = CobraRules.query.all()
         extensions = None
         for rule in rules:
-            for ext in languages:
-                if ext.language == rule.language:
-                    extensions = ext.extensions
+            for language in languages:
+                if language.id == rule.language:
+                    extensions = language.extensions.split('|')
 
             if extensions is None:
                 print("Rule Language Error")
@@ -152,16 +152,16 @@ class Static:
 
             filters = []
             for e in extensions:
-                filters.append('--include=*.' + e)
+                filters.append('--include=*' + e)
 
-            print filters
             log.info('Filter ')
 
             greps = rule.regex
 
             try:
                 log.info('Scan Rule ID: 1')
-                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [greps, directory],
+                # -n Show Line number / -r Recursive / -P Perl regular expression
+                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, directory],
                                         stdout=subprocess.PIPE)
                 result = proc.communicate()
 
@@ -172,8 +172,7 @@ class Static:
                     print perline
                     for r in range(0, len(perline) - 1):
                         try:
-                            basedir = '/Volumes/Statics/Project/Company/mogujie/'
-                            rr = str(perline[r]).replace(basedir, '').split(':', 1)
+                            rr = str(perline[r]).replace(directory, '').split(':', 1)
                             code = str(rr[1]).split(':', 1)
                             scan_id = 1
                             rule_id = rule.id
