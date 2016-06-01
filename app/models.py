@@ -38,24 +38,26 @@ class CobraTaskInfo(db.Model):
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     task_type = db.Column(db.SmallInteger, nullable=False)
-    create_time = db.Column(db.Integer, nullable=False)
     filename = db.Column(db.String(255), nullable=True)
     url = db.Column(db.String(255), nullable=True)
     branch = db.Column(db.String(64), nullable=True)
     scan_way = db.Column(db.SmallInteger, nullable=False)
     old_version = db.Column(db.String(40), nullable=True)
     new_version = db.Column(db.String(40), nullable=True)
+    created_at = db.Column(db.DATETIME, nullable=False)
+    updated_at = db.Column(db.DATETIME, nullable=False)
 
-    def __init__(self, task_type, create_time, filename, url, branch, scan_way,
-                 old_version, new_version):
+    def __init__(self, task_type, filename, url, branch, scan_way,
+                 old_version, new_version, created_at, updated_at):
         self.task_type = task_type
-        self.create_time = create_time
         self.filename = filename
         self.url = url
         self.branch = branch
         self.scan_way = scan_way
         self.old_version = old_version
         self.new_version = new_version
+        self.created_at = created_at
+        self.updated_at = updated_at
 
     def __repr__(self):
         return '<task_info %r - %r>' % (self.id,

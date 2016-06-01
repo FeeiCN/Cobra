@@ -13,6 +13,7 @@
 #
 import os
 import time
+from datetime import datetime
 import argparse
 import ConfigParser
 
@@ -92,7 +93,9 @@ def add():
                                           u'If this is a public repo, just leave username and password blank')
 
         # insert into db
-        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, scan_way, old_version, new_version)
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        new_task = CobraTaskInfo(task_type, None, url, branch, scan_way, old_version, new_version, current_time,
+                                 current_time)
         db.session.add(new_task)
         db.session.commit()
     else:
@@ -117,7 +120,9 @@ def add():
             os.remove(filepath)
             return jsonify(code=1002, msg=u'only rar, zip and tar.gz supported.')
 
-        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, scan_way, old_version, new_version)
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        new_task = CobraTaskInfo(task_type, filename, None, None, scan_way, old_version, new_version, current_time,
+                                 current_time)
         db.session.add(new_task)
         db.session.commit()
     return jsonify(code=1001, msg=u'success', id=123)
