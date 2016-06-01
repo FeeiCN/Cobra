@@ -101,7 +101,8 @@ def add():
         config = ConfigParser.ConfigParser()
         config.read('config')
         upload_directory = config.get('cobra', 'upload_directory') + os.sep
-
+        if os.path.isdir(upload_directory) is not True:
+            os.mkdir(upload_directory)
         task_type = 2
         upload_src = request.files['file']
         filename = str(int(time.time())) + '_' + secure_filename(upload_src.filename)
