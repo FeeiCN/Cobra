@@ -116,7 +116,7 @@ class CobraLanguages(db.Model):
         self.extensions = extensions
 
     def __repr__(self):
-        return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)
+        return "<CobraLanguage %r - %r>" % (self.id, self.language)
 
 
 class CobraResults(db.Model):
