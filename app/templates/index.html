@@ -117,7 +117,7 @@
                             <div class="form-group">
                                 <label>Gitlab Branch/Tag</label>
                                 <input type="text" class="form-control" name="branch"
-                                       placeholder="Type your branch;Default master">
+                                       placeholder="Type your branch;Default master" value="master">
                             </div>
                         </div>
                         <div class="col-md-12" style="padding-right:0;padding-left:0;">
@@ -383,7 +383,7 @@
 
             var data = new FormData();
             var allowFileTypes = ['.zip', '.rar', '.tar.gz'];
-            var url = $("input[name=url]").val();
+            var url = $("input[name=repository]").val();
             var username = $("input[name=username]").val();
             var password = $("input[name=password]").val();
             var branch = $("input[name=branch]").val();
