@@ -90,7 +90,7 @@ def add():
     if len(request.files) == 0:
         # no files, should check username and password
         task_type = 1
-        url = request.form['url']
+        url = request.form['repository']
         username = request.form['username'] if request.form['username'] != '' else None
         password = request.form['password'] if request.form['password'] != '' else None
         branch = request.form['branch'] if request.form['branch'] != '' else 'master'
@@ -125,7 +125,7 @@ def add():
             os.remove(filepath)
             return jsonify(code=1002, msg=u'only rar, zip and tar.gz supported.')
 
-        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, None, None, scan_type, level,
+        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, scan_type, level,
                                  scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
