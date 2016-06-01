@@ -130,67 +130,74 @@ class Static:
             else:
                 print ext
 
+        languages = CobraLanguages.query.all()
+
         rules = CobraRules.query.all()
+        extensions = None
         for rule in rules:
-            print rule
+            for ext in languages:
+                if ext.language == rule.language:
+                    extensions = ext.extensions
 
-        # grep name is ggrep on mac
-        grep = '/bin/grep'
-        if 'darwin' == sys.platform:
-            log.info('In Mac OS X System')
-            for root, dirnames, filenames in os.walk('/usr/local/Cellar/grep'):
-                for filename in filenames:
-                    if 'ggrep' == filename:
-                        grep = os.path.join(root, filename)
+            if extensions is None:
+                print("Rule Language Error")
+            # grep name is ggrep on mac
+            grep = '/bin/grep'
+            if 'darwin' == sys.platform:
+                log.info('In Mac OS X System')
+                for root, dirnames, filenames in os.walk('/usr/local/Cellar/grep'):
+                    for filename in filenames:
+                        if 'ggrep' == filename:
+                            grep = os.path.join(root, filename)
 
-        filters = []
-        for ext in self.extensions:
-            filters.append('--include=*.' + ext)
+            filters = []
+            for e in extensions:
+                filters.append('--include=*.' + e)
 
-        print filters
-        log.info('Filter ')
+            print filters
+            log.info('Filter ')
 
-        greps = 'eval\\s?\\('
+            greps = rule.regex
 
-        try:
-            log.info('Scan Rule ID: 1')
-            srcdir = '/Volumes/Statics/Project/Company/mogujie/public/test/'
-            proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [greps, srcdir],
-                                    stdout=subprocess.PIPE)
-            result = proc.communicate()
+            try:
+                log.info('Scan Rule ID: 1')
+                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [greps, directory],
+                                        stdout=subprocess.PIPE)
+                result = proc.communicate()
 
-            # Exists result
-            if len(result[0]):
-                log.info('Found:')
-                perline = str(result[0]).split("\n")
-                print perline
-                for r in range(0, len(perline) - 1):
-                    try:
-                        basedir = '/Volumes/Statics/Project/Company/mogujie/'
-                        rr = str(perline[r]).replace(basedir, '').split(':', 1)
-                        code = str(rr[1]).split(':', 1)
-                        scan_id = 1
-                        rule_id = 1
-                        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        params = [scan_id, rule_id, rr[0], code[0], str(code[1].strip()),
-                                  datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                                  datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
+                # Exists result
+                if len(result[0]):
+                    log.info('Found:')
+                    perline = str(result[0]).split("\n")
+                    print perline
+                    for r in range(0, len(perline) - 1):
                         try:
-                            print('In Insert')
-                            results = CobraResults(scan_id, rule_id, rr[0], code[0], str(code[1].strip()), current_time,
-                                                   current_time)
-                            db.session.add(results)
-                            db.session.commit()
-                            print('Insert Results Success')
-                        except:
-                            print('Insert Results Failed')
-                        print params
-                    except Exception as e:
-                        log.debug('Error parsing result: ' + str(e))
+                            basedir = '/Volumes/Statics/Project/Company/mogujie/'
+                            rr = str(perline[r]).replace(basedir, '').split(':', 1)
+                            code = str(rr[1]).split(':', 1)
+                            scan_id = 1
+                            rule_id = rule.id
+                            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            params = [scan_id, rule_id, rr[0], code[0], str(code[1].strip()),
+                                      datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                                      datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
+                            try:
+                                print('In Insert')
+                                results = CobraResults(scan_id, rule_id, rr[0], code[0], str(code[1].strip()),
+                                                       current_time,
+                                                       current_time)
+                                db.session.add(results)
+                                db.session.commit()
+                                print('Insert Results Success')
+                            except:
+                                print('Insert Results Failed')
+                            print params
+                        except Exception as e:
+                            log.debug('Error parsing result: ' + str(e))
 
-            else:
-                print result
-                log.info('Not Found')
+                else:
+                    print result
+                    log.info('Not Found')
 
-        except Exception as e:
-            log.debug('Error calling grep: ' + str(e))
+            except Exception as e:
+                log.debug('Error calling grep: ' + str(e))

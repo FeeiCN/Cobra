@@ -105,13 +105,15 @@ class CobraVuls(db.Model):
         return "<CobraVuls %r - %r>" % (self.id, self.name)
 
 
-class CobraSupportLanguage(db.Model):
+class CobraLanguages(db.Model):
     __tablename__ = 'languages'
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    language = db.Column(db.String(32), nullable=False)
+    language = db.Column(db.String(11), nullable=False)
+    extensions = db.Column(db.String(26), nullable=True, default=None)
 
-    def __init__(self, language):
+    def __init__(self, language, extensions):
         self.language = language
+        self.extensions = extensions
 
     def __repr__(self):
         return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)
