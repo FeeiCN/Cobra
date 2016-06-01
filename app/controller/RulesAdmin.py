@@ -318,7 +318,11 @@ def edit_project(project_id):
 # show all white lists
 @web.route(ADMIN_URL + '/whitelists', methods=['GET'])
 def whitelists():
-    pass
+    whitelists = CobraWhiteList.query.all()
+    data = {
+        'whitelists': whitelists,
+    }
+    return render_template('rulesadmin/whitelists.html', data=data)
 
 
 # add new white list
@@ -362,7 +366,17 @@ def add_whitelist():
 # del the special white list
 @web.route(ADMIN_URL + '/del_whitelist', methods=['POST'])
 def del_whitelist():
-    pass
+    whitelist_id = request.form.get('whitelist_id')
+    if not whitelist_id or whitelists == "":
+        return jsonify(tag='danger', msg='wrong white list id.')
+
+    whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
+    try:
+        db.session.delete(whitelist)
+        db.session.commit()
+        return jsonify(tag='success', msg='delete success.')
+    except:
+        return jsonify(tag='danger', msg='unknown error.')
 
 
 # edit the special white list

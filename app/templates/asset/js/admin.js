@@ -4,12 +4,12 @@
 
 
 $("#main-div").fadeIn(1000);
-function showAlert(tag, msg) {
+function showAlert(tag, msg, div) {
     var tt = '<div class="alert alert-' + tag +' alert-dismissible" role="alert">';
     tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
     tt += '<span aria-hidden="true">&times;</span></button>';
     tt += '<strong>' + msg + '</strong></div>';
-    $("#add-new-whitelist-result").html(tt).fadeIn(1000);
+    $(div).html(tt).fadeIn(1000);
 }
 
 // show all rules
@@ -378,6 +378,28 @@ $("#show_all_projects").click(function () {
 // show all white lists click
 $("#show_all_whitelists").click(function () {
     console.log('show all white list');
+    $.get('whitelists', function (data) {
+        $("#main-div").html(data);
+
+        // edit the special white list
+        $("[id^=edit-whitelist]").click(function () {
+            var cur_id = $(this).attr('id').split('-')[2];
+            console.log("edit the " + cur_id);
+        });
+
+
+        // delete the special white list
+        $("[id^=del-whitelist]").click(function () {
+            var cur_id = $(this).attr('id').split('-')[2];
+            console.log("delete the " + cur_id);
+            $.post('del_whitelist', {'whitelist_id': cur_id}, function (data) {
+                showAlert(data.tag, data.msg, "#operate_result");
+                $("#show_all_whitelists").click();
+            });
+        });
+
+
+    });
 });
 
 // add new white list click
@@ -419,7 +441,7 @@ $("#add_new_whitelist").click(function () {
             };
 
             $.post('add_whitelist', data, function (result) {
-                showAlert(result.tag, result.msg);
+                showAlert(result.tag, result.msg, "#add-new-whitelist-result");
             });
         });
 
