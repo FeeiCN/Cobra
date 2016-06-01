@@ -155,9 +155,6 @@ class Static:
                 filters.append('--include=*' + e)
 
             log.info('Filter ')
-
-            greps = rule.regex
-
             try:
                 log.info('Scan Rule ID: 1')
                 # -n Show Line number / -r Recursive / -P Perl regular expression
