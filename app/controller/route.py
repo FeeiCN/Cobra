@@ -16,7 +16,6 @@ import time
 from datetime import datetime
 import argparse
 import ConfigParser
-
 import magic
 from utils import log
 from flask import request, jsonify, render_template
@@ -84,8 +83,6 @@ def add():
         # no files, should check username and password
         task_type = 1
         url = request.form['repository']
-        username = request.form['username'] if request.form['username'] != '' else None
-        password = request.form['password'] if request.form['password'] != '' else None
         branch = request.form['branch'] if request.form['branch'] != '' else 'master'
 
         if not url:

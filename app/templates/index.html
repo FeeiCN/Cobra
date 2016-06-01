@@ -120,22 +120,6 @@
                                        placeholder="Type your branch;Default master" value="master">
                             </div>
                         </div>
-                        <div class="col-md-12" style="padding-right:0;padding-left:0;">
-                            <div class="col-md-6" style="padding-left:0;">
-                                <div class="form-group">
-                                    <label><i class="icon-user"></i> Username</label>
-                                    <input class="form-control" type="text" name="username"
-                                           placeholder="Type your username">
-                                </div>
-                            </div>
-                            <div class="col-md-6" style="padding-right:0;">
-                                <div class="form-group">
-                                    <label><i class=" icon-lock-2"></i> Password</label>
-                                    <input class="form-control" type="password" name="password"
-                                           placeholder="Type your password">
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-md-6" style="border-left: 1px solid #ddd;">
                         <div class="box_style_2" id="dropbox">
@@ -384,8 +368,6 @@
             var data = new FormData();
             var allowFileTypes = ['.zip', '.rar', '.tar.gz'];
             var url = $("input[name=repository]").val();
-            var username = $("input[name=username]").val();
-            var password = $("input[name=password]").val();
             var branch = $("input[name=branch]").val();
             var file = null;
             if (fileList && fileList.length != 0) {
@@ -409,7 +391,7 @@
             } else {
                 // check if url provide.
                 if (!url) {
-                    alert("Please provide gitlab url. If your repo is public, username and password is unnecessary.");
+                    alert("Please provide gitlab url. If your repo is public");
                     return false;
                 }
             }
@@ -429,8 +411,6 @@
             }
 
             data.append('repository', url);
-            data.append('username', username);
-            data.append('password', password);
             data.append('branch', branch);
             data.append('scan_way', scan_way);
             data.append('old_version', old_version);
