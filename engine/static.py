@@ -18,7 +18,7 @@ import subprocess
 from engine import rules, scan
 from utils import log
 from datetime import datetime
-from app import db, CobraResults
+from app import db, CobraResults, CobraRules
 
 
 class Static:
@@ -58,7 +58,81 @@ class Static:
 
         s = scan.Scan(directory)
         files = s.files()
-        print files
+        language_ext = {
+            'php': ['.php', '.php3', '.php4', '.php5'],
+            'jsp': ['.jsp'],
+            'java': ['.java'],
+            'html': ['.htm', '.html', '.phps', '.phtml'],
+            'js': ['.js']
+        }
+        ext_language = {
+            # Image
+            '.jpg': 'image',
+            '.png': 'image',
+            '.bmp': 'image',
+            '.gif': 'image',
+            '.ico': 'image',
+            '.cur': 'image',
+            # Font
+            '.eot': 'font',
+            '.otf': 'font',
+            '.svg': 'font',
+            '.ttf': 'font',
+            '.woff': 'font',
+            # CSS
+            '.css': 'css',
+            '.less': 'css',
+            '.scss': 'css',
+            '.styl': 'css',
+            # Media
+            '.mp3': 'media',
+            '.swf': 'media',
+            # Execute
+            '.exe': 'execute',
+            '.sh': 'execute',
+            '.dll': 'execute',
+            '.so': 'execute',
+            '.bat': 'execute',
+            '.pl': 'execute',
+            # Edit
+            '.swp': 'tmp',
+            # Cert
+            '.crt': 'cert',
+            # Text
+            '.txt': 'text',
+            '.csv': 'text',
+            '.md': 'markdown',
+            # Backup
+            '.zip': 'backup',
+            '.bak': 'backup',
+            '.tar': 'backup',
+            '.tar.gz': 'backup',
+            '.db': 'backup',
+            # Config
+            '.xml': 'config',
+            '.yml': 'config',
+            '.spf': 'config',
+            '.iml': 'config',
+            '.manifest': 'config',
+            # Source
+            '.psd': 'source',
+            '.as': 'source',
+            # Log
+            '.log': 'log',
+            # Template
+            '.template': 'template',
+            '.tpl': 'template',
+        }
+        for ext in files:
+            if ext in ext_language:
+                continue
+                print ext, files[ext]
+            else:
+                print ext
+
+        rules = CobraRules.query.all()
+        for rule in rules:
+            print rule
 
         # grep name is ggrep on mac
         grep = '/bin/grep'
