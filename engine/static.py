@@ -15,7 +15,7 @@ import os
 import sys
 import re
 import subprocess
-from engine import rules
+from engine import rules, scan
 from utils import log
 from datetime import datetime
 from app import db, CobraResults
@@ -55,6 +55,11 @@ class Static:
             print("Please set directory")
             sys.exit()
         log.info('Start code static analyse...')
+
+        s = scan.Scan(directory)
+        files = s.files()
+        print files
+
         # grep name is ggrep on mac
         grep = '/bin/grep'
         if 'darwin' == sys.platform:
