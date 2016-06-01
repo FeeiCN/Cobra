@@ -18,11 +18,11 @@ import subprocess
 from engine import rules
 from utils import log
 from datetime import datetime
-from app import CobraResults, db
+from app import db, CobraResults
 
 
 class Static:
-    def __init__(self, language, extensions):
+    def __init__(self, language=None, extensions=None):
         self.language = language
         self.extensions = extensions
 
@@ -50,7 +50,10 @@ class Static:
                 print(str(line_i + 1) + "\n")
         input_file.close()
 
-    def analyse(self):
+    def analyse(self, directory=None):
+        if directory is None:
+            print("Please set directory")
+            sys.exit()
         log.info('Start code static analyse...')
         # grep name is ggrep on mac
         grep = '/bin/grep'
