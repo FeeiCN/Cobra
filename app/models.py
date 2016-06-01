@@ -42,28 +42,24 @@ class CobraTaskInfo(db.Model):
     filename = db.Column(db.String(255), nullable=True)
     url = db.Column(db.String(255), nullable=True)
     branch = db.Column(db.String(64), nullable=True)
-    scan_type = db.Column(db.SmallInteger, nullable=False)
-    level = db.Column(db.SmallInteger, nullable=False)
     scan_way = db.Column(db.SmallInteger, nullable=False)
     old_version = db.Column(db.String(40), nullable=True)
     new_version = db.Column(db.String(40), nullable=True)
 
-    def __init__(self, task_type, create_time, filename, url, branch, scan_type, level, scan_way,
+    def __init__(self, task_type, create_time, filename, url, branch, scan_way,
                  old_version, new_version):
         self.task_type = task_type
         self.create_time = create_time
         self.filename = filename
         self.url = url
         self.branch = branch
-        self.scan_type = scan_type
-        self.level = level
         self.scan_way = scan_way
         self.old_version = old_version
         self.new_version = new_version
 
     def __repr__(self):
         return '<task_info %r - %r>' % (self.id,
-                                        "username/password on gitlab" if self.scan_type == 1 else "file upload")
+                                        "username/password on gitlab" if self.scan_way == 1 else "file upload")
 
 
 class CobraRules(db.Model):

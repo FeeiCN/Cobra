@@ -57,17 +57,9 @@ def blank():
 @web.route('/add', methods=['POST'])
 def add():
     log.debug('In add Route')
-    # url, username, password, scan_type, level, scan_way, old_version, new_version
+    # url, username, password, scan_way, old_version, new_version
     # if user upload a file, so we set the scan type to file scan
     # if there is no upload file, we set the scan type to gitlab scan
-
-    # check scan type and level
-    scan_type = request.form['scan_type']
-    level = request.form['level']
-    if not scan_type or not level or not scan_type.isdigit() or not level.isdigit():
-        return jsonify(code=1002, msg=u'please select Scan vulnerabilities and Level')
-    if scan_type not in [str(x) for x in range(1, 4)]:
-        return jsonify(code=1002, msg=u'scan type error.')
 
     # check scan way and version
     scan_way = request.form['scan_way']
@@ -100,8 +92,7 @@ def add():
                                           u'If this is a public repo, just leave username and password blank')
 
         # insert into db
-        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, scan_type, level,
-                                 scan_way, old_version, new_version)
+        new_task = CobraTaskInfo(task_type, int(time.time()), None, url, branch, scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
     else:
@@ -125,8 +116,7 @@ def add():
             os.remove(filepath)
             return jsonify(code=1002, msg=u'only rar, zip and tar.gz supported.')
 
-        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, scan_type, level,
-                                 scan_way, old_version, new_version)
+        new_task = CobraTaskInfo(task_type, int(time.time()), filename, None, None, scan_way, old_version, new_version)
         db.session.add(new_task)
         db.session.commit()
     return jsonify(code=1001, msg=u'success', id=123)
