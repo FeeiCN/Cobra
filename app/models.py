@@ -168,30 +168,23 @@ class CobraProjects(db.Model):
 
 
 class CobraWhiteList(db.Model):
-    """ White list table
-        id: id
-        project_id: project id
-        rule_id: rule_id
-        file: file path
-        reason: white list reason
-        created_at: create time
-        updated_at: last update time
-    """
     __tablename__ = 'whitelist'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     project_id = db.Column(db.Integer, default=None, nullable=True)
     rule_id = db.Column(db.Integer, default=None, nullable=True)
-    file = db.Column(db.String(512), default=None, nullable=True)
+    path = db.Column(db.String(512), default=None, nullable=True)
     reason = db.Column(db.String(512), default=None, nullable=True)
+    status = db.Column(TINYINT, default=None, nullable=True)
     created_at = db.Column(db.DateTime, default=None, nullable=True)
     updated_at = db.Column(db.DateTime, default=None, nullable=True)
 
-    def __init__(self, project_id, rule_id, file, reason, created_at, updated_at):
+    def __init__(self, project_id, rule_id, path, reason, status, created_at, updated_at):
         self.project_id = project_id
         self.rule_id = rule_id
-        self.file = file
+        self.path = path
         self.reason = reason
+        self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
 

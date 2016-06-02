@@ -358,7 +358,7 @@ def add_whitelist():
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         if file[0] != '/':
             file = '/' + file
-        whitelist = CobraWhiteList(project_id, rule_id, file, reason, current_time, current_time)
+        whitelist = CobraWhiteList(project_id, rule_id, file, reason, 1, current_time, current_time)
         try:
             db.session.add(whitelist)
             db.session.commit()
