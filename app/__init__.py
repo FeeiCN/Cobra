@@ -118,5 +118,6 @@ manager.add_command('scan', Scan())
 
 from app.controller import route
 from app.controller import RulesAdmin
+from app.controller import api
 
 log.info('Cobra HTTP Server Started')

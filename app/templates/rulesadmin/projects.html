@@ -1,0 +1,30 @@
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>name</th>
+            <th>branch</th>
+            <th>repository</th>
+            <th>last update time</th>
+            <th>Operation</th>
+        </tr>
+    </thead>
+    <tbody id="main-table">
+    {% for project in data.projects %}
+        <tr>
+            <td>{{ project.id }}</td>
+            <td>{{ project.name }}</td>
+            <td>{{ project.branch }}</td>
+            <td>{{ project.repository }}</td>
+            <td>{{ project.updated_at }}</td>
+            <td>
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-project-{{ project.id }}"></span>&nbsp;&nbsp;
+{#                <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-project-{{ project.id }}"#}
+{#                      data-toggle="modal" data-target="#view-modal">#}
+{#                </span>&nbsp;&nbsp;#}
+                <span class="glyphicon glyphicon-remove" aria-hidden="true" id="del-project-{{ project.id }}"></span>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

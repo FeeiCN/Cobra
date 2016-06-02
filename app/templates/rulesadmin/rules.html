@@ -17,9 +17,12 @@
             <td>{{ rule.vul_id }}</td>
             <td>{{ rule.description }}</td>
             <td>{{ rule.updated_at }}</td>
+            <td hidden id="rule-regex-{{ rule.id }}">{{ rule.regex }}</td>
             <td>
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-rule-{{ rule.id }}"></span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-rule-{{ rule.id }}" data-container="body" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."></span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-rule-{{ rule.id }}"
+                      data-toggle="modal" data-target="#view-modal">
+                </span>&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-remove" aria-hidden="true" id="del-rule-{{ rule.id }}"></span>
             </td>
         </tr>
