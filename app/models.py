@@ -109,7 +109,7 @@ class CobraLanguages(db.Model):
     __tablename__ = 'languages'
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     language = db.Column(db.String(11), nullable=False)
-    extensions = db.Column(db.String(26), nullable=True, default=None)
+    extensions = db.Column(db.String(128), nullable=True, default=None)
 
     def __init__(self, language, extensions):
         self.language = language

@@ -101,6 +101,7 @@ class Static:
             '.zip': 'backup',
             '.bak': 'backup',
             '.tar': 'backup',
+            '.rar': 'backup',
             '.tar.gz': 'backup',
             '.db': 'backup',
             # Config
