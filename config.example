@@ -5,7 +5,7 @@ debug: 0
 logs_directory: logs
 
 # upload src store path, default: uploads
-# NOTE: no '/' or '\' at the end of the direcotry name.
+# NOTE: no '/' or '\' at the end of the directory name.
 upload_directory: uploads
 
 #

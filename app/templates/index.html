@@ -108,28 +108,16 @@
                     <div class="col-md-6">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>Gitlab URL</label>
-                                <input type="text" class="form-control" name="url" placeholder="Type your gitlab url">
+                                <label>GIT/SVN Repository</label>
+                                <input type="text" class="form-control" name="repository"
+                                       placeholder="Type your gitlab/github/subversion repository url">
                             </div>
                         </div>
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
                                 <label>Gitlab Branch/Tag</label>
-                                <input type="text" class="form-control" name="branch" placeholder="Type your branch;Default master">
-                            </div>
-                        </div>
-                        <div class="col-md-12" style="padding-right:0;padding-left:0;">
-                            <div class="col-md-6" style="padding-left:0;">
-                                <div class="form-group">
-                                    <label><i class="icon-user"></i> Username</label>
-                                    <input class="form-control" type="text" name="username" placeholder="Type your username">
-                                </div>
-                            </div>
-                            <div class="col-md-6" style="padding-right:0;">
-                                <div class="form-group">
-                                    <label><i class=" icon-lock-2"></i> Password</label>
-                                    <input class="form-control" type="password" name="password" placeholder="Type your password">
-                                </div>
+                                <input type="text" class="form-control" name="branch"
+                                       placeholder="Type your branch;Default master" value="master">
                             </div>
                         </div>
                     </div>
@@ -140,31 +128,6 @@
                             <input type="file" id="uploadFile"/>
                             <div align="center" id="selectFile"></div>
                             <small>Support: tar.gz/rar/zip</small>
-                        </div>
-                    </div>
-                </div><!-- End row -->
-                <hr>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="select-label">Scan vulnerabilities</label>
-                            <select name="scan_type" class="form-control">
-                                <option value="1">All
-                                    vulnerabilities
-                                </option>
-                                <option value="2">General
-                                    vulnerabilities
-                                </option>
-                                <option value="3">Code Syntax</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-sm-3 col-xs-6">
-                        <div class="form-group">
-                            <label>Level</label>
-                            <div class="numbers-row">
-                                <input name="level" type="text" value="1" id="adults" class="qty2 form-control">
-                            </div>
                         </div>
                     </div>
                 </div><!-- End row -->
@@ -404,9 +367,7 @@
 
             var data = new FormData();
             var allowFileTypes = ['.zip', '.rar', '.tar.gz'];
-            var url = $("input[name=url]").val();
-            var username = $("input[name=username]").val();
-            var password = $("input[name=password]").val();
+            var url = $("input[name=repository]").val();
             var branch = $("input[name=branch]").val();
             var file = null;
             if (fileList && fileList.length != 0) {
@@ -430,19 +391,17 @@
             } else {
                 // check if url provide.
                 if (!url) {
-                    alert("Please provide gitlab url. If your repo is public, username and password is unnecessary.");
+                    alert("Please provide gitlab url. If your repo is public");
                     return false;
                 }
             }
 
-            var scan_type = $('select[name=scan_type]').val();
-            var level = $("input[name=level]").val();
             var scan_way = $("input[name=scan_way]:checked").val();
             var old_version = $("input[name=old_version]").val();
             var new_version = $("input[name=new_version]").val();
 
-            if (!scan_type || !level || !scan_way) {
-                alert('please select scan type, level and scan way');
+            if (!scan_way) {
+                alert('please select scan way');
                 return false;
             }
 
@@ -451,12 +410,8 @@
                 return false;
             }
 
-            data.append('url', url);
-            data.append('username', username);
-            data.append('password', password);
+            data.append('repository', url);
             data.append('branch', branch);
-            data.append('scan_type', scan_type);
-            data.append('level', level);
             data.append('scan_way', scan_way);
             data.append('old_version', old_version);
             data.append('new_version', new_version);
@@ -489,10 +444,10 @@
 <!-- Specific scripts -->
 {#<script src="asset/js/icheck.js"></script>#}
 <script>
-{#    $('input').iCheck({#}
-{#        checkboxClass: 'icheckbox_square-grey',#}
-{#        radioClass: 'iradio_square-grey'#}
-{#    });#}
+    {#    $('input').iCheck({#}
+    {#        checkboxClass: 'icheckbox_square-grey',#}
+    {#        radioClass: 'iradio_square-grey'#}
+    {#    });#}
 </script>
 </body>
 </html>

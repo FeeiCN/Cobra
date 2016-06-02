@@ -3,7 +3,7 @@
 # Copyright 2016 Feei. All Rights Reserved
 #
 # Author:   Feei <wufeifei@wufeifei.com>
-# Homepage: https://github.com/edge-security/cobra
+# Homepage: https://github.com/wufeifei/cobra
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -91,9 +91,13 @@ def add_file_handler(level, fmt, filename, mode, backup_count, limit, when):
 
     # If the filename is not set, use the default filename
     if filename is None:
-        config = ConfigParser.ConfigParser()
-        config.read('config')
-        logs_directory = config.get('cobra', 'logs_directory')
+        try:
+            config = ConfigParser.ConfigParser()
+            config.read('config')
+            logs_directory = config.get('cobra', 'logs_directory')
+        except ConfigParser.Error:
+            print("/config File Not Found, copy config.example to config please!")
+            exit()
         if os.path.isdir(logs_directory) is not True:
             os.mkdir(logs_directory)
         filename = logs_directory + '/' + time.strftime("%Y-%m-%d") + '.log'

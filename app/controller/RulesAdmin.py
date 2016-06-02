@@ -1,10 +1,22 @@
 #!/usr/bin/env python
+#
+# Copyright 2016 Feei. All Rights Reserved
+#
+# Author:   Feei <wufeifei@wufeifei.com>
+# Homepage: https://github.com/wufeifei/cobra
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# See the file 'doc/COPYING' for copying permission
+#
 import time
 
 from flask import render_template, request, jsonify
 
 from app import web, CobraRules, CobraVuls, db, CobraSupportLanguage
-from app import CobraProject, CobraWhiteList
+from app import CobraProjects, CobraWhiteList
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -238,7 +250,7 @@ def all_rules_count():
 # show all projects
 @web.route(ADMIN_URL + '/projects', methods=['GET'])
 def projects():
-    project = CobraProject.query.all()
+    project = CobraProjects.query.all()
     data = {
         'projects': project,
     }
@@ -252,7 +264,7 @@ def del_project():
         project_id = request.form.get('id')
         if not project_id or project_id == "":
             return jsonify(tag='danger', msg='project id error.')
-        project = CobraProject.query.filter_by(id=project_id).first()
+        project = CobraProjects.query.filter_by(id=project_id).first()
         try:
             db.session.delete(project)
             db.session.commit()
@@ -290,7 +302,7 @@ def edit_project(project_id):
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         repo_type = 1 if repo_type == "git" else 2
-        project = CobraProject.query.filter_by(id=project_id).first()
+        project = CobraProjects.query.filter_by(id=project_id).first()
         if not project:
             return jsonify(tag='danger', msg='wrong project id.')
 
@@ -309,7 +321,7 @@ def edit_project(project_id):
         except:
             return jsonify(tag='danger', msg='Unknown error.')
     else:
-        project = CobraProject.query.filter_by(id=project_id).first()
+        project = CobraProjects.query.filter_by(id=project_id).first()
         return render_template('rulesadmin/edit_project.html', data={
             'project': project
         })
@@ -355,7 +367,7 @@ def add_whitelist():
             return jsonify(tag='danger', msg='unknown error. Try again later?')
     else:
         rules = CobraRules.query.all()
-        projects = CobraProject.query.all()
+        projects = CobraProjects.query.all()
         data = {
             'rules': rules,
             'projects': projects,
@@ -383,6 +395,3 @@ def del_whitelist():
 @web.route(ADMIN_URL + '/edit_whitelist/<int:whitelist_id>', methods=['GET', 'POST'])
 def edit_whitelist():
     pass
-
-
-

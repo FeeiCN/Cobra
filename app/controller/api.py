@@ -7,7 +7,7 @@ from flask import request, jsonify
 
 from app import web
 from app import CobraTaskInfo
-from app import CobraProject
+from app import CobraProjects
 from app import db
 from pickup import GitTools
 
@@ -85,7 +85,7 @@ def add_new_task():
                               old_version=old_version, new_version=new_version)
 
     # insert into project table.
-    project = CobraProject(name=repo_name, repo_type=1, repository=url, branch=branch, username=username,
+    project = CobraProjects(name=repo_name, repo_type=1, repository=url, branch=branch, username=username,
                            password=password, scan_at=None, created_at=current_time, updated_at=current_time)
 
     try:

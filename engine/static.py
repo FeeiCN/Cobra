@@ -3,7 +3,7 @@
 # Copyright 2016 Feei. All Rights Reserved
 #
 # Author:   Feei <wufeifei@wufeifei.com>
-# Homepage: https://github.com/edge-security/cobra
+# Homepage: https://github.com/wufeifei/cobra
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,6 +18,7 @@ import subprocess
 from engine import rules
 from utils import log
 from datetime import datetime
+from app import CobraResults, db
 
 
 class Static:
@@ -52,7 +53,7 @@ class Static:
     def analyse(self):
         log.info('Start code static analyse...')
         # grep name is ggrep on mac
-        grep = 'grep'
+        grep = '/bin/grep'
         if 'darwin' == sys.platform:
             log.info('In Mac OS X System')
             for root, dirnames, filenames in os.walk('/usr/local/Cellar/grep'):
@@ -71,7 +72,7 @@ class Static:
 
         try:
             log.info('Scan Rule ID: 1')
-            srcdir = '/Volumes/Statics/Project/Company/mogujie/'
+            srcdir = '/Volumes/Statics/Project/Company/mogujie/public/test/'
             proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [greps, srcdir],
                                     stdout=subprocess.PIPE)
             result = proc.communicate()
@@ -88,9 +89,19 @@ class Static:
                         code = str(rr[1]).split(':', 1)
                         scan_id = 1
                         rule_id = 1
+                        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         params = [scan_id, rule_id, rr[0], code[0], str(code[1].strip()),
                                   datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                   datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
+                        try:
+                            print('In Insert')
+                            results = CobraResults(scan_id, rule_id, rr[0], code[0], str(code[1].strip()), current_time,
+                                                   current_time)
+                            db.session.add(results)
+                            db.session.commit()
+                            print('Insert Results Success')
+                        except:
+                            print('Insert Results Failed')
                         print params
                     except Exception as e:
                         log.debug('Error parsing result: ' + str(e))

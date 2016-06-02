@@ -3,7 +3,7 @@
 # Copyright 2016 Feei. All Rights Reserved
 #
 # Author:   Feei <wufeifei@wufeifei.com>
-# Homepage: https://github.com/edge-security/cobra
+# Homepage: https://github.com/wufeifei/cobra
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,47 +27,41 @@ class CobraTaskInfo(db.Model):
     url:            url, if user provide gitlab account, this is the project url on gitlab
     username:       username, gitlab username
     password:       password, gitlab password
-    scan_type:      scan type, 1-all vulnerabilities, 2-general vulnerabilities, 3-code syntax,
+    scan_type:      scan type, 1-all vulnerabislities, 2-general vulnerabilities, 3-code syntax,
     level:          level, scan level
     scan_way:       scan way, 1-full scan, 2-diff scan
     old_version:    old version, if user select diff scan, this is the old version of the project
     new_version:    new version, if user select diff scan, this is the new version of the project
     '''
 
-    __tablename__ = 'cobra_task_info'
+    __tablename__ = 'tasks'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     task_type = db.Column(db.SmallInteger, nullable=False)
-    create_time = db.Column(db.Integer, nullable=False)
     filename = db.Column(db.String(255), nullable=True)
     url = db.Column(db.String(255), nullable=True)
     branch = db.Column(db.String(64), nullable=True)
-    username = db.Column(db.String(64), nullable=True)
-    password = db.Column(db.String(64), nullable=True)
-    scan_type = db.Column(db.SmallInteger, nullable=False)
-    level = db.Column(db.SmallInteger, nullable=False)
     scan_way = db.Column(db.SmallInteger, nullable=False)
     old_version = db.Column(db.String(40), nullable=True)
     new_version = db.Column(db.String(40), nullable=True)
+    created_at = db.Column(db.DATETIME, nullable=False)
+    updated_at = db.Column(db.DATETIME, nullable=False)
 
-    def __init__(self, task_type, create_time, filename, url, branch, username, password, scan_type, level, scan_way,
-                 old_version, new_version):
+    def __init__(self, task_type, filename, url, branch, scan_way,
+                 old_version, new_version, created_at, updated_at):
         self.task_type = task_type
-        self.create_time = create_time
         self.filename = filename
         self.url = url
         self.branch = branch
-        self.username = username
-        self.password = password
-        self.scan_type = scan_type
-        self.level = level
         self.scan_way = scan_way
         self.old_version = old_version
         self.new_version = new_version
+        self.created_at = created_at
+        self.updated_at = updated_at
 
     def __repr__(self):
         return '<task_info %r - %r>' % (self.id,
-                                        "username/password on gitlab" if self.scan_type == 1 else "file upload")
+                                        "username/password on gitlab" if self.scan_way == 1 else "file upload")
 
 
 class CobraRules(db.Model):
@@ -115,44 +109,58 @@ class CobraSupportLanguage(db.Model):
     __tablename__ = 'languages'
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     language = db.Column(db.String(32), nullable=False)
-    suffix = db.Column(db.String(256), nullable=False)
 
-    def __init__(self, language, suffix):
+    def __init__(self, language):
         self.language = language
-        self.suffix = suffix
 
     def __repr__(self):
         return "<CobraSupportLanguage %r - %r>" % (self.id, self.language)
 
 
-class CobraProject(db.Model):
-
-    __tablename__ = 'projects'
-
+class CobraResults(db.Model):
+    __tablename__ = 'results'
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    name = db.Column(db.String(128), default=None, nullable=True)
-    repo_type = db.Column(TINYINT(2), nullable=False)
-    repository = db.Column(db.String(256), default=None, nullable=True)
-    branch = db.Column(db.String(128), default=None, nullable=True)
-    username = db.Column(db.String(128), default=None, nullable=True)
-    password = db.Column(db.String(128), default=None, nullable=True)
-    scan_at = db.Column(db.DateTime, default=None, nullable=True)
-    created_at = db.Column(db.DateTime, default=None, nullable=True)
-    updated_at = db.Column(db.DateTime, default=None, nullable=True)
+    scan_id = db.Column(INTEGER(11), nullable=True, default=None)
+    rule_id = db.Column(INTEGER(11), nullable=True, default=None)
+    file = db.Column(db.String(512), nullable=True, default=None)
+    line = db.Column(INTEGER(11), nullable=True, default=None)
+    code = db.Column(db.String(512), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, name, repo_type, repository, branch, username, password, scan_at, created_at, updated_at):
+    def __init__(self, scan_id, rule_id, file, line, code, created_at, updated_at):
+        self.scan_id = scan_id
+        self.rule_id = rule_id
+        self.file = file
+        self.line = line
+        self.code = code
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraResults %r - %r>" % (self.id, self.scan_id)
+
+
+class CobraProjects(db.Model):
+    __tablename__ = 'projects'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(128), nullable=True, default=None)
+    repo_type = db.Column(TINYINT(2), nullable=True, default=None)
+    repository = db.Column(db.String(256), nullable=True, default=None)
+    scan_at = db.Column(db.String(128), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+
+    def __init__(self, name, repo_type, repository, scan_at, created_at, updated_at):
         self.name = name
         self.repo_type = repo_type
         self.repository = repository
-        self.branch = branch
-        self.username = username
-        self.password = password
         self.scan_at = scan_at
         self.created_at = created_at
         self.updated_at = updated_at
 
     def __repr__(self):
-        return "<CobraProject %r>" % self.repository
+        return "<CobraProjects %r - %r>" % (self.id, self.name)
 
 
 class CobraWhiteList(db.Model):
@@ -185,6 +193,3 @@ class CobraWhiteList(db.Model):
 
     def __repr__(self):
         return "<CobraWhiteList %r-%r:%r>" % (self.project_id, self.rule_id, self.reason)
-
-
-
