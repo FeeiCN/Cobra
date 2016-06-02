@@ -17,11 +17,12 @@ import sys
 
 from flask import Flask
 from flask.ext.migrate import MigrateCommand, Migrate
-from flask.ext.script import Manager, Server
+from flask.ext.script import Manager, Server, Option, Command
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.bootstrap import Bootstrap
 
 from utils import log
+
 
 log.info('Initialization HTTP Server')
 reload(sys)
@@ -48,12 +49,49 @@ with web.app_context():
 migrate = Migrate(web, db)
 manager = Manager(web)
 
+
+class Scan(Command):
+    option_list = (
+        Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
+        Option('--pid', '-p', dest='pid', help='scan project id')
+    )
+
+    def parse_target(self, target=None):
+        if target[len(target) - 4:] == '.git':
+            return 'git'
+        elif os.path.isdir(target) is True:
+            return 'directory'
+        elif os.path.isfile(target) is True:
+            return 'file'
+        elif target[0:7] == 'http://' or target[0:8] == 'https://':
+            return 'svn'
+        else:
+            return False
+
+    def run(self, target=None, pid=None):
+        if target is None:
+            print("Please set --target param")
+            sys.exit()
+        target_type = self.parse_target(target)
+        if target_type is False:
+            print("""
+                Git Repository: must .git end
+                SVN Repository: can http:// or https://
+                Directory: must be local directory
+                File: must be single file or tar.gz/zip/rar compress file
+                """)
+        if target_type is 'directory':
+            from engine import static
+            static.Static().analyse(target)
+
+
 host = config.get('cobra', 'host')
 port = config.get('cobra', 'port')
 port = int(port)
 
 manager.add_command('db', MigrateCommand)
-manager.add_command('runserver', Server(host=host, port=port))
+manager.add_command('start', Server(host=host, port=port))
+manager.add_command('scan', Scan())
 
 from app.controller import route
 from app.controller import RulesAdmin

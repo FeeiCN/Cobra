@@ -15,7 +15,7 @@ import time
 
 from flask import render_template, request, jsonify
 
-from app import web, CobraRules, CobraVuls, db, CobraSupportLanguage
+from app import web, CobraRules, CobraVuls, db, CobraLanguages
 from app import CobraProjects, CobraWhiteList
 
 # default admin url
@@ -40,7 +40,7 @@ def rules():
     # cobra_rules = CobraRules.query.paginate(1, per_page=5, error_out=False)
     cobra_rules = CobraRules.query.all()
     cobra_vuls = CobraVuls.query.all()
-    cobra_lang = CobraSupportLanguage.query.all()
+    cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
     all_language = {}
     for vul in cobra_vuls:
@@ -95,7 +95,7 @@ def add_new_rule():
             return jsonify(tag='danger', msg='add failed, try again later?')
     else:
         vul_type = CobraVuls.query.all()
-        languages = CobraSupportLanguage.query.all()
+        languages = CobraLanguages.query.all()
         data = {
             'vul_type': vul_type,
             'languages': languages
@@ -152,7 +152,7 @@ def edit_rule(rule_id):
     else:
         r = CobraRules.query.filter_by(id=rule_id).first()
         vul_type = CobraVuls.query.all()
-        languages = CobraSupportLanguage.query.all()
+        languages = CobraLanguages.query.all()
         return render_template('rulesadmin/edit_rule.html', data={
             'vul_type': r.vul_id,
             'language': r.language,

@@ -1,33 +1,43 @@
-{% extends "bootstrap/base.html"  %}
+{% extends "bootstrap/base.html" %}
 
 {% block title %}Rules Admin{% endblock %}
 
 {% block content %}
-<div class="container">
-	<div class="row clearfix">
-		<div class="col-md-12 column">
-			<div class="page-header">
-				<h1>
-					Cobra Rules Manage <small></small>
-				</h1>
-			</div>
-		</div>
-	</div>
-	<div class="row clearfix">
-		<div class="col-md-2 column">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Rules Manage</div>
-                <div class="panel-body">
-                    <button type="button" class="btn btn-primary btn-block" id="show_all_rules">Show All Rules</button>
-                    <button type="button" class="btn btn-primary btn-block" id="add_new_rules">Add New Rules</button>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="page-header">
+                    <h1>
+                        Cobra Manage
+                        <small></small>
+                    </h1>
                 </div>
             </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">Vuls Manage</div>
-                <div class="panel-body">
-                    <button type="button" class="btn btn-primary btn-block" id="show_all_vuls">Show All Vuls</button>
-                    <button type="button" class="btn btn-primary btn-block" id="add_new_vuls">Add New Vuls</button>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-2 column">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Rules Manage</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_rules">All Rules
+                        </button>
+                        <button type="button" class="btn btn-primary btn-block" id="add_new_rules">Add Rules
+                        </button>
+                    </div>
                 </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Vuls Manage</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_vuls">All Vuls
+                        </button>
+                        <button type="button" class="btn btn-primary btn-block" id="add_new_vuls">Add Vuls</button>
+                    </div>
+                </div>
+            </div>
+            <div hidden class="col-md-10 column" id="vul_operate_result"></div>
+            <div class="col-md-10 column" id="main-div" hidden>
+                <h3>Welcome to cobra rules management.</h3>
+                <h3>Click left button to select function.</h3>
             </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">Projects Manage</div>
@@ -65,9 +75,8 @@
             <h3>Welcome to cobra rules management.</h3>
             <h3>Click left button to select function.</h3>
 		</div>
-
 	</div>
-</div>
+
 {% endblock %}
 
 {% block scripts %}
