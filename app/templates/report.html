@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="ie ie8"> <![endif]-->
+<!--[if IE 9]><html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Cobra is a code static scan system">
+    <meta name="author" content="Feei <wufeifei@wufeifei.com>">
+    <title>Cobra Report</title>
+
+    <!-- Favicons-->
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="img/apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114"
+          href="img/apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144"
+          href="img/apple-touch-icon-144x144-precomposed.png">
+
+    <!-- CSS -->
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='css/prism.css') }}" rel="stylesheet"/>
+    <!-- Google web fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+
+    <style>
+        .invoice-title h2, .invoice-title h3 {
+            display: inline-block;
+        }
+
+        .table > tbody > tr > .no-line {
+            border-top: none;
+        }
+
+        .table > thead > tr > .no-line {
+            border-bottom: none;
+        }
+
+        .table > tbody > tr > .thick-line {
+            border-top: 2px solid;
+        }
+    </style>
+
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+      <script src="js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="invoice-title">
+                <h2>Cobra</h2>
+                <h3 class="pull-right">Report ID # {{ data.id }}</h3>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-xs-6">
+                    <address>
+                        <h5>To:</h5>
+                        Business: @tieshou/@wuyue/@yantian <br>
+                        PE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: @puzhi <br>
+                        Security&nbsp;: @zhijie/@hanshui/@shiqiao <br>
+                    </address>
+                </div>
+                <div class="col-xs-6">
+                    <address>
+                        <h5>Date:</h5>
+                        2016-06-03 12:12:12<br><br>
+                    </address>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <address>
+                        <h5>Project:</h5>
+                        pay-cashier<br>
+                        http://gitlab.org/pay/pay-cashier.git
+                    </address>
+                </div>
+                <div class="col-xs-6">
+                    <address>
+                        <h5>Result:</h5>
+                        <strong>Scan Time</strong>: 12'12''<br>
+                        <strong>Files</strong>: 1,300,435<br>
+                        <strong>Vulnerabilities</strong>: 3
+                    </address>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong>Vulnerabilities</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <h4>SQL Injection</h4>
+                        <table class="table table-condensed">
+                            <thead>
+                            <tr>
+                                <td><strong>Level</strong></td>
+                                <td><strong>Rule</strong></td>
+                                <td>
+                                    <strong>Content</strong>
+                                </td>
+                                <td><strong>Repair</strong></td>
+                                <td class="text-right"><strong>Help</strong></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr style="color:red;">
+                                <td>High</td>
+                                <td>SELECT *</td>
+                                <td>
+                                    <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">/asset/img/banner_bg_colored.png:39</span>
+                                    <pre><code class="language-php">echo <mark>eval</mark>($content);</code></pre>
+                                </td>
+                                <td>过滤eval($content)入参$content,防止造成代码执行</td>
+                                <td class="text-right">
+                                    <div class="tooltip_styled tooltip-effect-1">
+                                        <span class="tooltip-item"><i class="icon_set_1_icon-74"></i></span>
+                                        <div class="tooltip-content">误报? 请反馈给我们</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <!-- Containers -->
+    <h3>Help</h3>
+    <div class="row">
+        <div class="col-md-6">
+
+            <div class="box_style_2">
+                <i class="icon_set_1_icon-70"></i>
+                <h4>Need Help? <span>TT</span></h4>
+                <a href="" class="phone">@zhijie/@hanshui</a>
+                <small>Service Time: 7*5 09:30am - 06:30pm</small>
+            </div>
+
+        </div><!-- End col-md-6-->
+        <div class="col-md-6">
+
+            <div class="box_style_2">
+                <i class="icon_set_1_icon-90"></i>
+                <h4><span>TT Offline?</span> Phone</h4>
+                <a href="tel://13506710613" class="phone">135 0671 0613</a>
+                <small>Service Time: 7*24</small>
+            </div>
+
+        </div><!-- End col-md-6-->
+    </div><!-- End row-->
+
+
+    <div class="banner colored">
+        <h4>如何 <span>提高代码安全质量?</span></h4>
+        <p>跟着安全团队, 45天精通代码安全.</p>
+        <a href="single_tour.html" class="btn_1 white">Read more</a>
+    </div>
+    <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
+</body>
+</html>

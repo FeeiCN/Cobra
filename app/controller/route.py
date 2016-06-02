@@ -131,6 +131,14 @@ def status(id):
     return jsonify(code=1001, msg='success', status='running')
 
 
+@web.route('/report/<int:id>', methods=['GET'])
+def report(id):
+    data = {
+        'id': int(id)
+    }
+    return render_template('report.html', data=data)
+
+
 @web.errorhandler(404)
 def page_not_found(e):
     log.debug('In 404 Route')
