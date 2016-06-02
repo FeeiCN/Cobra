@@ -23,7 +23,6 @@ from flask.ext.bootstrap import Bootstrap
 
 from utils import log
 
-
 log.info('Initialization HTTP Server')
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -62,7 +61,11 @@ class Scan(Command):
         elif os.path.isdir(target) is True:
             return 'directory'
         elif os.path.isfile(target) is True:
-            return 'file'
+            filename, file_extension = os.path.splitext(target)
+            if file_extension in ['.tar.gz', '.rar', '.zip']:
+                return 'compress'
+            else:
+                return 'file'
         elif target[0:7] == 'http://' or target[0:8] == 'https://':
             return 'svn'
         else:
@@ -80,9 +83,29 @@ class Scan(Command):
                 Directory: must be local directory
                 File: must be single file or tar.gz/zip/rar compress file
                 """)
+        from engine import static
+        s = static.Static()
         if target_type is 'directory':
-            from engine import static
-            static.Static().analyse(target)
+            s.analyse(target)
+        elif target_type is 'compress':
+            from utils.decompress import Decompress
+            # load an compressed file. only tar.gz, rar, zip supported.
+            dc = Decompress(target)
+            # decompress it. And there will create a directory named "222_test.tar".
+            dc.decompress()
+            s.analyse(target)
+        elif target_type is 'file':
+            s.analyse(target)
+        elif target_type is 'git':
+            from pickup.GitTools import Git
+            g = Git(target, branch='master')
+            g.get_repo()
+            if g.clone() is True:
+                s.analyse(target)
+            else:
+                print("Git clone failed")
+        elif target_type is 'svn':
+            print("Not Support SVN Repository")
 
 
 host = config.get('cobra', 'host')

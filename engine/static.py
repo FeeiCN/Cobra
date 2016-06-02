@@ -56,15 +56,10 @@ class Static:
             sys.exit()
         log.info('Start code static analyse...')
 
+        log.info('Parse target')
+
         s = scan.Scan(directory)
         files = s.files()
-        language_ext = {
-            'php': ['.php', '.php3', '.php4', '.php5'],
-            'jsp': ['.jsp'],
-            'java': ['.java'],
-            'html': ['.htm', '.html', '.phps', '.phtml'],
-            'js': ['.js']
-        }
         ext_language = {
             # Image
             '.jpg': 'image',
