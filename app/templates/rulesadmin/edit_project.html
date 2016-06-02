@@ -2,7 +2,8 @@
     <div class="col-md-12 column">
         <div class="page-header">
             <h3>
-                Edit project <small></small>
+                Edit project
+                <small></small>
             </h3>
         </div>
     </div>
@@ -12,32 +13,18 @@
         <label for="name">Project Name</label>
         <input type="text" class="form-control" id="name" value="{{ data.project.name }}"/>
     </div>
-    <label>Repository type</label><br />
-    <label class="radio-inline">
-        <input type="radio" name="repo_type" id="repo_type1" value="git"
-                {% if data.project.repo_type == 1 %}checked{% endif %}> GIT
-    </label>
-    <label class="radio-inline">
-        <input type="radio" name="repo_type" id="repo_type2" value="svn"
-                {% if data.project.repo_type == 2 %}checked{% endif %}> SVN
-    </label><br /><br>
+    <br>
     <div class="form-group">
         <label for="repository">Repository</label>
         <input type="text" class="form-control" id="repository" value="{{ data.project.repository }}"/>
     </div>
     <div class="form-group">
-        <label for="branch">branch</label>
-        <input type="text" class="form-control" id="branch" value="{{ data.project.branch }}"/>
+        <label for="branch">Author</label>
+        <input type="text" class="form-control" id="author" value="{{ data.project.author }}"/>
     </div>
     <div class="form-group">
-        <label for="username">username</label>
-        <input type="text" class="form-control" id="username"
-               value="{% if data.project.username == None %}{% else %}{{ data.project.username }}{% endif %}"/>
-    </div>
-    <div class="form-group">
-        <label for="password">password</label>
-        <input type="password" class="form-control" id="password"
-               value="{% if data.project.password == None %}{% else %}{{ data.project.password }}{% endif %}"/>
+        <label for="branch">Remark</label>
+        <textarea class="form-control" id="remark">{{ data.project.remark }}</textarea>
     </div>
     <div id="edit-project-result" hidden></div>
     <button type="button" class="btn btn-success" id="edit-project-button">Save</button>

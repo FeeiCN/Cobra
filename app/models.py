@@ -146,18 +146,20 @@ class CobraResults(db.Model):
 class CobraProjects(db.Model):
     __tablename__ = 'projects'
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    name = db.Column(db.String(128), nullable=True, default=None)
-    repo_type = db.Column(TINYINT(2), nullable=True, default=None)
-    repository = db.Column(db.String(256), nullable=True, default=None)
-    scan_at = db.Column(db.String(128), nullable=True, default=None)
+    repository = db.Column(db.String(512), nullable=True, default=None)
+    name = db.Column(db.String(50), nullable=True, default=None)
+    author = db.Column(db.String(50), nullable=True, default=None)
+    remark = db.Column(db.String(50), nullable=True, default=None)
+    last_scan = db.Column(db.DateTime, nullable=True, default=None)
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, name, repo_type, repository, scan_at, created_at, updated_at):
-        self.name = name
-        self.repo_type = repo_type
+    def __init__(self, repository, name, author, remark, last_scan, created_at, updated_at):
         self.repository = repository
-        self.scan_at = scan_at
+        self.name = name
+        self.author = author
+        self.remark = remark
+        self.last_scan = last_scan
         self.created_at = created_at
         self.updated_at = updated_at
 
