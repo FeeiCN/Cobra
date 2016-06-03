@@ -97,7 +97,7 @@
     <div id="search">
         <ul class="nav nav-tabs">
             <li class="active"><a href="#config" data-toggle="tab">1.Config</a></li>
-            <li><a href="#log" data-toggle="tab">2.Log</a></li>
+            <li><a href="#log" data-toggle="tab">2.Scan</a></li>
             <li><a href="#report" data-toggle="tab">3.Report</a></li>
         </ul>
 
@@ -346,6 +346,7 @@
 <!-- Common scripts -->
 <script src="asset/js/jquery-1.11.2.min.js"></script>
 <script src="asset/js/common_scripts_min.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.plainoverlay.min.js') }}"></script>
 <script src="asset/js/functions.js"></script>
 <script>
 
@@ -451,7 +452,9 @@
             }).done(function (result) {
                 if (result.code == '1001') {
                     $("#log > h3").text('Logging...');
+                    $('.tab-content').plainOverlay('show');
                     $("ul.nav-tabs > li").eq(1).find('a').trigger('click');
+                    /* Check Task Status @TODO */
                 } else {
                     alert(result.msg);
                 }
