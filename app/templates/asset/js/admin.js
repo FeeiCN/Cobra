@@ -289,63 +289,38 @@ $("#show_all_projects").click(function () {
 
                 $("#edit-project-button").click(function () {
                     var name = $("#name").val();
-                    var repo_type = $("input[name=repo_type]:checked").val();
                     var repository = $("#repository").val();
-                    var branch = $("#branch").val();
-                    var username = $("#username").val();
-                    var password = $("#password").val();
+                    var author = $("#author").val();
+                    var remark = $("#remark").val();
 
                     if (!name || name == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>name cannot be empty!</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
-                        return false;
-                    }
-
-                    if (!repo_type || repo_type == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>repo type error.</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                        showAlert('danger', 'name can not be empty!', 'edit-project-result');
                         return false;
                     }
 
                     if (!repository || repository == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>repository cannot be empty!</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                        showAlert('danger', 'repository can not be empty!', '#edit-project-result');
+                        return false;
+                    }
+                    if (!remark || remark == "") {
+                        showAlert('danger', 'remark can not be empty!', '#edit-project-result');
                         return false;
                     }
 
-                    if (!branch || branch == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>branch cannot be empty!</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                    if (!author || author == "") {
+                        showAlert('danger', 'author cannot be empty!', '#edit-project-result');
                         return false;
                     }
 
                     data = {
                         'project_id': cur_project_id,
                         'name': name,
-                        'repo_type': repo_type,
                         'repository' : repository,
-                        'branch' : branch,
-                        'username': username,
-                        'password': password
+                        'author': author,
+                        'remark': remark
                     };
                     $.post('edit_project/'+cur_project_id, data, function (res) {
-                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>' + res.msg + '</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                        showAlert(res.tag, res.msg, '#edit-project-result');
                     });
                 });
             });
