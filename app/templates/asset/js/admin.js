@@ -42,38 +42,37 @@ $("#show_all_rules").click(function () {
                     var lang = $("#language").val();
                     var regex = $("#regex").val();
                     var description = $("#description").val();
+                    var regex_confirm = $("#confirm-regex").val();
+                    var repair = $("#repair").val();
+                    var status = $("#status:checked").val();
 
                     // check data
                     if (!vul_type || vul_type == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>Vul type error.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'vul type error.', '#edit-rule-result');
                         return false;
                     }
                     if (!lang || lang == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>Language error.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'language error.', '#edit-rule-result');
                         return false;
                     }
                     if (!description || description == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>Description can not be blank.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'description can not be blank.', '#edit-rule-result');
                         return false;
                     }
                     if (!regex || regex == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>regex can not be blank.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!regex_confirm || regex_confirm == "") {
+                        showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!repair || repair == "") {
+                        showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!status || status == "") {
+                        showAlert('danger', 'status error.', '#edit-rule-result');
                         return false;
                     }
 
@@ -82,15 +81,14 @@ $("#show_all_rules").click(function () {
                         'vul_type': vul_type,
                         'language': lang,
                         'regex': regex,
+                        'regex_confirm': regex_confirm,
                         'description': description,
-                        'rule_id': cur_id
+                        'rule_id': cur_id,
+                        'repair': repair,
+                        'status': status
                     };
                     $.post('edit_rule/' + cur_id, data, function (res) {
-                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>' + res.msg + '</strong></div>';
-                        $("#edit-rule-result").html(tres).fadeIn(1000);
+                        showAlert(res.tag, res.msg, "#edit-rule-result");
                     });
                 });
             });
@@ -100,8 +98,13 @@ $("#show_all_rules").click(function () {
         $("[id^=view-rule]").click(function () {
             var cur_id = $(this).attr('id').split('-')[2];
             var regex = $("<div/>").text($("#rule-regex-" + cur_id).text()).html();
+            var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cur_id).text()).html();
+            var repair = $("<div/>").text($("#rule-repair-" + cur_id).text()).html();
             $("#view-title").html("Rule Details.");
-            $("#view-body").html("<b>Regex in Perl: </b>" + regex);
+            var content = "<b>Regex: </b>" + regex + "<br />";
+            content += "<b>Confirm Regex: </b>" + confirm_regex + "<br />";
+            content += "<b>Repair: </b>" + repair + "<br />";
+            $("#view-body").html(content);
         });
 
     });
@@ -116,39 +119,33 @@ $("#add_new_rules").click(function () {
             var vul_type = $("#vul_type").val();
             var lang = $("#language").val();
             var regex = $("#regex").val();
+            var regex_confirm = $("#confirm-regex").val();
             var description = $("#description").val();
+            var repair = $("#repair").val();
 
             // check data
             if (!vul_type || vul_type == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>Vul type error.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'vul type error.', '#add-new-rule-result');
                 return false;
             }
             if (!lang || lang == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>Language error.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'language error.', '#add-new-rule-result');
                 return false;
             }
             if (!description || description == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>Description can not be blank.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'description can not be blank.', '#add-new-rule-result');
                 return false;
             }
             if (!regex || regex == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>regex can not be blank.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'regex can not be blank.', '#add-new-rule-result');
+                return false;
+            }
+            if (!regex_confirm || regex_confirm == "") {
+                showAlert('danger', 'regex confirm can not be blank.', '#add-new-rule-result');
+                return false;
+            }
+            if (!repair || repair == "") {
+                showAlert('danger', 'repair can not be blank.', '#add-new-rule-result');
                 return false;
             }
 
@@ -157,14 +154,12 @@ $("#add_new_rules").click(function () {
                 'vul_type': vul_type,
                 'language': lang,
                 'regex': regex,
-                'description': description
+                'regex_confirm': regex_confirm,
+                'description': description,
+                'repair': repair
             };
             $.post('add_new_rule', data, function (res) {
-                var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                tres += '<span aria-hidden="true">&times;</span></button>';
-                tres += '<strong>' + res.msg + '</strong></div>';
-                $("#add-new-rule-result").html(tres).fadeIn(1000);
+                showAlert(res.tag, res.msg, '#add-new-rule-result');
             });
         });
     });
@@ -201,28 +196,41 @@ $("#show_all_vuls").click(function () {
                 $("#edit-vul-button").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
-                    if (!name || !description || name == "" || description == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>name or description can not be empty!</strong></div>';
-                        $("#edit-vul-result").html(result).fadeIn(1000);
+                    var repair = $("#repair").val();
+
+                    if (!name || name == "") {
+                        showAlert('danger', 'name can not be blank.', '#edit-vul-result');
                         return false;
                     }
+                    if (!description || description == "") {
+                        showAlert('danger', 'description can not be blank.', '#edit-vul-result');
+                        return false;
+                    }
+                    if (!repair || repair == "") {
+                        showAlert('danger', 'repair can not be blank.', '#edit-vul-result');
+                        return false;
+                    }
+
                     data = {
                         'vul_id': vul_id,
                         'name': name,
-                        'description': description
+                        'description': description,
+                        'repair': repair
                     };
                     $.post('edit_vul/' + vul_id, data, function (res) {
-                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>' + res.msg + '</strong></div>';
-                        $("#edit-vul-result").html(tres).fadeIn(1000);
+                        showAlert(res.tag, res.msg, '#edit-vul-result');
                     });
                 });
             });
+        });
+
+        // view the special vul
+        $("[id^=view-vul]").click(function () {
+            var cur_id = $(this).attr('id').split('-')[2];
+            var repair = $("<div/>").text($("#vul-repair-" + cur_id).text()).html();
+            $("#view-title").html("Vul Details.");
+            var content = "<b>Repair: </b>" + repair + "<br />";
+            $("#view-body").html(content);
         });
     });
 });
@@ -242,33 +250,27 @@ $("#add_new_vuls").click(function () {
         $("#add-new-vul-button").click(function () {
             var name = $("#name").val();
             var description = $("#description").val();
-            var result = '';
+            var repair = $("#repair").val();
+
             if (name == "" || !name) {
-                result += '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>name is empty!</strong></div>';
-                $("#add-new-vul-result").html(result).fadeIn(1000);
+                showAlert('danger', 'name can not be blank.', '#add-new-vul-result');
                 return false;
             }
             if (description == "" || !description) {
-                result += '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>description is empty!</strong></div>';
-                $("#add-new-vul-result").html(result).fadeIn(1000);
+                showAlert('danger', 'description can not be blank.', '#add-new-vul-result');
+                return false;
+            }
+            if (repair == "" || !description) {
+                showAlert('danger', 'description can not be blank.', '#add-new-vul-result');
                 return false;
             }
             var data = {
                 'name': name,
-                'description': description
+                'description': description,
+                'repair': repair
             };
             $.post('add_new_vul', data, function (res) {
-                var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                tres += '<span aria-hidden="true">&times;</span></button>';
-                tres += '<strong>' + res.msg + '</strong></div>';
-                $("#add-new-vul-result").html(tres).fadeIn(1000);
+                showAlert(res.tag, res.msg, "#add-new-vul-result");
             });
         });
     });
