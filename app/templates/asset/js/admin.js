@@ -100,8 +100,13 @@ $("#show_all_rules").click(function () {
         $("[id^=view-rule]").click(function () {
             var cur_id = $(this).attr('id').split('-')[2];
             var regex = $("<div/>").text($("#rule-regex-" + cur_id).text()).html();
+            var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cur_id).text()).html();
+            var repair = $("<div/>").text($("#rule-repair-" + cur_id).text()).html();
             $("#view-title").html("Rule Details.");
-            $("#view-body").html("<b>Regex in Perl: </b>" + regex);
+            var content = "<b>Regex: </b>" + regex + "<br />";
+            content += "<b>Confirm Regex: </b>" + confirm_regex + "<br />";
+            content += "<b>Repair: </b>" + repair + "<br />";
+            $("#view-body").html(content);
         });
 
     });
