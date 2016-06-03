@@ -14,7 +14,7 @@
         <select id="language" class="form-control">
             {% for lang in data.all_lang %}
                 <option value="{{ lang.id }}" {% if lang.id == data.language %}selected="selected"{% endif %}>
-                    {{ lang.language }}
+                    {{ lang.language }} ({{ lang.extensions }})
                 </option>
             {% endfor %}
         </select>
