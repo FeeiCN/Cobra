@@ -11,11 +11,15 @@
 <form role="form">
     <div class="form-group">
         <label for="name">Vul Name</label>
-        <textarea class="form-control" id="name">{{ data.name }}</textarea>
+        <textarea class="form-control" id="name">{{ data.vul.name }}</textarea>
     </div>
     <div class="form-group">
         <label for="description">Vul Description</label>
-        <textarea type="text" class="form-control" id="description">{{ data.description }}</textarea>
+        <textarea class="form-control" id="description">{{ data.vul.description }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="repair">Repair</label>
+        <textarea class="form-control" id="repair">{{ data.vul.repair }}</textarea>
     </div>
     <div id="edit-vul-result" hidden></div>
     <button type="button" class="btn btn-success" id="edit-vul-button">Save</button>

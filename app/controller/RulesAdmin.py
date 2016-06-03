@@ -236,15 +236,22 @@ def del_vul():
 @web.route(ADMIN_URL + '/edit_vul/<int:vul_id>', methods=['GET', 'POST'])
 def edit_vul(vul_id):
     if request.method == 'POST':
-        name = request.form['name']
-        description = request.form['description']
+        name = request.form.get('name')
+        description = request.form.get('description')
+        repair = request.form.get('repair')
+
         if not name or name == "":
             return jsonify(tag='danger', msg='name can not be empty')
         if not description or description == "":
             return jsonify(tag='danger', msg='description can not be empty')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be empty')
+
         v = CobraVuls.query.filter_by(id=vul_id).first()
         v.name = name
         v.description = description
+        v.repair = repair
+
         try:
             db.session.add(v)
             db.session.commit()
@@ -254,8 +261,7 @@ def edit_vul(vul_id):
     else:
         v = CobraVuls.query.filter_by(id=vul_id).first()
         return render_template('rulesadmin/edit_vul.html', data={
-            'name': v.name,
-            'description': v.description,
+            'vul': v,
         })
 
 

@@ -196,25 +196,29 @@ $("#show_all_vuls").click(function () {
                 $("#edit-vul-button").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
-                    if (!name || !description || name == "" || description == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>name or description can not be empty!</strong></div>';
-                        $("#edit-vul-result").html(result).fadeIn(1000);
+                    var repair = $("#repair").val();
+
+                    if (!name || name == "") {
+                        showAlert('danger', 'name can not be blank.', '#edit-vul-result');
                         return false;
                     }
+                    if (!description || description == "") {
+                        showAlert('danger', 'description can not be blank.', '#edit-vul-result');
+                        return false;
+                    }
+                    if (!repair || repair == "") {
+                        showAlert('danger', 'repair can not be blank.', '#edit-vul-result');
+                        return false;
+                    }
+
                     data = {
                         'vul_id': vul_id,
                         'name': name,
-                        'description': description
+                        'description': description,
+                        'repair': repair
                     };
                     $.post('edit_vul/' + vul_id, data, function (res) {
-                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>' + res.msg + '</strong></div>';
-                        $("#edit-vul-result").html(tres).fadeIn(1000);
+                        showAlert(res.tag, res.msg, '#edit-vul-result');
                     });
                 });
             });
