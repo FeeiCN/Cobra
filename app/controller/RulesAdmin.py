@@ -162,6 +162,7 @@ def edit_rule(rule_id):
         r.description = description
         r.repair = repair
         r.status = status
+        r.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
         try:
             db.session.add(r)
             db.session.commit()
