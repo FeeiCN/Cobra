@@ -4,7 +4,7 @@
         <select id="project" class="form-control">
             {% for project in data.projects %}
                 <option value="{{ project.id }}">
-                {{ project.id }}-{{ project.name }}-{{ project.repository }}-{{ project.branch }}
+                {{ project.id }}-{{ project.name }}-{{ project.repository }}-{{ project.author }}
                 </option>
             {% endfor %}
         </select>
