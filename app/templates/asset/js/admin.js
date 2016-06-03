@@ -385,7 +385,7 @@ $("#add_new_whitelist").click(function () {
         $("#add-new-whitelist-button").click(function () {
             var project_id = $("#project").val();
             var rule_id = $("#rule").val();
-            var file = $("#file").val();
+            var path = $("#path").val();
             var reason = $("#reason").val();
 
             if (!project_id || project_id == "") {
@@ -398,7 +398,7 @@ $("#add_new_whitelist").click(function () {
                 return false;
             }
 
-            if (!file || file == "") {
+            if (!path || path == "") {
                 showAlert('danger', 'file cannot be empty.');
                 return false;
             }
@@ -411,7 +411,7 @@ $("#add_new_whitelist").click(function () {
             data = {
                 'project_id': project_id,
                 'rule_id': rule_id,
-                'file': file,
+                'path': path,
                 'reason': reason
             };
 

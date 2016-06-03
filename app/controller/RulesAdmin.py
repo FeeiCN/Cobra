@@ -334,22 +334,22 @@ def add_whitelist():
     if request.method == 'POST':
         project_id = request.form.get('project_id')
         rule_id = request.form.get('rule_id')
-        file = request.form.get('file')
+        path = request.form.get('path')
         reason = request.form.get('reason')
 
         if not project_id or project_id == "":
             return jsonify(tag='danger', msg='project id error.')
         if not rule_id or rule_id == "":
             return jsonify(tag='danger', msg='rule id error.')
-        if not file or file == "":
+        if not path or path == "":
             return jsonify(tag='danger', msg='file error.')
         if not reason or reason == "":
             return jsonify(tag='danger', msg='reason error.')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        if file[0] != '/':
-            file = '/' + file
-        whitelist = CobraWhiteList(project_id, rule_id, file, reason, 1, current_time, current_time)
+        if path[0] != '/':
+            path = '/' + path
+        whitelist = CobraWhiteList(project_id, rule_id, path, reason, 1, current_time, current_time)
         try:
             db.session.add(whitelist)
             db.session.commit()
