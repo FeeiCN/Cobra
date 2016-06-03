@@ -71,10 +71,12 @@ def rules():
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
 def add_new_rule():
     if request.method == 'POST':
-        vul_type = request.form['vul_type']
-        lang = request.form['language']
-        regex = request.form['regex']
-        description = request.form['description']
+        vul_type = request.form.get('vul_type')
+        lang = request.form.get('language')
+        regex = request.form.get('regex')
+        regex_confirm = request.form.get('regex_confirm')
+        description = request.form.get('description')
+        repair = request.form.get('repair')
 
         if not vul_type or vul_type == "":
             return jsonify(tag='danger', msg='vul type error.')
@@ -84,9 +86,14 @@ def add_new_rule():
             return jsonify(tag='danger', msg='regex can not be blank')
         if not description or description == "":
             return jsonify(tag='danger', msg='description can not be blank')
+        if not regex_confirm or regex_confirm == "":
+            return jsonify(tag='danger', msg='confirm regex can not be blank')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be empty')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        rule = CobraRules(vul_type, lang, regex, description, current_time, current_time)
+        rule = CobraRules(vul_type, lang, regex, regex_confirm, description, repair,
+                          1, current_time, current_time)
         try:
             db.session.add(rule)
             db.session.commit()

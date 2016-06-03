@@ -121,55 +121,48 @@ $("#add_new_rules").click(function () {
             var vul_type = $("#vul_type").val();
             var lang = $("#language").val();
             var regex = $("#regex").val();
+            var regex_confirm = $("#confirm-regex").val();
             var description = $("#description").val();
+            var repair = $("#repair").val();
 
             // check data
             if (!vul_type || vul_type == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>Vul type error.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'vul type error.', '#add-new-rule-result');
                 return false;
             }
             if (!lang || lang == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>Language error.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'language error.', '#add-new-rule-result');
                 return false;
             }
             if (!description || description == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>Description can not be blank.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'description can not be blank.', '#add-new-rule-result');
                 return false;
             }
             if (!regex || regex == "") {
-                var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>regex can not be blank.</strong></div>';
-                $("#add-new-rule-result").html(result).fadeIn(1000);
+                showAlert('danger', 'regex can not be blank.', '#add-new-rule-result');
                 return false;
             }
+            if (!regex_confirm || regex_confirm == "") {
+                showAlert('danger', 'regex confirm can not be blank.', '#add-new-rule-result');
+                return false;
+            }
+            if (!repair || repair == "") {
+                showAlert('danger', 'repair can not be blank.', '#add-new-rule-result');
+                return false;
+            }
+
 
             // post data
             var data = {
                 'vul_type': vul_type,
                 'language': lang,
                 'regex': regex,
-                'description': description
+                'regex_confirm': regex_confirm,
+                'description': description,
+                'repair': repair
             };
             $.post('add_new_rule', data, function (res) {
-                var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                tres += '<span aria-hidden="true">&times;</span></button>';
-                tres += '<strong>' + res.msg + '</strong></div>';
-                $("#add-new-rule-result").html(tres).fadeIn(1000);
+                showAlert(res.tag, res.msg, '#add-new-rule-result');
             });
         });
     });
