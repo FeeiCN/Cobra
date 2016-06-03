@@ -12,56 +12,45 @@
 # See the file 'doc/COPYING' for copying permission
 #
 
-from sqlalchemy.dialects.mysql import TINYINT, INTEGER
+from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT
 
 from app import db
 
 
 # task_info table. store task information.
 class CobraTaskInfo(db.Model):
-    '''
-    id:             task id
-    task_type:      task type, 1-login to gitlab with username and password, 2-upload file
-    create_time:    task created time
-    filename:       filename, if user upload source code, this is the archive filename
-    url:            url, if user provide gitlab account, this is the project url on gitlab
-    username:       username, gitlab username
-    password:       password, gitlab password
-    scan_type:      scan type, 1-all vulnerabislities, 2-general vulnerabilities, 3-code syntax,
-    level:          level, scan level
-    scan_way:       scan way, 1-full scan, 2-diff scan
-    old_version:    old version, if user select diff scan, this is the old version of the project
-    new_version:    new version, if user select diff scan, this is the new version of the project
-    '''
 
     __tablename__ = 'tasks'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    task_type = db.Column(db.SmallInteger, nullable=False)
-    filename = db.Column(db.String(255), nullable=True)
-    url = db.Column(db.String(255), nullable=True)
-    branch = db.Column(db.String(64), nullable=True)
-    scan_way = db.Column(db.SmallInteger, nullable=False)
-    old_version = db.Column(db.String(40), nullable=True)
-    new_version = db.Column(db.String(40), nullable=True)
-    created_at = db.Column(db.DATETIME, nullable=False)
-    updated_at = db.Column(db.DATETIME, nullable=False)
+    target = db.Column(db.String(255), nullable=True, default=None)
+    branch = db.Column(db.String(64), nullable=True, default=None)
+    scan_way = db.Column(SMALLINT(6), nullable=True, default=None)
+    new_version = db.Column(db.String(40), nullable=True, default=None)
+    old_version = db.Column(db.String(40), nullable=True, default=None)
+    time_consume = db.Column(db.DateTime, nullable=True, default=None)
+    time_start = db.Column(db.DateTime, nullable=True, default=None)
+    time_end = db.Column(db.DateTime, nullable=True, default=None)
+    file_count = db.Column(db.Integer, nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, task_type, filename, url, branch, scan_way,
-                 old_version, new_version, created_at, updated_at):
-        self.task_type = task_type
-        self.filename = filename
-        self.url = url
+    def __init__(self, target, branch, scan_way, new_version, old_version, time_consume, time_start, time_end,
+                 file_count, created_at, updated_at):
+        self.target = target
         self.branch = branch
         self.scan_way = scan_way
-        self.old_version = old_version
         self.new_version = new_version
+        self.old_version = old_version
+        self.time_consume = time_consume
+        self.time_start = time_start
+        self.time_end = time_end
+        self.file_count = file_count
         self.created_at = created_at
         self.updated_at = updated_at
 
     def __repr__(self):
-        return '<task_info %r - %r>' % (self.id,
-                                        "username/password on gitlab" if self.scan_way == 1 else "file upload")
+        return '<task_info %r - %r>' % (self.id, self.target)
 
 
 class CobraRules(db.Model):
