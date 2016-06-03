@@ -120,6 +120,18 @@
                                        placeholder="Type your branch;Default master" value="master">
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><i class="icon-backward"></i> Old Version</label>
+                                <input name="old_version" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><i class="icon-forward-3"></i> New Version</label>
+                                <input name="new_version" class="form-control" type="text">
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6" style="border-left: 1px solid #ddd;">
                         <div class="box_style_2" id="dropbox">
@@ -132,37 +144,6 @@
                         </div>
                     </div>
                 </div><!-- End row -->
-                <hr>
-                <div class="row">
-                    <div class="col-md-4 col-sm-9">
-                        <div class="form-group">
-                            <div class="radio_fix">
-                                <label class="radio-inline" style="padding-left:0">
-                                    <input type="radio" name="scan_way" value="1" checked>
-                                    Full Scan
-                                </label>
-                            </div>
-                            <div class="radio_fix">
-                                <label class="radio-inline">
-                                    <input type="radio" name="scan_way" value="2">
-                                    Diff Scan
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label><i class="icon-backward"></i> Old Version</label>
-                            <input name="old_version" class="form-control" type="text">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label><i class="icon-forward-3"></i> New Version</label>
-                            <input name="new_version" class="form-control" type="text">
-                        </div>
-                    </div>
-                </div>
                 <hr>
                 <button class="btn_1 green" id="scan"><i class="icon-search"></i>Scan now</button>
             </div><!-- End rab -->
