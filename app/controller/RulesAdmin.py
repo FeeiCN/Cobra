@@ -130,11 +130,14 @@ def del_rule():
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
 def edit_rule(rule_id):
     if request.method == 'POST':
-        vul_type = request.form['vul_type']
-        lang = request.form['language']
-        regex = request.form['regex']
-        description = request.form['description']
-        rule_id = request.form['rule_id']
+        vul_type = request.form.get('vul_type')
+        lang = request.form.get('language')
+        regex = request.form.get('regex')
+        regex_confirm = request.form.get('regex_confirm')
+        description = request.form.get('description')
+        rule_id = request.form.get('rule_id')
+        repair = request.form.get('repair')
+        status = request.form.get('status')
 
         if not vul_type or vul_type == "":
             return jsonify(tag='danger', msg='vul type error.')
@@ -142,14 +145,23 @@ def edit_rule(rule_id):
             return jsonify(tag='danger', msg='language error.')
         if not regex or regex == "":
             return jsonify(tag='danger', msg='regex can not be blank')
+        if not regex_confirm or regex_confirm == "":
+            return jsonify(tag='danger', msg='confirm regex can not be blank')
         if not description or description == "":
             return jsonify(tag='danger', msg='description can not be blank')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be blank')
+        if not status or status == "" or (status != '1' and status != '2'):
+            return jsonify(tag="danger", msg='status error.')
 
         r = CobraRules.query.filter_by(id=rule_id).first()
         r.vul_id = vul_type
         r.language = lang
         r.regex = regex
+        r.regex_confirm = regex_confirm
         r.description = description
+        r.repair = repair
+        r.status = status
         try:
             db.session.add(r)
             db.session.commit()
@@ -161,10 +173,7 @@ def edit_rule(rule_id):
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
         return render_template('rulesadmin/edit_rule.html', data={
-            'vul_type': r.vul_id,
-            'language': r.language,
-            'regex': r.regex,
-            'description': r.description,
+            'rule': r,
             'all_vuls': vul_type,
             'all_lang': languages,
         })

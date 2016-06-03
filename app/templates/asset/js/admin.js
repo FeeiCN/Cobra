@@ -42,38 +42,37 @@ $("#show_all_rules").click(function () {
                     var lang = $("#language").val();
                     var regex = $("#regex").val();
                     var description = $("#description").val();
+                    var regex_confirm = $("#confirm-regex").val();
+                    var repair = $("#repair").val();
+                    var status = $("#status:checked").val();
 
                     // check data
                     if (!vul_type || vul_type == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>Vul type error.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'vul type error.', '#edit-rule-result');
                         return false;
                     }
                     if (!lang || lang == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>Language error.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'language error.', '#edit-rule-result');
                         return false;
                     }
                     if (!description || description == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>Description can not be blank.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'description can not be blank.', '#edit-rule-result');
                         return false;
                     }
                     if (!regex || regex == "") {
-                        var result = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        result += '<span aria-hidden="true">&times;</span></button>';
-                        result += '<strong>regex can not be blank.</strong></div>';
-                        $("#add-new-rule-result").html(result).fadeIn(1000);
+                        showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!regex_confirm || regex_confirm == "") {
+                        showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!repair || repair == "") {
+                        showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!status || status == "") {
+                        showAlert('danger', 'status error.', '#edit-rule-result');
                         return false;
                     }
 
@@ -82,15 +81,14 @@ $("#show_all_rules").click(function () {
                         'vul_type': vul_type,
                         'language': lang,
                         'regex': regex,
+                        'regex_confirm': regex_confirm,
                         'description': description,
-                        'rule_id': cur_id
+                        'rule_id': cur_id,
+                        'repair': repair,
+                        'status': status
                     };
                     $.post('edit_rule/' + cur_id, data, function (res) {
-                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>' + res.msg + '</strong></div>';
-                        $("#edit-rule-result").html(tres).fadeIn(1000);
+                        showAlert(res.tag, res.msg, "#edit-rule-result");
                     });
                 });
             });
@@ -150,7 +148,6 @@ $("#add_new_rules").click(function () {
                 showAlert('danger', 'repair can not be blank.', '#add-new-rule-result');
                 return false;
             }
-
 
             // post data
             var data = {
