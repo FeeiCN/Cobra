@@ -24,14 +24,12 @@ def add_new_task():
         {
             "url": "https://gitlab.com/username/project",   // must, gitlab address
             "branch": "master",                             // must, the project branch
-            "username": "your username",    // optional, the username access to the repo. If the repo is public, leave this blank.
-            "password": "your password",    // optional, the password access to the repo. If the repo is public, leave this blank.
+            "username": "username here",        // if the repo is private, please provide the account username
+            "password": "password here",        // if the repo is private, please provide the account password
             "old_version": "old version here",  // optional, if you choice diff scan mode, you should provide old version hash.
             "new_version": "new version here",  // optional, if you choice diff scan mode, you should provide new version hash.
             "scan_way": 1,      // must, scan way, 1-full scan, 2-diff scan, if you want to use full scan mode,
                                 // leave old_version and new_version blank.
-            "scan_type": 2,     // must, scan type, 1-all vulnerabilities, 2-general vulnerabilities, 3-code syntax
-            "level": "1",       // must, scan level, 1-5
         }
     :return:
         The return value also in json format, usually is:
@@ -48,13 +46,11 @@ def add_new_task():
     # get data
     url = data.get('url')
     branch = data.get('branch')
-    username = data.get('username')
-    password = data.get('password')
     new_version = data.get('new_version')
     old_version = data.get('old_version')
+    username = data.get('username')
+    password = data.get('password')
     scan_way = data.get('scan_way')
-    scan_type = data.get('scan_type')
-    level = data.get('level')
 
     # check data
     if not url or url == "":
@@ -63,34 +59,33 @@ def add_new_task():
         return jsonify(code=1002, msg=u'branch can not be empty.')
     if not scan_way or scan_way == "":
         return jsonify(code=1002, msg=u'scan way can not be empty')
-    if not scan_type or scan_type == "":
-        return jsonify(code=1002, msg=u'scan type can not be empty')
-    if not level or level == "":
-        return jsonify(code=1002, msg=u'level can not be empty')
 
-    current_timestamp = int(time.time())
     current_time = time.strftime('%Y-%m-%d %X', time.localtime())
     gg = GitTools.Git(url, branch=branch, username=username, password=password)
-    repo_name = gg.repo_directory.split('/')[-1]
-    repo_name = repo_name.split('_')[-1]
+    repo_author = gg.repo_author
+    repo_name = gg.repo_name
 
     new_version = None if new_version == "" else new_version
     old_version = None if old_version == "" else old_version
     username = None if username == "" else username
     password = None if password == "" else password
 
-    # insert into task info table.
-    task_info = CobraTaskInfo(task_type=1, create_time=current_timestamp, filename=None, url=url, branch=branch,
-                              username=username, password=password, scan_type=scan_type, level=level, scan_way=scan_way,
-                              old_version=old_version, new_version=new_version)
+    # TODO: file count
 
-    # insert into project table.
-    project = CobraProjects(name=repo_name, repo_type=1, repository=url, branch=branch, username=username,
-                           password=password, scan_at=None, created_at=current_time, updated_at=current_time)
+    # insert into task info table.
+    task = CobraTaskInfo(url, branch, scan_way, new_version, old_version, None, None, None, 1,
+                         current_time, current_time)
+
+    p = CobraProjects.query.filter_by(repository=url).first()
+    project = None
+    if not p:
+        # insert into project table.
+        project = CobraProjects(url, repo_name, repo_author, None, None, current_time, current_time)
 
     try:
-        db.session.add(task_info)
-        db.session.add(project)
+        db.session.add(task)
+        if not p:
+            db.session.add(project)
         db.session.commit()
         return jsonify(code=1001, msg=u'task add success.')
     except:
