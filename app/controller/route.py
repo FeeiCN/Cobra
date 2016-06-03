@@ -133,6 +133,9 @@ def status(id):
 
 @web.route('/report/<int:id>', methods=['GET'])
 def report(id):
+    task_info = CobraTaskInfo.query.filter_by(id=id).first()
+    if not task_info:
+        return jsonify(status='4004', msg='report id not found')
     data = {
         'id': int(id)
     }

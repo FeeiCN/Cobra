@@ -9,9 +9,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="code security scan, static code analyse"/>
-    <meta name="description" content="Cobra - Static Code security scan & analyse">
-    <meta name="author" content="Ansonika">
+    <meta name="keywords" content="static code scan">
+    <meta name="description" content="Cobra is a code static scan system">
+    <meta name="author" content="Feei <wufeifei@wufeifei.com>">
     <title>Cobra - Static Code security scan & analyse</title>
 
     <!-- Favicons-->
@@ -97,7 +97,7 @@
     <div id="search">
         <ul class="nav nav-tabs">
             <li class="active"><a href="#config" data-toggle="tab">1.Config</a></li>
-            <li><a href="#log" data-toggle="tab">2.Log</a></li>
+            <li><a href="#log" data-toggle="tab">2.Scan</a></li>
             <li><a href="#report" data-toggle="tab">3.Report</a></li>
         </ul>
 
@@ -168,9 +168,6 @@
             </div><!-- End rab -->
             <div class="tab-pane" id="log">
                 <h3>Set config on step1</h3>
-                <ul>
-                    <li></li>
-                </ul>
             </div>
             <div class="tab-pane" id="report">
                 <h3>Wait for the analyse & scan completed</h3>
@@ -346,6 +343,7 @@
 <!-- Common scripts -->
 <script src="asset/js/jquery-1.11.2.min.js"></script>
 <script src="asset/js/common_scripts_min.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.plainoverlay.min.js') }}"></script>
 <script src="asset/js/functions.js"></script>
 <script>
 
@@ -450,8 +448,10 @@
                 data: data,
             }).done(function (result) {
                 if (result.code == '1001') {
-                    $("#log > h3").text('Logging...');
+                    $("#log > h3").text('Scanning...');
+                    $('.tab-content').plainOverlay('show');
                     $("ul.nav-tabs > li").eq(1).find('a').trigger('click');
+                    /* Check Task Status @TODO */
                 } else {
                     alert(result.msg);
                 }
