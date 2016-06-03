@@ -71,15 +71,21 @@ class CobraRules(db.Model):
     vul_id = db.Column(TINYINT(unsigned=False), nullable=True, default=None)
     language = db.Column(TINYINT(unsigned=False), nullable=True, default=None)
     regex = db.Column(db.String(512), nullable=True, default=None)
+    regex_confirm = db.Column(db.String(512), nullable=True, default=None)
     description = db.Column(db.String(256), nullable=True, default=None)
+    repair = db.Column(db.String(512), nullable=True, default=None)
+    status = db.Column(TINYINT(2), nullable=True, default=None)
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, vul_id, language, regex, description, created_at, updated_at):
+    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, created_at, updated_at):
         self.vul_id = vul_id
         self.language = language
         self.regex = regex
+        self.regex_confirm = regex_confirm
         self.description = description
+        self.repair = repair
+        self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
 
