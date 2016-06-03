@@ -71,10 +71,12 @@ def rules():
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
 def add_new_rule():
     if request.method == 'POST':
-        vul_type = request.form['vul_type']
-        lang = request.form['language']
-        regex = request.form['regex']
-        description = request.form['description']
+        vul_type = request.form.get('vul_type')
+        lang = request.form.get('language')
+        regex = request.form.get('regex')
+        regex_confirm = request.form.get('regex_confirm')
+        description = request.form.get('description')
+        repair = request.form.get('repair')
 
         if not vul_type or vul_type == "":
             return jsonify(tag='danger', msg='vul type error.')
@@ -84,9 +86,14 @@ def add_new_rule():
             return jsonify(tag='danger', msg='regex can not be blank')
         if not description or description == "":
             return jsonify(tag='danger', msg='description can not be blank')
+        if not regex_confirm or regex_confirm == "":
+            return jsonify(tag='danger', msg='confirm regex can not be blank')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be empty')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        rule = CobraRules(vul_type, lang, regex, description, current_time, current_time)
+        rule = CobraRules(vul_type, lang, regex, regex_confirm, description, repair,
+                          1, current_time, current_time)
         try:
             db.session.add(rule)
             db.session.commit()
@@ -123,11 +130,14 @@ def del_rule():
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
 def edit_rule(rule_id):
     if request.method == 'POST':
-        vul_type = request.form['vul_type']
-        lang = request.form['language']
-        regex = request.form['regex']
-        description = request.form['description']
-        rule_id = request.form['rule_id']
+        vul_type = request.form.get('vul_type')
+        lang = request.form.get('language')
+        regex = request.form.get('regex')
+        regex_confirm = request.form.get('regex_confirm')
+        description = request.form.get('description')
+        rule_id = request.form.get('rule_id')
+        repair = request.form.get('repair')
+        status = request.form.get('status')
 
         if not vul_type or vul_type == "":
             return jsonify(tag='danger', msg='vul type error.')
@@ -135,14 +145,24 @@ def edit_rule(rule_id):
             return jsonify(tag='danger', msg='language error.')
         if not regex or regex == "":
             return jsonify(tag='danger', msg='regex can not be blank')
+        if not regex_confirm or regex_confirm == "":
+            return jsonify(tag='danger', msg='confirm regex can not be blank')
         if not description or description == "":
             return jsonify(tag='danger', msg='description can not be blank')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be blank')
+        if not status or status == "" or (status != '1' and status != '2'):
+            return jsonify(tag="danger", msg='status error.')
 
         r = CobraRules.query.filter_by(id=rule_id).first()
         r.vul_id = vul_type
         r.language = lang
         r.regex = regex
+        r.regex_confirm = regex_confirm
         r.description = description
+        r.repair = repair
+        r.status = status
+        r.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
         try:
             db.session.add(r)
             db.session.commit()
@@ -154,10 +174,7 @@ def edit_rule(rule_id):
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
         return render_template('rulesadmin/edit_rule.html', data={
-            'vul_type': r.vul_id,
-            'language': r.language,
-            'regex': r.regex,
-            'description': r.description,
+            'rule': r,
             'all_vuls': vul_type,
             'all_lang': languages,
         })
@@ -167,22 +184,24 @@ def edit_rule(rule_id):
 @web.route(ADMIN_URL + '/add_new_vul', methods=['GET', 'POST'])
 def add_new_vul():
     if request.method == 'POST':
-        name = request.form['name']
-        description = request.form['description']
+        name = request.form.get('name')
+        description = request.form.get('description')
+        repair = request.form.get('repair')
         if not name or name == "":
-            return jsonify(tag='danger', msg='name is empty')
+            return jsonify(tag='danger', msg='name can not be blank.')
         if not description or description == "":
-            return jsonify(tag='danger', msg='description is empty')
+            return jsonify(tag='danger', msg='description can not be blank.')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be blank.')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        vul = CobraVuls(name, description, current_time, current_time)
+        vul = CobraVuls(name, description, repair, current_time, current_time)
         try:
             db.session.add(vul)
             db.session.commit()
             return jsonify(tag='success', msg='Add Success.')
         except:
             return jsonify(tag='danger', msg='Add failed. Please try again later.')
-
     else:
         return render_template('rulesadmin/add_new_vul.html')
 
@@ -217,15 +236,22 @@ def del_vul():
 @web.route(ADMIN_URL + '/edit_vul/<int:vul_id>', methods=['GET', 'POST'])
 def edit_vul(vul_id):
     if request.method == 'POST':
-        name = request.form['name']
-        description = request.form['description']
+        name = request.form.get('name')
+        description = request.form.get('description')
+        repair = request.form.get('repair')
+
         if not name or name == "":
             return jsonify(tag='danger', msg='name can not be empty')
         if not description or description == "":
             return jsonify(tag='danger', msg='description can not be empty')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be empty')
+
         v = CobraVuls.query.filter_by(id=vul_id).first()
         v.name = name
         v.description = description
+        v.repair = repair
+
         try:
             db.session.add(v)
             db.session.commit()
@@ -235,8 +261,7 @@ def edit_vul(vul_id):
     else:
         v = CobraVuls.query.filter_by(id=vul_id).first()
         return render_template('rulesadmin/edit_vul.html', data={
-            'name': v.name,
-            'description': v.description,
+            'vul': v,
         })
 
 

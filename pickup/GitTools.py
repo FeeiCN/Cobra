@@ -81,6 +81,8 @@ class Git:
     repo_username = None
     repo_password = None
     repo_branch = None
+    repo_author = None
+    repo_name = None
 
     # https://github.com/<username>/<reponame>
 
@@ -97,6 +99,8 @@ class Git:
         self.repo_branch = branch
         repo_user = self.repo_address.split('/')[-2]
         repo_name = self.repo_address.split('/')[-1]
+        self.repo_author = repo_user
+        self.repo_name = repo_name
         if '.git' not in repo_name:
             self.repo_address += '.git'
         else:
