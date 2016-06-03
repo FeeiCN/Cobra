@@ -219,6 +219,15 @@ $("#show_all_vuls").click(function () {
                 });
             });
         });
+
+        // view the special vul
+        $("[id^=view-vul]").click(function () {
+            var cur_id = $(this).attr('id').split('-')[2];
+            var repair = $("<div/>").text($("#vul-repair-" + cur_id).text()).html();
+            $("#view-title").html("Vul Details.");
+            var content = "<b>Repair: </b>" + repair + "<br />";
+            $("#view-body").html(content);
+        });
     });
 });
 
