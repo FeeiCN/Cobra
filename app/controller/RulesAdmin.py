@@ -384,5 +384,52 @@ def del_whitelist():
 
 # edit the special white list
 @web.route(ADMIN_URL + '/edit_whitelist/<int:whitelist_id>', methods=['GET', 'POST'])
-def edit_whitelist():
-    pass
+def edit_whitelist(whitelist_id):
+    if request.method == 'POST':
+        whitelist_id = request.form.get('whitelist_id')
+        project_id = request.form.get('project')
+        rule_id = request.form.get('rule')
+        path = request.form.get('path')
+        reason = request.form.get('reason')
+        status = request.form.get('status')
+
+        if not whitelist_id or whitelist_id == "":
+            return jsonify(tag='danger', msg='wrong whitelist')
+        if not project_id or project_id == "":
+            return jsonify(tag='danger', msg='project can not be empty')
+        if not rule_id or rule_id == "":
+            return jsonify(tag='danger', msg='rule can not be empty')
+        if not path or path == "":
+            return jsonify(tag='danger', msg='path can not be empty')
+        if not reason or reason == "":
+            return jsonify(tag='danger', msg='reason can not be empty')
+        if not status or status == "":
+            return jsonify(tag='danger', msg='status can not be empty')
+
+        whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
+        if not whitelist:
+            return jsonify(tag='danger', msg='wrong whitelist')
+
+        whitelist.project_id = project_id
+        whitelist.rule_id = rule_id
+        whitelist.path = path
+        whitelist.reason = reason
+        whitelist.status = status
+
+        try:
+            db.session.add(whitelist)
+            db.session.commit()
+            return jsonify(tag='success', msg='update success.')
+        except:
+            return jsonify(tag='danger', msg='unknown error.')
+    else:
+        rules = CobraRules.query.all()
+        projects = CobraProjects.query.all()
+        whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
+        data = {
+            'rules': rules,
+            'projects': projects,
+            'whitelist': whitelist,
+        }
+
+        return render_template('rulesadmin/edit_whitelist.html', data=data)

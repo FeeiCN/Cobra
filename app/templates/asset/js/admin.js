@@ -352,7 +352,6 @@ $("#show_all_projects").click(function () {
 
 // show all white lists click
 $("#show_all_whitelists").click(function () {
-    console.log('show all white list');
     $.get('whitelists', function (data) {
         $("#main-div").html(data);
 
@@ -360,13 +359,37 @@ $("#show_all_whitelists").click(function () {
         $("[id^=edit-whitelist]").click(function () {
             var cur_id = $(this).attr('id').split('-')[2];
             console.log("edit the " + cur_id);
+
+            $.get('edit_whitelist/'+cur_id, function (data) {
+                $("#main-div").html(data);
+
+                $("#edit-whitelist-button").click(function () {
+                    var project = $("#project").val();
+                    var rule = $("#rule").val();
+                    var path = $("#path").val();
+                    var reason = $("#reason").val();
+                    var status = $("#status:checked").val();
+
+                    data = {
+                        'whitelist_id': cur_id,
+                        'project': project,
+                        'rule': rule,
+                        'path': path,
+                        'reason': reason,
+                        'status': status
+                    };
+
+                    $.post("edit_whitelist/"+cur_id, data, function (result) {
+                        showAlert(result.tag, result.msg, '#edit-whitelist-result');
+                    });
+                });
+            });
         });
 
 
         // delete the special white list
         $("[id^=del-whitelist]").click(function () {
             var cur_id = $(this).attr('id').split('-')[2];
-            console.log("delete the " + cur_id);
             $.post('del_whitelist', {'whitelist_id': cur_id}, function (data) {
                 showAlert(data.tag, data.msg, "#operate_result");
                 $("#show_all_whitelists").click();
