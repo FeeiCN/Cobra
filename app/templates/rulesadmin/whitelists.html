@@ -12,11 +12,11 @@
     </thead>
     <tbody id="main-table">
     {% for whitelist in data.whitelists %}
-        <tr>
+        <tr {% if whitelist.status == 1 %}class="success"{% else %}class="danger"{% endif %}>
             <td>{{ whitelist.id }}</td>
             <td>{{ whitelist.project_id }}</td>
             <td>{{ whitelist.rule_id }}</td>
-            <td>{{ whitelist.file }}</td>
+            <td>{{ whitelist.path }}</td>
             <td>{{ whitelist.reason }}</td>
             <td>{{ whitelist.updated_at }}</td>
             <td>

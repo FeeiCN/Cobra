@@ -282,37 +282,28 @@ def edit_project(project_id):
         # get data from request
         project_id = request.form.get('project_id')
         name = request.form.get('name')
-        repo_type = request.form.get('repo_type')
         repository = request.form.get('repository')
-        branch = request.form.get('branch')
-        username = request.form.get('username')
-        password = request.form.get('password')
+        author = request.form.get('author')
+        remark = request.form.get('remark')
 
         # check data
         if not project_id or project_id == "":
             return jsonify(tag='danger', msg='wrong project id.')
         if not name or name == "":
             return jsonify(tag='danger', msg='name cannot be empty')
-        if not repo_type or repo_type == "":
-            return jsonify(tag='danger', msg='repo type cannot be empty')
         if not repository or repository == "":
             return jsonify(tag='danger', msg='repository can not be empty')
-        if not branch or branch == "":
-            return jsonify(tag='danger', msg="branch can not be empty")
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        repo_type = 1 if repo_type == "git" else 2
         project = CobraProjects.query.filter_by(id=project_id).first()
         if not project:
             return jsonify(tag='danger', msg='wrong project id.')
 
         # update project data
         project.name = name
-        project.repo_type = 1 if repo_type == 'git' else 2
+        project.author = author
+        project.remark = remark
         project.repository = repository
-        project.branch = branch
-        project.username = username if username and username != "" else None
-        project.password = password if password and password != "" else None
         project.updated_at = current_time
         try:
             db.session.add(project)
@@ -343,22 +334,22 @@ def add_whitelist():
     if request.method == 'POST':
         project_id = request.form.get('project_id')
         rule_id = request.form.get('rule_id')
-        file = request.form.get('file')
+        path = request.form.get('path')
         reason = request.form.get('reason')
 
         if not project_id or project_id == "":
             return jsonify(tag='danger', msg='project id error.')
         if not rule_id or rule_id == "":
             return jsonify(tag='danger', msg='rule id error.')
-        if not file or file == "":
+        if not path or path == "":
             return jsonify(tag='danger', msg='file error.')
         if not reason or reason == "":
             return jsonify(tag='danger', msg='reason error.')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        if file[0] != '/':
-            file = '/' + file
-        whitelist = CobraWhiteList(project_id, rule_id, file, reason, 1, current_time, current_time)
+        if path[0] != '/':
+            path = '/' + path
+        whitelist = CobraWhiteList(project_id, rule_id, path, reason, 1, current_time, current_time)
         try:
             db.session.add(whitelist)
             db.session.commit()
@@ -393,5 +384,52 @@ def del_whitelist():
 
 # edit the special white list
 @web.route(ADMIN_URL + '/edit_whitelist/<int:whitelist_id>', methods=['GET', 'POST'])
-def edit_whitelist():
-    pass
+def edit_whitelist(whitelist_id):
+    if request.method == 'POST':
+        whitelist_id = request.form.get('whitelist_id')
+        project_id = request.form.get('project')
+        rule_id = request.form.get('rule')
+        path = request.form.get('path')
+        reason = request.form.get('reason')
+        status = request.form.get('status')
+
+        if not whitelist_id or whitelist_id == "":
+            return jsonify(tag='danger', msg='wrong whitelist')
+        if not project_id or project_id == "":
+            return jsonify(tag='danger', msg='project can not be empty')
+        if not rule_id or rule_id == "":
+            return jsonify(tag='danger', msg='rule can not be empty')
+        if not path or path == "":
+            return jsonify(tag='danger', msg='path can not be empty')
+        if not reason or reason == "":
+            return jsonify(tag='danger', msg='reason can not be empty')
+        if not status or status == "":
+            return jsonify(tag='danger', msg='status can not be empty')
+
+        whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
+        if not whitelist:
+            return jsonify(tag='danger', msg='wrong whitelist')
+
+        whitelist.project_id = project_id
+        whitelist.rule_id = rule_id
+        whitelist.path = path
+        whitelist.reason = reason
+        whitelist.status = status
+
+        try:
+            db.session.add(whitelist)
+            db.session.commit()
+            return jsonify(tag='success', msg='update success.')
+        except:
+            return jsonify(tag='danger', msg='unknown error.')
+    else:
+        rules = CobraRules.query.all()
+        projects = CobraProjects.query.all()
+        whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
+        data = {
+            'rules': rules,
+            'projects': projects,
+            'whitelist': whitelist,
+        }
+
+        return render_template('rulesadmin/edit_whitelist.html', data=data)

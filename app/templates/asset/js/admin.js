@@ -289,63 +289,38 @@ $("#show_all_projects").click(function () {
 
                 $("#edit-project-button").click(function () {
                     var name = $("#name").val();
-                    var repo_type = $("input[name=repo_type]:checked").val();
                     var repository = $("#repository").val();
-                    var branch = $("#branch").val();
-                    var username = $("#username").val();
-                    var password = $("#password").val();
+                    var author = $("#author").val();
+                    var remark = $("#remark").val();
 
                     if (!name || name == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>name cannot be empty!</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
-                        return false;
-                    }
-
-                    if (!repo_type || repo_type == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>repo type error.</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                        showAlert('danger', 'name can not be empty!', 'edit-project-result');
                         return false;
                     }
 
                     if (!repository || repository == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>repository cannot be empty!</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                        showAlert('danger', 'repository can not be empty!', '#edit-project-result');
+                        return false;
+                    }
+                    if (!remark || remark == "") {
+                        showAlert('danger', 'remark can not be empty!', '#edit-project-result');
                         return false;
                     }
 
-                    if (!branch || branch == "") {
-                        var tres = '<div class="alert alert-danger alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>branch cannot be empty!</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                    if (!author || author == "") {
+                        showAlert('danger', 'author cannot be empty!', '#edit-project-result');
                         return false;
                     }
 
                     data = {
                         'project_id': cur_project_id,
                         'name': name,
-                        'repo_type': repo_type,
                         'repository' : repository,
-                        'branch' : branch,
-                        'username': username,
-                        'password': password
+                        'author': author,
+                        'remark': remark
                     };
                     $.post('edit_project/'+cur_project_id, data, function (res) {
-                        var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                        tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        tres += '<span aria-hidden="true">&times;</span></button>';
-                        tres += '<strong>' + res.msg + '</strong></div>';
-                        $("#edit-project-result").html(tres).fadeIn(1000);
+                        showAlert(res.tag, res.msg, '#edit-project-result');
                     });
                 });
             });
@@ -377,7 +352,6 @@ $("#show_all_projects").click(function () {
 
 // show all white lists click
 $("#show_all_whitelists").click(function () {
-    console.log('show all white list');
     $.get('whitelists', function (data) {
         $("#main-div").html(data);
 
@@ -385,13 +359,37 @@ $("#show_all_whitelists").click(function () {
         $("[id^=edit-whitelist]").click(function () {
             var cur_id = $(this).attr('id').split('-')[2];
             console.log("edit the " + cur_id);
+
+            $.get('edit_whitelist/'+cur_id, function (data) {
+                $("#main-div").html(data);
+
+                $("#edit-whitelist-button").click(function () {
+                    var project = $("#project").val();
+                    var rule = $("#rule").val();
+                    var path = $("#path").val();
+                    var reason = $("#reason").val();
+                    var status = $("#status:checked").val();
+
+                    data = {
+                        'whitelist_id': cur_id,
+                        'project': project,
+                        'rule': rule,
+                        'path': path,
+                        'reason': reason,
+                        'status': status
+                    };
+
+                    $.post("edit_whitelist/"+cur_id, data, function (result) {
+                        showAlert(result.tag, result.msg, '#edit-whitelist-result');
+                    });
+                });
+            });
         });
 
 
         // delete the special white list
         $("[id^=del-whitelist]").click(function () {
             var cur_id = $(this).attr('id').split('-')[2];
-            console.log("delete the " + cur_id);
             $.post('del_whitelist', {'whitelist_id': cur_id}, function (data) {
                 showAlert(data.tag, data.msg, "#operate_result");
                 $("#show_all_whitelists").click();
@@ -410,7 +408,7 @@ $("#add_new_whitelist").click(function () {
         $("#add-new-whitelist-button").click(function () {
             var project_id = $("#project").val();
             var rule_id = $("#rule").val();
-            var file = $("#file").val();
+            var path = $("#path").val();
             var reason = $("#reason").val();
 
             if (!project_id || project_id == "") {
@@ -423,7 +421,7 @@ $("#add_new_whitelist").click(function () {
                 return false;
             }
 
-            if (!file || file == "") {
+            if (!path || path == "") {
                 showAlert('danger', 'file cannot be empty.');
                 return false;
             }
@@ -436,7 +434,7 @@ $("#add_new_whitelist").click(function () {
             data = {
                 'project_id': project_id,
                 'rule_id': rule_id,
-                'file': file,
+                'path': path,
                 'reason': reason
             };
 
