@@ -184,22 +184,24 @@ def edit_rule(rule_id):
 @web.route(ADMIN_URL + '/add_new_vul', methods=['GET', 'POST'])
 def add_new_vul():
     if request.method == 'POST':
-        name = request.form['name']
-        description = request.form['description']
+        name = request.form.get('name')
+        description = request.form.get('description')
+        repair = request.form.get('repair')
         if not name or name == "":
-            return jsonify(tag='danger', msg='name is empty')
+            return jsonify(tag='danger', msg='name can not be blank.')
         if not description or description == "":
-            return jsonify(tag='danger', msg='description is empty')
+            return jsonify(tag='danger', msg='description can not be blank.')
+        if not repair or repair == "":
+            return jsonify(tag='danger', msg='repair can not be blank.')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        vul = CobraVuls(name, description, current_time, current_time)
+        vul = CobraVuls(name, description, repair, current_time, current_time)
         try:
             db.session.add(vul)
             db.session.commit()
             return jsonify(tag='success', msg='Add Success.')
         except:
             return jsonify(tag='danger', msg='Add failed. Please try again later.')
-
     else:
         return render_template('rulesadmin/add_new_vul.html')
 

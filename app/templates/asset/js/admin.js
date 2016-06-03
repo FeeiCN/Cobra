@@ -246,33 +246,27 @@ $("#add_new_vuls").click(function () {
         $("#add-new-vul-button").click(function () {
             var name = $("#name").val();
             var description = $("#description").val();
-            var result = '';
+            var repair = $("#repair").val();
+
             if (name == "" || !name) {
-                result += '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>name is empty!</strong></div>';
-                $("#add-new-vul-result").html(result).fadeIn(1000);
+                showAlert('danger', 'name can not be blank.', '#add-new-vul-result');
                 return false;
             }
             if (description == "" || !description) {
-                result += '<div class="alert alert-danger alert-dismissible" role="alert">';
-                result += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                result += '<span aria-hidden="true">&times;</span></button>';
-                result += '<strong>description is empty!</strong></div>';
-                $("#add-new-vul-result").html(result).fadeIn(1000);
+                showAlert('danger', 'description can not be blank.', '#add-new-vul-result');
+                return false;
+            }
+            if (repair == "" || !description) {
+                showAlert('danger', 'description can not be blank.', '#add-new-vul-result');
                 return false;
             }
             var data = {
                 'name': name,
-                'description': description
+                'description': description,
+                'repair': repair
             };
             $.post('add_new_vul', data, function (res) {
-                var tres = '<div class="alert alert-' + res.tag + ' alert-dismissible" role="alert">';
-                tres += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                tres += '<span aria-hidden="true">&times;</span></button>';
-                tres += '<strong>' + res.msg + '</strong></div>';
-                $("#add-new-vul-result").html(tres).fadeIn(1000);
+                showAlert(res.tag, res.msg, "#add-new-vul-result");
             });
         });
     });
