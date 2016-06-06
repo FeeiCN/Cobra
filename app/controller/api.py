@@ -122,8 +122,11 @@ def status_task():
         3: 'error'
     }
     status_text = status[c.status]
+    config = ConfigParser.ConfigParser()
+    config.read('config')
+    domain = config.get('app', 'domain')
     result = {
         'status': status_text,
-        'report': 'http://cobra.wufeifei.com/report/' + scan_id
+        'report': 'http://' + domain + '/report/' + scan_id
     }
     return jsonify(status=1001, result=result)
