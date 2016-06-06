@@ -76,6 +76,10 @@ $("#main-div").delegate("span", "click", function () {
     var cid = cur_id.split('-')[2];
     console.log("[delegate]"+$(this).attr('id'));
 
+    if (type === "edit") {
+        $("#paginate").html("");
+    }
+
     if (target === "rule") {
         if (type === 'edit') {
             $.get('edit_rule/' + cid, function (result) {
@@ -250,7 +254,37 @@ $("#main-div").delegate("span", "click", function () {
         }
 
     } else if (target === "whitelist") {
+        if (type === "del") {
+            $.post('del_whitelist', {'whitelist_id': cid}, function (data) {
+                showAlert(data.tag, data.msg, "#operate_result");
+                $("#show_all_whitelists").click();
+            });
+        } else if (type === "edit") {
+            $.get('edit_whitelist/'+cid, function (data) {
+                $("#main-div").html(data);
 
+                $("#edit-whitelist-button").click(function () {
+                    var project = $("#project").val();
+                    var rule = $("#rule").val();
+                    var path = $("#path").val();
+                    var reason = $("#reason").val();
+                    var status = $("#status:checked").val();
+
+                    data = {
+                        'whitelist_id': cid,
+                        'project': project,
+                        'rule': rule,
+                        'path': path,
+                        'reason': reason,
+                        'status': status
+                    };
+
+                    $.post("edit_whitelist/"+cid, data, function (result) {
+                        showAlert(result.tag, result.msg, '#edit-whitelist-result');
+                    });
+                });
+            });
+        }
     }
 });
 
@@ -479,55 +513,62 @@ $("#show_all_projects").click(function () {
     make_projects_pagination(1);
 });
 
+function make_whitelists_pagination(cp) {
+    // make pagination
+    // get all rules count first
+    var projects_count = 0;
+    var promise = $.ajax('all_whitelists_count');
+    promise.always(function (data) {
+        var whitelists_count = data;
+        var per_page_count = 10;
+        var total_pages = Math.ceil(whitelists_count / per_page_count);
+        var current_page = cp;
+
+        var pp = "<ul class='pagination'>";
+        pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
+            "onclick='prevWhitelsits(" + current_page + ")'>Prev</a></li>";
+        pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
+        pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
+            "onclick='nextWhitelists(" + current_page + "," + total_pages + ")'>Next</a></li>";
+        pp += "</ul>";
+
+        $("#paginate").html(pp);
+
+        if (current_page == 1) {
+            $("#prev").addClass('disabled')
+        }
+        if (current_page == total_pages) {
+            $("#next").addClass('disabled')
+        }
+
+    });
+}
+
+function prevWhitelsits(cp) {
+    if (cp <= 1) {
+        $("#main-div").load('whitelists/1');
+    } else {
+        $("#main-div").load('whitelists/' + (cp-1));
+    }
+    make_whitelists_pagination(cp-1);
+}
+
+function nextWhitelists(cp, tp) {
+    if (cp >= tp) {
+        $("#main-div").load('whitelists/1');
+    } else {
+        $("#main-div").load('whitelists/' + (cp+1));
+    }
+    make_whitelists_pagination(cp+1);
+}
 
 // show all white lists click
 $("#show_all_whitelists").click(function () {
-    $.get('whitelists', function (data) {
+    $.get('whitelists/1', function (data) {
         $("#main-div").html(data);
-
-        // edit the special white list
-        $("[id^=edit-whitelist]").click(function () {
-            var cur_id = $(this).attr('id').split('-')[2];
-            console.log("edit the " + cur_id);
-
-            $.get('edit_whitelist/'+cur_id, function (data) {
-                $("#main-div").html(data);
-
-                $("#edit-whitelist-button").click(function () {
-                    var project = $("#project").val();
-                    var rule = $("#rule").val();
-                    var path = $("#path").val();
-                    var reason = $("#reason").val();
-                    var status = $("#status:checked").val();
-
-                    data = {
-                        'whitelist_id': cur_id,
-                        'project': project,
-                        'rule': rule,
-                        'path': path,
-                        'reason': reason,
-                        'status': status
-                    };
-
-                    $.post("edit_whitelist/"+cur_id, data, function (result) {
-                        showAlert(result.tag, result.msg, '#edit-whitelist-result');
-                    });
-                });
-            });
-        });
-
-
-        // delete the special white list
-        $("[id^=del-whitelist]").click(function () {
-            var cur_id = $(this).attr('id').split('-')[2];
-            $.post('del_whitelist', {'whitelist_id': cur_id}, function (data) {
-                showAlert(data.tag, data.msg, "#operate_result");
-                $("#show_all_whitelists").click();
-            });
-        });
-
-
     });
+
+    make_whitelists_pagination(1);
 });
 
 // add new white list click

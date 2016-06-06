@@ -287,6 +287,13 @@ def all_projects_count():
     return str(projects_count)
 
 
+# api: get all whitelists count
+@web.route(ADMIN_URL + '/all_whitelists_count', methods=['GET'])
+def all_whitelists_count():
+    whitelists_count = CobraWhiteList.query.count()
+    return str(whitelists_count)
+
+
 # show all projects
 @web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
 def projects(page):
@@ -360,9 +367,10 @@ def edit_project(project_id):
 
 
 # show all white lists
-@web.route(ADMIN_URL + '/whitelists', methods=['GET'])
-def whitelists():
-    whitelists = CobraWhiteList.query.all()
+@web.route(ADMIN_URL + '/whitelists/<int:page>', methods=['GET'])
+def whitelists(page):
+    per_page = 10
+    whitelists = CobraWhiteList.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
     data = {
         'whitelists': whitelists,
     }
