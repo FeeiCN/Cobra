@@ -4,6 +4,12 @@
 
 
 $("#main-div").fadeIn(1000);
+
+$("[id^=add_new_]").click(function () {
+    $("#paginate").html("");
+});
+
+
 function showAlert(tag, msg, div) {
     var tt = '<div class="alert alert-' + tag +' alert-dismissible" role="alert">';
     tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
@@ -66,7 +72,6 @@ $("#show_all_rules").click(function () {
 
     // delegate here
     $("#main-div").delegate("span", "click", function () {
-        console.log($(this).attr('id'));
         var cur_id = $(this).attr('id');
         var type = cur_id.split('-')[0];
         var cid = cur_id.split('-')[2];
@@ -216,34 +221,67 @@ $("#add_new_rules").click(function () {
     });
 });
 
+function make_vuls_pagination(cp) {
+    // make pagination
+    // get all rules count first
+    var vuls_count = 0;
+    var promise = $.ajax('all_vuls_count');
+    promise.always(function (data) {
+        vuls_count = data;
+        var per_page_count = 10;
+        var total_pages = Math.ceil(vuls_count / per_page_count);
+        var current_page = cp;
+
+        var pp = "<ul class='pagination'>";
+        pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
+            "onclick='prevVuls(" + current_page + ")'>Prev</a></li>";
+        pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
+        pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
+            "onclick='nextVuls(" + current_page + "," + total_pages + ")'>Next</a></li>";
+        pp += "</ul>";
+
+        $("#paginate").html(pp);
+
+        if (current_page == 1) {
+            $("#prev").addClass('disabled')
+        }
+        if (current_page == total_pages) {
+            $("#next").addClass('disabled')
+        }
+
+    });
+}
+
+function prevVuls(cp) {
+    if (cp <= 1) {
+        $("#main-div").load('vuls/1');
+    } else {
+        $("#main-div").load('vuls/' + (cp-1));
+    }
+    make_vuls_pagination(cp-1);
+}
+
+function nextVuls(cp, tp) {
+    if (cp >= tp) {
+        $("#main-div").load('vuls/1');
+    } else {
+        $("#main-div").load('vuls/' + (cp+1));
+    }
+    make_vuls_pagination(cp+1);
+}
+
 // show all vuls
 $("#show_all_vuls").click(function () {
-    $.get('vuls', function (data) {
-        $("#main-div").html(data);
 
-        // delete the special vul
-        $("[id^=del-vul]").click(function () {
-            var current_id = $(this).attr('id');
-            var vul_id = current_id.split('-')[2];
+    // delegate here
+    $("#main-div").delegate("span", "click", function () {
+        var cur_id = $(this).attr('id');
+        var type = cur_id.split('-')[0];
+        var cid = cur_id.split('-')[2];
 
-            $.post('del_vul', {'vul_id':vul_id}, function (result) {
-                var tt = '<div class="alert alert-' + result.tag +' alert-dismissible" role="alert">';
-                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                tt += '<span aria-hidden="true">&times;</span></button>';
-                tt += '<strong>' + result.msg + '</strong></div>';
-                $("#operate_result").html(tt).fadeIn(1000);
-                $("#show_all_vuls").click();
-            });
-        });
-
-        // edit the special vul
-        $("[id^=edit-vul]").click(function () {
-            var current_id = $(this).attr('id');
-            var vul_id = current_id.split('-')[2];
-
-            $.get('edit_vul/'+vul_id, function (data) {
+        if (type === "edit") {
+            $.get('edit_vul/'+ cid, function (data) {
                 $("#main-div").html(data);
-
                 $("#edit-vul-button").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
@@ -263,27 +301,37 @@ $("#show_all_vuls").click(function () {
                     }
 
                     data = {
-                        'vul_id': vul_id,
+                        'vul_id': cid,
                         'name': name,
                         'description': description,
                         'repair': repair
                     };
-                    $.post('edit_vul/' + vul_id, data, function (res) {
+                    $.post('edit_vul/' + cid, data, function (res) {
                         showAlert(res.tag, res.msg, '#edit-vul-result');
                     });
                 });
-            });
-        });
 
-        // view the special vul
-        $("[id^=view-vul]").click(function () {
-            var cur_id = $(this).attr('id').split('-')[2];
-            var repair = $("<div/>").text($("#vul-repair-" + cur_id).text()).html();
+            });
+
+        } else if (type === "view") {
+            var repair = $("<div/>").text($("#vul-repair-" + cid).text()).html();
             $("#view-title").html("Vul Details.");
             var content = "<b>Repair: </b>" + repair + "<br />";
             $("#view-body").html(content);
-        });
+
+        } else if (type === "del") {
+            $.post('del_vul', {'vul_id':cid}, function (result) {
+                showAlert(result.tag, result.msg, "#operate_result");
+                $("#show_all_vuls").click();
+            });
+        }
     });
+
+    $.get('vuls/1', function (data) {
+        $("#main-div").html(data);
+    });
+
+    make_vuls_pagination(1);
 });
 
 // Add new vuls.

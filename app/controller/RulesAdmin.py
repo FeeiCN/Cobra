@@ -207,9 +207,10 @@ def add_new_vul():
 
 
 # show all vuls click
-@web.route(ADMIN_URL + '/vuls', methods=['GET'])
-def vuls():
-    all_vuls = CobraVuls.query.all()
+@web.route(ADMIN_URL + '/vuls/<int:page>', methods=['GET'])
+def vuls(page):
+    per_page_vuls = 10
+    all_vuls = CobraVuls.query.order_by('id').limit(per_page_vuls).offset((page-1)*per_page_vuls).all()
     data = {
         'vuls': all_vuls
     }
@@ -270,6 +271,13 @@ def edit_vul(vul_id):
 def all_rules_count():
     rules_count = CobraRules.query.count()
     return str(rules_count)
+
+
+# api: get all vuls count
+@web.route(ADMIN_URL + '/all_vuls_count', methods=['GET'])
+def all_vuls_count():
+    vuls_count = CobraVuls.query.count()
+    return str(vuls_count)
 
 
 # show all projects
