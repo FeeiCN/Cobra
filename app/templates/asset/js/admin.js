@@ -73,7 +73,6 @@ $("#main-div").delegate("span", "click", function () {
     var type = cur_id.split('-')[0];
     var target = cur_id.split('-')[1];
     var cid = cur_id.split('-')[2];
-    console.log("[delegate]"+$(this).attr('id'));
 
     if (type === "edit") {
         $("#paginate").html("");
