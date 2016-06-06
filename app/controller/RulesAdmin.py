@@ -280,10 +280,18 @@ def all_vuls_count():
     return str(vuls_count)
 
 
+# api: get all projects count
+@web.route(ADMIN_URL + '/all_projects_count', methods=['GET'])
+def all_projects_count():
+    projects_count = CobraProjects.query.count()
+    return str(projects_count)
+
+
 # show all projects
-@web.route(ADMIN_URL + '/projects', methods=['GET'])
-def projects():
-    project = CobraProjects.query.all()
+@web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
+def projects(page):
+    per_page = 10
+    project = CobraProjects.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
     data = {
         'projects': project,
     }
