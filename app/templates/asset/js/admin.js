@@ -72,9 +72,10 @@ function next(cp, tp, t) {
 }
 
 // delegate search bar
-$("#search_rules_bar").delegate("button", "click", function () {
+$("#search_rules_bar").delegate("button", "click", function (event) {
 
     $("#paginate").html("");
+    event.preventDefault();
 
     var language = $("#language").val();
     var vul = $("#vul").val();
