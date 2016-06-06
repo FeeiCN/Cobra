@@ -1,0 +1,34 @@
+<form class="form-inline">
+
+    <div class="form-group col-md-5">
+        <label for="language">Language</label>
+        <select id="language" class="form-control" style="width: 60%">
+            <option value="all" selected>
+                All
+            </option>
+            {% for language in data.languages %}
+                <option value="{{ language.id }}">
+                    {{ language.language }} ({{ language.extensions }})
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group col-md-5">
+        <label for="vul">Vuls</label>
+        <select id="vul" class="form-control" style="width: 80%;">
+            <option value="all" selected>
+                All
+            </option>
+            {% for vul in data.vuls %}
+                <option value="{{ vul.id }}">
+                    {{ vul.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group col-md-2">
+        <button class="btn btn-primary" id="search_rules_button">Search</button>
+    </div>
+</form>
+<br />
+<hr />

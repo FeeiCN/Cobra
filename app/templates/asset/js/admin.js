@@ -7,6 +7,10 @@ $("#main-div").fadeIn(1000);
 
 $("[id^=add_new_]").click(function () {
     $("#paginate").html("");
+    $("#search_rules_bar").html("");
+});
+$("[id^=show_all_]").click(function () {
+    $("#search_rules_bar").html("")
 });
 
 
@@ -67,7 +71,24 @@ function next(cp, tp, t) {
     make_pagination(cp+1, t);
 }
 
-// delegate here
+// delegate search bar
+$("#search_rules_bar").delegate("button", "click", function () {
+
+    var language = $("#language").val();
+    var vul = $("#vul").val();
+
+    data = {
+        'language': language,
+        'vul': vul
+    };
+
+    $.post('search_rules', data, function (data) {
+        $("#main-div").html(data);
+    });
+
+});
+
+// delegate main-div
 $("#main-div").delegate("span", "click", function () {
     var cur_id = $(this).attr('id');
     var type = cur_id.split('-')[0];
@@ -76,6 +97,7 @@ $("#main-div").delegate("span", "click", function () {
 
     if (type === "edit") {
         $("#paginate").html("");
+        $("#search_rules_bar").html("");
     }
 
     if (target === "rule") {
@@ -294,6 +316,10 @@ $("#show_all_rules").click(function () {
     });
 
     make_pagination(1, 'rules');
+
+    // show search bar
+    $("#search_rules_bar").load('search_rules_bar');
+
 });
 
 // add new rules

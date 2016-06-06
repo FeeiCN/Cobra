@@ -482,3 +482,64 @@ def edit_whitelist(whitelist_id):
         }
 
         return render_template('rulesadmin/edit_whitelist.html', data=data)
+
+
+# search_rules_bar
+@web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
+def search_rules_bar():
+    languages = CobraLanguages.query.all()
+    vuls = CobraVuls.query.all()
+
+    data = {
+        'languages': languages,
+        'vuls': vuls,
+    }
+
+    return render_template('rulesadmin/search_rules_bar.html', data=data)
+
+
+# search rules
+@web.route(ADMIN_URL + '/search_rules', methods=['POST'])
+def search_rules():
+    if request.method == 'POST':
+        language = request.form.get('language')
+        vul = request.form.get('vul')
+
+        rules = None
+
+        if language == 'all' and vul == 'all':
+            rules = CobraRules.query.all()
+        elif language == 'all' and vul != 'all':
+            rules = CobraRules.query.filter_by(vul_id=vul).all()
+        elif language != 'all' and vul == 'all':
+            rules = CobraRules.query.filter_by(language=language).all()
+        elif language == 'all' and vul == 'all':
+            rules = CobraRules.query.filter_by(language=language, vul_id=vul).all()
+        else:
+            return 'error!'
+
+        cobra_vuls = CobraVuls.query.all()
+        cobra_lang = CobraLanguages.query.all()
+        all_vuls = {}
+        all_language = {}
+        for vul in cobra_vuls:
+            all_vuls[vul.id] = vul.name
+        for lang in cobra_lang:
+            all_language[lang.id] = lang.language
+
+        # replace id with real name
+        for rule in rules:
+            try:
+                rule.vul_id = all_vuls[rule.vul_id]
+            except KeyError:
+                rule.vul_id = 'Unknown Type'
+            try:
+                rule.language = all_language[rule.language]
+            except KeyError:
+                rule.language = 'Unknown Language'
+
+        data = {
+            'rules': rules,
+        }
+
+        return render_template('rulesadmin/rules.html', data=data)
