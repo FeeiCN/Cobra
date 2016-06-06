@@ -18,23 +18,23 @@ function showAlert(tag, msg, div) {
     $(div).html(tt).fadeIn(1000);
 }
 
-function make_rules_pagination(cp) {
+function make_pagination(cp, t) {
     // make pagination
     // get all rules count first
-    var rules_count = 0;
-    var promise = $.ajax('all_rules_count');
+    var all_count = 0;
+    var promise = $.ajax('all_' + t + '_count');
     promise.always(function (data) {
-        rules_count = data;
+        all_count = data;
         var per_page_count = 10;
-        var total_pages = Math.ceil(rules_count / per_page_count);
+        var total_pages = Math.ceil(all_count / per_page_count);
         var current_page = cp;
 
         var pp = "<ul class='pagination'>";
         pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
-            "onclick='prevRules(" + current_page + ")'>Prev</a></li>";
+            "onclick=prev(" + current_page + ",\"" + t + "\")>Prev</a></li>";
         pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
         pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
-            "onclick='nextRules(" + current_page + "," + total_pages + ")'>Next</a></li>";
+            "onclick=next(" + current_page + "," + total_pages + ",\"" + t + "\")>Next</a></li>";
         pp += "</ul>";
 
         $("#paginate").html(pp);
@@ -49,24 +49,23 @@ function make_rules_pagination(cp) {
     });
 }
 
-function prevRules(cp) {
+function prev(cp, t) {
     if (cp <= 1) {
-        $("#main-div").load('rules/1');
+        $("#main-div").load(t + '/1');
     } else {
-        $("#main-div").load('rules/' + (cp-1));
+        $("#main-div").load(t + '/' + (cp-1));
     }
-    make_rules_pagination(cp-1);
+    make_pagination(cp-1, t);
 }
 
-function nextRules(cp, tp) {
+function next(cp, tp, t) {
     if (cp >= tp) {
-        $("#main-div").load('rules/1');
+        $("#main-div").load(t + '/1');
     } else {
-        $("#main-div").load('rules/' + (cp+1));
+        $("#main-div").load(t + '/' + (cp+1));
     }
-    make_rules_pagination(cp+1);
+    make_pagination(cp+1, t);
 }
-
 
 // delegate here
 $("#main-div").delegate("span", "click", function () {
@@ -295,8 +294,7 @@ $("#show_all_rules").click(function () {
         $("#main-div").html(data);
     });
 
-    make_rules_pagination(1);
-
+    make_pagination(1, 'rules');
 });
 
 // add new rules
@@ -354,55 +352,6 @@ $("#add_new_rules").click(function () {
     });
 });
 
-function make_vuls_pagination(cp) {
-    // make pagination
-    // get all rules count first
-    var vuls_count = 0;
-    var promise = $.ajax('all_vuls_count');
-    promise.always(function (data) {
-        vuls_count = data;
-        var per_page_count = 10;
-        var total_pages = Math.ceil(vuls_count / per_page_count);
-        var current_page = cp;
-
-        var pp = "<ul class='pagination'>";
-        pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
-            "onclick='prevVuls(" + current_page + ")'>Prev</a></li>";
-        pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
-        pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
-            "onclick='nextVuls(" + current_page + "," + total_pages + ")'>Next</a></li>";
-        pp += "</ul>";
-
-        $("#paginate").html(pp);
-
-        if (current_page == 1) {
-            $("#prev").addClass('disabled')
-        }
-        if (current_page == total_pages) {
-            $("#next").addClass('disabled')
-        }
-
-    });
-}
-
-function prevVuls(cp) {
-    if (cp <= 1) {
-        $("#main-div").load('vuls/1');
-    } else {
-        $("#main-div").load('vuls/' + (cp-1));
-    }
-    make_vuls_pagination(cp-1);
-}
-
-function nextVuls(cp, tp) {
-    if (cp >= tp) {
-        $("#main-div").load('vuls/1');
-    } else {
-        $("#main-div").load('vuls/' + (cp+1));
-    }
-    make_vuls_pagination(cp+1);
-}
-
 // show all vuls
 $("#show_all_vuls").click(function () {
 
@@ -410,7 +359,7 @@ $("#show_all_vuls").click(function () {
         $("#main-div").html(data);
     });
 
-    make_vuls_pagination(1);
+    make_pagination(1, 'vuls');
 });
 
 // Add new vuls.
@@ -454,55 +403,6 @@ $("#add_new_vuls").click(function () {
     });
 });
 
-function make_projects_pagination(cp) {
-    // make pagination
-    // get all rules count first
-    var projects_count = 0;
-    var promise = $.ajax('all_projects_count');
-    promise.always(function (data) {
-        projects_count = data;
-        var per_page_count = 10;
-        var total_pages = Math.ceil(projects_count / per_page_count);
-        var current_page = cp;
-
-        var pp = "<ul class='pagination'>";
-        pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
-            "onclick='prevProjects(" + current_page + ")'>Prev</a></li>";
-        pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
-        pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
-            "onclick='nextProjects(" + current_page + "," + total_pages + ")'>Next</a></li>";
-        pp += "</ul>";
-
-        $("#paginate").html(pp);
-
-        if (current_page == 1) {
-            $("#prev").addClass('disabled')
-        }
-        if (current_page == total_pages) {
-            $("#next").addClass('disabled')
-        }
-
-    });
-}
-
-function prevProjects(cp) {
-    if (cp <= 1) {
-        $("#main-div").load('projects/1');
-    } else {
-        $("#main-div").load('projects/' + (cp-1));
-    }
-    make_projects_pagination(cp-1);
-}
-
-function nextProjects(cp, tp) {
-    if (cp >= tp) {
-        $("#main-div").load('projects/1');
-    } else {
-        $("#main-div").load('projects/' + (cp+1));
-    }
-    make_projects_pagination(cp+1);
-}
-
 // show all projects click
 $("#show_all_projects").click(function () {
 
@@ -510,57 +410,8 @@ $("#show_all_projects").click(function () {
         $("#main-div").html(data);
     });
 
-    make_projects_pagination(1);
+    make_pagination(1, 'projects');
 });
-
-function make_whitelists_pagination(cp) {
-    // make pagination
-    // get all rules count first
-    var projects_count = 0;
-    var promise = $.ajax('all_whitelists_count');
-    promise.always(function (data) {
-        var whitelists_count = data;
-        var per_page_count = 10;
-        var total_pages = Math.ceil(whitelists_count / per_page_count);
-        var current_page = cp;
-
-        var pp = "<ul class='pagination'>";
-        pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
-            "onclick='prevWhitelsits(" + current_page + ")'>Prev</a></li>";
-        pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
-        pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
-            "onclick='nextWhitelists(" + current_page + "," + total_pages + ")'>Next</a></li>";
-        pp += "</ul>";
-
-        $("#paginate").html(pp);
-
-        if (current_page == 1) {
-            $("#prev").addClass('disabled')
-        }
-        if (current_page == total_pages) {
-            $("#next").addClass('disabled')
-        }
-
-    });
-}
-
-function prevWhitelsits(cp) {
-    if (cp <= 1) {
-        $("#main-div").load('whitelists/1');
-    } else {
-        $("#main-div").load('whitelists/' + (cp-1));
-    }
-    make_whitelists_pagination(cp-1);
-}
-
-function nextWhitelists(cp, tp) {
-    if (cp >= tp) {
-        $("#main-div").load('whitelists/1');
-    } else {
-        $("#main-div").load('whitelists/' + (cp+1));
-    }
-    make_whitelists_pagination(cp+1);
-}
 
 // show all white lists click
 $("#show_all_whitelists").click(function () {
@@ -568,7 +419,7 @@ $("#show_all_whitelists").click(function () {
         $("#main-div").html(data);
     });
 
-    make_whitelists_pagination(1);
+    make_pagination(1, 'whitelists');
 });
 
 // add new white list click
