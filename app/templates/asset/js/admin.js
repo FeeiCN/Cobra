@@ -74,6 +74,8 @@ function next(cp, tp, t) {
 // delegate search bar
 $("#search_rules_bar").delegate("button", "click", function () {
 
+    $("#paginate").html("");
+
     var language = $("#language").val();
     var vul = $("#vul").val();
 

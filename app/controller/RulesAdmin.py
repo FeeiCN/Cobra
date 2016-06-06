@@ -513,7 +513,7 @@ def search_rules():
             rules = CobraRules.query.filter_by(vul_id=vul).all()
         elif language != 'all' and vul == 'all':
             rules = CobraRules.query.filter_by(language=language).all()
-        elif language == 'all' and vul == 'all':
+        elif language != 'all' and vul != 'all':
             rules = CobraRules.query.filter_by(language=language, vul_id=vul).all()
         else:
             return 'error!'
