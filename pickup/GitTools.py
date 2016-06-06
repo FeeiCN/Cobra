@@ -13,6 +13,7 @@
 #
 
 import os
+from subprocess import call
 import subprocess
 import ConfigParser
 from urllib import quote
@@ -142,6 +143,8 @@ class Git:
         :return: True - clone success, False - clone error.
         """
         log.info('start clone repo')
+        if os.path.isdir(self.repo_directory):
+            call(['rm', '-rf', self.repo_directory])
         if self.__check_exist():
             log.info('repo already exist. Stop clone.')
             return False
