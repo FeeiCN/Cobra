@@ -12,29 +12,77 @@ function showAlert(tag, msg, div) {
     $(div).html(tt).fadeIn(1000);
 }
 
+function make_rules_pagination(cp) {
+    // make pagination
+    // get all rules count first
+    var rules_count = 0;
+    var promise = $.ajax('all_rules_count');
+    promise.always(function (data) {
+        rules_count = data;
+        var per_page_count = 10;
+        var total_pages = Math.ceil(rules_count / per_page_count);
+        var current_page = cp;
+
+        var pp = "<ul class='pagination'>";
+        pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
+            "onclick='prevRules(" + current_page + ")'>Prev</a></li>";
+        pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
+        pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
+            "onclick='nextRules(" + current_page + "," + total_pages + ")'>Next</a></li>";
+        pp += "</ul>";
+
+        $("#paginate").html(pp);
+
+        if (current_page == 1) {
+            $("#prev").addClass('disabled')
+        }
+        if (current_page == total_pages) {
+            $("#next").addClass('disabled')
+        }
+
+    });
+}
+
+function prevRules(cp) {
+    if (cp <= 1) {
+        $("#main-div").load('rules/1');
+    } else {
+        $("#main-div").load('rules/' + (cp-1));
+    }
+    make_rules_pagination(cp-1);
+}
+
+function nextRules(cp, tp) {
+    if (cp >= tp) {
+        $("#main-div").load('rules/1');
+    } else {
+        $("#main-div").load('rules/' + (cp+1));
+    }
+    make_rules_pagination(cp+1);
+}
+
 // show all rules
 $("#show_all_rules").click(function () {
-    $.get('rules', function (data) {
-        $("#main-div").html(data);
 
-        // delete the special rule
-        $("[id^=del-rule]").click(function () {
-            var cur_id = $(this).attr('id').split('-')[2];
-            $.post('del_rule', {'rule_id':cur_id}, function (data) {
-                var tt = '<div class="alert alert-' + data.tag +' alert-dismissible" role="alert">';
-                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                tt += '<span aria-hidden="true">&times;</span></button>';
-                tt += '<strong>' + data.msg + '</strong></div>';
-                $("#operate_result").html(tt).fadeIn(1000);
-                $("#show_all_rules").click();
-            });
+    // delegate here
+    $("#main-div").delegate("span", "click", function () {
+        console.log($(this).attr('id'));
+        var cur_id = $(this).attr('id');
+        var type = cur_id.split('-')[0];
+        var cid = cur_id.split('-')[2];
 
-        });
+        if (type === "view") {
+            var regex = $("<div/>").text($("#rule-regex-" + cid).text()).html();
+            var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cid).text()).html();
+            var repair = $("<div/>").text($("#rule-repair-" + cid).text()).html();
+            $("#view-title").html("Rule Details.");
+            var content = "<b>Regex: </b>" + regex + "<br />";
+            content += "<b>Confirm Regex: </b>" + confirm_regex + "<br />";
+            content += "<b>Repair: </b>" + repair + "<br />";
+            $("#view-body").html(content);
 
-        // edit the special rule
-        $("[id^=edit-rule]").click(function () {
-            var cur_id = $(this).attr('id').split('-')[2];
-            $.get('edit_rule/' + cur_id, function (result) {
+        } else if (type === "edit") {
+            $.get('edit_rule/' + cid, function (result) {
                 $('#main-div').html(result);
 
                 $("#edit-rule-button").click(function () {
@@ -83,31 +131,34 @@ $("#show_all_rules").click(function () {
                         'regex': regex,
                         'regex_confirm': regex_confirm,
                         'description': description,
-                        'rule_id': cur_id,
+                        'rule_id': cid,
                         'repair': repair,
                         'status': status
                     };
-                    $.post('edit_rule/' + cur_id, data, function (res) {
+                    $.post('edit_rule/' + cid, data, function (res) {
                         showAlert(res.tag, res.msg, "#edit-rule-result");
                     });
                 });
             });
-        });
-
-        // view the special rule
-        $("[id^=view-rule]").click(function () {
-            var cur_id = $(this).attr('id').split('-')[2];
-            var regex = $("<div/>").text($("#rule-regex-" + cur_id).text()).html();
-            var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cur_id).text()).html();
-            var repair = $("<div/>").text($("#rule-repair-" + cur_id).text()).html();
-            $("#view-title").html("Rule Details.");
-            var content = "<b>Regex: </b>" + regex + "<br />";
-            content += "<b>Confirm Regex: </b>" + confirm_regex + "<br />";
-            content += "<b>Repair: </b>" + repair + "<br />";
-            $("#view-body").html(content);
-        });
+        } else if (type === "del") {
+            $.post('del_rule', {'rule_id':cid}, function (data) {
+                var tt = '<div class="alert alert-' + data.tag +' alert-dismissible" role="alert">';
+                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                tt += '<span aria-hidden="true">&times;</span></button>';
+                tt += '<strong>' + data.msg + '</strong></div>';
+                $("#operate_result").html(tt).fadeIn(1000);
+                $("#show_all_rules").click();
+            });
+        }
 
     });
+
+    $.get('rules/1', function (data) {
+        $("#main-div").html(data);
+    });
+
+    make_rules_pagination(1);
+
 });
 
 // add new rules

@@ -35,10 +35,10 @@ def main():
 
 
 # all rules button
-@web.route(ADMIN_URL + '/rules', methods=['GET'])
-def rules():
-    # cobra_rules = CobraRules.query.paginate(1, per_page=5, error_out=False)
-    cobra_rules = CobraRules.query.all()
+@web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
+def rules(page):
+    per_page = 10
+    cobra_rules = CobraRules.query.order_by('id').limit(per_page).offset((page-1)*per_page).all()
     cobra_vuls = CobraVuls.query.all()
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
