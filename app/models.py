@@ -19,7 +19,6 @@ from app import db
 
 # task_info table. store task information.
 class CobraTaskInfo(db.Model):
-
     __tablename__ = 'tasks'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
@@ -32,11 +31,12 @@ class CobraTaskInfo(db.Model):
     time_start = db.Column(db.DateTime, nullable=True, default=None)
     time_end = db.Column(db.DateTime, nullable=True, default=None)
     file_count = db.Column(db.Integer, nullable=True, default=None)
+    status = db.Column(TINYINT(4), nullable=True, default=0)
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
     def __init__(self, target, branch, scan_way, new_version, old_version, time_consume, time_start, time_end,
-                 file_count, created_at, updated_at):
+                 file_count, status, created_at, updated_at):
         self.target = target
         self.branch = branch
         self.scan_way = scan_way
@@ -46,6 +46,7 @@ class CobraTaskInfo(db.Model):
         self.time_start = time_start
         self.time_end = time_end
         self.file_count = file_count
+        self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
 
