@@ -84,7 +84,7 @@ class Scan(Command):
             if t is None:
                 print("Task id doesn't exists.")
                 sys.exit()
-            if t.status is not 0:
+            if t.status not in [0, 1]:
                 print("Task Already Scan.")
                 sys.exit()
             t.status = 1
