@@ -26,7 +26,7 @@ class Directory:
 
     def files(self, directory, level=1):
         if level == 1:
-            print directory
+            print(directory)
         for filename in os.listdir(directory):
             path = os.path.join(directory, filename)
 
