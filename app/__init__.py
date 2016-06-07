@@ -80,6 +80,9 @@ class Scan(Command):
             task_id = id
             # Start Time For Task
             t = CobraTaskInfo.query.filter_by(id=id).first()
+            if t is None:
+                print("Task id doesn't exists.")
+                sys.exit()
             if t.status is not 0:
                 print("Task Already Scan.")
                 sys.exit()
