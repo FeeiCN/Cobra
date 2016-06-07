@@ -156,7 +156,7 @@ class Static:
             ws = CobraWhiteList.query.filter_by(project_id=project_id, rule_id=rule.id).all()
             if ws is not None:
                 for w in ws:
-                    explode.append('--exclude=' + w.path)
+                    explode.append('--exclude=' + directory + w.path)
 
             try:
                 log.info('Scan rule id: ' + rule.id)
