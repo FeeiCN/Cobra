@@ -198,7 +198,8 @@ class Static:
         t = CobraTaskInfo.query.filter_by(id=task_id).first()
         t.status = 2
         t.file_count = files['file_nums']
-        t.time_end = time.strftime('%Y-%m-%d %X', time.localtime())
+        t.time_end = int(time.time())
+        t.time_consume = t.time_end - t.time_start
         t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
         try:
             db.session.add(t)
