@@ -65,10 +65,11 @@ class CobraRules(db.Model):
     description = db.Column(db.String(256), nullable=True, default=None)
     repair = db.Column(db.String(512), nullable=True, default=None)
     status = db.Column(TINYINT(2), nullable=True, default=None)
+    level = db.Column(TINYINT(2), nullable=True, default=None)
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, created_at, updated_at):
+    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, level, created_at, updated_at):
         self.vul_id = vul_id
         self.language = language
         self.regex = regex
@@ -76,6 +77,7 @@ class CobraRules(db.Model):
         self.description = description
         self.repair = repair
         self.status = status
+        self.level = level
         self.created_at = created_at
         self.updated_at = updated_at
 
@@ -138,7 +140,7 @@ class CobraResults(db.Model):
         self.updated_at = updated_at
 
     def __repr__(self):
-        return "<CobraResults %r - %r>" % (self.id, self.scan_id)
+        return "<CobraResults %r - %r>" % (self.id, self.task_id)
 
 
 class CobraProjects(db.Model):

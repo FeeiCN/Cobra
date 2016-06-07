@@ -43,6 +43,7 @@ def rules(page):
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
     all_language = {}
+    all_level = {1: 'Low', 2: 'Medium', 3: 'High'}
     for vul in cobra_vuls:
         all_vuls[vul.id] = vul.name
     for lang in cobra_lang:
@@ -54,10 +55,16 @@ def rules(page):
             rule.vul_id = all_vuls[rule.vul_id]
         except KeyError:
             rule.vul_id = 'Unknown Type'
+
         try:
             rule.language = all_language[rule.language]
         except KeyError:
             rule.language = 'Unknown Language'
+
+        try:
+            rule.level = all_level[rule.level]
+        except KeyError:
+            rule.level = 'Unknown Level'
 
     data = {
         # 'paginate': cobra_rules,
@@ -77,6 +84,7 @@ def add_new_rule():
         regex_confirm = request.form.get('regex_confirm')
         description = request.form.get('description')
         repair = request.form.get('repair')
+        level = request.form.get('level')
 
         if not vul_type or vul_type == "":
             return jsonify(tag='danger', msg='vul type error.')
@@ -90,10 +98,12 @@ def add_new_rule():
             return jsonify(tag='danger', msg='confirm regex can not be blank')
         if not repair or repair == "":
             return jsonify(tag='danger', msg='repair can not be empty')
+        if not level or level == "":
+            return jsonify(tag='danger', msg='repair can not be blank.')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         rule = CobraRules(vul_type, lang, regex, regex_confirm, description, repair,
-                          1, current_time, current_time)
+                          1, level, current_time, current_time)
         try:
             db.session.add(rule)
             db.session.commit()

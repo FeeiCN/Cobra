@@ -167,10 +167,13 @@ $("#main-div").delegate("span", "click", function () {
             var regex = $("<div/>").text($("#rule-regex-" + cid).text()).html();
             var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cid).text()).html();
             var repair = $("<div/>").text($("#rule-repair-" + cid).text()).html();
+            var level = $("<div/>").text($("#rule-level-"+cid).text()).html();
+            console.log(level);
             $("#view-title").html("Rule Details.");
             var content = "<b>Regex: </b>" + regex + "<br />";
             content += "<b>Confirm Regex: </b>" + confirm_regex + "<br />";
             content += "<b>Repair: </b>" + repair + "<br />";
+            content += "<b>Level: </b>" + level + "<br />";
             $("#view-body").html(content);
         } else if (type === "del") {
             $.post('del_rule', {'rule_id':cid}, function (data) {
@@ -337,6 +340,7 @@ $("#add_new_rules").click(function () {
             var regex_confirm = $("#confirm-regex").val();
             var description = $("#description").val();
             var repair = $("#repair").val();
+            var level = $("#level:checked").val();
 
             // check data
             if (!vul_type || vul_type == "") {
@@ -364,6 +368,11 @@ $("#add_new_rules").click(function () {
                 return false;
             }
 
+            if (!level || level == "") {
+                showAlert('danger', 'level can not be blank.', "#add-new-rule-result");
+                return false;
+            }
+
             // post data
             var data = {
                 'vul_type': vul_type,
@@ -371,7 +380,8 @@ $("#add_new_rules").click(function () {
                 'regex': regex,
                 'regex_confirm': regex_confirm,
                 'description': description,
-                'repair': repair
+                'repair': repair,
+                'level': level
             };
             $.post('add_new_rule', data, function (res) {
                 showAlert(res.tag, res.msg, '#add-new-rule-result');
