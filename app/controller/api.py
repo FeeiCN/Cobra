@@ -15,6 +15,7 @@ import time
 
 from flask import request, jsonify
 import ConfigParser
+import subprocess
 from app import web
 from app import CobraTaskInfo
 from app import CobraProjects
@@ -99,12 +100,18 @@ def add_task():
         # insert into project table.
         project = CobraProjects(target, repo_name, repo_author, None, None, current_time, current_time)
 
+        # Start Scanning
+        subprocess.Popen(
+            ['python', '/home/mapp/cobra/cobra.py', "scan", "-i", task.id, "-t", "uploads/" + repo_name + "/"],
+            stdout=subprocess.PIPE)
+
     try:
         db.session.add(task)
         if not p:
             db.session.add(project)
         db.session.commit()
-        return jsonify(code=1001, msg=u'task add success.')
+        result['scan_id'] = task.id
+        return jsonify(code=1001, result=result)
     except:
         return jsonify(code=1004, msg=u'Unknown error, try again later?')
 

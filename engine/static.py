@@ -50,7 +50,7 @@ class Static:
                 print(str(line_i + 1) + "\n")
         input_file.close()
 
-    def analyse(self, directory=None):
+    def analyse(self, directory=None, task_id=None):
         if directory is None:
             print("Please set directory")
             sys.exit()
@@ -167,7 +167,10 @@ class Static:
                         try:
                             rr = str(perline[r]).replace(directory, '').split(':', 1)
                             code = str(rr[1]).split(':', 1)
-                            scan_id = 1
+                            if task_id is None:
+                                scan_id = 0
+                            else:
+                                scan_id = task_id
                             rule_id = rule.id
                             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             params = [scan_id, rule_id, rr[0], code[0], str(code[1].strip()),
