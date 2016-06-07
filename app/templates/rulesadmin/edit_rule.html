@@ -1,9 +1,9 @@
-<form role="form" xmlns="http://www.w3.org/1999/html">
+<form role="form">
     <div class="form-group">
         <label for="vul_id">Vul type</label>
         <select id="vul_type" class="form-control">
             {% for vul in data.all_vuls %}
-                <option value="{{ vul.id }}" {% if vul.id == data.vul_type %}selected="selected"{% endif %}>
+                <option value="{{ vul.id }}" {% if vul.id == data.rule.vul_id %}selected{% endif %}>
                     {{ vul.name }}
                 </option>
             {% endfor %}
@@ -13,7 +13,7 @@
         <label for="language">Language</label>
         <select id="language" class="form-control">
             {% for lang in data.all_lang %}
-                <option value="{{ lang.id }}" {% if lang.id == data.language %}selected="selected"{% endif %}>
+                <option value="{{ lang.id }}" {% if lang.id == data.rule.language %}selected{% endif %}>
                     {{ lang.language }} ({{ lang.extensions }})
                 </option>
             {% endfor %}
