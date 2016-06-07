@@ -167,6 +167,7 @@ def report(id):
         each_vul['code'] = result.code
         each_vul['repair'] = rules.repair
         each_vul['line'] = result.line
+        each_vul['level'] = 'High' if rules.level == 3 else ('Medium' if rules.id == 1 else 'Low')
 
         for ev in vulnerabilities:
             if ev['vul_type'] == vul_type:
