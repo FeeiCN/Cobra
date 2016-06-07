@@ -120,7 +120,7 @@ class CobraLanguages(db.Model):
 class CobraResults(db.Model):
     __tablename__ = 'results'
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    scan_id = db.Column(INTEGER(11), nullable=True, default=None)
+    task_id = db.Column(INTEGER(11), nullable=True, default=None)
     rule_id = db.Column(INTEGER(11), nullable=True, default=None)
     file = db.Column(db.String(512), nullable=True, default=None)
     line = db.Column(INTEGER(11), nullable=True, default=None)
@@ -128,8 +128,8 @@ class CobraResults(db.Model):
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, scan_id, rule_id, file, line, code, created_at, updated_at):
-        self.scan_id = scan_id
+    def __init__(self, task_id, rule_id, file, line, code, created_at, updated_at):
+        self.task_id = task_id
         self.rule_id = rule_id
         self.file = file
         self.line = line

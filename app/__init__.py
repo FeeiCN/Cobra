@@ -52,7 +52,7 @@ manager = Manager(web)
 class Scan(Command):
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
-        Option('--id', '-i', dest='task id', help='scan task id')
+        Option('--id', '-i', dest='id', help='scan task id')
     )
 
     def parse_target(self, target=None):
