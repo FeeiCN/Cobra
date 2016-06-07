@@ -87,7 +87,7 @@ class Scan(Command):
                 print("Task Already Scan.")
                 sys.exit()
             t.status = 1
-            t.time_start = time.strftime('%Y-%m-%d %X', time.localtime())
+            t.time_start = int(time.time())
             t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
             try:
                 db.session.add(t)
