@@ -95,16 +95,18 @@ def add_task():
                          current_time, current_time)
 
     p = CobraProjects.query.filter_by(repository=target).first()
+    project_id = p.id
     project = None
     if not p:
         # insert into project table.
         project = CobraProjects(target, repo_name, repo_author, None, None, current_time, current_time)
+        project_id = project.id
 
-        # Start Scanning
-        subprocess.Popen(
-            ['python', '/home/mapp/cobra/cobra.py', "scan", "-i", task.id, "-t", "uploads/" + repo_name + "/"],
-            stdout=subprocess.PIPE)
-
+    # Start Scanning
+    subprocess.Popen(
+        ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", project_id, "-i", task.id, "-t",
+         "uploads/" + repo_name + "/"],
+        stdout=subprocess.PIPE)
     try:
         db.session.add(task)
         if not p:
