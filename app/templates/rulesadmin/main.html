@@ -1,74 +1,80 @@
-{% extends "bootstrap/base.html"  %}
+{% extends "bootstrap/base.html" %}
 
-{% block title %}Rules Admin{% endblock %}
+{% block title %}Cobra Admin{% endblock %}
 
 {% block content %}
-<div class="container">
-	<div class="row clearfix">
-		<div class="col-md-12 column">
-			<div class="page-header">
-				<h1>
-					Cobra Manage <small></small>
-				</h1>
-			</div>
-		</div>
-	</div>
-	<div class="row clearfix">
-		<div class="col-md-2 column">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Rules Manage</div>
-                <div class="panel-body">
-                    <button type="button" class="btn btn-primary btn-block" id="show_all_rules">Show All Rules</button>
-                    <button type="button" class="btn btn-primary btn-block" id="add_new_rules">Add New Rules</button>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="page-header">
+                    <h1>
+                        Cobra Manage
+                        <small></small>
+                    </h1>
                 </div>
             </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">Vuls Manage</div>
-                <div class="panel-body">
-                    <button type="button" class="btn btn-primary btn-block" id="show_all_vuls">Show All Vuls</button>
-                    <button type="button" class="btn btn-primary btn-block" id="add_new_vuls">Add New Vuls</button>
-                </div>
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">Projects Manage</div>
-                <div class="panel-body">
-                    <button type="button" class="btn btn-primary btn-block" id="show_all_projects">Show All Projects</button>
-                </div>
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">White List Manage</div>
-                <div class="panel-body">
-                    <button type="button" class="btn btn-primary btn-block" id="show_all_whitelists" style="font-size: 12px">Show All White Lists</button>
-                    <button type="button" class="btn btn-primary btn-block" id="add_new_whitelist" style="font-size: 12px">Add New White Lists</button>
-                </div>
-            </div>
-		</div>
-        <div class="col-md-10 column" id="search_rules_bar"></div>
-        <div hidden class="col-md-10 column" id="operate_result"></div>
-        <div class="modal fade" id="view-modal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="view-title"></h4>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-2 column">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Rules Manage</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_rules">All Rules</button>
+                        <button type="button" class="btn btn-primary btn-block" id="add_new_rules">Add Rule</button>
                     </div>
-                    <div class="modal-body">
-                        <p id="view-body">One fine body&hellip;</p>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Vuls Manage</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_vuls">All Vuls</button>
+                        <button type="button" class="btn btn-primary btn-block" id="add_new_vuls">Add Vul</button>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Projects Manage</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_projects">All Projects
+                        </button>
                     </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-		<div class="col-md-10 column" id="main-div" hidden>
-            <h3>Welcome to cobra rules management.</h3>
-            <h3>Click left button to select function.</h3>
-		</div>
-        <div class="col-md-10 column" id="paginate" align="center"></div>
-	</div>
-</div>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Whitelist Manage</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_whitelists"
+                                style="font-size: 12px">All Whitelists
+                        </button>
+                        <button type="button" class="btn btn-primary btn-block" id="add_new_whitelist"
+                                style="font-size: 12px">Add Whitelist
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10 column" id="search_rules_bar"></div>
+            <div hidden class="col-md-10 column" id="operate_result"></div>
+            <div class="modal fade" id="view-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="view-title"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="view-body">One fine body&hellip;</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <div class="col-md-10 column" id="main-div" hidden>
+                <h3>Welcome to cobra rules management.</h3>
+                <h3>Click left button to select function.</h3>
+            </div>
+            <div class="col-md-10 column" id="paginate" align="center"></div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
