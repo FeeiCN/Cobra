@@ -35,7 +35,7 @@ class Directory:
             self.type_nums.setdefault(file_extension.lower(), []).append(filename)
 
             # Directory Structure
-            #print '|  ' * (level - 1) + '|--' + filename
+            # print '|  ' * (level - 1) + '|--' + filename
             if os.path.isdir(path):
                 self.files(path, level + 1)
             if os.path.isfile(path):
@@ -56,4 +56,5 @@ class Directory:
 
         t2 = time.clock()
         print('Scan Files: {0}, Total Time: {1}s'.format(self.file_nums, t2 - t1))
+        self.result['file_nums'] = self.file_nums
         return self.result
