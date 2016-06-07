@@ -65,6 +65,7 @@ class CobraRules(db.Model):
     description = db.Column(db.String(256), nullable=True, default=None)
     repair = db.Column(db.String(512), nullable=True, default=None)
     status = db.Column(TINYINT(2), nullable=True, default=None)
+    level = db.Column(TINYINT(2), nullable=True, default=None)
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
