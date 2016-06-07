@@ -14,6 +14,7 @@
 import os
 import sys
 import re
+import time
 import subprocess
 from engine import rules, scan
 from utils import log
@@ -150,9 +151,8 @@ class Static:
             for e in extensions:
                 filters.append('--include=*' + e)
 
-            log.info('Filter ')
             try:
-                log.info('Scan Rule ID: 1')
+                log.info('Scan rule id: ' + rule.id)
                 # -n Show Line number / -r Recursive / -P Perl regular expression
                 proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, directory],
                                         stdout=subprocess.PIPE)
@@ -189,7 +189,6 @@ class Static:
                             log.debug('Error parsing result: ' + str(e))
 
                 else:
-                    print result
                     log.info('Not Found')
 
             except Exception as e:
@@ -198,6 +197,7 @@ class Static:
         # Set End Time For Task
         t = CobraTaskInfo.query.filter_by(id=task_id).first()
         t.status = 2
+        t.file_count = files['file_nums']
         t.time_end = time.strftime('%Y-%m-%d %X', time.localtime())
         t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
         try:
