@@ -71,10 +71,14 @@ class Scan(Command):
         else:
             return False
 
-    def run(self, target=None, pid=None):
+    def run(self, target=None, id=None):
         if target is None:
             print("Please set --target param")
             sys.exit()
+        if id is not None:
+            task_id = id
+        else:
+            task_id = None
         target_type = self.parse_target(target)
         if target_type is False:
             print("""
@@ -86,14 +90,14 @@ class Scan(Command):
         from engine import static
         s = static.Static()
         if target_type is 'directory':
-            s.analyse(target)
+            s.analyse(target, task_id=task_id)
         elif target_type is 'compress':
             from utils.decompress import Decompress
             # load an compressed file. only tar.gz, rar, zip supported.
             dc = Decompress(target)
             # decompress it. And there will create a directory named "222_test.tar".
             dc.decompress()
-            s.analyse(target)
+            s.analyse(target, task_id=task_id)
         elif target_type is 'file':
             s.analyse(target)
         elif target_type is 'git':
@@ -101,7 +105,7 @@ class Scan(Command):
             g = Git(target, branch='master')
             g.get_repo()
             if g.clone() is True:
-                s.analyse(target)
+                s.analyse(target, task_id=task_id)
             else:
                 print("Git clone failed")
         elif target_type is 'svn':
