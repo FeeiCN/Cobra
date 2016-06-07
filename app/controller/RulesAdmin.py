@@ -84,6 +84,7 @@ def add_new_rule():
         regex_confirm = request.form.get('regex_confirm')
         description = request.form.get('description')
         repair = request.form.get('repair')
+        level = request.form.get('level')
 
         if not vul_type or vul_type == "":
             return jsonify(tag='danger', msg='vul type error.')
@@ -97,10 +98,12 @@ def add_new_rule():
             return jsonify(tag='danger', msg='confirm regex can not be blank')
         if not repair or repair == "":
             return jsonify(tag='danger', msg='repair can not be empty')
+        if not level or level == "":
+            return jsonify(tag='danger', msg='repair can not be blank.')
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         rule = CobraRules(vul_type, lang, regex, regex_confirm, description, repair,
-                          1, current_time, current_time)
+                          1, level, current_time, current_time)
         try:
             db.session.add(rule)
             db.session.commit()

@@ -340,6 +340,7 @@ $("#add_new_rules").click(function () {
             var regex_confirm = $("#confirm-regex").val();
             var description = $("#description").val();
             var repair = $("#repair").val();
+            var level = $("#level:checked").val();
 
             // check data
             if (!vul_type || vul_type == "") {
@@ -367,6 +368,11 @@ $("#add_new_rules").click(function () {
                 return false;
             }
 
+            if (!level || level == "") {
+                showAlert('danger', 'level can not be blank.', "#add-new-rule-result");
+                return false;
+            }
+
             // post data
             var data = {
                 'vul_type': vul_type,
@@ -374,7 +380,8 @@ $("#add_new_rules").click(function () {
                 'regex': regex,
                 'regex_confirm': regex_confirm,
                 'description': description,
-                'repair': repair
+                'repair': repair,
+                'level': level
             };
             $.post('add_new_rule', data, function (res) {
                 showAlert(res.tag, res.msg, '#add-new-rule-result');
