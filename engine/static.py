@@ -122,10 +122,10 @@ class Static:
         }
         for ext in files:
             if ext in ext_language:
+                print('{0} - {1}'.format(ext, files[ext]))
                 continue
-                print ext, files[ext]
             else:
-                print ext
+                print(ext)
 
         languages = CobraLanguages.query.all()
 
@@ -169,7 +169,7 @@ class Static:
                 if len(result[0]):
                     log.info('Found:')
                     perline = str(result[0]).split("\n")
-                    print perline
+                    print(perline)
                     for r in range(0, len(perline) - 1):
                         try:
                             rr = str(perline[r]).replace(directory, '').split(':', 1)
@@ -200,7 +200,7 @@ class Static:
                                         print('Insert Results Success')
                             except:
                                 print('Insert Results Failed')
-                            print params
+                            print(params)
                         except Exception as e:
                             log.debug('Error parsing result: ' + str(e))
 
@@ -220,5 +220,5 @@ class Static:
         try:
             db.session.add(t)
             db.session.commit()
-        except:
-            print("Set start time failed")
+        except Exception as e:
+            print("Set start time failed:" + e.message)

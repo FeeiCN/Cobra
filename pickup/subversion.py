@@ -11,7 +11,10 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import subprocess, sys, logging, ConfigParser
+import subprocess
+import sys
+import logging
+import ConfigParser
 
 
 class Subversion:
