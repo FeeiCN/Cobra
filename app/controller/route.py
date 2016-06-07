@@ -21,7 +21,7 @@ from utils import log
 from flask import request, jsonify, render_template
 from werkzeug import secure_filename
 
-from app import web, CobraTaskInfo, db, CobraProjects
+from app import web, CobraTaskInfo, db, CobraProjects, CobraResults, CobraRules, CobraVuls
 
 
 @web.route('/', methods=['GET'])
@@ -136,8 +136,53 @@ def report(id):
     task_info = CobraTaskInfo.query.filter_by(id=id).first()
     if not task_info:
         return jsonify(status='4004', msg='report id not found')
+
+    repository = task_info.target
+    project = CobraProjects.query.filter_by(repository=repository).first()
+    project_name = project.name
+    author = project.author
+    scan_time = task_info.time_consume
+    date = task_info.time_start
+    files = task_info.file_count
+    vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
+    results = CobraResults.query.filter_by(task_id=id).all()
+
+    # find rules -> vuls
+    vulnerabilities = []
+    for result in results:
+        rules = CobraRules.query.filter_by(id=result.rule_id).first()
+        vul_type = CobraVuls.query.filter_by(id=rules.vul_id).first().name
+
+        find = False
+        for each_vul in vulnerabilities:
+            if each_vul['vul_type'] == vul_type:
+                find = True
+        if not find:
+            vulnerabilities.append({'vul_type': vul_type, 'data': []})
+
+        each_vul = {}
+        each_vul['rule'] = rules.description
+        each_vul['file'] = result.file
+        each_vul['code'] = result.code
+        each_vul['repair'] = rules.repair
+
+        for ev in vulnerabilities:
+            if ev['vul_type'] == vul_type:
+                ev['data'].append(each_vul)
+        # vulnerabilities[vul_type]['data'].append(each_vul)
+
+    print vulnerabilities
+
     data = {
-        'id': int(id)
+        'id': int(id),
+        'project_name': project_name,
+        'project_repository': repository,
+        'author': author,
+        'date': date,
+        'scan_time': scan_time,
+        'files': files,
+        'vulnerabilities_count': vulnerabilities_count,
+        'vulnerabilities': vulnerabilities,
     }
     return render_template('report.html', data=data)
 
