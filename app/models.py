@@ -138,7 +138,7 @@ class CobraResults(db.Model):
         self.updated_at = updated_at
 
     def __repr__(self):
-        return "<CobraResults %r - %r>" % (self.id, self.scan_id)
+        return "<CobraResults %r - %r>" % (self.id, self.task_id)
 
 
 class CobraProjects(db.Model):
