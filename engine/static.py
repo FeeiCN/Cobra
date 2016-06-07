@@ -19,7 +19,7 @@ import subprocess
 from engine import rules, scan
 from utils import log
 from datetime import datetime
-from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo
+from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
 
 
 class Static:
@@ -51,7 +51,7 @@ class Static:
                 print(str(line_i + 1) + "\n")
         input_file.close()
 
-    def analyse(self, directory=None, task_id=None):
+    def analyse(self, directory=None, task_id=None, project_id=None):
         if directory is None:
             print("Please set directory")
             sys.exit()
@@ -151,10 +151,17 @@ class Static:
             for e in extensions:
                 filters.append('--include=*' + e)
 
+            # White list
+            explode = []
+            ws = CobraWhiteList.query.filter_by(project_id=project_id, rule_id=rule.id).all()
+            if ws is not None:
+                for w in ws:
+                    explode.append('--exclude=' + w.path)
+
             try:
                 log.info('Scan rule id: ' + rule.id)
                 # -n Show Line number / -r Recursive / -P Perl regular expression
-                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, directory],
+                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + explode + [rule.regex, directory],
                                         stdout=subprocess.PIPE)
                 result = proc.communicate()
 

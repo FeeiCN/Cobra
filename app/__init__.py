@@ -53,7 +53,8 @@ manager = Manager(web)
 class Scan(Command):
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
-        Option('--id', '-i', dest='id', help='scan task id')
+        Option('--tid', '-i', dest='tid', help='scan task id'),
+        Option('--pid', '-p', dest='pid', help='scan project id')
     )
 
     def parse_target(self, target=None):
@@ -72,14 +73,14 @@ class Scan(Command):
         else:
             return False
 
-    def run(self, target=None, id=None):
+    def run(self, target=None, tid=None, pid=None):
         if target is None:
             print("Please set --target param")
             sys.exit()
-        if id is not None:
-            task_id = id
+        if tid is not None:
+            task_id = tid
             # Start Time For Task
-            t = CobraTaskInfo.query.filter_by(id=id).first()
+            t = CobraTaskInfo.query.filter_by(id=tid).first()
             if t is None:
                 print("Task id doesn't exists.")
                 sys.exit()
@@ -108,14 +109,14 @@ class Scan(Command):
         from engine import static
         s = static.Static()
         if target_type is 'directory':
-            s.analyse(target, task_id=task_id)
+            s.analyse(target, task_id=task_id, project_id=pid)
         elif target_type is 'compress':
             from utils.decompress import Decompress
             # load an compressed file. only tar.gz, rar, zip supported.
             dc = Decompress(target)
             # decompress it. And there will create a directory named "222_test.tar".
             dc.decompress()
-            s.analyse(target, task_id=task_id)
+            s.analyse(target, task_id=task_id, project_id=pid)
         elif target_type is 'file':
             s.analyse(target)
         elif target_type is 'git':
@@ -123,7 +124,7 @@ class Scan(Command):
             g = Git(target, branch='master')
             g.get_repo()
             if g.clone() is True:
-                s.analyse(target, task_id=task_id)
+                s.analyse(target, task_id=task_id, project_id=pid)
             else:
                 print("Git clone failed")
         elif target_type is 'svn':
