@@ -130,7 +130,7 @@
                             {% for each_vul in vulnerability.data %}
                                 <tbody>
                                 <tr style="color:red;">
-                                    <td>High</td>
+                                    <td>{{ each_vul.level }}</td>
                                     <td>{{ each_vul.rule }}</td>
                                     <td>
                                         <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>

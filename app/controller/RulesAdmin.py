@@ -148,6 +148,7 @@ def edit_rule(rule_id):
         rule_id = request.form.get('rule_id')
         repair = request.form.get('repair')
         status = request.form.get('status')
+        level = request.form.get('level')
 
         if not vul_type or vul_type == "":
             return jsonify(tag='danger', msg='vul type error.')
@@ -163,6 +164,8 @@ def edit_rule(rule_id):
             return jsonify(tag='danger', msg='repair can not be blank')
         if not status or status == "" or (status != '1' and status != '2'):
             return jsonify(tag="danger", msg='status error.')
+        if not level or level == "":
+            return jsonify(tag='danger', msg='level can not be blank.')
 
         r = CobraRules.query.filter_by(id=rule_id).first()
         r.vul_id = vul_type
@@ -172,6 +175,7 @@ def edit_rule(rule_id):
         r.description = description
         r.repair = repair
         r.status = status
+        r.level = level
         r.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
         try:
             db.session.add(r)
