@@ -35,10 +35,10 @@ def main():
 
 
 # all rules button
-@web.route(ADMIN_URL + '/rules', methods=['GET'])
-def rules():
-    # cobra_rules = CobraRules.query.paginate(1, per_page=5, error_out=False)
-    cobra_rules = CobraRules.query.all()
+@web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
+def rules(page):
+    per_page = 10
+    cobra_rules = CobraRules.query.order_by('id').limit(per_page).offset((page-1)*per_page).all()
     cobra_vuls = CobraVuls.query.all()
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
@@ -207,9 +207,10 @@ def add_new_vul():
 
 
 # show all vuls click
-@web.route(ADMIN_URL + '/vuls', methods=['GET'])
-def vuls():
-    all_vuls = CobraVuls.query.all()
+@web.route(ADMIN_URL + '/vuls/<int:page>', methods=['GET'])
+def vuls(page):
+    per_page_vuls = 10
+    all_vuls = CobraVuls.query.order_by('id').limit(per_page_vuls).offset((page-1)*per_page_vuls).all()
     data = {
         'vuls': all_vuls
     }
@@ -272,10 +273,32 @@ def all_rules_count():
     return str(rules_count)
 
 
+# api: get all vuls count
+@web.route(ADMIN_URL + '/all_vuls_count', methods=['GET'])
+def all_vuls_count():
+    vuls_count = CobraVuls.query.count()
+    return str(vuls_count)
+
+
+# api: get all projects count
+@web.route(ADMIN_URL + '/all_projects_count', methods=['GET'])
+def all_projects_count():
+    projects_count = CobraProjects.query.count()
+    return str(projects_count)
+
+
+# api: get all whitelists count
+@web.route(ADMIN_URL + '/all_whitelists_count', methods=['GET'])
+def all_whitelists_count():
+    whitelists_count = CobraWhiteList.query.count()
+    return str(whitelists_count)
+
+
 # show all projects
-@web.route(ADMIN_URL + '/projects', methods=['GET'])
-def projects():
-    project = CobraProjects.query.all()
+@web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
+def projects(page):
+    per_page = 10
+    project = CobraProjects.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
     data = {
         'projects': project,
     }
@@ -344,9 +367,10 @@ def edit_project(project_id):
 
 
 # show all white lists
-@web.route(ADMIN_URL + '/whitelists', methods=['GET'])
-def whitelists():
-    whitelists = CobraWhiteList.query.all()
+@web.route(ADMIN_URL + '/whitelists/<int:page>', methods=['GET'])
+def whitelists(page):
+    per_page = 10
+    whitelists = CobraWhiteList.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
     data = {
         'whitelists': whitelists,
     }
@@ -458,3 +482,64 @@ def edit_whitelist(whitelist_id):
         }
 
         return render_template('rulesadmin/edit_whitelist.html', data=data)
+
+
+# search_rules_bar
+@web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
+def search_rules_bar():
+    languages = CobraLanguages.query.all()
+    vuls = CobraVuls.query.all()
+
+    data = {
+        'languages': languages,
+        'vuls': vuls,
+    }
+
+    return render_template('rulesadmin/search_rules_bar.html', data=data)
+
+
+# search rules
+@web.route(ADMIN_URL + '/search_rules', methods=['POST'])
+def search_rules():
+    if request.method == 'POST':
+        language = request.form.get('language')
+        vul = request.form.get('vul')
+
+        rules = None
+
+        if language == 'all' and vul == 'all':
+            rules = CobraRules.query.all()
+        elif language == 'all' and vul != 'all':
+            rules = CobraRules.query.filter_by(vul_id=vul).all()
+        elif language != 'all' and vul == 'all':
+            rules = CobraRules.query.filter_by(language=language).all()
+        elif language != 'all' and vul != 'all':
+            rules = CobraRules.query.filter_by(language=language, vul_id=vul).all()
+        else:
+            return 'error!'
+
+        cobra_vuls = CobraVuls.query.all()
+        cobra_lang = CobraLanguages.query.all()
+        all_vuls = {}
+        all_language = {}
+        for vul in cobra_vuls:
+            all_vuls[vul.id] = vul.name
+        for lang in cobra_lang:
+            all_language[lang.id] = lang.language
+
+        # replace id with real name
+        for rule in rules:
+            try:
+                rule.vul_id = all_vuls[rule.vul_id]
+            except KeyError:
+                rule.vul_id = 'Unknown Type'
+            try:
+                rule.language = all_language[rule.language]
+            except KeyError:
+                rule.language = 'Unknown Language'
+
+        data = {
+            'rules': rules,
+        }
+
+        return render_template('rulesadmin/rules.html', data=data)
