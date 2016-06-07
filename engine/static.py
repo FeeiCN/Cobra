@@ -14,6 +14,7 @@
 import os
 import sys
 import re
+import time
 import subprocess
 from engine import rules, scan
 from utils import log
