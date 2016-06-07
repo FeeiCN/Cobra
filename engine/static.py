@@ -194,3 +194,14 @@ class Static:
 
             except Exception as e:
                 log.debug('Error calling grep: ' + str(e))
+
+        # Set End Time For Task
+        t = CobraTaskInfo.query.filter_by(id=task_id).first()
+        t.status = 2
+        t.time_end = time.strftime('%Y-%m-%d %X', time.localtime())
+        t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
+        try:
+            db.session.add(t)
+            db.session.commit()
+        except:
+            print("Set start time failed")

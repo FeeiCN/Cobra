@@ -14,6 +14,7 @@
 import ConfigParser
 import os
 import sys
+import time
 
 from flask import Flask
 from flask.ext.migrate import MigrateCommand, Migrate
@@ -77,8 +78,19 @@ class Scan(Command):
             sys.exit()
         if id is not None:
             task_id = id
+            # Start Time For Task
+            t = CobraTaskInfo.query.filter_by(id=id).first()
+            t.status = 1
+            t.time_start = time.strftime('%Y-%m-%d %X', time.localtime())
+            t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
+            try:
+                db.session.add(t)
+                db.session.commit()
+            except:
+                print("Set start time failed")
         else:
             task_id = None
+
         target_type = self.parse_target(target)
         if target_type is False:
             print("""
