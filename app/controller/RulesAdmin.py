@@ -43,6 +43,7 @@ def rules(page):
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
     all_language = {}
+    all_level = {1: 'Low', 2: 'Medium', 3: 'High'}
     for vul in cobra_vuls:
         all_vuls[vul.id] = vul.name
     for lang in cobra_lang:
@@ -54,10 +55,16 @@ def rules(page):
             rule.vul_id = all_vuls[rule.vul_id]
         except KeyError:
             rule.vul_id = 'Unknown Type'
+
         try:
             rule.language = all_language[rule.language]
         except KeyError:
             rule.language = 'Unknown Language'
+
+        try:
+            rule.level = all_level[rule.level]
+        except KeyError:
+            rule.level = 'Unknown Level'
 
     data = {
         # 'paginate': cobra_rules,
