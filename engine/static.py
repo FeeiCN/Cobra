@@ -18,7 +18,7 @@ import subprocess
 from engine import rules, scan
 from utils import log
 from datetime import datetime
-from app import db, CobraResults, CobraRules, CobraLanguages
+from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo
 
 
 class Static:
@@ -168,17 +168,15 @@ class Static:
                             rr = str(perline[r]).replace(directory, '').split(':', 1)
                             code = str(rr[1]).split(':', 1)
                             if task_id is None:
-                                scan_id = 0
-                            else:
-                                scan_id = task_id
+                                task_id = 0
                             rule_id = rule.id
                             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                            params = [scan_id, rule_id, rr[0], code[0], str(code[1].strip()),
+                            params = [task_id, rule_id, rr[0], code[0], str(code[1].strip()),
                                       datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                       datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
                             try:
                                 print('In Insert')
-                                results = CobraResults(scan_id, rule_id, rr[0], code[0], str(code[1].strip()),
+                                results = CobraResults(task_id, rule_id, rr[0], code[0], str(code[1].strip()),
                                                        current_time,
                                                        current_time)
                                 db.session.add(results)
@@ -196,3 +194,14 @@ class Static:
 
             except Exception as e:
                 log.debug('Error calling grep: ' + str(e))
+
+        # Set End Time For Task
+        t = CobraTaskInfo.query.filter_by(id=task_id).first()
+        t.status = 2
+        t.time_end = time.strftime('%Y-%m-%d %X', time.localtime())
+        t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
+        try:
+            db.session.add(t)
+            db.session.commit()
+        except:
+            print("Set start time failed")

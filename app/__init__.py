@@ -14,6 +14,7 @@
 import ConfigParser
 import os
 import sys
+import time
 
 from flask import Flask
 from flask.ext.migrate import MigrateCommand, Migrate
@@ -52,7 +53,7 @@ manager = Manager(web)
 class Scan(Command):
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
-        Option('--id', '-i', dest='task id', help='scan task id')
+        Option('--id', '-i', dest='id', help='scan task id')
     )
 
     def parse_target(self, target=None):
@@ -77,8 +78,25 @@ class Scan(Command):
             sys.exit()
         if id is not None:
             task_id = id
+            # Start Time For Task
+            t = CobraTaskInfo.query.filter_by(id=id).first()
+            if t is None:
+                print("Task id doesn't exists.")
+                sys.exit()
+            if t.status is not 0:
+                print("Task Already Scan.")
+                sys.exit()
+            t.status = 1
+            t.time_start = time.strftime('%Y-%m-%d %X', time.localtime())
+            t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
+            try:
+                db.session.add(t)
+                db.session.commit()
+            except:
+                print("Set start time failed")
         else:
             task_id = None
+
         target_type = self.parse_target(target)
         if target_type is False:
             print("""
