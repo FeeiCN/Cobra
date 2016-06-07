@@ -69,7 +69,7 @@ class CobraRules(db.Model):
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, created_at, updated_at):
+    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, level, created_at, updated_at):
         self.vul_id = vul_id
         self.language = language
         self.regex = regex
@@ -77,6 +77,7 @@ class CobraRules(db.Model):
         self.description = description
         self.repair = repair
         self.status = status
+        self.level = level
         self.created_at = created_at
         self.updated_at = updated_at
 
