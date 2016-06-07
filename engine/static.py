@@ -189,7 +189,7 @@ class Static:
                                     r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
                                                                              file=rr[0],
                                                                              line=code[0]).first()
-                                    if r_content is None:
+                                    if r_content is not None:
                                         print("Exists Result")
                                     else:
                                         results = CobraResults(task_id, rule_id, rr[0], code[0], str(code[1].strip()),
