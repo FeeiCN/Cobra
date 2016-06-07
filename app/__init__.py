@@ -80,6 +80,9 @@ class Scan(Command):
             task_id = id
             # Start Time For Task
             t = CobraTaskInfo.query.filter_by(id=id).first()
+            if t.status is not 0:
+                print("Task Already Scan.")
+                sys.exit()
             t.status = 1
             t.time_start = time.strftime('%Y-%m-%d %X', time.localtime())
             t.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())

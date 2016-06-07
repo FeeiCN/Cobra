@@ -18,7 +18,7 @@ import subprocess
 from engine import rules, scan
 from utils import log
 from datetime import datetime
-from app import db, CobraResults, CobraRules, CobraLanguages
+from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo
 
 
 class Static:
