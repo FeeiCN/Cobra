@@ -111,44 +111,43 @@
                     <h3 class="panel-title"><strong>Vulnerabilities</strong></h3>
                 </div>
                 <div class="panel-body">
-                    <div class="table-responsive">
 
-                        {% for vulnerability in data.vulnerabilities %}
-                            <h4>{{ vulnerability.vul_type }}</h4>
-                            <table class="table table-condensed">
-                                <thead>
-                                <tr>
-                                    <td><strong>Level</strong></td>
-                                    <td><strong>Rule</strong></td>
+                    {% for vulnerability in data.vulnerabilities %}
+                        <h4>{{ vulnerability.vul_type }}</h4>
+                        <table class="table table-condensed">
+                            <thead>
+                            <tr>
+                                <td><strong>Level</strong></td>
+                                <td><strong>Rule</strong></td>
+                                <td>
+                                    <strong>Content</strong>
+                                </td>
+                                <td><strong>Repair</strong></td>
+                                <td class="text-right"><strong>Help</strong></td>
+                            </tr>
+                            </thead>
+                            {% for each_vul in vulnerability.data %}
+                                <tbody>
+                                <tr style="color:{{ each_vul.color }};">
+                                    <td>{{ each_vul.level }}</td>
+                                    <td>{{ each_vul.rule }}</td>
                                     <td>
-                                        <strong>Content</strong>
+                                        <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
+                                        <pre><code class="language-php">{{ each_vul.code }}</code></pre>
                                     </td>
-                                    <td><strong>Repair</strong></td>
-                                    <td class="text-right"><strong>Help</strong></td>
+                                    <td>{{ each_vul.repair }}</td>
+                                    <td class="text-right">
+                                        <div class="tooltip_styled tooltip-effect-1">
+                                            <span class="tooltip-item"><i class="icon_set_1_icon-74"></i></span>
+                                            <div class="tooltip-content">误报? 请反馈给我们</div>
+                                        </div>
+                                    </td>
                                 </tr>
-                                </thead>
-                                {% for each_vul in vulnerability.data %}
-                                    <tbody>
-                                    <tr style="color:red;">
-                                        <td>{{ each_vul.level }}</td>
-                                        <td>{{ each_vul.rule }}</td>
-                                        <td>
-                                            <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
-                                            <pre><code class="language-php">{{ each_vul.code }}</code></pre>
-                                        </td>
-                                        <td>{{ each_vul.repair }}</td>
-                                        <td class="text-right">
-                                            <div class="tooltip_styled tooltip-effect-1">
-                                                <span class="tooltip-item"><i class="icon_set_1_icon-74"></i></span>
-                                                <div class="tooltip-content">误报? 请反馈给我们</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                {% endfor %}
-                            </table>
-                        {% endfor %}
-                    </div> <!-- .table-responsive -->
+                                </tbody>
+                            {% endfor %}
+                        </table>
+                    {% endfor %}
+
                 </div> <!-- .panel-body -->
             </div> <!-- .panel panel-default -->
         </div>
