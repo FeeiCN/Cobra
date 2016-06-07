@@ -166,6 +166,7 @@ def report(id):
         each_vul['file'] = result.file
         each_vul['code'] = result.code
         each_vul['repair'] = rules.repair
+        each_vul['line'] = result.line
 
         for ev in vulnerabilities:
             if ev['vul_type'] == vul_type:

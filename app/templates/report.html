@@ -133,7 +133,7 @@
                                     <td>High</td>
                                     <td>{{ each_vul.rule }}</td>
                                     <td>
-                                        <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}</span>
+                                        <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
                                         <pre><code class="language-php">{{ each_vul.code }}</code></pre>
                                     </td>
                                     <td>{{ each_vul.repair }}</td>
