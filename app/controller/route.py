@@ -138,6 +138,7 @@ def report(id):
         return jsonify(status='4004', msg='report id not found')
 
     repository = task_info.target
+    task_created_at = task_info.created_at
     project = CobraProjects.query.filter_by(repository=repository).first()
     project_name = project.name
     author = project.author
@@ -179,6 +180,7 @@ def report(id):
         'project_repository': repository,
         'author': author,
         'date': date,
+        'task_created_at': task_created_at,
         'scan_time': scan_time,
         'files': files,
         'vulnerabilities_count': vulnerabilities_count,
