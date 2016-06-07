@@ -170,9 +170,6 @@ def report(id):
         for ev in vulnerabilities:
             if ev['vul_type'] == vul_type:
                 ev['data'].append(each_vul)
-        # vulnerabilities[vul_type]['data'].append(each_vul)
-
-    print vulnerabilities
 
     data = {
         'id': int(id),
