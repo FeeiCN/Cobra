@@ -159,7 +159,7 @@ class Static:
                     white_list.append(w.path)
 
             try:
-                log.info('Scan rule id: ' + rule.id)
+                log.info('Scan rule id: {0}'.format(rule.id))
                 # -n Show Line number / -r Recursive / -P Perl regular expression
                 proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, directory],
                                         stdout=subprocess.PIPE)
@@ -186,12 +186,18 @@ class Static:
                                 if rr[0] in white_list:
                                     print("In White list")
                                 else:
-                                    results = CobraResults(task_id, rule_id, rr[0], code[0], str(code[1].strip()),
-                                                           current_time,
-                                                           current_time)
-                                    db.session.add(results)
-                                    db.session.commit()
-                                    print('Insert Results Success')
+                                    r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
+                                                                             file=rr[0],
+                                                                             line=code[0]).first()
+                                    if r_content is None:
+                                        print("Exists Result")
+                                    else:
+                                        results = CobraResults(task_id, rule_id, rr[0], code[0], str(code[1].strip()),
+                                                               current_time,
+                                                               current_time)
+                                        db.session.add(results)
+                                        db.session.commit()
+                                        print('Insert Results Success')
                             except:
                                 print('Insert Results Failed')
                             print params
