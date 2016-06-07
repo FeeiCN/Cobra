@@ -116,6 +116,7 @@ $("#main-div").delegate("span", "click", function () {
                 var regex_confirm = $("#confirm-regex").val();
                 var repair = $("#repair").val();
                 var status = $("#status:checked").val();
+                var level = $("#level:checked").val();
 
                 // check data
                 if (!vul_type || vul_type == "") {
@@ -146,6 +147,10 @@ $("#main-div").delegate("span", "click", function () {
                     showAlert('danger', 'status error.', '#edit-rule-result');
                     return false;
                 }
+                if (!level || level == "") {
+                    showAlert('danger', 'level can not be blank.', '#edit-rule-result');
+                    return false;
+                }
 
                 // post data
                 var data = {
@@ -156,7 +161,8 @@ $("#main-div").delegate("span", "click", function () {
                     'description': description,
                     'rule_id': cid,
                     'repair': repair,
-                    'status': status
+                    'status': status,
+                    'level': level
                 };
                 $.post('edit_rule/' + cid, data, function (res) {
                     showAlert(res.tag, res.msg, "#edit-rule-result");
