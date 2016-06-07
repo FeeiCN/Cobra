@@ -95,12 +95,13 @@ def add_task():
                          current_time, current_time)
 
     p = CobraProjects.query.filter_by(repository=target).first()
-    project_id = p.id
     project = None
     if not p:
         # insert into project table.
         project = CobraProjects(target, repo_name, repo_author, None, None, current_time, current_time)
         project_id = project.id
+    else:
+        project_id = p.id
 
     # Start Scanning
     subprocess.Popen(
