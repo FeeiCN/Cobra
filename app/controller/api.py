@@ -114,7 +114,7 @@ def add_task():
         # Start Scanning
         subprocess.Popen(
             ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
-             "uploads/" + gg.repo_directory + "/"])
+             gg.repo_directory])
 
         result['scan_id'] = task.id
         result['project_id'] = project_id
