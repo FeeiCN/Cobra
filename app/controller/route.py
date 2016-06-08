@@ -150,8 +150,8 @@ def report(id):
     results = CobraResults.query.filter_by(task_id=id).all()
 
     # convert timestamp to datetime
-    time_start = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_start))
-    time_end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_end))
+    time_start = time.strftime("%H:%M:%S", time.localtime(time_start))
+    time_end = time.strftime("%H:%M:%S", time.localtime(time_end))
 
     # find rules -> vuls
     vulnerabilities = []
