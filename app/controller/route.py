@@ -172,12 +172,16 @@ def report(id):
         each_vul['line'] = result.line
         if rules.level == 3:
             each_vul['level'] = 'High'
+            each_vul['color'] = 'red'
         elif rules.level == 2:
             each_vul['level'] = 'Medium'
+            each_vul['color'] = 'orange'
         elif rules.level == 1:
             each_vul['level'] = 'Low'
+            each_vul['color'] = 'black'
         else:
-            each_vul['level'] = 'Unknown level.'
+            each_vul['level'] = 'Undefined'
+            each_vul['color'] = '#555'
 
         for ev in vulnerabilities:
             if ev['vul_type'] == vul_type:

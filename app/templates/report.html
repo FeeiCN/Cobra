@@ -111,25 +111,24 @@
                     <h3 class="panel-title"><strong>Vulnerabilities</strong></h3>
                 </div>
                 <div class="panel-body">
-                    <div class="table-responsive">
 
-                        {% for vulnerability in data.vulnerabilities %}
-                            <h4>{{ vulnerability.vul_type }}</h4>
-                            <table class="table table-condensed">
-                                <thead>
-                                <tr>
-                                    <td><strong>Level</strong></td>
-                                    <td><strong>Rule</strong></td>
-                                    <td>
-                                        <strong>Content</strong>
-                                    </td>
-                                    <td><strong>Repair</strong></td>
-                                    <td class="text-right"><strong>Help</strong></td>
-                                </tr>
-                                </thead>
+                    {% for vulnerability in data.vulnerabilities %}
+                        <h4>{{ vulnerability.vul_type }}</h4>
+                        <table class="table table-condensed">
+                            <thead>
+                            <tr>
+                                <td><strong>Level</strong></td>
+                                <td><strong>Rule</strong></td>
+                                <td>
+                                    <strong>Content</strong>
+                                </td>
+                                <td><strong>Repair</strong></td>
+                                <td class="text-right"><strong>Help</strong></td>
+                            </tr>
+                            </thead>
                             {% for each_vul in vulnerability.data %}
                                 <tbody>
-                                <tr style="color:red;">
+                                <tr style="color:{{ each_vul.color }};">
                                     <td>{{ each_vul.level }}</td>
                                     <td>{{ each_vul.rule }}</td>
                                     <td>
@@ -146,9 +145,9 @@
                                 </tr>
                                 </tbody>
                             {% endfor %}
-                            </table>
-                        {% endfor %}
-                    </div> <!-- .table-responsive -->
+                        </table>
+                    {% endfor %}
+
                 </div> <!-- .panel-body -->
             </div> <!-- .panel panel-default -->
         </div>
@@ -163,8 +162,8 @@
             <div class="box_style_2">
                 <i class="icon_set_1_icon-70"></i>
                 <h4>Need Help? <span>TT</span></h4>
-                <a href="" class="phone">@zhijie/@hanshui</a>
-                <small>Service Time: 7*5 09:30am - 06:30pm</small>
+                <a href="mactt://message/user/100064" class="phone">@security</a>
+                <small>Service Time: 7*8 (09:30am - 06:30pm)</small>
             </div>
 
         </div><!-- End col-md-6-->
@@ -173,8 +172,8 @@
             <div class="box_style_2">
                 <i class="icon_set_1_icon-90"></i>
                 <h4><span>TT Offline?</span> Phone</h4>
-                <a href="tel://13506710613" class="phone">135 0671 0613</a>
-                <small>Service Time: 7*24</small>
+                <a class="phone">@hanshui/@zhijie/@shiqiao</a>
+                <small>Service Time: 7*24h</small>
             </div>
 
         </div><!-- End col-md-6-->
