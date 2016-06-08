@@ -13,10 +13,10 @@
 #
 import time
 
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, session, escape, redirect
 
 from app import web, CobraRules, CobraVuls, db, CobraLanguages
-from app import CobraProjects, CobraWhiteList
+from app import CobraProjects, CobraWhiteList, CobraAdminUser
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -26,7 +26,26 @@ ADMIN_URL = '/admin'
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
     if request.method == "POST":
-        pass
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        au = CobraAdminUser.query.filter_by(username=username).first()
+        if not au or not au.verify_password(password):
+            # login failed.
+            return "Wrong username or password."
+        else:
+            # login success.
+            session['role'] = au.role
+            session['username'] = escape(au.username)
+            session['is_login'] = True
+
+            current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+            au.last_login_time = current_time
+            au.last_login_ip = request.remote_addr
+            db.session.add(au)
+            db.session.commit()
+
+            return "Login success, jumping...<br /><script>window.setTimeout(\"location='main'\", 1000);</script>"
     else:
         return render_template("rulesadmin/index.html")
 
@@ -34,7 +53,10 @@ def index():
 # main view
 @web.route(ADMIN_URL + '/main', methods=['GET'])
 def main():
-    return render_template("rulesadmin/main.html")
+    if not session.get('is_login'):
+        return redirect(ADMIN_URL + '/index')
+    else:
+        return render_template("rulesadmin/main.html")
 
 
 # all rules button

@@ -69,7 +69,8 @@
 			                        	<label class="sr-only" for="form-password">Password</label>
 			                        	<input type="password" name="form-password" placeholder="Password..." class="form-password form-control" id="form-password">
 			                        </div>
-			                        <button type="button" class="btn">Sign in!</button>
+			                        <button type="button" class="btn" id="login">Sign in!</button>
+                                    <div id="login-result" align="center"></div>
 			                    </form>
 		                    </div>
                         </div>
@@ -87,8 +88,34 @@
         <script src="/asset/js/scripts.js"></script>
 
         <!--[if lt IE 10]>
-            <script src="assets/js/placeholder.js"></script>
+            <script src="/asset/js/placeholder.js"></script>
         <![endif]-->
+
+        <script>
+
+            $(document).ready(function () {
+
+                $("#form-password, #form-username").focus(function () {
+                    $("#login-result").fadeOut(1000);
+                });
+
+
+                $("#login").click(function () {
+                    var username = $("#form-username").val();
+                    var password = $("#form-password").val();
+                    var data = {
+                        'username': username,
+                        'password': password
+                    };
+                    $.post('index', data, function (data) {
+                        $("#login-result").html(data).fadeIn(1000);
+                    });
+
+
+                });
+            });
+
+        </script>
 
     </body>
 
