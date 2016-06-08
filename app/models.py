@@ -13,7 +13,7 @@
 #
 
 from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT
-
+from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
 
@@ -190,3 +190,33 @@ class CobraWhiteList(db.Model):
 
     def __repr__(self):
         return "<CobraWhiteList %r-%r:%r>" % (self.project_id, self.rule_id, self.reason)
+
+
+class CobraAdminUser(db.Model):
+    """
+    :role: 1-super admin, 2-admin, 3-rule admin
+    """
+    __tablename__ = 'adminuser'
+
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=None)
+    username = db.Column(db.String(64), nullable=True, default=None)
+    password = db.Column(db.String(256), nullable=True, default=None)
+    role = db.Column(TINYINT(2), nullable=True, default=None)
+    created_at = db.Column(db.DateTime, nullable=True, default=None)
+    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+
+    def __init__(self, username, password, role, created_at, updated_at):
+        self.username = username
+        self.generate_password(password)
+        self.role = role
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraAdminUser %r-%r>" % (self.username, self.role)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password, password)
+
+    def generate_password(self, password):
+        self.password = generate_password_hash(password)
