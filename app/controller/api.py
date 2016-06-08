@@ -129,7 +129,7 @@ def status_task():
     key = request.json.get('key')
     if common.verify_key(key) is False:
         return jsonify(code=4002, msg=u'Key verify failed')
-    c = CobraTaskInfo.query.filter_by(id=scan_id)
+    c = CobraTaskInfo.query.filter_by(id=scan_id).first()
     if not c:
         return jsonify(status=4004)
     status = {
@@ -141,7 +141,7 @@ def status_task():
     status_text = status[c.status]
     config = ConfigParser.ConfigParser()
     config.read('config')
-    domain = config.get('app', 'domain')
+    domain = config.get('cobra', 'domain')
     result = {
         'status': status_text,
         'report': 'http://' + domain + '/report/' + scan_id
