@@ -80,6 +80,7 @@
                     <address>
                         <h4>Date:</h4>
                         <span class="content"><strong>Report at: </strong>{{ data.task_created_at }}</span><br>
+                        <span class="content"><strong>Scan Time: </strong>{{ data.time_start }} - {{ data.time_end }} ({{ data.time_consume }})</span><br/>
                     </address>
                 </div>
             </div>
@@ -89,12 +90,12 @@
                         <h4>Project:</h4>
                         <span class="content"><strong>Project Name: </strong>{{ data.project_name }}</span><br>
                         <span class="content"><strong>Project Repository: </strong>{{ data.project_repository }}</span>
+                        <span class="content"><strong>Project Description: </strong>{{ data.project_description }}</span>
                     </address>
                 </div>
                 <div class="col-xs-6">
                     <address>
                         <h4>Result:</h4>
-                        <span class="content"><strong>Scan Time: </strong>{{ data.time_start }} - {{ data.time_end }} ({{ data.time_consume }})</span><br/>
                         <span class="content"><strong>Scan Files: </strong>{{ data.files }}</span><br/>
                         <span class="content"><strong>Code Line Number: </strong>{{ data.code_number }}</span><br/>
                         <span class="content"><strong>Vulnerabilities: </strong>{{ data.vulnerabilities_count }}</span><br/>
