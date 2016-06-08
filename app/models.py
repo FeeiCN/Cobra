@@ -203,7 +203,7 @@ class CobraAdminUser(db.Model):
     password = db.Column(db.String(256), nullable=True, default=None)
     role = db.Column(TINYINT(2), nullable=True, default=None)
     last_login_time = db.Column(db.DateTime, nullable=True, default=None)
-    last_login_ip = db.Column(db.DateTime, nullable=True, default=None)
+    last_login_ip = db.Column(db.String(16), nullable=True, default=None)
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
