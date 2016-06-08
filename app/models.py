@@ -202,13 +202,17 @@ class CobraAdminUser(db.Model):
     username = db.Column(db.String(64), nullable=True, default=None)
     password = db.Column(db.String(256), nullable=True, default=None)
     role = db.Column(TINYINT(2), nullable=True, default=None)
+    last_login_time = db.Column(db.DateTime, nullable=True, default=None)
+    last_login_ip = db.Column(db.DateTime, nullable=True, default=None)
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, username, password, role, created_at, updated_at):
+    def __init__(self, username, password, role, last_login_time, last_login_ip, created_at, updated_at):
         self.username = username
         self.generate_password(password)
         self.role = role
+        self.last_login_time = last_login_time
+        self.last_login_ip = last_login_ip
         self.created_at = created_at
         self.updated_at = updated_at
 
