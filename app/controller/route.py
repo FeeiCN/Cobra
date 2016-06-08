@@ -148,6 +148,9 @@ def report(id):
     vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
     results = CobraResults.query.filter_by(task_id=id).all()
 
+    # convert timestamp to datetime
+    date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(date))
+
     # find rules -> vuls
     vulnerabilities = []
     for result in results:
