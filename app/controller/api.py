@@ -113,7 +113,7 @@ def add_task():
 
         # Start Scanning
         subprocess.Popen(
-            ['python', '/home/mapp/cobra/cobra.py', "scan", "-s", "-p", str(project_id), "-i", str(task.id), "-t",
+            ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
              gg.repo_directory])
         # Statistic Code
         subprocess.Popen(
