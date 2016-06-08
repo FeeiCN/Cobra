@@ -188,7 +188,7 @@ class Static:
                                     print("In White list")
                                 else:
                                     # # // /* *
-                                    match_result = re.match("^(#)?(\/\/)?(\*)?(\/\*)?", m_code)
+                                    match_result = re.match("(#)?(\/\/)?(\*)?(\/\*)?", m_code)
                                     if match_result.group(0) is not None and match_result.group(0) is not "":
                                         print("In Annotation")
                                     else:
