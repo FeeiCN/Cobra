@@ -12,6 +12,7 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import datetime
+from app import db, CobraAuth
 
 
 def convert_timestamp(stamp):
@@ -22,3 +23,9 @@ def convert_timestamp(stamp):
     date_shards = [x.lstrip('0') for x in date_shards]
     processed_date = datetime.date(int(date_shards[0]), int(date_shards[1]), int(date_shards[2]))
     return processed_date
+
+
+def verify_key(key):
+    """verify api key"""
+    auth = CobraAuth.query.filter_by(key=key).first()
+    return auth is None

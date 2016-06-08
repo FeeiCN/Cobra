@@ -129,7 +129,7 @@ class Static:
 
         languages = CobraLanguages.query.all()
 
-        rules = CobraRules.query.all()
+        rules = CobraRules.query.filter_by(status=1).all()
         extensions = None
         for rule in rules:
             for language in languages:
@@ -153,7 +153,7 @@ class Static:
 
             # White list
             white_list = []
-            ws = CobraWhiteList.query.filter_by(project_id=project_id, rule_id=rule.id).all()
+            ws = CobraWhiteList.query.filter_by(project_id=project_id, rule_id=rule.id, status=1).all()
             if ws is not None:
                 for w in ws:
                     white_list.append(w.path)
@@ -178,9 +178,11 @@ class Static:
                                 task_id = 0
                             rule_id = rule.id
                             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                            params = [task_id, rule_id, rr[0], code[0], str(code[1].strip()),
-                                      datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                                      datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
+                            m_file = rr[0].strip()
+                            m_line = code[0]
+                            m_code = str(code[1].strip())
+                            params = [task_id, rule_id, m_file, m_line, m_code, current_time,
+                                      current_time]
                             try:
                                 print('In Insert')
                                 if rr[0] in white_list:
@@ -192,8 +194,7 @@ class Static:
                                     if r_content is not None:
                                         print("Exists Result")
                                     else:
-                                        results = CobraResults(task_id, rule_id, rr[0], code[0], str(code[1].strip()),
-                                                               current_time,
+                                        results = CobraResults(task_id, rule_id, m_file, m_line, m_code, current_time,
                                                                current_time)
                                         db.session.add(results)
                                         db.session.commit()

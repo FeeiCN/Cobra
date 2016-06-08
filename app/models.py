@@ -69,7 +69,8 @@ class CobraRules(db.Model):
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, level, created_at, updated_at):
+    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, level, created_at,
+                 updated_at):
         self.vul_id = vul_id
         self.language = language
         self.regex = regex
@@ -190,3 +191,24 @@ class CobraWhiteList(db.Model):
 
     def __repr__(self):
         return "<CobraWhiteList %r-%r:%r>" % (self.project_id, self.rule_id, self.reason)
+
+
+class CobraAuth(db.Modal):
+    __tablename__ = 'auth'
+
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(52), default=None, nullable=True)
+    key = db.Column(db.String(256), default=None, nullable=True)
+    status = db.Column(TINYINT, default=None, nullable=True)
+    created_at = db.Column(db.DateTime, default=None, nullable=True)
+    updated_at = db.Column(db.DateTime, default=None, nullable=True)
+
+    def __init__(self, name, key, status, created_at, updated_at):
+        self.name = name
+        self.key = key
+        self.status = status
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraAuth %r-%r>" % (self.name, self.key)
