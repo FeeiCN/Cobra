@@ -146,6 +146,7 @@ def report(id):
     time_start = task_info.time_start
     time_end = task_info.time_end
     files = task_info.file_count
+    code_number = task_info.code_number
     vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
     results = CobraResults.query.filter_by(task_id=id).all()
 
@@ -199,6 +200,7 @@ def report(id):
         'time_start': time_start,
         'time_end': time_end,
         'files': files,
+        'code_number': code_number,
         'vulnerabilities_count': vulnerabilities_count,
         'vulnerabilities': vulnerabilities,
     }

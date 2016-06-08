@@ -15,6 +15,7 @@ import ConfigParser
 import os
 import sys
 import time
+import subprocess
 
 from flask import Flask
 from flask.ext.migrate import MigrateCommand, Migrate
@@ -50,11 +51,44 @@ migrate = Migrate(web, db)
 manager = Manager(web)
 
 
+class Statistic(Command):
+    option_list = (
+        Option('--target', '-t', dest='target', help='directory'),
+        Option('--tid', '-i', dest='tid', help='scan task id')
+    )
+
+    def run(self, target=None, tid=None):
+        if target is None:
+            print("Please set --target param")
+            sys.exit()
+        if tid is None:
+            print("Please set --tid param")
+            sys.exit()
+
+        # Statistic Code
+        p = subprocess.Popen(
+            ['cloc', target], stdout=subprocess.PIPE)
+        (output, err) = p.communicate()
+        rs = output.split("\n")
+        for r in rs:
+            r_e = r.split()
+            if len(r_e) > 3 and r_e[0] == 'SUM:':
+                t = CobraTaskInfo.query.filter_by(id=tid).first()
+                if t is not None:
+                    t.code_number = r_e[4]
+                    try:
+                        db.session.add(t)
+                        db.session.commit()
+                        print("Statistic code number done")
+                    except:
+                        print("Statistic code number failed")
+
+
 class Scan(Command):
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
         Option('--tid', '-i', dest='tid', help='scan task id'),
-        Option('--pid', '-p', dest='pid', help='scan project id')
+        Option('--pid', '-p', dest='pid', help='scan project id'),
     )
 
     def parse_target(self, target=None):
@@ -118,7 +152,7 @@ class Scan(Command):
             dc.decompress()
             s.analyse(target, task_id=task_id, project_id=pid)
         elif target_type is 'file':
-            s.analyse(target)
+            s.analyse(target, task_id=task_id, project_id=pid)
         elif target_type is 'git':
             from pickup.GitTools import Git
             g = Git(target, branch='master')

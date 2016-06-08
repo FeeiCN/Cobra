@@ -94,7 +94,7 @@ def add_task():
         return jsonify(code=4001)
 
     # insert into task info table.
-    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, None, None, None, 1, 0,
+    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, None, None, None, 1, None, 0,
                          current_time, current_time)
 
     p = CobraProjects.query.filter_by(repository=target).first()
@@ -113,7 +113,11 @@ def add_task():
 
         # Start Scanning
         subprocess.Popen(
-            ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
+            ['python', '/home/mapp/cobra/cobra.py', "scan", "-s", "-p", str(project_id), "-i", str(task.id), "-t",
+             gg.repo_directory])
+        # Statistic Code
+        subprocess.Popen(
+            ['python', '/home/mapp/cobra/cobra.py', "statistic", "-i", str(task.id), "-t",
              gg.repo_directory])
 
         result['scan_id'] = task.id
