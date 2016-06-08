@@ -13,30 +13,69 @@
 #
 import time
 
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, session, escape, redirect
 
 from app import web, CobraRules, CobraVuls, db, CobraLanguages
-from app import CobraProjects, CobraWhiteList
+from app import CobraProjects, CobraWhiteList, CobraAdminUser
 
 # default admin url
 ADMIN_URL = '/admin'
 
 
+# check login function
+def is_login():
+    if session.get('is_login') and session.get('is_login') == True:
+        return True
+    else:
+        return False
+
+
 @web.route(ADMIN_URL + '/', methods=['GET'])
-@web.route(ADMIN_URL + '/index', methods=['GET'])
+@web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
-    return 'admin/index - todo: login page'
+    if request.method == "POST":
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        au = CobraAdminUser.query.filter_by(username=username).first()
+        if not au or not au.verify_password(password):
+            # login failed.
+            return "Wrong username or password."
+        else:
+            # login success.
+            session['role'] = au.role
+            session['username'] = escape(au.username)
+            session['is_login'] = True
+
+            current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+            au.last_login_time = current_time
+            au.last_login_ip = request.remote_addr
+            db.session.add(au)
+            db.session.commit()
+
+            return "Login success, jumping...<br /><script>window.setTimeout(\"location='main'\", 1000);</script>"
+    else:
+        return render_template("rulesadmin/index.html")
 
 
 # main view
 @web.route(ADMIN_URL + '/main', methods=['GET'])
 def main():
-    return render_template("rulesadmin/main.html")
+    # check login
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+    else:
+        return render_template("rulesadmin/main.html")
 
 
 # all rules button
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
 def rules(page):
+
+    # check login
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     per_page = 10
     cobra_rules = CobraRules.query.order_by('id').limit(per_page).offset((page-1)*per_page).all()
     cobra_vuls = CobraVuls.query.all()
@@ -77,6 +116,10 @@ def rules(page):
 # add new rules button
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
 def add_new_rule():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         vul_type = request.form.get('vul_type')
         lang = request.form.get('language')
@@ -123,6 +166,10 @@ def add_new_rule():
 # del special rule
 @web.route(ADMIN_URL + '/del_rule', methods=['POST'])
 def del_rule():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     vul_id = request.form['rule_id']
     if vul_id:
         r = CobraRules.query.filter_by(id=vul_id).first()
@@ -139,6 +186,10 @@ def del_rule():
 # edit special rule
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
 def edit_rule(rule_id):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         vul_type = request.form.get('vul_type')
         lang = request.form.get('language')
@@ -197,6 +248,10 @@ def edit_rule(rule_id):
 # add new vuls button
 @web.route(ADMIN_URL + '/add_new_vul', methods=['GET', 'POST'])
 def add_new_vul():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         name = request.form.get('name')
         description = request.form.get('description')
@@ -223,6 +278,10 @@ def add_new_vul():
 # show all vuls click
 @web.route(ADMIN_URL + '/vuls/<int:page>', methods=['GET'])
 def vuls(page):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     per_page_vuls = 10
     all_vuls = CobraVuls.query.order_by('id').limit(per_page_vuls).offset((page-1)*per_page_vuls).all()
     data = {
@@ -234,6 +293,10 @@ def vuls(page):
 # del special vul
 @web.route(ADMIN_URL + '/del_vul', methods=['POST'])
 def del_vul():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     vul_id = request.form['vul_id']
     if vul_id:
         v = CobraVuls.query.filter_by(id=vul_id).first()
@@ -250,6 +313,10 @@ def del_vul():
 # edit special vul
 @web.route(ADMIN_URL + '/edit_vul/<int:vul_id>', methods=['GET', 'POST'])
 def edit_vul(vul_id):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         name = request.form.get('name')
         description = request.form.get('description')
@@ -283,6 +350,10 @@ def edit_vul(vul_id):
 # api: get all rules count
 @web.route(ADMIN_URL + '/all_rules_count', methods=['GET'])
 def all_rules_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     rules_count = CobraRules.query.count()
     return str(rules_count)
 
@@ -290,6 +361,10 @@ def all_rules_count():
 # api: get all vuls count
 @web.route(ADMIN_URL + '/all_vuls_count', methods=['GET'])
 def all_vuls_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     vuls_count = CobraVuls.query.count()
     return str(vuls_count)
 
@@ -297,6 +372,10 @@ def all_vuls_count():
 # api: get all projects count
 @web.route(ADMIN_URL + '/all_projects_count', methods=['GET'])
 def all_projects_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     projects_count = CobraProjects.query.count()
     return str(projects_count)
 
@@ -304,6 +383,10 @@ def all_projects_count():
 # api: get all whitelists count
 @web.route(ADMIN_URL + '/all_whitelists_count', methods=['GET'])
 def all_whitelists_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     whitelists_count = CobraWhiteList.query.count()
     return str(whitelists_count)
 
@@ -311,6 +394,10 @@ def all_whitelists_count():
 # show all projects
 @web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
 def projects(page):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     per_page = 10
     project = CobraProjects.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
     data = {
@@ -322,6 +409,10 @@ def projects(page):
 # del the special projects
 @web.route(ADMIN_URL + '/del_project', methods=['POST'])
 def del_project():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         project_id = request.form.get('id')
         if not project_id or project_id == "":
@@ -340,6 +431,10 @@ def del_project():
 # edit the special projects
 @web.route(ADMIN_URL + '/edit_project/<int:project_id>', methods=['GET', 'POST'])
 def edit_project(project_id):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == "POST":
         # get data from request
         project_id = request.form.get('project_id')
@@ -383,6 +478,10 @@ def edit_project(project_id):
 # show all white lists
 @web.route(ADMIN_URL + '/whitelists/<int:page>', methods=['GET'])
 def whitelists(page):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     per_page = 10
     whitelists = CobraWhiteList.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
     data = {
@@ -394,6 +493,10 @@ def whitelists(page):
 # add new white list
 @web.route(ADMIN_URL + '/add_whitelist', methods=['GET', 'POST'])
 def add_whitelist():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         project_id = request.form.get('project_id')
         rule_id = request.form.get('rule_id')
@@ -432,6 +535,10 @@ def add_whitelist():
 # del the special white list
 @web.route(ADMIN_URL + '/del_whitelist', methods=['POST'])
 def del_whitelist():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     whitelist_id = request.form.get('whitelist_id')
     if not whitelist_id or whitelists == "":
         return jsonify(tag='danger', msg='wrong white list id.')
@@ -448,6 +555,10 @@ def del_whitelist():
 # edit the special white list
 @web.route(ADMIN_URL + '/edit_whitelist/<int:whitelist_id>', methods=['GET', 'POST'])
 def edit_whitelist(whitelist_id):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         whitelist_id = request.form.get('whitelist_id')
         project_id = request.form.get('project')
@@ -501,6 +612,10 @@ def edit_whitelist(whitelist_id):
 # search_rules_bar
 @web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
 def search_rules_bar():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     languages = CobraLanguages.query.all()
     vuls = CobraVuls.query.all()
 
@@ -515,6 +630,10 @@ def search_rules_bar():
 # search rules
 @web.route(ADMIN_URL + '/search_rules', methods=['POST'])
 def search_rules():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == 'POST':
         language = request.form.get('language')
         vul = request.form.get('vul')
