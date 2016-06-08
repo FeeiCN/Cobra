@@ -184,15 +184,15 @@ class Static:
                             params = [task_id, rule_id, m_file, m_line, m_code, current_time,
                                       current_time]
                             try:
-                                print('In Insert')
                                 if m_file in white_list:
                                     print("In White list")
                                 else:
                                     # # // /* *
                                     match_result = re.match("^(#)?(\/\/)?(\*)?(\/\*)?", m_code)
-                                    if match_result.group(0) is not None:
+                                    if match_result.group(0) is not None or match_result.group(0) == "":
                                         print("In Annotation")
                                     else:
+                                        print('In Insert')
                                         r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
                                                                                  file=m_file,
                                                                                  line=m_line).first()
