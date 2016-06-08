@@ -106,8 +106,7 @@ def add_task():
     # Start Scanning
     subprocess.Popen(
         ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
-         "uploads/" + repo_name + "/"],
-        stdout=subprocess.PIPE)
+         "uploads/" + repo_name + "/"])
     try:
         db.session.add(task)
         if not p:
