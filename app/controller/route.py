@@ -168,13 +168,13 @@ def report(id):
         each_vul['repair'] = rules.repair
         each_vul['line'] = result.line
         if rules.level == 3:
-            each_vul['level'] = 'High'
+            each_vul['level'] = 'H'
             each_vul['color'] = 'red'
         elif rules.level == 2:
-            each_vul['level'] = 'Medium'
+            each_vul['level'] = 'M'
             each_vul['color'] = 'orange'
         elif rules.level == 1:
-            each_vul['level'] = 'Low'
+            each_vul['level'] = 'L'
             each_vul['color'] = 'black'
         else:
             each_vul['level'] = 'Undefined'

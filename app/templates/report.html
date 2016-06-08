@@ -71,7 +71,7 @@
                 <div class="col-xs-6">
                     <address>
                         <h4>To:</h4>
-                        <span class="content"><strong>Business: </strong>{{ data.author }} </span><br/>
+                        <span class="content"><strong>Author: </strong>{{ data.author }} </span><br/>
                         <span class="content"><strong>PE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </strong>@puzhi </span><br/>
                         <span class="content"><strong>Security&nbsp;: </strong>@zhijie/@hanshui/@shiqiao </span>
                     </address>
@@ -79,8 +79,7 @@
                 <div class="col-xs-6">
                     <address>
                         <h4>Date:</h4>
-                        <span class="content"><strong>Task created at: </strong>{{ data.task_created_at }}</span><br>
-                        <span class="content"><strong>Task Start at: </strong>{{ data.date }}</span><br>
+                        <span class="content"><strong>Report at: </strong>{{ data.task_created_at }}</span><br>
                     </address>
                 </div>
             </div>
@@ -95,8 +94,8 @@
                 <div class="col-xs-6">
                     <address>
                         <h4>Result:</h4>
-                        <span class="content"><strong>Scan Time: </strong>{{ data.scan_time }}</span><br/>
-                        <span class="content"><strong>Files: </strong>{{ data.files }}</span><br/>
+                        <span class="content"><strong>Scan Time: </strong>{{ data.task_created_at }} - {{ data.date }} ({{ data.scan_time }})</span><br/>
+                        <span class="content"><strong>Scan Files: </strong>{{ data.files }}</span><br/>
                         <span class="content"><strong>Vulnerabilities: </strong>{{ data.vulnerabilities_count }}</span><br/>
                     </address>
                 </div>
@@ -172,7 +171,9 @@
             <div class="box_style_2">
                 <i class="icon_set_1_icon-90"></i>
                 <h4><span>TT Offline?</span> Phone</h4>
-                <a class="phone">@hanshui/@zhijie/@shiqiao</a>
+                <a href="mactt://message/user/910" class="phone">@hanshui</a>/
+                <a href="mactt://message/user/472" class="phone">@zhijie</a>/
+                <a href="mactt://message/user/1306" class="phone">@shiqiao</a>
                 <small>Service Time: 7*24h</small>
             </div>
 
