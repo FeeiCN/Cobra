@@ -193,9 +193,14 @@ class Static:
                                         print("In Annotation")
                                     else:
                                         print('In Insert')
-                                        r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
-                                                                                 file=m_file,
-                                                                                 line=m_line).first()
+                                        if rule.regex == "":
+                                            # Didn't filter line when regex is empty
+                                            r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
+                                                                                     file=m_file).first()
+                                        else:
+                                            r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
+                                                                                     file=m_file,
+                                                                                     line=m_line).first()
                                         if r_content is not None:
                                             print("Exists Result")
                                         else:
