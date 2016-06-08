@@ -173,6 +173,7 @@ port = int(port)
 manager.add_command('db', MigrateCommand)
 manager.add_command('start', Server(host=host, port=port))
 manager.add_command('scan', Scan())
+manager.add_command('statistic', Statistic())
 
 from app.controller import route
 from app.controller import RulesAdmin
