@@ -197,6 +197,7 @@ class Static:
                                             # Didn't filter line when regex is empty
                                             r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
                                                                                      file=m_file).first()
+                                            m_line = 0
                                         else:
                                             r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
                                                                                      file=m_file,
