@@ -193,7 +193,7 @@ class CobraWhiteList(db.Model):
         return "<CobraWhiteList %r-%r:%r>" % (self.project_id, self.rule_id, self.reason)
 
 
-class CobraAuth(db.Modal):
+class CobraAuth(db.Model):
     __tablename__ = 'auth'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
