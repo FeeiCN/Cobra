@@ -199,7 +199,7 @@ class CobraAdminUser(db.Model):
     __tablename__ = 'adminuser'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=None)
-    username = db.Column(db.String(64), nullable=True, default=None)
+    username = db.Column(db.String(64), nullable=True, default=None, unique=True)
     password = db.Column(db.String(256), nullable=True, default=None)
     role = db.Column(TINYINT(2), nullable=True, default=None)
     last_login_time = db.Column(db.DateTime, nullable=True, default=None)
