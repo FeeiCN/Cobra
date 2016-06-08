@@ -220,7 +220,7 @@ class CobraAdminUser(db.Model):
     """
     :role: 1-super admin, 2-admin, 3-rule admin
     """
-    __tablename__ = 'adminuser'
+    __tablename__ = 'user'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=None)
     username = db.Column(db.String(64), nullable=True, default=None, unique=True)
