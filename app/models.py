@@ -13,7 +13,7 @@
 #
 
 from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT
-from werkzeug.security import generate_password_hash, check_password_hash
+
 from app import db
 
 
@@ -69,7 +69,8 @@ class CobraRules(db.Model):
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, level, created_at, updated_at):
+    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, level, created_at,
+                 updated_at):
         self.vul_id = vul_id
         self.language = language
         self.regex = regex
@@ -192,35 +193,22 @@ class CobraWhiteList(db.Model):
         return "<CobraWhiteList %r-%r:%r>" % (self.project_id, self.rule_id, self.reason)
 
 
-class CobraAdminUser(db.Model):
-    """
-    :role: 1-super admin, 2-admin, 3-rule admin
-    """
-    __tablename__ = 'adminuser'
+class CobraAuth(db.Model):
+    __tablename__ = 'auth'
 
-    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=None)
-    username = db.Column(db.String(64), nullable=True, default=None, unique=True)
-    password = db.Column(db.String(256), nullable=True, default=None)
-    role = db.Column(TINYINT(2), nullable=True, default=None)
-    last_login_time = db.Column(db.DateTime, nullable=True, default=None)
-    last_login_ip = db.Column(db.String(16), nullable=True, default=None)
-    created_at = db.Column(db.DateTime, nullable=True, default=None)
-    updated_at = db.Column(db.DateTime, nullable=True, default=None)
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(52), default=None, nullable=True)
+    key = db.Column(db.String(256), default=None, nullable=True)
+    status = db.Column(TINYINT, default=None, nullable=True)
+    created_at = db.Column(db.DateTime, default=None, nullable=True)
+    updated_at = db.Column(db.DateTime, default=None, nullable=True)
 
-    def __init__(self, username, password, role, last_login_time, last_login_ip, created_at, updated_at):
-        self.username = username
-        self.generate_password(password)
-        self.role = role
-        self.last_login_time = last_login_time
-        self.last_login_ip = last_login_ip
+    def __init__(self, name, key, status, created_at, updated_at):
+        self.name = name
+        self.key = key
+        self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
 
     def __repr__(self):
-        return "<CobraAdminUser %r-%r>" % (self.username, self.role)
-
-    def verify_password(self, password):
-        return check_password_hash(self.password, password)
-
-    def generate_password(self, password):
-        self.password = generate_password_hash(password)
+        return "<CobraAuth %r-%r>" % (self.name, self.key)

@@ -142,14 +142,16 @@ def report(id):
     project = CobraProjects.query.filter_by(repository=repository).first()
     project_name = project.name
     author = project.author
-    scan_time = task_info.time_consume
-    date = task_info.time_start
+    time_consume = task_info.time_consume
+    time_start = task_info.time_start
+    time_end = task_info.time_end
     files = task_info.file_count
     vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
     results = CobraResults.query.filter_by(task_id=id).all()
 
     # convert timestamp to datetime
-    date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(date))
+    time_start = time.strftime("%H:%M:%S", time.localtime(time_start))
+    time_end = time.strftime("%H:%M:%S", time.localtime(time_end))
 
     # find rules -> vuls
     vulnerabilities = []
@@ -171,13 +173,13 @@ def report(id):
         each_vul['repair'] = rules.repair
         each_vul['line'] = result.line
         if rules.level == 3:
-            each_vul['level'] = 'High'
+            each_vul['level'] = 'H'
             each_vul['color'] = 'red'
         elif rules.level == 2:
-            each_vul['level'] = 'Medium'
+            each_vul['level'] = 'M'
             each_vul['color'] = 'orange'
         elif rules.level == 1:
-            each_vul['level'] = 'Low'
+            each_vul['level'] = 'L'
             each_vul['color'] = 'black'
         else:
             each_vul['level'] = 'Undefined'
@@ -192,9 +194,10 @@ def report(id):
         'project_name': project_name,
         'project_repository': repository,
         'author': author,
-        'date': date,
         'task_created_at': task_created_at,
-        'scan_time': scan_time,
+        'time_consume': str(time_consume) + 's',
+        'time_start': time_start,
+        'time_end': time_end,
         'files': files,
         'vulnerabilities_count': vulnerabilities_count,
         'vulnerabilities': vulnerabilities,

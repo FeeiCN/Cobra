@@ -13,6 +13,7 @@
 #
 import time
 
+from utils import common
 from flask import request, jsonify
 import ConfigParser
 import subprocess
@@ -37,7 +38,7 @@ def add_task():
     example:
         {
             "key": "34b9a295d037d47eec3952e9dcdb6b2b",              // must, client key
-            "target": "https://gitlab.com/username/project",        // must, gitlab address
+            "target": "https://gitlab.com/username/project.git",    // must, gitlab address
             "branch": "master",                                     // must, the project branch
             "old_version": "old version here",                      // optional, if you choice diff scan mode, you should provide old version hash.
             "new_version": "new version here",                      // optional, if you choice diff scan mode, you should provide new version hash.
@@ -57,6 +58,8 @@ def add_task():
 
     # Params
     key = data.get('key')
+    if common.verify_key(key) is False:
+        return jsonify(code=4002, msg=u'Key verify failed')
     target = data.get('target')
     branch = data.get('branch')
     new_version = data.get('new_version')
@@ -102,18 +105,19 @@ def add_task():
         project_id = project.id
     else:
         project_id = p.id
-
-    # Start Scanning
-    subprocess.Popen(
-        ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
-         "uploads/" + repo_name + "/"],
-        stdout=subprocess.PIPE)
     try:
         db.session.add(task)
         if not p:
             db.session.add(project)
         db.session.commit()
+
+        # Start Scanning
+        subprocess.Popen(
+            ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
+             gg.repo_directory])
+
         result['scan_id'] = task.id
+        result['project_id'] = project_id
         return jsonify(code=1001, result=result)
     except:
         return jsonify(code=1004, msg=u'Unknown error, try again later?')
@@ -122,7 +126,10 @@ def add_task():
 @web.route(API_URL + '/status', methods=['POST'])
 def status_task():
     scan_id = request.json.get('scan_id')
-    c = CobraTaskInfo.query.filter_by(id=scan_id)
+    key = request.json.get('key')
+    if common.verify_key(key) is False:
+        return jsonify(code=4002, msg=u'Key verify failed')
+    c = CobraTaskInfo.query.filter_by(id=scan_id).first()
     if not c:
         return jsonify(status=4004)
     status = {
@@ -134,7 +141,7 @@ def status_task():
     status_text = status[c.status]
     config = ConfigParser.ConfigParser()
     config.read('config')
-    domain = config.get('app', 'domain')
+    domain = config.get('cobra', 'domain')
     result = {
         'status': status_text,
         'report': 'http://' + domain + '/report/' + scan_id
