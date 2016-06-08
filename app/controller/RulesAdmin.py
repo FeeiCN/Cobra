@@ -23,9 +23,12 @@ ADMIN_URL = '/admin'
 
 
 @web.route(ADMIN_URL + '/', methods=['GET'])
-@web.route(ADMIN_URL + '/index', methods=['GET'])
+@web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
-    return 'admin/index - todo: login page'
+    if request.method == "POST":
+        pass
+    else:
+        return render_template("rulesadmin/index.html")
 
 
 # main view
