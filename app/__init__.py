@@ -36,6 +36,7 @@ config = ConfigParser.ConfigParser()
 config.read('config')
 web.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 web.config['SQLALCHEMY_DATABASE_URI'] = config.get('database', 'mysql')
+web.secret_key = config.get('cobra', 'secret_key')
 
 bootstrap = Bootstrap(web)
 
