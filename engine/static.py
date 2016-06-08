@@ -185,8 +185,10 @@ class Static:
                                       current_time]
                             try:
                                 print('In Insert')
-                                if rr[0] in white_list:
+                                if m_file in white_list:
                                     print("In White list")
+                                elif re.match("^(#)?(\/\/)?(\*)?(\/\*)?", m_code) is not None:
+                                    print("In Annotation")
                                 else:
                                     r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
                                                                              file=rr[0],
