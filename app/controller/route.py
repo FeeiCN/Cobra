@@ -142,14 +142,16 @@ def report(id):
     project = CobraProjects.query.filter_by(repository=repository).first()
     project_name = project.name
     author = project.author
-    scan_time = task_info.time_consume
-    date = task_info.time_start
+    time_consume = task_info.time_consume
+    time_start = task_info.time_start
+    time_end = task_info.time_end
     files = task_info.file_count
     vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
     results = CobraResults.query.filter_by(task_id=id).all()
 
     # convert timestamp to datetime
-    date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(date))
+    time_start = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_start))
+    time_end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_end))
 
     # find rules -> vuls
     vulnerabilities = []
@@ -192,9 +194,10 @@ def report(id):
         'project_name': project_name,
         'project_repository': repository,
         'author': author,
-        'date': date,
         'task_created_at': task_created_at,
-        'scan_time': str(scan_time) + 's',
+        'time_consume': str(time_consume) + 's',
+        'time_start': time_start,
+        'time_end': time_end,
         'files': files,
         'vulnerabilities_count': vulnerabilities_count,
         'vulnerabilities': vulnerabilities,
