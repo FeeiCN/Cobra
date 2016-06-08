@@ -194,7 +194,7 @@ def report(id):
         'author': author,
         'date': date,
         'task_created_at': task_created_at,
-        'scan_time': scan_time,
+        'scan_time': str(scan_time) + 's',
         'files': files,
         'vulnerabilities_count': vulnerabilities_count,
         'vulnerabilities': vulnerabilities,

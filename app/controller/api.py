@@ -114,6 +114,7 @@ def add_task():
             db.session.add(project)
         db.session.commit()
         result['scan_id'] = task.id
+        result['project_id'] = project_id
         return jsonify(code=1001, result=result)
     except:
         return jsonify(code=1004, msg=u'Unknown error, try again later?')
