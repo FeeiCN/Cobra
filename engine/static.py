@@ -188,13 +188,14 @@ class Static:
                                 if m_file in white_list:
                                     print("In White list")
                                 else:
+                                    # # // /* *
                                     match_result = re.match("^(#)?(\/\/)?(\*)?(\/\*)?", m_code)
-                                    if match_result.group[0] is not None:
+                                    if match_result.group(0) is not None:
                                         print("In Annotation")
                                     else:
                                         r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
-                                                                                 file=rr[0],
-                                                                                 line=code[0]).first()
+                                                                                 file=m_file,
+                                                                                 line=m_line).first()
                                         if r_content is not None:
                                             print("Exists Result")
                                         else:
@@ -228,3 +229,5 @@ class Static:
             db.session.commit()
         except Exception as e:
             print("Set start time failed:" + e.message)
+
+        print("Scan Done")
