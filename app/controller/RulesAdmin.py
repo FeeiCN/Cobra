@@ -710,6 +710,11 @@ def dashboard():
         and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
     ).first()[0]
 
+    # scanning time
+    avg_scan_time = db.session.query(func.avg(CobraTaskInfo.time_consume)).first()[0]
+    max_scan_time = db.session.query(func.max(CobraTaskInfo.time_consume)).first()[0]
+    min_scan_time = db.session.query(func.min(CobraTaskInfo.time_consume)).first()[0]
+
     data = {
         'total_task_count': total_task_count,
         'total_vulns_count': total_vulns_count,
@@ -719,5 +724,8 @@ def dashboard():
         'today_vulns_count': today_vulns_count,
         'today_projects_count': today_projects_count,
         'today_files_count': today_files_count,
+        'max_scan_time': max_scan_time,
+        'min_scan_time': min_scan_time,
+        'avg_scan_time': avg_scan_time,
     }
     return render_template("rulesadmin/dashboard.html", data=data)
