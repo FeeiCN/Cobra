@@ -10,7 +10,6 @@ $(document).ready(function () {
 
 // todo: improve this..
 $("div>button").click(function () {
-    console.log("123123");
     $("button").removeClass('btn-success');
     $(this).addClass('btn-success');
 });
@@ -488,22 +487,22 @@ $("#add_new_whitelist").click(function () {
             var reason = $("#reason").val();
 
             if (!project_id || project_id == "") {
-                showAlert('danger', 'project error.');
+                showAlert('danger', 'project error.', "#add-new-whitelist-result");
                 return false;
             }
 
             if (!rule_id || rule_id == "") {
-                showAlert('danger', 'rule error.');
+                showAlert('danger', 'rule error.', "#add-new-whitelist-result");
                 return false;
             }
 
             if (!path || path == "") {
-                showAlert('danger', 'file cannot be empty.');
+                showAlert('danger', 'file cannot be empty.', "#add-new-whitelist-result");
                 return false;
             }
 
             if (!reason || reason == "") {
-                showAlert('danger', 'reason can not be empty');
+                showAlert('danger', 'reason can not be empty', "#add-new-whitelist-result");
                 return false;
             }
 
