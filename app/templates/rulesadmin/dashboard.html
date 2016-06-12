@@ -107,10 +107,12 @@
                             <td><b>Today Vulnerability</b></td>
                             <td><b>Count</b></td>
                         </tr>
+                        {% for ev in data.today_vuls %}
                         <tr>
-                            <td>vul 1</td>
-                            <td>count 1</td>
+                        <td>{{ ev.vuls }}</td>
+                        <td>{{ ev.counts }}</td>
                         </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -121,10 +123,12 @@
                             <td><b>Total Vulnerability</b></td>
                             <td><b>Count</b></td>
                         </tr>
-                        <tr>
-                            <td>vul 1</td>
-                            <td>count 1</td>
-                        </tr>
+                        {% for ev in data.total_vuls %}
+                            <tr>
+                            <td>{{ ev.vuls }}</td>
+                            <td>{{ ev.counts }}</td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>

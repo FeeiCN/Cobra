@@ -684,6 +684,9 @@ def search_rules():
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
 
+    cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id,).all()
+    cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
+
     # get today date time and timestamp
     today_time_array = datetime.date.today()
     today_time_stamp = int(time.mktime(today_time_array.timetuple()))
@@ -715,6 +718,38 @@ def dashboard():
     max_scan_time = db.session.query(func.max(CobraTaskInfo.time_consume)).first()[0]
     min_scan_time = db.session.query(func.min(CobraTaskInfo.time_consume)).first()[0]
 
+    # total each vuls count
+    all_vuls = db.session.query(
+        CobraResults.rule_id, func.count("*").label('counts')
+    ).group_by(CobraResults.rule_id).all()
+
+    # today each vuls count
+    all_vuls_today = db.session.query(
+        CobraResults.rule_id, func.count("*").label('counts')
+    ).group_by(CobraResults.rule_id).filter(
+        and_(CobraResults.created_at >= today_time_array, CobraResults.created_at <= tomorrow_time_array)
+    ).all()
+
+    all_rules = {}
+    for x in cobra_rules:
+        all_rules[x.id] = x.vul_id
+    all_cobra_vuls = {}
+    for x in cobra_vuls:
+        all_cobra_vuls[x.id] = x.name
+
+    total_vuls = []
+    for x in all_vuls:
+        t = {}
+        t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+        t['counts'] = x.counts
+        total_vuls.append(t)
+    today_vuls = []
+    for x in all_vuls_today:
+        t = {}
+        t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+        t['counts'] = x.counts
+        today_vuls.append(t)
+
     data = {
         'total_task_count': total_task_count,
         'total_vulns_count': total_vulns_count,
@@ -727,5 +762,7 @@ def dashboard():
         'max_scan_time': max_scan_time,
         'min_scan_time': min_scan_time,
         'avg_scan_time': avg_scan_time,
+        'total_vuls': total_vuls,
+        'today_vuls': today_vuls,
     }
     return render_template("rulesadmin/dashboard.html", data=data)
