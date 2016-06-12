@@ -52,7 +52,6 @@ manager = Manager(web)
 
 
 class Statistic(Command):
-    log.info("Statistic Code...")
     option_list = (
         Option('--target', '-t', dest='target', help='directory'),
         Option('--tid', '-i', dest='tid', help='scan task id')
@@ -86,7 +85,6 @@ class Statistic(Command):
 
 
 class Scan(Command):
-    log.info('Scanning...')
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
         Option('--tid', '-i', dest='tid', help='scan task id'),
