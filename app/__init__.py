@@ -141,24 +141,24 @@ class Scan(Command):
                 File: must be single file or tar.gz/zip/rar compress file
                 """)
         from engine import static
-        s = static.Static()
+        s = static.Static(target, task_id=task_id, project_id=pid)
         if target_type is 'directory':
-            s.analyse(target, task_id=task_id, project_id=pid)
+            s.analyse()
         elif target_type is 'compress':
             from utils.decompress import Decompress
             # load an compressed file. only tar.gz, rar, zip supported.
             dc = Decompress(target)
             # decompress it. And there will create a directory named "222_test.tar".
             dc.decompress()
-            s.analyse(target, task_id=task_id, project_id=pid)
+            s.analyse()
         elif target_type is 'file':
-            s.analyse(target, task_id=task_id, project_id=pid)
+            s.analyse()
         elif target_type is 'git':
             from pickup.GitTools import Git
             g = Git(target, branch='master')
             g.get_repo()
             if g.clone() is True:
-                s.analyse(target, task_id=task_id, project_id=pid)
+                s.analyse()
             else:
                 log.critical("Git clone failed")
         elif target_type is 'svn':

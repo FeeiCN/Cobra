@@ -16,50 +16,27 @@ import sys
 import re
 import time
 import subprocess
-from engine import rules, scan
+from engine import scan
 from utils import log
 from datetime import datetime
 from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
 
 
 class Static:
-    def __init__(self, language=None, extensions=None):
-        self.language = language
-        self.extensions = extensions
+    def __init__(self, directory=None, task_id=None, project_id=None):
+        self.directory = directory
+        self.task_id = task_id
+        self.project_id = project_id
 
-    def re_multi(self, file_paths):
-        if self.language == 'php':
-            patterns = rules.php_function()
-
-        for file_path in file_paths:
-            self.re_one(file_path, patterns)
-
-    def re_one(self, file_path, pattern):
-        # open the files
-        input_file = open(file_path, 'r')
-
-        # read the corpus first
-        corpus_lines = input_file.readlines()
-
-        # loop through each line in corpus
-        for line_i in range(len(corpus_lines)):
-            line = corpus_lines[line_i]
-
-            # check if we have a regex match with "phrase" variable
-            # if so, write it the output file
-            if re.match(pattern, line):
-                log.debug(str(line_i + 1) + "\n")
-        input_file.close()
-
-    def analyse(self, directory=None, task_id=None, project_id=None):
-        if directory is None:
+    def analyse(self):
+        if self.directory is None:
             log.critical("Please set directory")
             sys.exit()
         log.info('Start code static analyse...')
 
         log.info('Parse target')
 
-        s = scan.Scan(directory)
+        s = scan.Scan(self.directory)
         files = s.files()
         ext_language = {
             # Image
@@ -142,8 +119,8 @@ class Static:
             grep = '/bin/grep'
             if 'darwin' == sys.platform:
                 log.info('In Mac OS X System')
-                for root, dirnames, filenames in os.walk('/usr/local/Cellar/grep'):
-                    for filename in filenames:
+                for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
+                    for filename in file_names:
                         if 'ggrep' == filename:
                             grep = os.path.join(root, filename)
 
@@ -153,7 +130,7 @@ class Static:
 
             # White list
             white_list = []
-            ws = CobraWhiteList.query.filter_by(project_id=project_id, rule_id=rule.id, status=1).all()
+            ws = CobraWhiteList.query.filter_by(project_id=self.project_id, rule_id=rule.id, status=1).all()
             if ws is not None:
                 for w in ws:
                     white_list.append(w.path)
@@ -161,7 +138,7 @@ class Static:
             try:
                 log.info('Scan rule id: {0}'.format(rule.id))
                 # -n Show Line number / -r Recursive / -P Perl regular expression
-                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, directory],
+                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory],
                                         stdout=subprocess.PIPE)
                 result = proc.communicate()
 
@@ -172,7 +149,7 @@ class Static:
                     log.debug(perline)
                     for r in range(0, len(perline) - 1):
                         try:
-                            rr = str(perline[r]).replace(directory, '').split(':', 1)
+                            rr = str(perline[r]).replace(self.directory, '').split(':', 1)
                             code = str(rr[1]).split(':', 1)
                             if task_id is None:
                                 task_id = 0
@@ -188,7 +165,7 @@ class Static:
                                     log.debug("In White list")
                                 else:
                                     # # // /* *
-                                    match_result = re.match("(#)?(\/\/)?(\*)?(\/\*)?", m_code)
+                                    match_result = re.match("(#)?(//)?(\*)?(/\*)?", m_code)
                                     if match_result.group(0) is not None and match_result.group(0) is not "":
                                         log.debug("In Annotation")
                                     else:
@@ -211,11 +188,11 @@ class Static:
                                             db.session.add(results)
                                             db.session.commit()
                                             log.info('Insert Results Success')
-                            except:
-                                log.error('Insert Results Failed')
+                            except Exception as e:
+                                log.error('Insert Results Failed' + str(e.message))
                             log.debug(params)
                         except Exception as e:
-                            log.critical('Error parsing result: ' + str(e))
+                            log.critical('Error parsing result: ' + str(e.message))
 
                 else:
                     log.info('Not Found')
