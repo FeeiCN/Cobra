@@ -151,14 +151,14 @@ class Static:
                         try:
                             rr = str(perline[r]).replace(self.directory, '').split(':', 1)
                             code = str(rr[1]).split(':', 1)
-                            if task_id is None:
-                                task_id = 0
+                            if self.task_id is None:
+                                self.task_id = 0
                             rule_id = rule.id
                             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             m_file = rr[0].strip()
                             m_line = code[0]
                             m_code = str(code[1].strip())
-                            params = [task_id, rule_id, m_file, m_line, m_code, current_time,
+                            params = [self.task_id, rule_id, m_file, m_line, m_code, current_time,
                                       current_time]
                             try:
                                 if m_file in white_list:
@@ -172,17 +172,19 @@ class Static:
                                         log.debug('In Insert')
                                         if rule.regex == "":
                                             # Didn't filter line when regex is empty
-                                            r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
+                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
+                                                                                     rule_id=rule_id,
                                                                                      file=m_file).first()
                                             m_line = 0
                                         else:
-                                            r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
+                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
+                                                                                     rule_id=rule_id,
                                                                                      file=m_file,
                                                                                      line=m_line).first()
                                         if r_content is not None:
                                             log.warning("Exists Result")
                                         else:
-                                            results = CobraResults(task_id, rule_id, m_file, m_line, m_code,
+                                            results = CobraResults(self.task_id, rule_id, m_file, m_line, m_code,
                                                                    current_time,
                                                                    current_time)
                                             db.session.add(results)
@@ -201,7 +203,7 @@ class Static:
                 log.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task
-        t = CobraTaskInfo.query.filter_by(id=task_id).first()
+        t = CobraTaskInfo.query.filter_by(id=self.task_id).first()
         t.status = 2
         t.file_count = files['file_nums']
         t.time_end = int(time.time())
