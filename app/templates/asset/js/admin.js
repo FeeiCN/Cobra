@@ -511,3 +511,9 @@ $("#add_new_whitelist").click(function () {
 
     });
 });
+
+
+// dashboard click
+$("#show_dashboard").click(function () {
+    $("#main-div").load("dashboard");
+});

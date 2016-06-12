@@ -676,3 +676,8 @@ def search_rules():
         }
 
         return render_template('rulesadmin/rules.html', data=data)
+
+
+@web.route(ADMIN_URL + "/dashboard", methods=['GET'])
+def dashboard():
+    return "dashboard"
