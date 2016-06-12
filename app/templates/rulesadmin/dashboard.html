@@ -18,23 +18,19 @@
                                 </tr>
                                 <tr>
                                     <td>Today Scan times: </td>
-                                    <td>127</td>
+                                    <td>{{ data.today_task_count }}</td>
                                 </tr>
                                 <tr>
                                     <td>Today Vulnerabilities: </td>
-                                    <td>76</td>
+                                    <td>{{ data.today_vulns_count }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Today Projects Count: </td>
-                                    <td>59</td>
+                                    <td>Today Scanned Projects Count: </td>
+                                    <td>{{ data.today_projects_count }}</td>
                                 </tr>
                                 <tr>
                                     <td>Today Files Count: </td>
-                                    <td>174</td>
-                                </tr>
-                                <tr>
-                                    <td>Today Code Lines Count:</td>
-                                    <td>3849</td>
+                                    <td>{{ data.today_files_count }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -48,23 +44,19 @@
                                 </tr>
                                 <tr>
                                     <td>Total Scan times: </td>
-                                    <td>12</td>
+                                    <td>{{ data.total_task_count }}</td>
                                 </tr>
                                 <tr>
                                     <td>Total Vulnerabilities: </td>
-                                    <td>5</td>
+                                    <td>{{ data.total_vulns_count }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Total Projects count: </td>
-                                    <td>4</td>
+                                    <td>Total Scanned Projects count: </td>
+                                    <td>{{ data.total_projects_count }}</td>
                                 </tr>
                                 <tr>
-                                    <td>ToTal Files Count: </td>
-                                    <td>471</td>
-                                </tr>
-                                <tr>
-                                    <td>ToTal Code Lines Count:</td>
-                                    <td>32849</td>
+                                    <td>Total Files Count: </td>
+                                    <td>{{ data.total_files_count }}</td>
                                 </tr>
                             </tbody>
                         </table>

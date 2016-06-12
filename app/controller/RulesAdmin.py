@@ -12,12 +12,14 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import time
+import datetime
 
 from flask import render_template, request, jsonify, session, escape, redirect
+from sqlalchemy.sql import func, and_
 
 from app import web, CobraRules, CobraVuls, db, CobraLanguages
 from app import CobraProjects, CobraWhiteList, CobraAdminUser
-from app import CobraTaskInfo
+from app import CobraTaskInfo, CobraResults
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -681,5 +683,41 @@ def search_rules():
 
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
+
+    # get today date time and timestamp
+    today_time_array = datetime.date.today()
+    today_time_stamp = int(time.mktime(today_time_array.timetuple()))
+    tomorrow_time_stamp = today_time_stamp + 3600 * 24
+    tomorrow_time_array = datetime.datetime.fromtimestamp(int(tomorrow_time_stamp))
+
+    # total overview
     total_task_count = CobraTaskInfo.query.count()
-    return render_template("rulesadmin/dashboard.html")
+    total_vulns_count = CobraResults.query.count()
+    total_projects_count = CobraProjects.query.count()
+    total_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]
+
+    # today overview
+    today_task_count = CobraTaskInfo.query.filter(
+        and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
+    ).count()
+    today_vulns_count = CobraResults.query.filter(
+        and_(CobraResults.created_at >= today_time_array, CobraResults.created_at <= tomorrow_time_array)
+    ).count()
+    today_projects_count = CobraProjects.query.filter(
+        and_(CobraProjects.last_scan >= today_time_array, CobraProjects.last_scan <= tomorrow_time_array)
+    ).count()
+    today_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).filter(
+        and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
+    ).first()[0]
+
+    data = {
+        'total_task_count': total_task_count,
+        'total_vulns_count': total_vulns_count,
+        'total_projects_count': total_projects_count,
+        'total_files_count': total_files_count,
+        'today_task_count': today_task_count,
+        'today_vulns_count': today_vulns_count,
+        'today_projects_count': today_projects_count,
+        'today_files_count': today_files_count,
+    }
+    return render_template("rulesadmin/dashboard.html", data=data)
