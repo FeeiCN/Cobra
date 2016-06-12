@@ -739,6 +739,34 @@ def del_language():
         return jsonify(tag="danger", msg="delete failed.")
 
 
+@web.route(ADMIN_URL + "/edit_language/<int:language_id>", methods=['POST', 'GET'])
+def edit_language(language_id):
+    if request.method == "POST":
+        language = request.form.get("language")
+        extensions = request.form.get("extensions")
+        if not language or language == "":
+            return jsonify(tag="danger", msg="language name can not be blank.")
+        if not extensions or extensions == "":
+            return jsonify(tag="danger", msg="extensions can not be blank.")
+
+        l = CobraLanguages.query.filter_by(id=language_id).first()
+        try:
+            l.language = language
+            l.extensions = extensions
+            db.session.add(l)
+            db.session.commit()
+            return jsonify(tag="success", msg="update success.")
+        except:
+            return jsonify(tag="danger", msg="try again later?")
+
+    else:
+        l = CobraLanguages.query.filter_by(id=language_id).first()
+        data = {
+            'language': l,
+        }
+        return render_template("rulesadmin/edit_language.html", data=data)
+
+
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
 

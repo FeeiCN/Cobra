@@ -332,7 +332,33 @@ $("#main-div").delegate("span", "click", function () {
                 $("#show_all_languages").click();
             })
         } else if (type == "edit") {
+            $.get("edit_language/"+cid, function (data) {
+                $("#main-div").html(data);
+                $("#edit-language-button").click(function () {
+                    var language = $("#language").val();
+                    var extensions = $("#extensions").val();
 
+                    if (!language || language == "") {
+                        showAlert("danger", "language name can not be blank.", "#edit-language-result");
+                        return false;
+                    }
+                    if (!extensions || extensions == "") {
+                        showAlert("danger", "extensions can not be blank.", "#edit-language-result");
+                        return false;
+                    }
+
+                    data = {
+                        'language': language,
+                        'extensions': extensions
+                    };
+
+                    $.post("edit_language/"+cid, data, function (data) {
+                        showAlert(data.tag, data.msg, "#edit-language-result");
+                        return false;
+                    });
+
+                });
+            })
         }
     }
 });
