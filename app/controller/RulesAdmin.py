@@ -17,6 +17,7 @@ from flask import render_template, request, jsonify, session, escape, redirect
 
 from app import web, CobraRules, CobraVuls, db, CobraLanguages
 from app import CobraProjects, CobraWhiteList, CobraAdminUser
+from app import CobraTaskInfo
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -680,4 +681,5 @@ def search_rules():
 
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
-    return "dashboard"
+    total_task_count = CobraTaskInfo.query.count()
+    return render_template("rulesadmin/dashboard.html")
