@@ -3,7 +3,17 @@
  */
 
 
-$("#main-div").fadeIn(1000);
+$(document).ready(function () {
+    $("#show_dashboard").click();
+    $("#main-div").fadeIn(1000);
+});
+
+// todo: improve this..
+$("div>button").click(function () {
+    console.log("123123");
+    $("button").removeClass('btn-success');
+    $(this).addClass('btn-success');
+});
 
 $("[id^=add_new_]").click(function () {
     $("#paginate").html("");
