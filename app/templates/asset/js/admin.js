@@ -8,8 +8,7 @@ $(document).ready(function () {
     $("#main-div").fadeIn(1000);
 });
 
-// todo: improve this..
-$("div>button").click(function () {
+$("#left-div button").click(function () {
     $("button").removeClass('btn-success');
     $(this).addClass('btn-success');
 });
