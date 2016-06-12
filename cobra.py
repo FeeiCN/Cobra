@@ -26,7 +26,6 @@ def main():
         debug = True
         log.critical("/config File Not Found, copy config.example to config please!")
     web.debug = debug
-    log.info('Starting Cobra Engine...')
     manager.run()
 
 

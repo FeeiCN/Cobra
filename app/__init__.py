@@ -177,3 +177,5 @@ manager.add_command('statistic', Statistic())
 from app.controller import route
 from app.controller import RulesAdmin
 from app.controller import api
+
+log.info('Cobra Engine Started')
