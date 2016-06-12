@@ -161,8 +161,8 @@ class Static:
                             params = [self.task_id, rule_id, m_file, m_line, m_code, current_time,
                                       current_time]
                             try:
-                                if m_file in white_list:
-                                    log.debug("In White list")
+                                if m_file in white_list or ".min.js" in m_file:
+                                    log.debug("In White list or min.js")
                                 else:
                                     # # // /* *
                                     match_result = re.match("(#)?(//)?(\*)?(/\*)?", m_code)
