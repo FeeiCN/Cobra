@@ -94,7 +94,7 @@ def add_task():
         return jsonify(code=4001)
 
     # insert into task info table.
-    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, None, None, None, 1, 0,
+    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, None, None, None, 1, None, 0,
                          current_time, current_time)
 
     p = CobraProjects.query.filter_by(repository=target).first()
@@ -115,12 +115,16 @@ def add_task():
         subprocess.Popen(
             ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
              gg.repo_directory])
+        # Statistic Code
+        subprocess.Popen(
+            ['python', '/home/mapp/cobra/cobra.py', "statistic", "-i", str(task.id), "-t",
+             gg.repo_directory])
 
         result['scan_id'] = task.id
         result['project_id'] = project_id
         return jsonify(code=1001, result=result)
-    except:
-        return jsonify(code=1004, msg=u'Unknown error, try again later?')
+    except Exception as e:
+        return jsonify(code=1004, msg=u'Unknown error, try again later?' + e.message)
 
 
 @web.route(API_URL + '/status', methods=['POST'])

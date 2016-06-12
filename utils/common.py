@@ -28,4 +28,4 @@ def convert_timestamp(stamp):
 def verify_key(key):
     """verify api key"""
     auth = CobraAuth.query.filter_by(key=key).first()
-    return auth is None
+    return auth is not None

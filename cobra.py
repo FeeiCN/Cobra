@@ -24,9 +24,8 @@ def main():
         debug = bool(debug)
     except ConfigParser.Error:
         debug = True
-        print("/config File Not Found, copy config.example to config please!")
+        log.critical("/config File Not Found, copy config.example to config please!")
     web.debug = debug
-    log.info('Starting Cobra...')
     manager.run()
 
 

@@ -142,10 +142,12 @@ def report(id):
     project = CobraProjects.query.filter_by(repository=repository).first()
     project_name = project.name
     author = project.author
+    project_description = project.remark
     time_consume = task_info.time_consume
     time_start = task_info.time_start
     time_end = task_info.time_end
     files = task_info.file_count
+    code_number = task_info.code_number
     vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
     results = CobraResults.query.filter_by(task_id=id).all()
 
@@ -193,12 +195,14 @@ def report(id):
         'id': int(id),
         'project_name': project_name,
         'project_repository': repository,
+        'project_description': project_description,
         'author': author,
         'task_created_at': task_created_at,
         'time_consume': str(time_consume) + 's',
         'time_start': time_start,
         'time_end': time_end,
         'files': files,
+        'code_number': code_number,
         'vulnerabilities_count': vulnerabilities_count,
         'vulnerabilities': vulnerabilities,
     }

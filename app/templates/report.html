@@ -80,6 +80,7 @@
                     <address>
                         <h4>Date:</h4>
                         <span class="content"><strong>Report at: </strong>{{ data.task_created_at }}</span><br>
+                        <span class="content"><strong>Scan Time: </strong>{{ data.time_start }} - {{ data.time_end }} ({{ data.time_consume }})</span><br/>
                     </address>
                 </div>
             </div>
@@ -89,13 +90,14 @@
                         <h4>Project:</h4>
                         <span class="content"><strong>Project Name: </strong>{{ data.project_name }}</span><br>
                         <span class="content"><strong>Project Repository: </strong>{{ data.project_repository }}</span>
+                        <span class="content"><strong>Project Description: </strong>{{ data.project_description }}</span>
                     </address>
                 </div>
                 <div class="col-xs-6">
                     <address>
                         <h4>Result:</h4>
-                        <span class="content"><strong>Scan Time: </strong>{{ data.time_start }} - {{ data.time_end }} ({{ data.time_consume }})</span><br/>
                         <span class="content"><strong>Scan Files: </strong>{{ data.files }}</span><br/>
+                        <span class="content"><strong>Code Line Number: </strong>{{ data.code_number }}</span><br/>
                         <span class="content"><strong>Vulnerabilities: </strong>{{ data.vulnerabilities_count }}</span><br/>
                     </address>
                 </div>
@@ -131,8 +133,12 @@
                                     <td>{{ each_vul.level }}</td>
                                     <td>{{ each_vul.rule }}</td>
                                     <td>
-                                        <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
-                                        <pre><code class="language-php">{{ each_vul.code }}</code></pre>
+                                        {% if each_vul.line == 0 %}
+                                            <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}</span>
+                                        {% else %}
+                                            <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
+                                            <pre><code class="language-php">{{ each_vul.code }}</code></pre>
+                                        {% endif %}
                                     </td>
                                     <td>{{ each_vul.repair }}</td>
                                     <td class="text-right">

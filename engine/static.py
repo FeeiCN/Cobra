@@ -16,50 +16,27 @@ import sys
 import re
 import time
 import subprocess
-from engine import rules, scan
+from engine import scan
 from utils import log
 from datetime import datetime
 from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
 
 
 class Static:
-    def __init__(self, language=None, extensions=None):
-        self.language = language
-        self.extensions = extensions
+    def __init__(self, directory=None, task_id=None, project_id=None):
+        self.directory = directory
+        self.task_id = task_id
+        self.project_id = project_id
 
-    def re_multi(self, file_paths):
-        if self.language == 'php':
-            patterns = rules.php_function()
-
-        for file_path in file_paths:
-            self.re_one(file_path, patterns)
-
-    def re_one(self, file_path, pattern):
-        # open the files
-        input_file = open(file_path, 'r')
-
-        # read the corpus first
-        corpus_lines = input_file.readlines()
-
-        # loop through each line in corpus
-        for line_i in range(len(corpus_lines)):
-            line = corpus_lines[line_i]
-
-            # check if we have a regex match with "phrase" variable
-            # if so, write it the output file
-            if re.match(pattern, line):
-                print(str(line_i + 1) + "\n")
-        input_file.close()
-
-    def analyse(self, directory=None, task_id=None, project_id=None):
-        if directory is None:
-            print("Please set directory")
+    def analyse(self):
+        if self.directory is None:
+            log.critical("Please set directory")
             sys.exit()
         log.info('Start code static analyse...')
 
         log.info('Parse target')
 
-        s = scan.Scan(directory)
+        s = scan.Scan(self.directory)
         files = s.files()
         ext_language = {
             # Image
@@ -122,10 +99,10 @@ class Static:
         }
         for ext in files:
             if ext in ext_language:
-                print('{0} - {1}'.format(ext, files[ext]))
+                log.info('{0} - {1}'.format(ext, files[ext]))
                 continue
             else:
-                print(ext)
+                log.info(ext)
 
         languages = CobraLanguages.query.all()
 
@@ -137,13 +114,13 @@ class Static:
                     extensions = language.extensions.split('|')
 
             if extensions is None:
-                print("Rule Language Error")
+                log.warning("Rule Language Error")
             # grep name is ggrep on mac
             grep = '/bin/grep'
             if 'darwin' == sys.platform:
                 log.info('In Mac OS X System')
-                for root, dirnames, filenames in os.walk('/usr/local/Cellar/grep'):
-                    for filename in filenames:
+                for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
+                    for filename in file_names:
                         if 'ggrep' == filename:
                             grep = os.path.join(root, filename)
 
@@ -153,7 +130,7 @@ class Static:
 
             # White list
             white_list = []
-            ws = CobraWhiteList.query.filter_by(project_id=project_id, rule_id=rule.id, status=1).all()
+            ws = CobraWhiteList.query.filter_by(project_id=self.project_id, rule_id=rule.id, status=1).all()
             if ws is not None:
                 for w in ws:
                     white_list.append(w.path)
@@ -161,64 +138,72 @@ class Static:
             try:
                 log.info('Scan rule id: {0}'.format(rule.id))
                 # -n Show Line number / -r Recursive / -P Perl regular expression
-                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, directory],
-                                        stdout=subprocess.PIPE)
-                result = proc.communicate()
+                p = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory],
+                                     stdout=subprocess.PIPE)
+                result = p.communicate()
 
                 # Exists result
                 if len(result[0]):
                     log.info('Found:')
-                    perline = str(result[0]).split("\n")
-                    print(perline)
-                    for r in range(0, len(perline) - 1):
+                    per_line = str(result[0]).split("\n")
+                    log.debug(per_line)
+                    for r in range(0, len(per_line) - 1):
                         try:
-                            rr = str(perline[r]).replace(directory, '').split(':', 1)
+                            rr = str(per_line[r]).replace(self.directory, '').split(':', 1)
                             code = str(rr[1]).split(':', 1)
-                            if task_id is None:
-                                task_id = 0
+                            if self.task_id is None:
+                                self.task_id = 0
                             rule_id = rule.id
                             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             m_file = rr[0].strip()
                             m_line = code[0]
                             m_code = str(code[1].strip())
-                            params = [task_id, rule_id, m_file, m_line, m_code, current_time,
+                            params = [self.task_id, rule_id, m_file, m_line, m_code, current_time,
                                       current_time]
                             try:
-                                if m_file in white_list:
-                                    print("In White list")
+                                if m_file in white_list or ".min.js" in m_file:
+                                    log.debug("In White list or min.js")
                                 else:
                                     # # // /* *
-                                    match_result = re.match("(#)?(\/\/)?(\*)?(\/\*)?", m_code)
+                                    match_result = re.match("(#)?(//)?(\*)?(/\*)?", m_code)
                                     if match_result.group(0) is not None and match_result.group(0) is not "":
-                                        print("In Annotation")
+                                        log.debug("In Annotation")
                                     else:
-                                        print('In Insert')
-                                        r_content = CobraResults.query.filter_by(task_id=task_id, rule_id=rule_id,
-                                                                                 file=m_file,
-                                                                                 line=m_line).first()
-                                        if r_content is not None:
-                                            print("Exists Result")
+                                        log.debug('In Insert')
+                                        if rule.regex == "":
+                                            # Didn't filter line when regex is empty
+                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
+                                                                                     rule_id=rule_id,
+                                                                                     file=m_file).first()
+                                            m_line = 0
                                         else:
-                                            results = CobraResults(task_id, rule_id, m_file, m_line, m_code,
+                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
+                                                                                     rule_id=rule_id,
+                                                                                     file=m_file,
+                                                                                     line=m_line).first()
+                                        if r_content is not None:
+                                            log.warning("Exists Result")
+                                        else:
+                                            results = CobraResults(self.task_id, rule_id, m_file, m_line, m_code,
                                                                    current_time,
                                                                    current_time)
                                             db.session.add(results)
                                             db.session.commit()
-                                            print('Insert Results Success')
-                            except:
-                                print('Insert Results Failed')
-                            print(params)
+                                            log.info('Insert Results Success')
+                            except Exception as e:
+                                log.error('Insert Results Failed' + str(e.message))
+                            log.debug(params)
                         except Exception as e:
-                            log.debug('Error parsing result: ' + str(e))
+                            log.critical('Error parsing result: ' + str(e.message))
 
                 else:
                     log.info('Not Found')
 
             except Exception as e:
-                log.debug('Error calling grep: ' + str(e))
+                log.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task
-        t = CobraTaskInfo.query.filter_by(id=task_id).first()
+        t = CobraTaskInfo.query.filter_by(id=self.task_id).first()
         t.status = 2
         t.file_count = files['file_nums']
         t.time_end = int(time.time())
@@ -228,6 +213,6 @@ class Static:
             db.session.add(t)
             db.session.commit()
         except Exception as e:
-            print("Set start time failed:" + e.message)
+            log.critical("Set start time failed:" + e.message)
 
-        print("Scan Done")
+        log.info("Scan Done")
