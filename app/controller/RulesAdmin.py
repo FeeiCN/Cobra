@@ -685,6 +685,16 @@ def search_rules():
         return render_template('rulesadmin/rules.html', data=data)
 
 
+@web.route(ADMIN_URL + "/add_new_language", methods=['GET'])
+def add_new_language():
+    return "add new language"
+
+
+@web.route(ADMIN_URL + "/languages", methods=['GET'])
+def languages():
+    return "languages"
+
+
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
 

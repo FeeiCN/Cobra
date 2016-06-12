@@ -520,6 +520,14 @@ $("#add_new_whitelist").click(function () {
     });
 });
 
+// languages
+$("#add_language").click(function () {
+    $("#main-div").load("add_new_language");
+});
+$("#show_all_languages").click(function () {
+    $("#main-div").load("languages");
+});
+
 
 // dashboard click
 $("#show_dashboard").click(function () {
