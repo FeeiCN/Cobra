@@ -138,18 +138,18 @@ class Static:
             try:
                 log.info('Scan rule id: {0}'.format(rule.id))
                 # -n Show Line number / -r Recursive / -P Perl regular expression
-                proc = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory],
-                                        stdout=subprocess.PIPE)
-                result = proc.communicate()
+                p = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory],
+                                     stdout=subprocess.PIPE)
+                result = p.communicate()
 
                 # Exists result
                 if len(result[0]):
                     log.info('Found:')
-                    perline = str(result[0]).split("\n")
-                    log.debug(perline)
-                    for r in range(0, len(perline) - 1):
+                    per_line = str(result[0]).split("\n")
+                    log.debug(per_line)
+                    for r in range(0, len(per_line) - 1):
                         try:
-                            rr = str(perline[r]).replace(self.directory, '').split(':', 1)
+                            rr = str(per_line[r]).replace(self.directory, '').split(':', 1)
                             code = str(rr[1]).split(':', 1)
                             if self.task_id is None:
                                 self.task_id = 0
