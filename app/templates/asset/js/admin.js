@@ -325,6 +325,15 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         }
+    } else if (target == "language") {
+        if (type == "del") {
+            $.post("del_language", {id:cid}, function (data) {
+                showAlert(data.tag, data.msg, "#operate_result");
+                $("#show_all_languages").click();
+            })
+        } else if (type == "edit") {
+
+        }
     }
 });
 

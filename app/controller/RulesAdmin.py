@@ -727,6 +727,18 @@ def languages():
     return render_template("rulesadmin/languages.html", data=data)
 
 
+@web.route(ADMIN_URL + "/del_language", methods=['POST'])
+def del_language():
+    cid = request.form.get("id")
+    l = CobraLanguages.query.filter_by(id=cid).first()
+    try:
+        db.session.delete(l)
+        db.session.commit()
+        return jsonify(tag="success", msg="delete success.")
+    except:
+        return jsonify(tag="danger", msg="delete failed.")
+
+
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
 
