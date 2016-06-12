@@ -36,6 +36,10 @@ def is_login():
 @web.route(ADMIN_URL + '/', methods=['GET'])
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
+
+    if is_login():
+        return redirect(ADMIN_URL + '/main')
+
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
@@ -683,6 +687,9 @@ def search_rules():
 
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
 
     cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id,).all()
     cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
