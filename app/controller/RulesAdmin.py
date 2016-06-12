@@ -398,6 +398,17 @@ def all_whitelists_count():
     return str(whitelists_count)
 
 
+# api: get all languages count
+@web.route(ADMIN_URL + '/all_languages_count', methods=['GET'])
+def all_languages_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    languages_count = CobraLanguages.query.count()
+    return str(languages_count)
+
+
 # show all projects
 @web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
 def projects(page):
@@ -692,7 +703,11 @@ def add_new_language():
 
 @web.route(ADMIN_URL + "/languages", methods=['GET'])
 def languages():
-    return "languages"
+    languages = CobraLanguages.query.all()
+    data = {
+        'languages': languages,
+    }
+    return render_template("rulesadmin/languages.html", data=data)
 
 
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])

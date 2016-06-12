@@ -526,6 +526,7 @@ $("#add_language").click(function () {
 });
 $("#show_all_languages").click(function () {
     $("#main-div").load("languages");
+    make_pagination(1, 'languages');
 });
 
 
