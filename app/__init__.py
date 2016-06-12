@@ -25,7 +25,6 @@ from flask.ext.bootstrap import Bootstrap
 
 from utils import log
 
-log.info('Initialization HTTP Server')
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -53,6 +52,7 @@ manager = Manager(web)
 
 
 class Statistic(Command):
+    log.info("Statistic Code...")
     option_list = (
         Option('--target', '-t', dest='target', help='directory'),
         Option('--tid', '-i', dest='tid', help='scan task id')
@@ -60,10 +60,10 @@ class Statistic(Command):
 
     def run(self, target=None, tid=None):
         if target is None:
-            print("Please set --target param")
+            log.critical("Please set --target param")
             sys.exit()
         if tid is None:
-            print("Please set --tid param")
+            log.critical("Please set --tid param")
             sys.exit()
 
         # Statistic Code
@@ -80,12 +80,13 @@ class Statistic(Command):
                     try:
                         db.session.add(t)
                         db.session.commit()
-                        print("Statistic code number done")
+                        log.info("Statistic code number done")
                     except:
-                        print("Statistic code number failed")
+                        log.error("Statistic code number failed")
 
 
 class Scan(Command):
+    log.info('Scanning...')
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
         Option('--tid', '-i', dest='tid', help='scan task id'),
@@ -110,17 +111,17 @@ class Scan(Command):
 
     def run(self, target=None, tid=None, pid=None):
         if target is None:
-            print("Please set --target param")
+            log.critical("Please set --target param")
             sys.exit()
         if tid is not None:
             task_id = tid
             # Start Time For Task
             t = CobraTaskInfo.query.filter_by(id=tid).first()
             if t is None:
-                print("Task id doesn't exists.")
+                log.critical("Task id doesn't exists.")
                 sys.exit()
             if t.status not in [0, 1]:
-                print("Task Already Scan.")
+                log.critical("Task Already Scan.")
                 sys.exit()
             t.status = 1
             t.time_start = int(time.time())
@@ -129,13 +130,13 @@ class Scan(Command):
                 db.session.add(t)
                 db.session.commit()
             except:
-                print("Set start time failed")
+                log.error("Set start time failed")
         else:
             task_id = None
 
         target_type = self.parse_target(target)
         if target_type is False:
-            print("""
+            log.error("""
                 Git Repository: must .git end
                 SVN Repository: can http:// or https://
                 Directory: must be local directory
@@ -161,9 +162,9 @@ class Scan(Command):
             if g.clone() is True:
                 s.analyse(target, task_id=task_id, project_id=pid)
             else:
-                print("Git clone failed")
+                log.critical("Git clone failed")
         elif target_type is 'svn':
-            print("Not Support SVN Repository")
+            log.warning("Not Support SVN Repository")
 
 
 host = config.get('cobra', 'host')
@@ -178,5 +179,3 @@ manager.add_command('statistic', Statistic())
 from app.controller import route
 from app.controller import RulesAdmin
 from app.controller import api
-
-log.info('Cobra HTTP Server Started')

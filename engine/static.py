@@ -215,13 +215,13 @@ class Static:
                                 print('Insert Results Failed')
                             print(params)
                         except Exception as e:
-                            log.debug('Error parsing result: ' + str(e))
+                            log.critical('Error parsing result: ' + str(e))
 
                 else:
                     log.info('Not Found')
 
             except Exception as e:
-                log.debug('Error calling grep: ' + str(e))
+                log.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task
         t = CobraTaskInfo.query.filter_by(id=task_id).first()
