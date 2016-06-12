@@ -80,8 +80,8 @@ class Statistic(Command):
                         db.session.add(t)
                         db.session.commit()
                         log.info("Statistic code number done")
-                    except:
-                        log.error("Statistic code number failed")
+                    except Exception as e:
+                        log.error("Statistic code number failed" + str(e.message))
 
 
 class Scan(Command):
@@ -127,8 +127,8 @@ class Scan(Command):
             try:
                 db.session.add(t)
                 db.session.commit()
-            except:
-                log.error("Set start time failed")
+            except Exception as e:
+                log.error("Set start time failed" + str(e.message))
         else:
             task_id = None
 
