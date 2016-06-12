@@ -520,10 +520,34 @@ $("#add_new_whitelist").click(function () {
     });
 });
 
-// languages
-$("#add_language").click(function () {
-    $("#main-div").load("add_new_language");
+// add new languages
+$("#add_new_language").click(function () {
+    $.get("add_new_language", function (data) {
+        $("#main-div").html(data);
+        $("#add-new-language-button").click(function () {
+            var language = $("#language").val();
+            var extensions = $("#extensions").val();
+
+            if (!language || language == "") {
+                showAlert("danger", "language name can not be blank.", "#add-new-language-result");
+                return false;
+            }
+            if (!extensions || extensions == "") {
+                showAlert("danger", "extensions can not be blank.", "#add-new-language-result");
+            }
+
+            data = {
+                "language": language,
+                "extensions": extensions
+            };
+
+            $.post("add_new_language", data, function (res) {
+                showAlert(res.tag, res.msg, "#add-new-language-result");
+            });
+        });
+    });
 });
+
 $("#show_all_languages").click(function () {
     $("#main-div").load("languages");
     make_pagination(1, 'languages');

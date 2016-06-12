@@ -696,9 +696,26 @@ def search_rules():
         return render_template('rulesadmin/rules.html', data=data)
 
 
-@web.route(ADMIN_URL + "/add_new_language", methods=['GET'])
+@web.route(ADMIN_URL + "/add_new_language", methods=['GET', 'POST'])
 def add_new_language():
-    return "add new language"
+    if request.method == "POST":
+        language = request.form.get("language")
+        extensions = request.form.get("extensions")
+
+        if not language or language == "":
+            return jsonify(tag="danger", msg="language name can not be blank.")
+        if not extensions or extensions == "":
+            return jsonify(tag="danger", msg="extensions can not be blank.")
+
+        l = CobraLanguages(language, extensions)
+        try:
+            db.session.add(l)
+            db.session.commit()
+            return jsonify(tag="success", msg="add success")
+        except:
+            return jsonify(tag="danger", msg="try again later?")
+    else:
+        return render_template("rulesadmin/add_new_language.html")
 
 
 @web.route(ADMIN_URL + "/languages", methods=['GET'])
