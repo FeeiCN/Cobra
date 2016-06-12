@@ -12,11 +12,14 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import time
+import datetime
 
 from flask import render_template, request, jsonify, session, escape, redirect
+from sqlalchemy.sql import func, and_
 
 from app import web, CobraRules, CobraVuls, db, CobraLanguages
 from app import CobraProjects, CobraWhiteList, CobraAdminUser
+from app import CobraTaskInfo, CobraResults
 
 # default admin url
 ADMIN_URL = '/admin'
@@ -33,6 +36,10 @@ def is_login():
 @web.route(ADMIN_URL + '/', methods=['GET'])
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
+
+    if is_login():
+        return redirect(ADMIN_URL + '/main')
+
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
@@ -391,6 +398,17 @@ def all_whitelists_count():
     return str(whitelists_count)
 
 
+# api: get all languages count
+@web.route(ADMIN_URL + '/all_languages_count', methods=['GET'])
+def all_languages_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    languages_count = CobraLanguages.query.count()
+    return str(languages_count)
+
+
 # show all projects
 @web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
 def projects(page):
@@ -676,3 +694,164 @@ def search_rules():
         }
 
         return render_template('rulesadmin/rules.html', data=data)
+
+
+@web.route(ADMIN_URL + "/add_new_language", methods=['GET', 'POST'])
+def add_new_language():
+    if request.method == "POST":
+        language = request.form.get("language")
+        extensions = request.form.get("extensions")
+
+        if not language or language == "":
+            return jsonify(tag="danger", msg="language name can not be blank.")
+        if not extensions or extensions == "":
+            return jsonify(tag="danger", msg="extensions can not be blank.")
+
+        l = CobraLanguages(language, extensions)
+        try:
+            db.session.add(l)
+            db.session.commit()
+            return jsonify(tag="success", msg="add success")
+        except:
+            return jsonify(tag="danger", msg="try again later?")
+    else:
+        return render_template("rulesadmin/add_new_language.html")
+
+
+@web.route(ADMIN_URL + "/languages", methods=['GET'])
+def languages():
+    languages = CobraLanguages.query.all()
+    data = {
+        'languages': languages,
+    }
+    return render_template("rulesadmin/languages.html", data=data)
+
+
+@web.route(ADMIN_URL + "/del_language", methods=['POST'])
+def del_language():
+    cid = request.form.get("id")
+    l = CobraLanguages.query.filter_by(id=cid).first()
+    try:
+        db.session.delete(l)
+        db.session.commit()
+        return jsonify(tag="success", msg="delete success.")
+    except:
+        return jsonify(tag="danger", msg="delete failed.")
+
+
+@web.route(ADMIN_URL + "/edit_language/<int:language_id>", methods=['POST', 'GET'])
+def edit_language(language_id):
+    if request.method == "POST":
+        language = request.form.get("language")
+        extensions = request.form.get("extensions")
+        if not language or language == "":
+            return jsonify(tag="danger", msg="language name can not be blank.")
+        if not extensions or extensions == "":
+            return jsonify(tag="danger", msg="extensions can not be blank.")
+
+        l = CobraLanguages.query.filter_by(id=language_id).first()
+        try:
+            l.language = language
+            l.extensions = extensions
+            db.session.add(l)
+            db.session.commit()
+            return jsonify(tag="success", msg="update success.")
+        except:
+            return jsonify(tag="danger", msg="try again later?")
+
+    else:
+        l = CobraLanguages.query.filter_by(id=language_id).first()
+        data = {
+            'language': l,
+        }
+        return render_template("rulesadmin/edit_language.html", data=data)
+
+
+@web.route(ADMIN_URL + "/dashboard", methods=['GET'])
+def dashboard():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id,).all()
+    cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
+
+    # get today date time and timestamp
+    today_time_array = datetime.date.today()
+    today_time_stamp = int(time.mktime(today_time_array.timetuple()))
+    tomorrow_time_stamp = today_time_stamp + 3600 * 24
+    tomorrow_time_array = datetime.datetime.fromtimestamp(int(tomorrow_time_stamp))
+
+    # total overview
+    total_task_count = CobraTaskInfo.query.count()
+    total_vulns_count = CobraResults.query.count()
+    total_projects_count = CobraProjects.query.count()
+    total_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]
+
+    # today overview
+    today_task_count = CobraTaskInfo.query.filter(
+        and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
+    ).count()
+    today_vulns_count = CobraResults.query.filter(
+        and_(CobraResults.created_at >= today_time_array, CobraResults.created_at <= tomorrow_time_array)
+    ).count()
+    today_projects_count = CobraProjects.query.filter(
+        and_(CobraProjects.last_scan >= today_time_array, CobraProjects.last_scan <= tomorrow_time_array)
+    ).count()
+    today_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).filter(
+        and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
+    ).first()[0]
+
+    # scanning time
+    avg_scan_time = db.session.query(func.avg(CobraTaskInfo.time_consume)).first()[0]
+    max_scan_time = db.session.query(func.max(CobraTaskInfo.time_consume)).first()[0]
+    min_scan_time = db.session.query(func.min(CobraTaskInfo.time_consume)).first()[0]
+
+    # total each vuls count
+    all_vuls = db.session.query(
+        CobraResults.rule_id, func.count("*").label('counts')
+    ).group_by(CobraResults.rule_id).all()
+
+    # today each vuls count
+    all_vuls_today = db.session.query(
+        CobraResults.rule_id, func.count("*").label('counts')
+    ).group_by(CobraResults.rule_id).filter(
+        and_(CobraResults.created_at >= today_time_array, CobraResults.created_at <= tomorrow_time_array)
+    ).all()
+
+    all_rules = {}
+    for x in cobra_rules:
+        all_rules[x.id] = x.vul_id
+    all_cobra_vuls = {}
+    for x in cobra_vuls:
+        all_cobra_vuls[x.id] = x.name
+
+    total_vuls = []
+    for x in all_vuls:
+        t = {}
+        t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+        t['counts'] = x.counts
+        total_vuls.append(t)
+    today_vuls = []
+    for x in all_vuls_today:
+        t = {}
+        t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+        t['counts'] = x.counts
+        today_vuls.append(t)
+
+    data = {
+        'total_task_count': total_task_count,
+        'total_vulns_count': total_vulns_count,
+        'total_projects_count': total_projects_count,
+        'total_files_count': total_files_count,
+        'today_task_count': today_task_count,
+        'today_vulns_count': today_vulns_count,
+        'today_projects_count': today_projects_count,
+        'today_files_count': today_files_count,
+        'max_scan_time': max_scan_time,
+        'min_scan_time': min_scan_time,
+        'avg_scan_time': avg_scan_time,
+        'total_vuls': total_vuls,
+        'today_vuls': today_vuls,
+    }
+    return render_template("rulesadmin/dashboard.html", data=data)

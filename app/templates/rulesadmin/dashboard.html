@@ -1,0 +1,138 @@
+<div class="row clearfix">
+    <div class="col-md-12 column">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Overview
+                </h3>
+            </div>
+            <!-- Overview -->
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="col-md-6 column"><br />
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td><b>Today Overview</b></td>
+                                    <td><b>Count</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Today Scan times: </td>
+                                    <td>{{ data.today_task_count }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Today Vulnerabilities: </td>
+                                    <td>{{ data.today_vulns_count }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Today Scanned Projects Count: </td>
+                                    <td>{{ data.today_projects_count }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Today Files Count: </td>
+                                    <td>{{ data.today_files_count }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6 column"><br />
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td><b>Total Overview</b></td>
+                                    <td><b>Count</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Scan times: </td>
+                                    <td>{{ data.total_task_count }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Vulnerabilities: </td>
+                                    <td>{{ data.total_vulns_count }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Scanned Projects count: </td>
+                                    <td>{{ data.total_projects_count }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Files Count: </td>
+                                    <td>{{ data.total_files_count }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- .panel body -->
+        </div><!-- .panel -->
+
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Scan Times
+                </h3>
+            </div>
+            <!-- scan times -->
+            <div class="panel-body"><br />
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>Average Scanning Time: </td>
+                            <td>{{ data.avg_scan_time }} s</td>
+                        </tr>
+                        <tr>
+                            <td>Longest Scanning Time: </td>
+                            <td>{{ data.max_scan_time }} s</td>
+                        </tr>
+                        <tr>
+                            <td>Shortest Scanning Time: </td>
+                            <td>{{ data.min_scan_time }} s</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div><!-- .panel body -->
+        </div><!-- .panel -->
+
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Vulnerabilities
+                </h3>
+            </div>
+            <!-- Vulnerabilities -->
+            <div class="panel-body"><br />
+                <div class="col-md-6 column"><br />
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td><b>Today Vulnerability</b></td>
+                            <td><b>Count</b></td>
+                        </tr>
+                        {% for ev in data.today_vuls %}
+                        <tr>
+                        <td>{{ ev.vuls }}</td>
+                        <td>{{ ev.counts }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6 column"><br />
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td><b>Total Vulnerability</b></td>
+                            <td><b>Count</b></td>
+                        </tr>
+                        {% for ev in data.total_vuls %}
+                            <tr>
+                            <td>{{ ev.vuls }}</td>
+                            <td>{{ ev.counts }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div><!-- .panel body -->
+        </div><!-- .panel -->
+    </div>
+</div>

@@ -3,7 +3,15 @@
  */
 
 
-$("#main-div").fadeIn(1000);
+$(document).ready(function () {
+    $("#show_dashboard").click();
+    $("#main-div").fadeIn(1000);
+});
+
+$("#left-div button").click(function () {
+    $("button").removeClass('btn-success');
+    $(this).addClass('btn-success');
+});
 
 $("[id^=add_new_]").click(function () {
     $("#paginate").html("");
@@ -317,6 +325,41 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         }
+    } else if (target == "language") {
+        if (type == "del") {
+            $.post("del_language", {id:cid}, function (data) {
+                showAlert(data.tag, data.msg, "#operate_result");
+                $("#show_all_languages").click();
+            })
+        } else if (type == "edit") {
+            $.get("edit_language/"+cid, function (data) {
+                $("#main-div").html(data);
+                $("#edit-language-button").click(function () {
+                    var language = $("#language").val();
+                    var extensions = $("#extensions").val();
+
+                    if (!language || language == "") {
+                        showAlert("danger", "language name can not be blank.", "#edit-language-result");
+                        return false;
+                    }
+                    if (!extensions || extensions == "") {
+                        showAlert("danger", "extensions can not be blank.", "#edit-language-result");
+                        return false;
+                    }
+
+                    data = {
+                        'language': language,
+                        'extensions': extensions
+                    };
+
+                    $.post("edit_language/"+cid, data, function (data) {
+                        showAlert(data.tag, data.msg, "#edit-language-result");
+                        return false;
+                    });
+
+                });
+            })
+        }
     }
 });
 
@@ -478,22 +521,22 @@ $("#add_new_whitelist").click(function () {
             var reason = $("#reason").val();
 
             if (!project_id || project_id == "") {
-                showAlert('danger', 'project error.');
+                showAlert('danger', 'project error.', "#add-new-whitelist-result");
                 return false;
             }
 
             if (!rule_id || rule_id == "") {
-                showAlert('danger', 'rule error.');
+                showAlert('danger', 'rule error.', "#add-new-whitelist-result");
                 return false;
             }
 
             if (!path || path == "") {
-                showAlert('danger', 'file cannot be empty.');
+                showAlert('danger', 'file cannot be empty.', "#add-new-whitelist-result");
                 return false;
             }
 
             if (!reason || reason == "") {
-                showAlert('danger', 'reason can not be empty');
+                showAlert('danger', 'reason can not be empty', "#add-new-whitelist-result");
                 return false;
             }
 
@@ -510,4 +553,43 @@ $("#add_new_whitelist").click(function () {
         });
 
     });
+});
+
+// add new languages
+$("#add_new_language").click(function () {
+    $.get("add_new_language", function (data) {
+        $("#main-div").html(data);
+        $("#add-new-language-button").click(function () {
+            var language = $("#language").val();
+            var extensions = $("#extensions").val();
+
+            if (!language || language == "") {
+                showAlert("danger", "language name can not be blank.", "#add-new-language-result");
+                return false;
+            }
+            if (!extensions || extensions == "") {
+                showAlert("danger", "extensions can not be blank.", "#add-new-language-result");
+            }
+
+            data = {
+                "language": language,
+                "extensions": extensions
+            };
+
+            $.post("add_new_language", data, function (res) {
+                showAlert(res.tag, res.msg, "#add-new-language-result");
+            });
+        });
+    });
+});
+
+$("#show_all_languages").click(function () {
+    $("#main-div").load("languages");
+    make_pagination(1, 'languages');
+});
+
+
+// dashboard click
+$("#show_dashboard").click(function () {
+    $("#main-div").load("dashboard");
 });
