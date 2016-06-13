@@ -52,15 +52,22 @@ class Directory:
     def collect_files(self):
         t1 = time.clock()
         self.files(self.path)
+        self.result['no_extension'] = {'file_count': 0, 'file_list': []}
         for extension, values in self.type_nums.iteritems():
             self.result[extension] = {'file_count': len(values), 'file_list': []}
             # .php : 123
             log.debug('{0} : {1}'.format(extension, len(values)))
             for f in self.file:
-                if f.endswith(extension):
-                    self.result[extension]['file_list'].append(f)
+                es = f.split(os.extsep)
+                if len(es) >= 2:
+                    # Exists Extension
+                    # os.extsep + es[len(es) - 1]
+                    if f.endswith(extension):
+                        self.result[extension]['file_list'].append(f)
                 else:
-                    log.debug('Not In Extension: {0} {1}'.format(f, extension))
+                    # Didn't have extension
+                    self.result['no_extension']['file_count'] = int(self.result['no_extension']['file_count']) + 1
+                    self.result['no_extension']['file_list'].append(f)
 
         t2 = time.clock()
         self.result['file_nums'] = self.file_id
