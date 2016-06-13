@@ -113,7 +113,7 @@ class Git:
 
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-        log.info('start pull repo')
+        log.info('Start Pull Repo')
 
         if not self.__check_exist():
             log.info('No local repo exist. Please clone first.')
@@ -133,7 +133,7 @@ class Git:
         os.chdir(current_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-            log.info('pull done.')
+            log.info('Pull Done.')
             return True
         else:
             return False
@@ -142,12 +142,12 @@ class Git:
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-        log.info('start clone repo')
+        log.info('Start Clone Repo')
         if os.path.isdir(self.repo_directory):
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
         if self.__check_exist():
-            log.info('repo already exist. Stop clone.')
+            log.info('Repo Already Exist. Stop Clone.')
             return False
 
         # if no username or password provide, it may be a public repo.
