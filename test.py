@@ -13,7 +13,7 @@
 #
 
 import unittest
-from engine import scan, static
+from engine import static
 from pickup import subversion, GitTools, directory
 
 
@@ -46,10 +46,6 @@ class Test(unittest.TestCase):
     def test_directory(self):
         d = directory.Directory(self.project)
         d.collect_files()
-
-    def test_scan_directory(self):
-        s = scan.Scan(self.project)
-        s.files()
 
     def test_static_analyse(self):
         s = static.Static('php', ['php'])

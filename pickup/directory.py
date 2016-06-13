@@ -13,20 +13,21 @@
 #
 import time
 import os
+from utils import log
 
 
 class Directory:
     def __init__(self, path):
         self.path = path
 
-    file_nums = 0
+    file_id = 0
     type_nums = {}
     result = {}
     file = []
 
     def files(self, directory, level=1):
         if level == 1:
-            print(directory)
+            log.debug(directory)
         for filename in os.listdir(directory):
             path = os.path.join(directory, filename)
 
@@ -35,26 +36,33 @@ class Directory:
             self.type_nums.setdefault(file_extension.lower(), []).append(filename)
 
             # Directory Structure
-            # print '|  ' * (level - 1) + '|--' + filename
+            log.debug('|  ' * (level - 1) + '|--' + filename)
             if os.path.isdir(path):
                 self.files(path, level + 1)
             if os.path.isfile(path):
                 path = path.replace(self.path, '')
                 self.file.append(path)
-                self.file_nums += 1
-                print("{0}, {1}".format(self.file_nums, path))
+                self.file_id += 1
+                log.debug("{0}, {1}".format(self.file_id, path))
+
+    """
+    :return {'file_nums': 500, 'collect_time': 2, '.php': {'file_count': 123, 'file_list': ['/path/to/a.php', '/path/to/b.php']}}
+    """
 
     def collect_files(self):
         t1 = time.clock()
         self.files(self.path)
         for extension, values in self.type_nums.iteritems():
             self.result[extension] = {'file_count': len(values), 'file_list': []}
-            print('{0} : {1}'.format(extension, len(values)))
+            # .php : 123
+            log.debug('{0} : {1}'.format(extension, len(values)))
+            # Files Count : 123
+            log.debug('Files Count: {0}').format(len(self.file))
             for f in self.file:
                 if f.endswith(extension):
                     self.result[extension]['file_list'].append(f)
 
         t2 = time.clock()
-        print('Scan Files: {0}, Total Time: {1}s'.format(self.file_nums, t2 - t1))
-        self.result['file_nums'] = self.file_nums
+        self.result['file_nums'] = self.file_id
+        self.result['collect_time'] = t2 - t1
         return self.result

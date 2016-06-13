@@ -16,7 +16,7 @@ import sys
 import re
 import time
 import subprocess
-from engine import scan
+from pickup import directory
 from utils import log
 from datetime import datetime
 from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
@@ -34,10 +34,10 @@ class Static:
             sys.exit()
         log.info('Start code static analyse...')
 
-        log.info('Parse target')
+        d = directory.Directory(self.directory)
+        files = d.collect_files()
+        log.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
 
-        s = scan.Scan(self.directory)
-        files = s.files()
         ext_language = {
             # Image
             '.jpg': 'image',
