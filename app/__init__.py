@@ -18,10 +18,10 @@ import time
 import subprocess
 
 from flask import Flask
-from flask.ext.migrate import MigrateCommand, Migrate
-from flask.ext.script import Manager, Server, Option, Command
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.bootstrap import Bootstrap
+from flask_migrate import MigrateCommand, Migrate
+from flask_script import Manager, Server, Option, Command
+from flask_sqlalchemy import SQLAlchemy
+from flask_bootstrap import Bootstrap
 
 from utils import log
 

@@ -36,7 +36,7 @@ class Directory:
             self.type_nums.setdefault(file_extension.lower(), []).append(filename)
 
             # Directory Structure
-            log.debug('|  ' * (level - 1) + '|--' + filename)
+            # log.debug('|  ' * (level - 1) + '|--' + filename)
             if os.path.isdir(path):
                 self.files(path, level + 1)
             if os.path.isfile(path):
@@ -46,7 +46,7 @@ class Directory:
                 log.debug("{0}, {1}".format(self.file_id, path))
 
     """
-    :return {'file_nums': 500, 'collect_time': 2, '.php': {'file_count': 123, 'file_list': ['/path/to/a.php', '/path/to/b.php']}}
+    :return {'file_nums': 50, 'collect_time': 2, '.php': {'file_count': 2, 'file_list': ['/path/a.php', '/path/b.php']}}
     """
 
     def collect_files(self):
@@ -56,11 +56,11 @@ class Directory:
             self.result[extension] = {'file_count': len(values), 'file_list': []}
             # .php : 123
             log.debug('{0} : {1}'.format(extension, len(values)))
-            # Files Count : 123
-            log.debug('Files Count: {0}').format(len(self.file))
             for f in self.file:
                 if f.endswith(extension):
                     self.result[extension]['file_list'].append(f)
+                else:
+                    log.debug('Not In Extension: {0} {1}'.format(f, extension))
 
         t2 = time.clock()
         self.result['file_nums'] = self.file_id

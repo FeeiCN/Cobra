@@ -97,10 +97,10 @@ def add_file_handler(level, fmt, filename, mode, backup_count, limit, when):
             logs_directory = config.get('cobra', 'logs_directory')
         except ConfigParser.Error:
             print("/config File Not Found, copy config.example to config please!")
-            exit()
+            sys.exit(0)
         if os.path.isdir(logs_directory) is not True:
             os.mkdir(logs_directory)
-        filename = logs_directory + '/' + time.strftime("%Y-%m-%d") + '.log'
+        filename = logs_directory + os.sep + time.strftime("%Y-%m-%d") + '.log'
 
     kwargs['filename'] = filename
 
@@ -135,7 +135,7 @@ def init_logger():
     g_logger.setLevel(logging.DEBUG)
 
 
-def set_logger(filename=None, mode='a', level='INFO:INFO',
+def set_logger(filename=None, mode='a', level='DEBUG:INFO',
                fmt=None,
                backup_count=5, limit=20480, when=None):
     """Configure the global logger."""
