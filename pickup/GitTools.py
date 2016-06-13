@@ -107,7 +107,7 @@ class Git:
         else:
             repo_name = repo_name.split('.')[0]
 
-        self.repo_directory = self.upload_directory + repo_user + '_' + repo_name
+        self.repo_directory = self.upload_directory + repo_user + os.sep + repo_name
 
         log.info('Git class init.')
 
@@ -144,7 +144,8 @@ class Git:
         """
         log.info('start clone repo')
         if os.path.isdir(self.repo_directory):
-            call(['rm', '-rf', self.repo_directory])
+            return self.pull()
+            # call(['rm', '-rf', self.repo_directory])
         if self.__check_exist():
             log.info('repo already exist. Stop clone.')
             return False
