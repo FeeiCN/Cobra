@@ -14,3 +14,8 @@
 * CMS Scan - https://github.com/droope/droopescan
 
 * GrepBugs - https://github.com/foospidy/GrepBugs
+
+
+# Rules
+* https://github.com/srcclr/commit-watcher/blob/master/db/seeds.rb
+* https://github.com/apuigsech/seekret/tree/master/rules
