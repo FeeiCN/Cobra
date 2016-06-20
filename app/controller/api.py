@@ -122,6 +122,7 @@ def add_task():
 
         result['scan_id'] = task.id
         result['project_id'] = project_id
+        result['msg'] = u'success'
         return jsonify(code=1001, result=result)
     except Exception as e:
         return jsonify(code=1004, msg=u'Unknown error, try again later?' + e.message)
@@ -148,6 +149,8 @@ def status_task():
     domain = config.get('cobra', 'domain')
     result = {
         'status': status_text,
-        'report': 'http://' + domain + '/report/' + scan_id
+        'text': u'放过',
+        'report': 'http://' + domain + '/report/' + scan_id,
+        'allow_deploy': True
     }
     return jsonify(status=1001, result=result)
