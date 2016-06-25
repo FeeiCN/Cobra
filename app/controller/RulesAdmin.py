@@ -821,16 +821,26 @@ def dashboard():
 
     all_rules = {}
     for x in cobra_rules:
-        all_rules[x.id] = x.vul_id
+        all_rules[x.id] = x.vul_id  # rule_id -> vul_id
     all_cobra_vuls = {}
     for x in cobra_vuls:
-        all_cobra_vuls[x.id] = x.name
+        all_cobra_vuls[x.id] = x.name   # vul_id -> vul_name
 
     total_vuls = []
-    for x in all_vuls:
+    for x in all_vuls:      # all_vuls: results group by rule_id and count(*)
         t = {}
-        t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
-        t['counts'] = x.counts
+        # get vul name
+        te = all_cobra_vuls[all_rules[x.rule_id]]
+        # check if there is already a same vul name in different language
+        flag = False
+        for tv in total_vuls:
+            if te == tv['vuls']:
+                tv['counts'] += x.counts
+                flag = True
+                break
+        if not flag:
+            t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+            t['counts'] = x.counts
         total_vuls.append(t)
     today_vuls = []
     for x in all_vuls_today:
