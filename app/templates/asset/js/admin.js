@@ -591,5 +591,7 @@ $("#show_all_languages").click(function () {
 
 // dashboard click
 $("#show_dashboard").click(function () {
+    $("#operate_result").html("");
+    $("#search_rules_bar").html("");
     $("#main-div").load("dashboard");
 });
