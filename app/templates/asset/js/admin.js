@@ -691,6 +691,18 @@ $("#show_dashboard").click(function () {
             "#5F9EA0", "#48D1CC", "#00FA9A", "#556B2F", "#FFD700"
         ];
 
+        var my_chart = null;
+        function draw_chart(ctx, data, type) {
+            if (my_chart != null) {
+                my_chart.destroy();
+            }
+
+            my_chart = new Chart(ctx, {
+                type: type,
+                data: data
+            });
+        }
+
         $("#show-all-data").click(function () {
             var data = {
                 "show_all": 1
@@ -714,10 +726,7 @@ $("#show_dashboard").click(function () {
                     }]
                 };
                 var ctx = $("#g-vulns");
-                var vuls_graph = new Chart(ctx,{
-                    type: 'pie',
-                    data: g_data,
-                });
+                draw_chart(ctx, g_data, "pie");
             });
 
             // languages vulns graph
@@ -774,10 +783,7 @@ $("#show_dashboard").click(function () {
                     }]
                 };
                 var ctx = $("#g-vulns");
-                var vuls_graph = new Chart(ctx,{
-                    type: 'pie',
-                    data: g_data,
-                });
+                draw_chart(ctx, g_data, "pie");
             });
 
         });
