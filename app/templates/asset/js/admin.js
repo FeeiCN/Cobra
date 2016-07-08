@@ -22,6 +22,9 @@ $("[id^=show_all_]").click(function () {
 });
 
 var g_rule_back_page = 1;
+var g_rule_back_lang = null;
+var g_rule_back_vul = null;
+var g_rule_back_method = null;
 
 function showAlert(tag, msg, div) {
     var tt = '<div class="alert alert-' + tag +' alert-dismissible" role="alert">';
@@ -34,6 +37,7 @@ function showAlert(tag, msg, div) {
 function make_pagination(cp, t) {
     // make pagination
     g_rule_back_page = cp;
+    g_rule_back_method = "page";
     // get all rules count first
     var all_count = 0;
     var promise = $.ajax('all_' + t + '_count');
@@ -89,6 +93,9 @@ $("#search_rules_bar").delegate("button", "click", function (event) {
 
     var language = $("#language").val();
     var vul = $("#vul").val();
+    g_rule_back_lang = language;
+    g_rule_back_vul = vul;
+    g_rule_back_method = "search";
 
     data = {
         'language': language,
@@ -181,15 +188,32 @@ $("#main-div").delegate("span", "click", function () {
 
                 $("#back-rule-button").click(function () {
                     // back to rule list.
-                    var back_page = g_rule_back_page;
-                        $.get('rules/' + back_page, function (data) {
-                        $("#main-div").html(data);
-                    });
+                    if (g_rule_back_method == "search") {
+                        data = {
+                            'language': g_rule_back_lang,
+                            'vul': g_rule_back_vul
+                        };
+                        $.post('search_rules', data, function (data) {
+                            $("#main-div").html(data);
+                        });
+                        $.get("search_rules_bar", function (raw_data) {
+                            $("#search_rules_bar").html(raw_data);
+                            $("#vul").val(g_rule_back_vul);
+                            $("#language").val(g_rule_back_lang);
+                        });
 
-                    make_pagination(back_page, 'rules');
+                    } else if (g_rule_back_method == "page") {
+                        var back_page = g_rule_back_page;
+                            $.get('rules/' + back_page, function (data) {
+                            $("#main-div").html(data);
+                        });
 
-                    // show search bar
-                    $("#search_rules_bar").load('search_rules_bar');
+                        make_pagination(back_page, 'rules');
+
+                        // show search bar
+                        $("#search_rules_bar").load('search_rules_bar');
+                    }
+
 
                 });
             });
