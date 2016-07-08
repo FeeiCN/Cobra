@@ -21,6 +21,7 @@ $("[id^=show_all_]").click(function () {
     $("#search_rules_bar").html("")
 });
 
+var g_rule_back_page = 1;
 
 function showAlert(tag, msg, div) {
     var tt = '<div class="alert alert-' + tag +' alert-dismissible" role="alert">';
@@ -32,6 +33,7 @@ function showAlert(tag, msg, div) {
 
 function make_pagination(cp, t) {
     // make pagination
+    g_rule_back_page = cp;
     // get all rules count first
     var all_count = 0;
     var promise = $.ajax('all_' + t + '_count');
@@ -114,69 +116,83 @@ $("#main-div").delegate("span", "click", function () {
     if (target === "rule") {
         if (type === 'edit') {
             $.get('edit_rule/' + cid, function (result) {
-            $('#main-div').html(result);
+                $('#main-div').html(result);
 
-            $("#edit-rule-button").click(function () {
-                var vul_type = $("#vul_type").val();
-                var lang = $("#language").val();
-                var regex = $("#regex").val();
-                var description = $("#description").val();
-                var regex_confirm = $("#confirm-regex").val();
-                var repair = $("#repair").val();
-                var status = $("#status:checked").val();
-                var level = $("#level:checked").val();
+                $("#edit-rule-button").click(function () {
+                    var vul_type = $("#vul_type").val();
+                    var lang = $("#language").val();
+                    var regex = $("#regex").val();
+                    var description = $("#description").val();
+                    var regex_confirm = $("#confirm-regex").val();
+                    var repair = $("#repair").val();
+                    var status = $("#status:checked").val();
+                    var level = $("#level:checked").val();
 
-                // check data
-                if (!vul_type || vul_type == "") {
-                    showAlert('danger', 'vul type error.', '#edit-rule-result');
-                    return false;
-                }
-                if (!lang || lang == "") {
-                    showAlert('danger', 'language error.', '#edit-rule-result');
-                    return false;
-                }
-                if (!description || description == "") {
-                    showAlert('danger', 'description can not be blank.', '#edit-rule-result');
-                    return false;
-                }
-                if (!regex || regex == "") {
-                    showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
-                    return false;
-                }
-                if (!regex_confirm || regex_confirm == "") {
-                    showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
-                    return false;
-                }
-                if (!repair || repair == "") {
-                    showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
-                    return false;
-                }
-                if (!status || status == "") {
-                    showAlert('danger', 'status error.', '#edit-rule-result');
-                    return false;
-                }
-                if (!level || level == "") {
-                    showAlert('danger', 'level can not be blank.', '#edit-rule-result');
-                    return false;
-                }
+                    // check data
+                    if (!vul_type || vul_type == "") {
+                        showAlert('danger', 'vul type error.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!lang || lang == "") {
+                        showAlert('danger', 'language error.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!description || description == "") {
+                        showAlert('danger', 'description can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!regex || regex == "") {
+                        showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!regex_confirm || regex_confirm == "") {
+                        showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!repair || repair == "") {
+                        showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!status || status == "") {
+                        showAlert('danger', 'status error.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!level || level == "") {
+                        showAlert('danger', 'level can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
 
-                // post data
-                var data = {
-                    'vul_type': vul_type,
-                    'language': lang,
-                    'regex': regex,
-                    'regex_confirm': regex_confirm,
-                    'description': description,
-                    'rule_id': cid,
-                    'repair': repair,
-                    'status': status,
-                    'level': level
-                };
-                $.post('edit_rule/' + cid, data, function (res) {
-                    showAlert(res.tag, res.msg, "#edit-rule-result");
+                    // post data
+                    var data = {
+                        'vul_type': vul_type,
+                        'language': lang,
+                        'regex': regex,
+                        'regex_confirm': regex_confirm,
+                        'description': description,
+                        'rule_id': cid,
+                        'repair': repair,
+                        'status': status,
+                        'level': level
+                    };
+                    $.post('edit_rule/' + cid, data, function (res) {
+                        showAlert(res.tag, res.msg, "#edit-rule-result");
+                    });
+                });
+
+                $("#back-rule-button").click(function () {
+                    // back to rule list.
+                    var back_page = g_rule_back_page;
+                        $.get('rules/' + back_page, function (data) {
+                        $("#main-div").html(data);
+                    });
+
+                    make_pagination(back_page, 'rules');
+
+                    // show search bar
+                    $("#search_rules_bar").load('search_rules_bar');
+
                 });
             });
-        });
         } else if (type === 'view') {
             var regex = $("<div/>").text($("#rule-regex-" + cid).text()).html();
             var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cid).text()).html();
