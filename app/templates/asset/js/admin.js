@@ -700,7 +700,8 @@ $("#show_dashboard").click(function () {
             $.post("graph_vulns", data, function (raw_data) {
                 var labels = [];
                 var data = [];
-                for (var i = 0; i < raw_data.data.length-1; i++) {
+                console.log(raw_data);
+                for (var i = 0; i < raw_data.data.length; i++) {
                     labels.push(raw_data.data[i]["vuls"]);
                     data.push(raw_data.data[i]["counts"]);
                 }
@@ -714,6 +715,29 @@ $("#show_dashboard").click(function () {
                 };
                 var ctx = $("#g-vulns");
                 var vuls_graph = new Chart(ctx,{
+                    type: 'pie',
+                    data: g_data,
+                });
+            });
+
+            // languages vulns graph
+            $.post("graph_languages", data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (i in raw_data.data) {
+                    labels.push(i);
+                    data.push(raw_data.data[i]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-languages");
+                var graph = new Chart(ctx,{
                     type: 'pie',
                     data: g_data,
                 });
@@ -737,7 +761,7 @@ $("#show_dashboard").click(function () {
             $.post("graph_vulns",data, function (raw_data) {
                 var labels = [];
                 var data = [];
-                for (var i = 0; i < raw_data.data.length-1; i++) {
+                for (var i = 0; i < raw_data.data.length; i++) {
                     labels.push(raw_data.data[i]["vuls"]);
                     data.push(raw_data.data[i]["counts"]);
                 }

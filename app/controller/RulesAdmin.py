@@ -982,3 +982,27 @@ def graph_vulns():
 
             return jsonify(data=total_vuls)
 
+
+@web.route(ADMIN_URL + "/graph_languages", methods=['POST'])
+def graph_languages():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    return_value = dict()
+    hit_rules = db.session.query(CobraResults.rule_id).all()
+    for rule_id in hit_rules:
+        language_id = db.session.query(CobraRules.language).filter_by(id=int(rule_id[0])).all()
+        language_id = int(language_id[0][0])
+        language_name = db.session.query(
+            CobraLanguages.language, CobraLanguages.extensions
+        ).filter_by(id=language_id).all()
+        language_name = language_name[0]
+        if return_value.get(language_name[0]):
+            return_value[language_name[0]] += 1
+        else:
+            return_value[language_name[0]] = 1
+    return jsonify(data=return_value)
+
+
+
