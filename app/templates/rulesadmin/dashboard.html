@@ -1,5 +1,36 @@
 <div class="row clearfix">
     <div class="col-md-12 column">
+
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Graph
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <div class="form-inline">
+                            <label for="g-start-time">Start Time: </label>
+                            <input type="text" class="form-control" id="g-start-time">&nbsp;&nbsp;&nbsp;
+                            <label for="g-end-time">End Time: </label>
+                            <input type="text" class="form-control" id="g-end-time">&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-data">Show Data</button>&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-all-data">Show All Data</button>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6 column"><br />
+                        <label for="g-vulns">Each vulns count: </label>
+                        <canvas id="g-vulns" width="40" height="40"></canvas>
+                    </div>
+                    <div class="col-md-6 column"><br />
+                    2222
+                    </div>
+                </div> <!-- .row clearfix -->
+            </div> <!-- .panel-body -->
+        </div>
+
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -60,6 +91,20 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="col-md-12 column">
+                        <div class="form-inline">
+                            <label for="start-time">Start Time: </label>
+                            <input class="form-control" type="text" id="start-time" data-date-format="yyyy-mm-dd hh:ii">
+                            &nbsp;&nbsp;&nbsp;
+                            <label for="end-time">End Time: </label>
+                            <input class="form-control" type="text" id="end-time" data-date-format="yyyy-mm-dd hh:ii">
+                            &nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-info">Show</button>
+                            &nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-danger" id="hide-info">Hide</button>
+                        </div>
+                        <div id="information" hidden></div>
                     </div>
                 </div>
             </div><!-- .panel body -->

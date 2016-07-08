@@ -834,14 +834,15 @@ def dashboard():
         # check if there is already a same vul name in different language
         flag = False
         for tv in total_vuls:
-            if te == tv['vuls']:
+            if te == tv.get('vuls'):
                 tv['counts'] += x.counts
                 flag = True
                 break
         if not flag:
             t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
             t['counts'] = x.counts
-        total_vuls.append(t)
+        if t:
+            total_vuls.append(t)
     today_vuls = []
     for x in all_vuls_today:
         t = {}
@@ -865,3 +866,91 @@ def dashboard():
         'today_vuls': today_vuls,
     }
     return render_template("rulesadmin/dashboard.html", data=data)
+
+
+@web.route(ADMIN_URL + "/get_scan_information", methods=['POST'])
+def get_scan_information():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    if request.method == "POST":
+        start_time = request.form.get("start_time")
+        end_time = request.form.get("end_time")
+        start_time_stamp = request.form.get("start_time_stamp")[0:10]
+        end_time_stamp = request.form.get("end_time_stamp")[0:10]
+        start_time_array = datetime.datetime.fromtimestamp(int(start_time_stamp))
+        end_time_array = datetime.datetime.fromtimestamp(int(end_time_stamp))
+
+        if start_time_stamp >= end_time_stamp:
+            return jsonify(tag="danger", msg="wrong date select.", code=1002)
+
+        task_count = CobraTaskInfo.query.filter(
+            and_(CobraTaskInfo.time_start >= start_time_stamp, CobraTaskInfo.time_start <= end_time_stamp)
+        ).count()
+        vulns_count = CobraResults.query.filter(
+            and_(CobraResults.created_at >= start_time_array, CobraResults.created_at <= end_time_array)
+        ).count()
+        projects_count = CobraProjects.query.filter(
+            and_(CobraProjects.last_scan >= start_time_array, CobraProjects.last_scan <= end_time_array)
+        ).count()
+        files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).filter(
+            and_(CobraTaskInfo.time_start >= start_time_stamp, CobraTaskInfo.time_start <= end_time_stamp)
+        ).first()[0]
+
+        return jsonify(code=1001, task_count=task_count, vulns_count=vulns_count, projects_count=projects_count,
+                       files_count=long(files_count))
+
+
+@web.route(ADMIN_URL + "/graph_vulns", methods=['POST'])
+def graph_vulns():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    if request.method == "POST":
+        start_time_stamp = request.form.get("start_time_stamp")[:10]
+        end_time_stamp = request.form.get("end_time_stamp")[:10]
+        show_all = request.form.get("show_all")
+
+        cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id, ).all()
+        cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
+
+        all_rules = {}
+        for x in cobra_rules:
+            all_rules[x.id] = x.vul_id  # rule_id -> vul_id
+        all_cobra_vuls = {}
+        for x in cobra_vuls:
+            all_cobra_vuls[x.id] = x.name  # vul_id -> vul_name
+
+        if show_all:
+            # show all vulns
+            all_vuls = db.session.query(
+                CobraResults.rule_id, func.count("*").label('counts')
+            ).group_by(CobraResults.rule_id).all()
+
+            total_vuls = []
+            for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
+                t = {}
+                # get vul name
+                te = all_cobra_vuls[all_rules[x.rule_id]]
+                # check if there is already a same vul name in different language
+                flag = False
+                for tv in total_vuls:
+                    if te == tv['vuls']:
+                        tv['counts'] += x.counts
+                        flag = True
+                        break
+                if not flag:
+                    t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+                    t['counts'] = x.counts
+                if t:
+                    total_vuls.append(t)
+
+            return jsonify(data=total_vuls)
+        else:
+            # show part of vulns
+            pass
+
+
+

@@ -609,5 +609,102 @@ $("#show_all_languages").click(function () {
 $("#show_dashboard").click(function () {
     $("#operate_result").html("");
     $("#search_rules_bar").html("");
-    $("#main-div").load("dashboard");
+
+    $.get("dashboard", function (data) {
+        $("#main-div").html(data);
+        $('#start-time').datetimepicker();
+        $("#end-time").datetimepicker();
+
+        $("#show-info").click(function () {
+            var start_time = $("#start-time").val();
+            var end_time = $("#end-time").val();
+
+            var start_time_stamp = new Date(start_time);
+            start_time_stamp = start_time_stamp.getTime();
+
+            var end_time_stamp = new Date(end_time);
+            end_time_stamp = end_time_stamp.getTime();
+            
+            var data = {
+                'start_time': start_time,
+                'start_time_stamp': start_time_stamp,
+                'end_time': end_time,
+                'end_time_stamp': end_time_stamp
+            };
+            
+            $.post("get_scan_information", data, function (res) {
+
+                if (res.code == 1002) {
+                    showAlert(res.tag, res.msg, "#information");
+                    $("#information").fadeIn(1000);
+                } else if (res.code == 1001) {
+                    var content = '<br/><table class="table"><tbody>';
+                    content += '<tr><td><b>Overview</b></td><td><b>Count</b></td></tr>';
+                    content += '<tr><td>Scan Times: </td><td>' + res.task_count + '</td></tr>';
+                    content += '<tr><td>Vulnerabilities: </td><td>' + res.vulns_count + '</td></tr>';
+                    content += '<tr><td>Scanned Projects Count: </td><td>' + res.projects_count + '</td></tr>';
+                    content += '<tr><td>Files Count: </td><td>' + res.files_count + '</td></tr>';
+                    content += '</tbody></table>';
+                    $("#information").html(content);
+                    $("#information").fadeIn(1000);
+                }
+            });
+            
+        });
+
+        $("#hide-info").click(function () {
+            $("#information").fadeOut(1000);
+        });
+
+        // graph
+        var colors = [
+            "#FF6384", "#36A2EB", "#FFCE56", "#2F4F4F", "#32CD32",
+            "#FFFF00", "#DAA520", "#FF8C00", "#FF4500", "#B22222",
+            "#000000", "#7FFFD4", "#1E90FF", "#C71585", "#0000CD",
+        ];
+        // vulns pie graph
+        $("#show-all-data").click(function () {
+            var start_time = $("#g-start-time").val();
+            var end_time = $("#g-end-time").val();
+            var start_time_stamp = new Date(start_time);
+            start_time_stamp = start_time_stamp.getTime();
+            var end_time_stamp = new Date(end_time);
+            end_time_stamp = end_time_stamp.getTime();
+
+            var data = {
+                "start_time_stamp": start_time_stamp,
+                "end_time_stamp": end_time_stamp,
+                "show_all": 1
+            };
+
+            // vulns graph
+            $.post("graph_vulns", data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (var i = 0; i < raw_data.data.length-1; i++) {
+                    labels.push(raw_data.data[i]["vuls"]);
+                    data.push(raw_data.data[i]["counts"]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-vulns");
+                var vuls_graph = new Chart(ctx,{
+                    type: 'pie',
+                    data: g_data,
+                });
+            });
+
+        });
+        $("#show-all-data").click();
+
+
+    });
+
+
 });
