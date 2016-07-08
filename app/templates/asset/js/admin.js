@@ -638,6 +638,8 @@ $("#show_dashboard").click(function () {
         $("#main-div").html(data);
         $('#start-time').datetimepicker();
         $("#end-time").datetimepicker();
+        $("#g-start-time").datetimepicker();
+        $("#g-end-time").datetimepicker();
 
         $("#show-info").click(function () {
             var start_time = $("#start-time").val();
@@ -685,9 +687,41 @@ $("#show_dashboard").click(function () {
             "#FF6384", "#36A2EB", "#FFCE56", "#2F4F4F", "#32CD32",
             "#FFFF00", "#DAA520", "#FF8C00", "#FF4500", "#B22222",
             "#000000", "#7FFFD4", "#1E90FF", "#C71585", "#0000CD",
+            "#E6E6FA", "#FF1493", "#DC143C", "#4682B4", "#00BFFF",
+            "#5F9EA0", "#48D1CC", "#00FA9A", "#556B2F", "#FFD700"
         ];
-        // vulns pie graph
+
         $("#show-all-data").click(function () {
+            var data = {
+                "show_all": 1
+            };
+
+            // vulns graph
+            $.post("graph_vulns", data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (var i = 0; i < raw_data.data.length-1; i++) {
+                    labels.push(raw_data.data[i]["vuls"]);
+                    data.push(raw_data.data[i]["counts"]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-vulns");
+                var vuls_graph = new Chart(ctx,{
+                    type: 'pie',
+                    data: g_data,
+                });
+            });
+
+        });
+        
+        $("#show-data").click(function () {
             var start_time = $("#g-start-time").val();
             var end_time = $("#g-end-time").val();
             var start_time_stamp = new Date(start_time);
@@ -695,14 +729,12 @@ $("#show_dashboard").click(function () {
             var end_time_stamp = new Date(end_time);
             end_time_stamp = end_time_stamp.getTime();
 
-            var data = {
+            data = {
                 "start_time_stamp": start_time_stamp,
-                "end_time_stamp": end_time_stamp,
-                "show_all": 1
+                "end_time_stamp": end_time_stamp
             };
 
-            // vulns graph
-            $.post("graph_vulns", data, function (raw_data) {
+            $.post("graph_vulns",data, function (raw_data) {
                 var labels = [];
                 var data = [];
                 for (var i = 0; i < raw_data.data.length-1; i++) {

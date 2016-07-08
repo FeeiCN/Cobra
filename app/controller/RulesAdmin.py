@@ -909,8 +909,6 @@ def graph_vulns():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
-        start_time_stamp = request.form.get("start_time_stamp")[:10]
-        end_time_stamp = request.form.get("end_time_stamp")[:10]
         show_all = request.form.get("show_all")
 
         cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id, ).all()
@@ -950,7 +948,37 @@ def graph_vulns():
             return jsonify(data=total_vuls)
         else:
             # show part of vulns
-            pass
+            start_time_stamp = request.form.get("start_time_stamp")[:10]
+            end_time_stamp = request.form.get("end_time_stamp")[:10]
+            if start_time_stamp >= end_time_stamp:
+                return jsonify(code=1002, tag="danger", msg="wrong datetime.")
 
+            start_time = datetime.datetime.fromtimestamp(int(start_time_stamp))
+            end_time = datetime.datetime.fromtimestamp(int(end_time_stamp))
+            # TODO: improve this
+            all_vuls = db.session.query(
+                CobraResults.rule_id, func.count("*").label('counts')
+            ).filter(
+                and_(CobraResults.created_at >= start_time, CobraResults.created_at <= end_time)
+            ).group_by(CobraResults.rule_id).all()
 
+            total_vuls = []
+            for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
+                t = {}
+                # get vul name
+                te = all_cobra_vuls[all_rules[x.rule_id]]
+                # check if there is already a same vul name in different language
+                flag = False
+                for tv in total_vuls:
+                    if te == tv['vuls']:
+                        tv['counts'] += x.counts
+                        flag = True
+                        break
+                if not flag:
+                    t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+                    t['counts'] = x.counts
+                if t:
+                    total_vuls.append(t)
+
+            return jsonify(data=total_vuls)
 
