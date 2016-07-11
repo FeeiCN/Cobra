@@ -846,9 +846,20 @@ def dashboard():
     today_vuls = []
     for x in all_vuls_today:
         t = {}
-        t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
-        t['counts'] = x.counts
-        today_vuls.append(t)
+        # get vul name
+        te = all_cobra_vuls[all_rules[x.rule_id]]
+        # check if there is already a same vul name in different language
+        flag = False
+        for tv in today_vuls:
+            if te == tv.get('vuls'):
+                tv['counts'] += x.counts
+                flag = True
+                break
+        if not flag:
+            t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+            t['counts'] = x.counts
+        if t:
+            today_vuls.append(t)
 
     data = {
         'total_task_count': total_task_count,
