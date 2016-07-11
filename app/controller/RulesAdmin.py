@@ -1077,9 +1077,6 @@ def graph_lines():
         start_time_stamp = request.form.get("start_time_stamp")[:10]
         end_time_stamp = request.form.get("end_time_stamp")[:10]
 
-        print start_time_stamp
-        print end_time_stamp
-
         labels = list()
         vuls = list()
         scans = list()
@@ -1117,10 +1114,6 @@ def graph_lines():
             ).all()
             scans.append(all_scans[0][0])
             d += datetime.timedelta(1)
-
-        print labels
-        print vuls
-        print scans
 
         return jsonify(labels=labels, vuls=vuls, scans=scans)
 
