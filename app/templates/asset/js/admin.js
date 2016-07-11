@@ -682,7 +682,7 @@ $("#show_dashboard").click(function () {
             $("#information").fadeOut(1000);
         });
 
-        // graph
+        // graph colors
         var colors = [
             "#FF6384", "#36A2EB", "#FFCE56", "#2F4F4F", "#32CD32",
             "#FFFF00", "#DAA520", "#FF8C00", "#FF4500", "#B22222",
@@ -691,18 +691,54 @@ $("#show_dashboard").click(function () {
             "#5F9EA0", "#48D1CC", "#00FA9A", "#556B2F", "#FFD700"
         ];
 
-        var my_chart = null;
-        function draw_chart(ctx, data, type) {
-            if (my_chart != null) {
-                my_chart.destroy();
+        // draw chart functions
+        var chart_vuls = null;
+        var chart_languages = null;
+        var chart_lines = null;
+        function draw_vuls_chart(ctx, data, type) {
+            if (chart_vuls != null) {
+                chart_vuls.destroy();
             }
 
-            my_chart = new Chart(ctx, {
+            chart_vuls = new Chart(ctx, {
                 type: type,
                 data: data
             });
         }
 
+        function draw_languages_chart(ctx, data, type) {
+            if (chart_languages != null) {
+                chart_languages.destroy();
+            }
+
+            chart_languages = new Chart(ctx, {
+                type: type,
+                data: data
+            });
+        }
+
+        function draw_lines_chart(ctx, data, type) {
+            if (chart_lines != null) {
+                chart_lines.destroy()
+            }
+
+            chart_lines = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                stepSize: 1
+                            }
+                        }]
+                    }
+                }
+            })
+        }
+
+        // draw all data
         $("#show-all-data").click(function () {
             var data = {
                 "show_all": 1
@@ -712,7 +748,6 @@ $("#show_dashboard").click(function () {
             $.post("graph_vulns", data, function (raw_data) {
                 var labels = [];
                 var data = [];
-                console.log(raw_data);
                 for (var i = 0; i < raw_data.data.length; i++) {
                     labels.push(raw_data.data[i]["vuls"]);
                     data.push(raw_data.data[i]["counts"]);
@@ -726,7 +761,7 @@ $("#show_dashboard").click(function () {
                     }]
                 };
                 var ctx = $("#g-vulns");
-                draw_chart(ctx, g_data, "pie");
+                draw_vuls_chart(ctx, g_data, "pie");
             });
 
             // languages vulns graph
@@ -746,14 +781,43 @@ $("#show_dashboard").click(function () {
                     }]
                 };
                 var ctx = $("#g-languages");
-                var graph = new Chart(ctx,{
-                    type: 'pie',
-                    data: g_data,
-                });
+                draw_languages_chart(ctx, g_data, "pie");
+            });
+
+            // lines graph
+            $.post("graph_lines", data, function (raw_data) {
+                var g_data = {
+                    labels: raw_data.labels,
+                    datasets: [
+                        {
+                            label: "vulnerabilities everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[0],
+                            pointBackgroundColor: colors[0],
+                            borderColor: colors[0],
+                            data: raw_data.vuls
+                        },
+                        {
+                            label: "scan times everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[1],
+                            pointBackgroundColor: colors[1],
+                            borderColor: colors[1],
+                            data: raw_data.scans
+                        }
+                    ]
+                };
+                var ctx = $("#g-lines");
+                draw_lines_chart(ctx, g_data, "line")
             });
 
         });
-        
+
+        // draw part of data
         $("#show-data").click(function () {
             var start_time = $("#g-start-time").val();
             var end_time = $("#g-end-time").val();
@@ -783,7 +847,56 @@ $("#show_dashboard").click(function () {
                     }]
                 };
                 var ctx = $("#g-vulns");
-                draw_chart(ctx, g_data, "pie");
+                draw_vuls_chart(ctx, g_data, "pie");
+            });
+
+            $.post("graph_languages", data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (i in raw_data.data) {
+                    labels.push(i);
+                    data.push(raw_data.data[i]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-languages");
+                draw_languages_chart(ctx, g_data, "pie");
+            });
+
+            $.post("graph_lines", data, function (raw_data) {
+                var g_data = {
+                    labels: raw_data.labels,
+                    datasets: [
+                        {
+                            label: "vulnerabilities everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[0],
+                            pointBackgroundColor: colors[0],
+                            borderColor: colors[0],
+                            data: raw_data.vuls
+                        },
+                        {
+                            label: "scan times everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[1],
+                            pointBackgroundColor: colors[1],
+                            borderColor: colors[1],
+                            data: raw_data.scans
+                        }
+                    ]
+                };
+                var ctx = $("#g-lines");
+                draw_lines_chart(ctx, g_data, "line");
             });
 
         });

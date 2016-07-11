@@ -989,8 +989,22 @@ def graph_languages():
     if not is_login():
         return redirect(ADMIN_URL + '/index')
 
+    show_all = request.form.get("show_all")
+
     return_value = dict()
-    hit_rules = db.session.query(CobraResults.rule_id).all()
+    hit_rules = None
+
+    if show_all:
+        hit_rules = db.session.query(CobraResults.rule_id).all()
+    else:
+        start_time_stamp = request.form.get("start_time_stamp")
+        end_time_stamp = request.form.get("end_time_stamp")
+        start_time = datetime.datetime.fromtimestamp(int(start_time_stamp[:10]))
+        end_time = datetime.datetime.fromtimestamp(int(end_time_stamp[:10]))
+        hit_rules = db.session.query(CobraResults.rule_id).filter(
+            and_(CobraResults.created_at >= start_time, CobraResults.created_at <= end_time)
+        ).all()
+
     for rule_id in hit_rules:
         language_id = db.session.query(CobraRules.language).filter_by(id=int(rule_id[0])).all()
         language_id = int(language_id[0][0])
@@ -1005,4 +1019,97 @@ def graph_languages():
     return jsonify(data=return_value)
 
 
+@web.route(ADMIN_URL + "/graph_lines", methods=['POST'])
+def graph_lines():
+    # everyday vulns count
+    # everyday scan count
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+    show_all = request.form.get("show_all")
+    if show_all:
+        days = 15-1
+        vuls = list()
+        scans = list()
+        labels = list()
+        # get vulns count
+        end_date = datetime.datetime.today()
+        start_date = datetime.date.today() - datetime.timedelta(days=days)
+        start_date = datetime.datetime.combine(start_date, datetime.datetime.min.time())
+
+        d = start_date
+        while d < end_date:
+
+            all_vuls = db.session.query(
+                func.count("*").label('counts')
+            ).filter(
+                and_(CobraResults.created_at >= d, CobraResults.created_at <= d + datetime.timedelta(1))
+            ).all()
+            vuls.append(all_vuls[0][0])
+            labels.append(d.strftime("%Y%m%d"))
+            d += datetime.timedelta(1)
+
+        # get scan count
+        d = start_date
+        while d < end_date:
+            t = int(time.mktime(d.timetuple()))
+            all_scans = db.session.query(
+                func.count("*").label("counts")
+            ).filter(
+                and_(CobraTaskInfo.time_start >= t, CobraTaskInfo.time_start <= t + 3600*24)
+            ).all()
+            scans.append(all_scans[0][0])
+            d += datetime.timedelta(1)
+
+        return jsonify(labels=labels, vuls=vuls, scans=scans)
+
+    else:
+        start_time_stamp = request.form.get("start_time_stamp")[:10]
+        end_time_stamp = request.form.get("end_time_stamp")[:10]
+
+        print start_time_stamp
+        print end_time_stamp
+
+        labels = list()
+        vuls = list()
+        scans = list()
+
+        start_date = datetime.datetime.fromtimestamp(int(start_time_stamp[:10]))
+        end_date = datetime.datetime.fromtimestamp(int(end_time_stamp[:10]))
+
+        # get vulns count
+        d = start_date
+        while d < end_date:
+
+            t = end_date if d + datetime.timedelta(1) > end_date else d + datetime.timedelta(1)
+
+            all_vuls = db.session.query(
+                func.count("*").label('counts')
+            ).filter(
+                and_(CobraResults.created_at >= d, CobraResults.created_at <= t)
+            ).all()
+
+            labels.append(d.strftime("%Y%m%d"))
+            vuls.append(all_vuls[0][0])
+            d += datetime.timedelta(1)
+
+        # get scans count
+        d = start_date
+        while d < end_date:
+            t_end_date = end_date if d + datetime.timedelta(1) > end_date else d + datetime.timedelta(1)
+            t_start_date = time.mktime(d.timetuple())
+            t_end_date = time.mktime(t_end_date.timetuple())
+
+            all_scans = db.session.query(
+                func.count("*").label("counts")
+            ).filter(
+                and_(CobraTaskInfo.time_start >= t_start_date, CobraTaskInfo.time_start <= t_end_date)
+            ).all()
+            scans.append(all_scans[0][0])
+            d += datetime.timedelta(1)
+
+        print labels
+        print vuls
+        print scans
+
+        return jsonify(labels=labels, vuls=vuls, scans=scans)
 
