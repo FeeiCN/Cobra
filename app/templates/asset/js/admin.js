@@ -402,7 +402,29 @@ $("#main-div").delegate("span", "click", function () {
         }
     } else if (target === "task") {
         if (type === "edit") {
-            console.log(target + type + cid);
+            $.get('edit_task/'+cid, function (data) {
+                $("#main-div").html(data);
+
+                $("#edit-task-button").click(function () {
+                    var branch = $("#branch").val();
+                    var scan_way = $("#scanway:checked").val();
+                    var old_version = $("#oldversion").val();
+                    var new_version = $("#newversion").val();
+                    var target = $("#target").val();
+
+                    data = {
+                        'branch': branch,
+                        'scan_way': scan_way,
+                        'old_version': old_version,
+                        'new_version': new_version,
+                        'target': target
+                    };
+
+                    $.post("edit_task/"+cid, data, function (result) {
+                        showAlert(result.tag, result.msg, '#edit-task-result');
+                    });
+                });
+            });
         } else if (type === "del") {
             $.post("del_task", {id:cid}, function (data) {
                 showAlert(data.tag, data.msg, "#operate_result");

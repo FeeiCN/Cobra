@@ -675,6 +675,50 @@ def del_task():
         return jsonify(tag='danger', msg='unknown error.')
 
 
+# edit the special task
+@web.route(ADMIN_URL + '/edit_task/<int:task_id>', methods=['GET', 'POST'])
+def edit_task(task_id):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    if request.method == 'POST':
+        branch = request.form.get('branch')
+        scan_way = request.form.get('scan_way')
+        new_version = request.form.get('new_version')
+        old_version = request.form.get('old_version')
+        target = request.form.get('target')
+
+        if not branch or branch == "":
+            return jsonify(tag='danger', msg='branch can not be empty')
+        if not scan_way or scan_way == "":
+            return jsonify(tag='danger', msg='scan way can not be empty')
+        if (scan_way == 2) and ((not new_version or new_version == "") or (not old_version or old_version == "")):
+            return jsonify(tag='danger', msg='In diff scan mode, new version and old version can not be empty')
+        if not target or target == "":
+            return jsonify(tag='danger', msg='Target can not be empty.')
+
+        task = CobraTaskInfo.query.filter_by(id=task_id).first()
+        task.branch = branch
+        task.scan_way = scan_way
+        task.new_version = new_version
+        task.old_version = old_version
+        task.target = target
+        task.updated_time = datetime.datetime.now()
+
+        try:
+            db.session.add(task)
+            db.session.commit()
+            return jsonify(tag='success', msg='save success.')
+        except:
+            return jsonify(tag='danger', msg='save failed. Try again later?')
+    else:
+        task = CobraTaskInfo.query.filter_by(id=task_id).first()
+        return render_template('rulesadmin/edit_task.html', data={
+            'task': task,
+        })
+
+
 # search_rules_bar
 @web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
 def search_rules_bar():
