@@ -655,6 +655,24 @@ def tasks(page):
     return render_template('rulesadmin/tasks.html', data=data)
 
 
+# del the special task
+@web.route(ADMIN_URL + '/del_task', methods=['POST'])
+def del_task():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    task_id = request.form.get('id')
+    if not task_id or task_id == "":
+        return jsonify(tag='danger', msg='wrong task id.')
+
+    task = CobraTaskInfo.query.filter_by(id=task_id).first()
+    try:
+        db.session.delete(task)
+        db.session.commit()
+        return jsonify(tag='success', msg='delete success.')
+    except:
+        return jsonify(tag='danger', msg='unknown error.')
 
 
 # search_rules_bar

@@ -404,7 +404,10 @@ $("#main-div").delegate("span", "click", function () {
         if (type === "edit") {
             console.log(target + type + cid);
         } else if (type === "del") {
-            console.log(target + type + cid);
+            $.post("del_task", {id:cid}, function (data) {
+                showAlert(data.tag, data.msg, "#operate_result");
+                $("#show_all_tasks").click();
+            });
         } else if (type === "view") {
             var old_version = $("<div/>").text($("#task-oldversion-" + cid).text()).html();
             var new_version = $("<div/>").text($("#task-newversion-" + cid).text()).html();
