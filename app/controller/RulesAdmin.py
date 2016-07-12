@@ -835,6 +835,7 @@ def dashboard():
     total_vulns_count = CobraResults.query.count()
     total_projects_count = CobraProjects.query.count()
     total_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]
+    total_code_number = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).first()[0]
 
     # today overview
     today_task_count = CobraTaskInfo.query.filter(
@@ -847,6 +848,9 @@ def dashboard():
         and_(CobraProjects.last_scan >= today_time_array, CobraProjects.last_scan <= tomorrow_time_array)
     ).count()
     today_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).filter(
+        and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
+    ).first()[0]
+    today_code_number = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).filter(
         and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
     ).first()[0]
 
@@ -923,6 +927,8 @@ def dashboard():
         'avg_scan_time': avg_scan_time,
         'total_vuls': total_vuls,
         'today_vuls': today_vuls,
+        'total_code_number': total_code_number,
+        'today_code_number': today_code_number,
     }
     return render_template("rulesadmin/dashboard.html", data=data)
 
@@ -956,9 +962,12 @@ def get_scan_information():
         files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).filter(
             and_(CobraTaskInfo.time_start >= start_time_stamp, CobraTaskInfo.time_start <= end_time_stamp)
         ).first()[0]
+        code_number = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).filter(
+            and_(CobraTaskInfo.time_start >= start_time_stamp, CobraTaskInfo.time_start <= end_time_stamp)
+        ).first()[0]
 
         return jsonify(code=1001, task_count=task_count, vulns_count=vulns_count, projects_count=projects_count,
-                       files_count=long(files_count))
+                       files_count=int(files_count), code_number=int(code_number))
 
 
 @web.route(ADMIN_URL + "/graph_vulns", methods=['POST'])

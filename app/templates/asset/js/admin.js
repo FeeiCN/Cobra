@@ -419,7 +419,6 @@ $("#main-div").delegate("span", "click", function () {
             $("#view-title").html("Task Details.");
             var content = "<b>Old Version: </b>" + old_version + "<br />";
             content += "<b>New Version: </b>" + new_version + "<br />";
-            content += "<b>New Version: </b>" + new_version + "<br />";
             content += "<b>Time Start: </b>" + time_start + "<br />";
             content += "<b>Time End: </b>" + time_end + "<br />";
             content += "<b>Time Consume: </b>" + time_consume + "<br />";
@@ -707,6 +706,7 @@ $("#show_dashboard").click(function () {
                     content += '<tr><td>Vulnerabilities: </td><td>' + res.vulns_count + '</td></tr>';
                     content += '<tr><td>Scanned Projects Count: </td><td>' + res.projects_count + '</td></tr>';
                     content += '<tr><td>Files Count: </td><td>' + res.files_count + '</td></tr>';
+                    content += '<tr><td>Code Number: </td><td>' + res.code_number + '</td></tr>';
                     content += '</tbody></table>';
                     $("#information").html(content);
                     $("#information").fadeIn(1000);
