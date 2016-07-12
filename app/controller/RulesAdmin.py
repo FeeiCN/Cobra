@@ -398,6 +398,16 @@ def all_whitelists_count():
     return str(whitelists_count)
 
 
+# api: get all tasks count
+@web.route(ADMIN_URL + '/all_tasks_count', methods=['GET'])
+def all_tasks_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    tasks_count = CobraTaskInfo.query.count()
+    return str(tasks_count)
+
 # api: get all languages count
 @web.route(ADMIN_URL + '/all_languages_count', methods=['GET'])
 def all_languages_count():
@@ -625,6 +635,24 @@ def edit_whitelist(whitelist_id):
         }
 
         return render_template('rulesadmin/edit_whitelist.html', data=data)
+
+
+# show all tasks
+@web.route(ADMIN_URL + '/tasks/<int:page>', methods=['GET'])
+def tasks(page):
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    per_page = 10
+    tasks = CobraTaskInfo.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
+
+    # replace data
+    for task in tasks:
+        task.scan_way = "Full Scan" if task.scan_way == 1 else "Diff Scan"
+    data = {
+        'tasks': tasks,
+    }
+    return render_template('rulesadmin/tasks.html', data=data)
 
 
 # search_rules_bar

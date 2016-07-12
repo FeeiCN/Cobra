@@ -400,6 +400,14 @@ $("#main-div").delegate("span", "click", function () {
                 });
             })
         }
+    } else if (target === "task") {
+        if (type === "edit") {
+            console.log(target + type + cid);
+        } else if (type === "del") {
+            console.log(target + type + cid);
+        } else if (type === "view") {
+            console.log(target + type + cid);
+        }
     }
 });
 
@@ -627,6 +635,15 @@ $("#show_all_languages").click(function () {
     $("#main-div").load("languages");
     make_pagination(1, 'languages');
 });
+
+// show all tasks click
+$("#show_all_tasks").click(function () {
+    $("#main-div").load("tasks/1");
+    make_pagination(1, "tasks");
+});
+
+
+// add new task click
 
 
 // dashboard click
