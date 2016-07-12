@@ -655,6 +655,8 @@ def tasks(page):
     return render_template('rulesadmin/tasks.html', data=data)
 
 
+
+
 # search_rules_bar
 @web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
 def search_rules_bar():

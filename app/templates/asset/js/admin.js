@@ -406,7 +406,24 @@ $("#main-div").delegate("span", "click", function () {
         } else if (type === "del") {
             console.log(target + type + cid);
         } else if (type === "view") {
-            console.log(target + type + cid);
+            var old_version = $("<div/>").text($("#task-oldversion-" + cid).text()).html();
+            var new_version = $("<div/>").text($("#task-newversion-" + cid).text()).html();
+            var time_start = $("<div/>").text($("#task-timestart-" + cid).text()).html();
+            var time_end = $("<div/>").text($("#task-timeend-" + cid).text()).html();
+            var time_consume = $("<div/>").text($("#task-timeconsume-" + cid).text()).html();
+            var status = $("<div/>").text($("#task-status-" + cid).text()).html();
+            var code_number = $("<div/>").text($("#task-codenumber-" + cid).text()).html();
+            $("#view-title").html("Task Details.");
+            var content = "<b>Old Version: </b>" + old_version + "<br />";
+            content += "<b>New Version: </b>" + new_version + "<br />";
+            content += "<b>New Version: </b>" + new_version + "<br />";
+            content += "<b>Time Start: </b>" + time_start + "<br />";
+            content += "<b>Time End: </b>" + time_end + "<br />";
+            content += "<b>Time Consume: </b>" + time_consume + "<br />";
+            content += "<b>Status: </b>" + status + "<br />";
+            content += "<b>Code Number: </b>" + code_number + "<br />";
+
+            $("#view-body").html(content);
         }
     }
 });

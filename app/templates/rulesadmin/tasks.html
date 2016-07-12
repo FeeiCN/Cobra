@@ -19,6 +19,13 @@
             <td>{{ task.file_count }}</td>
             <td>{{ task.target }}</td>
             <td>{{ task.updated_at }}</td>
+            <td hidden id="task-oldversion-{{ task.id }}">{{ task.old_version }}</td>
+            <td hidden id="task-newversion-{{ task.id }}">{{ task.new_version }}</td>
+            <td hidden id="task-timestart-{{ task.id }}">{{ task.time_start }}</td>
+            <td hidden id="task-timeend-{{ task.id }}">{{ task.time_end }}</td>
+            <td hidden id="task-timeconsume-{{ task.id }}">{{ task.time_consume }}</td>
+            <td hidden id="task-status-{{ task.id }}">{{ task.status }}</td>
+            <td hidden id="task-codenumber-{{ task.id }}">{{ task.codenumber }}</td>
             <td>
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-task-{{ task.id }}"></span>&nbsp;&nbsp;
                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-task-{{ task.id }}"
