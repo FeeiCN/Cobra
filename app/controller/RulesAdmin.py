@@ -11,21 +11,22 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import time
 import datetime
+import time
 
 from flask import render_template, request, jsonify, session, escape, redirect
 from sqlalchemy.sql import func, and_
 
-from ..ValidateClass import ValidateClass
-from app import web, CobraRules, CobraVuls, db, CobraLanguages
 from app import CobraProjects, CobraWhiteList, CobraAdminUser
 from app import CobraTaskInfo, CobraResults
+from app import web, CobraRules, CobraVuls, db, CobraLanguages
+from app.CommonClass.ValidateClass import ValidateClass
 
 # default admin url
 ADMIN_URL = '/admin'
 
 
+# login page and index
 @web.route(ADMIN_URL + '/', methods=['GET'])
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
@@ -123,31 +124,14 @@ def add_new_rule():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        vul_type = request.form.get('vul_type')
-        lang = request.form.get('language')
-        regex = request.form.get('regex')
-        regex_confirm = request.form.get('regex_confirm')
-        description = request.form.get('description')
-        repair = request.form.get('repair')
-        level = request.form.get('level')
-
-        if not vul_type or vul_type == "":
-            return jsonify(tag='danger', msg='vul type error.')
-        if not lang or lang == "":
-            return jsonify(tag='danger', msg='language error.')
-        if not regex or regex == "":
-            return jsonify(tag='danger', msg='regex can not be blank')
-        if not description or description == "":
-            return jsonify(tag='danger', msg='description can not be blank')
-        if not regex_confirm or regex_confirm == "":
-            return jsonify(tag='danger', msg='confirm regex can not be blank')
-        if not repair or repair == "":
-            return jsonify(tag='danger', msg='repair can not be empty')
-        if not level or level == "":
-            return jsonify(tag='danger', msg='repair can not be blank.')
+        vc = ValidateClass(request, 'vul_type', 'language', 'regex', 'regex_confirm',
+                           'description', 'repair', 'level')
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        rule = CobraRules(vul_type, lang, regex, regex_confirm, description, repair,
+        rule = CobraRules(vc.vars.get('vul_type'), vc.vars.get('lang'), regex, regex_confirm, description, repair,
                           1, level, current_time, current_time)
         try:
             db.session.add(rule)
