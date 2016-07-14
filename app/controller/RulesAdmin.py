@@ -131,8 +131,8 @@ def add_new_rule():
             return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        rule = CobraRules(vc.vars.get('vul_type'), vc.vars.get('lang'), regex, regex_confirm, description, repair,
-                          1, level, current_time, current_time)
+        rule = CobraRules(vc.vars.vul_type, vc.vars.language, vc.vars.regex, vc.vars.regex_confirm,
+                          vc.vars.description, vc.vars.repair, 1, vc.vars.level, current_time, current_time)
         try:
             db.session.add(rule)
             db.session.commit()
@@ -156,7 +156,9 @@ def del_rule():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
-    vul_id = request.form['rule_id']
+    vc = ValidateClass(request, "rule_id")
+    vc.check_args()
+    vul_id = vc.vars.rule_id
     if vul_id:
         r = CobraRules.query.filter_by(id=vul_id).first()
         try:
@@ -177,42 +179,23 @@ def edit_rule(rule_id):
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        vul_type = request.form.get('vul_type')
-        lang = request.form.get('language')
-        regex = request.form.get('regex')
-        regex_confirm = request.form.get('regex_confirm')
-        description = request.form.get('description')
-        rule_id = request.form.get('rule_id')
-        repair = request.form.get('repair')
-        status = request.form.get('status')
-        level = request.form.get('level')
 
-        if not vul_type or vul_type == "":
-            return jsonify(tag='danger', msg='vul type error.')
-        if not lang or lang == "":
-            return jsonify(tag='danger', msg='language error.')
-        if not regex or regex == "":
-            return jsonify(tag='danger', msg='regex can not be blank')
-        if not regex_confirm or regex_confirm == "":
-            return jsonify(tag='danger', msg='confirm regex can not be blank')
-        if not description or description == "":
-            return jsonify(tag='danger', msg='description can not be blank')
-        if not repair or repair == "":
-            return jsonify(tag='danger', msg='repair can not be blank')
-        if not status or status == "" or (status != '1' and status != '2'):
-            return jsonify(tag="danger", msg='status error.')
-        if not level or level == "":
-            return jsonify(tag='danger', msg='level can not be blank.')
+        vc = ValidateClass(request, "vul_type", "language", "regex", "regex_confirm", "description", "rule_id",
+                           "repair", "status", "level")
+        ret, msg = vc.check_args()
+
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         r = CobraRules.query.filter_by(id=rule_id).first()
-        r.vul_id = vul_type
-        r.language = lang
-        r.regex = regex
-        r.regex_confirm = regex_confirm
-        r.description = description
-        r.repair = repair
-        r.status = status
-        r.level = level
+        r.vul_id = vc.vars.vul_type
+        r.language = vc.vars.language
+        r.regex = vc.vars.regex
+        r.regex_confirm = vc.vars.regex_confirm
+        r.description = vc.vars.description
+        r.repair = vc.vars.repair
+        r.status = vc.vars.status
+        r.level = vc.vars.level
         r.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
         try:
             db.session.add(r)
@@ -239,18 +222,14 @@ def add_new_vul():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        name = request.form.get('name')
-        description = request.form.get('description')
-        repair = request.form.get('repair')
-        if not name or name == "":
-            return jsonify(tag='danger', msg='name can not be blank.')
-        if not description or description == "":
-            return jsonify(tag='danger', msg='description can not be blank.')
-        if not repair or repair == "":
-            return jsonify(tag='danger', msg='repair can not be blank.')
+
+        vc = ValidateClass(request, "name", "description", "repair")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        vul = CobraVuls(name, description, repair, current_time, current_time)
+        vul = CobraVuls(vc.vars.name, vc.vars.description, vc.vars.repair, current_time, current_time)
         try:
             db.session.add(vul)
             db.session.commit()
@@ -283,9 +262,13 @@ def del_vul():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
-    vul_id = request.form['vul_id']
-    if vul_id:
-        v = CobraVuls.query.filter_by(id=vul_id).first()
+    vc = ValidateClass(request, "vul_id")
+    ret, msg = vc.check_args()
+    if not ret:
+        return jsonify(tag="danger", msg=msg)
+
+    if vc.vars.vul_id:
+        v = CobraVuls.query.filter_by(id=vc.vars.vul_id).first()
         try:
             db.session.delete(v)
             db.session.commit()
@@ -304,21 +287,17 @@ def edit_vul(vul_id):
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        name = request.form.get('name')
-        description = request.form.get('description')
-        repair = request.form.get('repair')
 
-        if not name or name == "":
-            return jsonify(tag='danger', msg='name can not be empty')
-        if not description or description == "":
-            return jsonify(tag='danger', msg='description can not be empty')
-        if not repair or repair == "":
-            return jsonify(tag='danger', msg='repair can not be empty')
+        vc = ValidateClass(request, "name", "description", "repair")
+        ret, msg = vc.check_args()
+
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         v = CobraVuls.query.filter_by(id=vul_id).first()
-        v.name = name
-        v.description = description
-        v.repair = repair
+        v.name = vc.args.name
+        v.description = vc.args.description
+        v.repair = vc.args.repair
 
         try:
             db.session.add(v)
@@ -422,9 +401,13 @@ def del_project():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        project_id = request.form.get('id')
-        if not project_id or project_id == "":
-            return jsonify(tag='danger', msg='project id error.')
+
+        vc = ValidateClass(request, "id")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
+
+        project_id = vc.vars.id
         project = CobraProjects.query.filter_by(id=project_id).first()
         try:
             db.session.delete(project)
@@ -444,20 +427,11 @@ def edit_project(project_id):
         return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
-        # get data from request
-        project_id = request.form.get('project_id')
-        name = request.form.get('name')
-        repository = request.form.get('repository')
-        author = request.form.get('author')
-        remark = request.form.get('remark')
 
-        # check data
-        if not project_id or project_id == "":
-            return jsonify(tag='danger', msg='wrong project id.')
-        if not name or name == "":
-            return jsonify(tag='danger', msg='name cannot be empty')
-        if not repository or repository == "":
-            return jsonify(tag='danger', msg='repository can not be empty')
+        vc = ValidateClass(request, "project_id", "name", "repository", "author", "remark")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         project = CobraProjects.query.filter_by(id=project_id).first()
@@ -465,10 +439,10 @@ def edit_project(project_id):
             return jsonify(tag='danger', msg='wrong project id.')
 
         # update project data
-        project.name = name
-        project.author = author
-        project.remark = remark
-        project.repository = repository
+        project.name = vc.vars.name
+        project.author = vc.vars.author
+        project.remark = vc.vars.remark
+        project.repository = vc.vars.repository
         project.updated_at = current_time
         try:
             db.session.add(project)
@@ -506,24 +480,17 @@ def add_whitelist():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        project_id = request.form.get('project_id')
-        rule_id = request.form.get('rule_id')
-        path = request.form.get('path')
-        reason = request.form.get('reason')
 
-        if not project_id or project_id == "":
-            return jsonify(tag='danger', msg='project id error.')
-        if not rule_id or rule_id == "":
-            return jsonify(tag='danger', msg='rule id error.')
-        if not path or path == "":
-            return jsonify(tag='danger', msg='file error.')
-        if not reason or reason == "":
-            return jsonify(tag='danger', msg='reason error.')
+        vc = ValidateClass(request, "project_id", "rule_id", "path", "reason")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        if path[0] != '/':
-            path = '/' + path
-        whitelist = CobraWhiteList(project_id, rule_id, path, reason, 1, current_time, current_time)
+        if vc.vars.path[0] != '/':
+            vc.vars.path = '/' + vc.vars.path
+        whitelist = CobraWhiteList(vc.vars.project_id, vc.vars.rule_id, vc.vars.path, vc.vars.reason,
+                                   1, current_time, current_time)
         try:
             db.session.add(whitelist)
             db.session.commit()
@@ -547,11 +514,12 @@ def del_whitelist():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
-    whitelist_id = request.form.get('whitelist_id')
-    if not whitelist_id or whitelists == "":
-        return jsonify(tag='danger', msg='wrong white list id.')
+    vc = ValidateClass(request, "whitelist_id")
+    ret, msg = vc.check_args()
+    if not ret:
+        return jsonify(tag="danger", msg=msg)
 
-    whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
+    whitelist = CobraWhiteList.query.filter_by(id=vc.vars.whitelist_id).first()
     try:
         db.session.delete(whitelist)
         db.session.commit()
@@ -568,35 +536,21 @@ def edit_whitelist(whitelist_id):
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        whitelist_id = request.form.get('whitelist_id')
-        project_id = request.form.get('project')
-        rule_id = request.form.get('rule')
-        path = request.form.get('path')
-        reason = request.form.get('reason')
-        status = request.form.get('status')
 
-        if not whitelist_id or whitelist_id == "":
-            return jsonify(tag='danger', msg='wrong whitelist')
-        if not project_id or project_id == "":
-            return jsonify(tag='danger', msg='project can not be empty')
-        if not rule_id or rule_id == "":
-            return jsonify(tag='danger', msg='rule can not be empty')
-        if not path or path == "":
-            return jsonify(tag='danger', msg='path can not be empty')
-        if not reason or reason == "":
-            return jsonify(tag='danger', msg='reason can not be empty')
-        if not status or status == "":
-            return jsonify(tag='danger', msg='status can not be empty')
+        vc = ValidateClass(request, "whitelist_id", "project", "rule", "path", "reason", "status")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
         if not whitelist:
             return jsonify(tag='danger', msg='wrong whitelist')
 
-        whitelist.project_id = project_id
-        whitelist.rule_id = rule_id
-        whitelist.path = path
-        whitelist.reason = reason
-        whitelist.status = status
+        whitelist.project_id = vc.vars.project_id
+        whitelist.rule_id = vc.vars.rule_id
+        whitelist.path = vc.vars.path
+        whitelist.reason = vc.vars.reason
+        whitelist.status = vc.vars.status
 
         try:
             db.session.add(whitelist)
@@ -642,11 +596,12 @@ def del_task():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
-    task_id = request.form.get('id')
-    if not task_id or task_id == "":
-        return jsonify(tag='danger', msg='wrong task id.')
+    vc = ValidateClass(request, "id")
+    ret, msg = vc.check_args()
+    if not ret:
+        return jsonify(tag="danger", msg=msg)
 
-    task = CobraTaskInfo.query.filter_by(id=task_id).first()
+    task = CobraTaskInfo.query.filter_by(id=vc.vars.task_id).first()
     try:
         db.session.delete(task)
         db.session.commit()
@@ -663,6 +618,12 @@ def edit_task(task_id):
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
+
+        # vc = ValidateClass(request, "branch", "scan_way", "new_version", "old_version", "target")
+        # ret, msg = vc.check_args()
+        # if not ret:
+        #     return jsonify(tag="danger", msg=msg)
+        # TODO: check new_version and old_version when scan_way == 2
         branch = request.form.get('branch')
         scan_way = request.form.get('scan_way')
         new_version = request.form.get('new_version')
@@ -725,19 +686,22 @@ def search_rules():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        language = request.form.get('language')
-        vul = request.form.get('vul')
+
+        vc = ValidateClass(request, "language", "vul")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         rules = None
 
-        if language == 'all' and vul == 'all':
+        if vc.vars.language == 'all' and vc.vars.vul == 'all':
             rules = CobraRules.query.all()
-        elif language == 'all' and vul != 'all':
-            rules = CobraRules.query.filter_by(vul_id=vul).all()
-        elif language != 'all' and vul == 'all':
-            rules = CobraRules.query.filter_by(language=language).all()
-        elif language != 'all' and vul != 'all':
-            rules = CobraRules.query.filter_by(language=language, vul_id=vul).all()
+        elif vc.vars.language == 'all' and vc.vars.vul != 'all':
+            rules = CobraRules.query.filter_by(vul_id=vc.vars.vul).all()
+        elif vc.vars.language != 'all' and vc.vars.vul == 'all':
+            rules = CobraRules.query.filter_by(language=vc.vars.language).all()
+        elif vc.vars.language != 'all' and vc.vars.vul != 'all':
+            rules = CobraRules.query.filter_by(language=vc.vars.language, vul_id=vc.vars.vul).all()
         else:
             return 'error!'
 
@@ -775,15 +739,13 @@ def add_new_language():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
-        language = request.form.get("language")
-        extensions = request.form.get("extensions")
 
-        if not language or language == "":
-            return jsonify(tag="danger", msg="language name can not be blank.")
-        if not extensions or extensions == "":
-            return jsonify(tag="danger", msg="extensions can not be blank.")
+        vc = ValidateClass(request, "language", "extensions")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
-        l = CobraLanguages(language, extensions)
+        l = CobraLanguages(vc.vars.language, vc.vars.extensions)
         try:
             db.session.add(l)
             db.session.commit()
@@ -813,8 +775,12 @@ def del_language():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + "/index")
 
-    cid = request.form.get("id")
-    l = CobraLanguages.query.filter_by(id=cid).first()
+    vc = ValidateClass(request, "id")
+    ret, msg = vc.check_args()
+    if not ret:
+        return jsonify(tag="danger", msg=msg)
+
+    l = CobraLanguages.query.filter_by(id=vc.vars.id).first()
     try:
         db.session.delete(l)
         db.session.commit()
@@ -830,17 +796,16 @@ def edit_language(language_id):
         return redirect(ADMIN_URL + "/index")
 
     if request.method == "POST":
-        language = request.form.get("language")
-        extensions = request.form.get("extensions")
-        if not language or language == "":
-            return jsonify(tag="danger", msg="language name can not be blank.")
-        if not extensions or extensions == "":
-            return jsonify(tag="danger", msg="extensions can not be blank.")
+
+        vc = ValidateClass(request, "language", "extensions")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
 
         l = CobraLanguages.query.filter_by(id=language_id).first()
         try:
-            l.language = language
-            l.extensions = extensions
+            l.language = vc.vars.language
+            l.extensions = vc.vars.extensions
             db.session.add(l)
             db.session.commit()
             return jsonify(tag="success", msg="update success.")
