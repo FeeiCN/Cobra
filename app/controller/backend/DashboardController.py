@@ -133,7 +133,7 @@ def dashboard():
         'total_code_number': total_code_number,
         'today_code_number': today_code_number,
     }
-    return render_template("backend/dashboard.html", data=data)
+    return render_template("backend/index/dashboard.html", data=data)
 
 
 @web.route(ADMIN_URL + "/get_scan_information", methods=['POST'])

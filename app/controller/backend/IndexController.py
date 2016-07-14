@@ -50,7 +50,7 @@ def index():
 
             return "Login success, jumping...<br /><script>window.setTimeout(\"location='main'\", 1000);</script>"
     else:
-        return render_template("backend/index.html")
+        return render_template("backend/index/index.html")
 
 
 # main view
@@ -59,5 +59,5 @@ def main():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + "/index")
     else:
-        return render_template("backend/main.html")
+        return render_template("backend/index/main.html")
 

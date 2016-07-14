@@ -31,7 +31,7 @@ def tasks(page):
     data = {
         'tasks': tasks,
     }
-    return render_template('backend/tasks.html', data=data)
+    return render_template('backend/task/tasks.html', data=data)
 
 
 # del the special task
@@ -100,6 +100,6 @@ def edit_task(task_id):
             return jsonify(tag='danger', msg='save failed. Try again later?')
     else:
         task = CobraTaskInfo.query.filter_by(id=task_id).first()
-        return render_template('backend/edit_task.html', data={
+        return render_template('backend/task/edit_task.html', data={
             'task': task,
         })

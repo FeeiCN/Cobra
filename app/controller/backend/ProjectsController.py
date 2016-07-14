@@ -28,7 +28,7 @@ def projects(page):
     data = {
         'projects': project,
     }
-    return render_template("backend/projects.html", data=data)
+    return render_template("backend/project/projects.html", data=data)
 
 
 # del the special projects
@@ -90,7 +90,7 @@ def edit_project(project_id):
             return jsonify(tag='danger', msg='Unknown error.')
     else:
         project = CobraProjects.query.filter_by(id=project_id).first()
-        return render_template('backend/edit_project.html', data={
+        return render_template('backend/project/edit_project.html', data={
             'project': project
         })
 

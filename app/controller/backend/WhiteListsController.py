@@ -27,7 +27,7 @@ def whitelists(page):
     data = {
         'whitelists': whitelists,
     }
-    return render_template('backend/whitelists.html', data=data)
+    return render_template('backend/whitelist/whitelists.html', data=data)
 
 
 # add new white list
@@ -62,7 +62,7 @@ def add_whitelist():
             'rules': rules,
             'projects': projects,
         }
-        return render_template('backend/add_new_whitelist.html', data=data)
+        return render_template('backend/whitelist/add_new_whitelist.html', data=data)
 
 
 # del the special white list
@@ -126,5 +126,5 @@ def edit_whitelist(whitelist_id):
             'whitelist': whitelist,
         }
 
-        return render_template('backend/edit_whitelist.html', data=data)
+        return render_template('backend/whitelist/edit_whitelist.html', data=data)
 

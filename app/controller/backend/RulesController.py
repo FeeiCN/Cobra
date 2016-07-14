@@ -56,7 +56,7 @@ def rules(page):
         'rules': cobra_rules,
     }
 
-    return render_template('backend/rules.html', data=data)
+    return render_template('backend/rule/rules.html', data=data)
 
 
 # add new rules button
@@ -89,7 +89,7 @@ def add_new_rule():
             'vul_type': vul_type,
             'languages': languages
         }
-        return render_template('backend/add_new_rule.html', data=data)
+        return render_template('backend/rule/add_new_rule.html', data=data)
 
 
 # del special rule
@@ -150,7 +150,7 @@ def edit_rule(rule_id):
         r = CobraRules.query.filter_by(id=rule_id).first()
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
-        return render_template('backend/edit_rule.html', data={
+        return render_template('backend/rule/edit_rule.html', data={
             'rule': r,
             'all_vuls': vul_type,
             'all_lang': languages,

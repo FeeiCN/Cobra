@@ -29,7 +29,7 @@ def search_rules_bar():
         'vuls': vuls,
     }
 
-    return render_template('backend/search_rules_bar.html', data=data)
+    return render_template('backend/index/search_rules_bar.html', data=data)
 
 
 # search rules
@@ -83,5 +83,5 @@ def search_rules():
             'rules': rules,
         }
 
-        return render_template('backend/rules.html', data=data)
+        return render_template('backend/rule/rules.html', data=data)
 

@@ -38,7 +38,7 @@ def add_new_vul():
         except:
             return jsonify(tag='danger', msg='Add failed. Please try again later.')
     else:
-        return render_template('backend/add_new_vul.html')
+        return render_template('backend/vul/add_new_vul.html')
 
 
 # show all vuls click
@@ -53,7 +53,7 @@ def vuls(page):
     data = {
         'vuls': all_vuls
     }
-    return render_template('backend/vuls.html', data=data)
+    return render_template('backend/vul/vuls.html', data=data)
 
 
 # del special vul
@@ -108,7 +108,7 @@ def edit_vul(vul_id):
             return jsonify(tag='danger', msg='save failed. Try again later?')
     else:
         v = CobraVuls.query.filter_by(id=vul_id).first()
-        return render_template('backend/edit_vul.html', data={
+        return render_template('backend/vul/edit_vul.html', data={
             'vul': v,
         })
 

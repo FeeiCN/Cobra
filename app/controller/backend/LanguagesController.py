@@ -35,7 +35,7 @@ def add_new_language():
         except:
             return jsonify(tag="danger", msg="try again later?")
     else:
-        return render_template("backend/add_new_language.html")
+        return render_template("backend/language/add_new_language.html")
 
 
 @web.route(ADMIN_URL + "/languages", methods=['GET'])
@@ -48,7 +48,7 @@ def languages():
     data = {
         'languages': languages,
     }
-    return render_template("backend/languages.html", data=data)
+    return render_template("backend/language/languages.html", data=data)
 
 
 @web.route(ADMIN_URL + "/del_language", methods=['POST'])
@@ -99,5 +99,5 @@ def edit_language(language_id):
         data = {
             'language': l,
         }
-        return render_template("backend/edit_language.html", data=data)
+        return render_template("backend/language/edit_language.html", data=data)
 
