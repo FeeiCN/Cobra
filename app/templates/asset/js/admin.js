@@ -21,6 +21,10 @@ $("[id^=show_all_]").click(function () {
     $("#search_rules_bar").html("")
 });
 
+var g_rule_back_page = 1;
+var g_rule_back_lang = null;
+var g_rule_back_vul = null;
+var g_rule_back_method = null;
 
 function showAlert(tag, msg, div) {
     var tt = '<div class="alert alert-' + tag +' alert-dismissible" role="alert">';
@@ -32,6 +36,8 @@ function showAlert(tag, msg, div) {
 
 function make_pagination(cp, t) {
     // make pagination
+    g_rule_back_page = cp;
+    g_rule_back_method = "page";
     // get all rules count first
     var all_count = 0;
     var promise = $.ajax('all_' + t + '_count');
@@ -87,6 +93,9 @@ $("#search_rules_bar").delegate("button", "click", function (event) {
 
     var language = $("#language").val();
     var vul = $("#vul").val();
+    g_rule_back_lang = language;
+    g_rule_back_vul = vul;
+    g_rule_back_method = "search";
 
     data = {
         'language': language,
@@ -114,69 +123,100 @@ $("#main-div").delegate("span", "click", function () {
     if (target === "rule") {
         if (type === 'edit') {
             $.get('edit_rule/' + cid, function (result) {
-            $('#main-div').html(result);
+                $('#main-div').html(result);
 
-            $("#edit-rule-button").click(function () {
-                var vul_type = $("#vul_type").val();
-                var lang = $("#language").val();
-                var regex = $("#regex").val();
-                var description = $("#description").val();
-                var regex_confirm = $("#confirm-regex").val();
-                var repair = $("#repair").val();
-                var status = $("#status:checked").val();
-                var level = $("#level:checked").val();
+                $("#edit-rule-button").click(function () {
+                    var vul_type = $("#vul_type").val();
+                    var lang = $("#language").val();
+                    var regex = $("#regex").val();
+                    var description = $("#description").val();
+                    var regex_confirm = $("#confirm-regex").val();
+                    var repair = $("#repair").val();
+                    var status = $("#status:checked").val();
+                    var level = $("#level:checked").val();
 
-                // check data
-                if (!vul_type || vul_type == "") {
-                    showAlert('danger', 'vul type error.', '#edit-rule-result');
-                    return false;
-                }
-                if (!lang || lang == "") {
-                    showAlert('danger', 'language error.', '#edit-rule-result');
-                    return false;
-                }
-                if (!description || description == "") {
-                    showAlert('danger', 'description can not be blank.', '#edit-rule-result');
-                    return false;
-                }
-                if (!regex || regex == "") {
-                    showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
-                    return false;
-                }
-                if (!regex_confirm || regex_confirm == "") {
-                    showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
-                    return false;
-                }
-                if (!repair || repair == "") {
-                    showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
-                    return false;
-                }
-                if (!status || status == "") {
-                    showAlert('danger', 'status error.', '#edit-rule-result');
-                    return false;
-                }
-                if (!level || level == "") {
-                    showAlert('danger', 'level can not be blank.', '#edit-rule-result');
-                    return false;
-                }
+                    // check data
+                    if (!vul_type || vul_type == "") {
+                        showAlert('danger', 'vul type error.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!lang || lang == "") {
+                        showAlert('danger', 'language error.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!description || description == "") {
+                        showAlert('danger', 'description can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!regex || regex == "") {
+                        showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!regex_confirm || regex_confirm == "") {
+                        showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!repair || repair == "") {
+                        showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!status || status == "") {
+                        showAlert('danger', 'status error.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!level || level == "") {
+                        showAlert('danger', 'level can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
 
-                // post data
-                var data = {
-                    'vul_type': vul_type,
-                    'language': lang,
-                    'regex': regex,
-                    'regex_confirm': regex_confirm,
-                    'description': description,
-                    'rule_id': cid,
-                    'repair': repair,
-                    'status': status,
-                    'level': level
-                };
-                $.post('edit_rule/' + cid, data, function (res) {
-                    showAlert(res.tag, res.msg, "#edit-rule-result");
+                    // post data
+                    var data = {
+                        'vul_type': vul_type,
+                        'language': lang,
+                        'regex': regex,
+                        'regex_confirm': regex_confirm,
+                        'description': description,
+                        'rule_id': cid,
+                        'repair': repair,
+                        'status': status,
+                        'level': level
+                    };
+                    $.post('edit_rule/' + cid, data, function (res) {
+                        showAlert(res.tag, res.msg, "#edit-rule-result");
+                    });
+                });
+
+                $("#back-rule-button").click(function () {
+                    // back to rule list.
+                    if (g_rule_back_method == "search") {
+                        data = {
+                            'language': g_rule_back_lang,
+                            'vul': g_rule_back_vul
+                        };
+                        $.post('search_rules', data, function (data) {
+                            $("#main-div").html(data);
+                        });
+                        $.get("search_rules_bar", function (raw_data) {
+                            $("#search_rules_bar").html(raw_data);
+                            $("#vul").val(g_rule_back_vul);
+                            $("#language").val(g_rule_back_lang);
+                        });
+
+                    } else if (g_rule_back_method == "page") {
+                        var back_page = g_rule_back_page;
+                            $.get('rules/' + back_page, function (data) {
+                            $("#main-div").html(data);
+                        });
+
+                        make_pagination(back_page, 'rules');
+
+                        // show search bar
+                        $("#search_rules_bar").load('search_rules_bar');
+                    }
+
+
                 });
             });
-        });
         } else if (type === 'view') {
             var regex = $("<div/>").text($("#rule-regex-" + cid).text()).html();
             var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cid).text()).html();
@@ -359,6 +399,55 @@ $("#main-div").delegate("span", "click", function () {
 
                 });
             })
+        }
+    } else if (target === "task") {
+        if (type === "edit") {
+            $.get('edit_task/'+cid, function (data) {
+                $("#main-div").html(data);
+
+                $("#edit-task-button").click(function () {
+                    var branch = $("#branch").val();
+                    var scan_way = $("#scanway:checked").val();
+                    var old_version = $("#oldversion").val();
+                    var new_version = $("#newversion").val();
+                    var target = $("#target").val();
+
+                    data = {
+                        'branch': branch,
+                        'scan_way': scan_way,
+                        'old_version': old_version,
+                        'new_version': new_version,
+                        'target': target
+                    };
+
+                    $.post("edit_task/"+cid, data, function (result) {
+                        showAlert(result.tag, result.msg, '#edit-task-result');
+                    });
+                });
+            });
+        } else if (type === "del") {
+            $.post("del_task", {id:cid}, function (data) {
+                showAlert(data.tag, data.msg, "#operate_result");
+                $("#show_all_tasks").click();
+            });
+        } else if (type === "view") {
+            var old_version = $("<div/>").text($("#task-oldversion-" + cid).text()).html();
+            var new_version = $("<div/>").text($("#task-newversion-" + cid).text()).html();
+            var time_start = $("<div/>").text($("#task-timestart-" + cid).text()).html();
+            var time_end = $("<div/>").text($("#task-timeend-" + cid).text()).html();
+            var time_consume = $("<div/>").text($("#task-timeconsume-" + cid).text()).html();
+            var status = $("<div/>").text($("#task-status-" + cid).text()).html();
+            var code_number = $("<div/>").text($("#task-codenumber-" + cid).text()).html();
+            $("#view-title").html("Task Details.");
+            var content = "<b>Old Version: </b>" + old_version + "<br />";
+            content += "<b>New Version: </b>" + new_version + "<br />";
+            content += "<b>Time Start: </b>" + time_start + "<br />";
+            content += "<b>Time End: </b>" + time_end + "<br />";
+            content += "<b>Time Consume: </b>" + time_consume + "<br />";
+            content += "<b>Status: </b>" + status + "<br />";
+            content += "<b>Code Number: </b>" + code_number + "<br />";
+
+            $("#view-body").html(content);
         }
     }
 });
@@ -588,10 +677,292 @@ $("#show_all_languages").click(function () {
     make_pagination(1, 'languages');
 });
 
+// show all tasks click
+$("#show_all_tasks").click(function () {
+    $("#main-div").load("tasks/1");
+    make_pagination(1, "tasks");
+});
+
+
+// add new task click
+
 
 // dashboard click
 $("#show_dashboard").click(function () {
     $("#operate_result").html("");
     $("#search_rules_bar").html("");
-    $("#main-div").load("dashboard");
+
+    $.get("dashboard", function (data) {
+        $("#main-div").html(data);
+        $('#start-time').datetimepicker();
+        $("#end-time").datetimepicker();
+        $("#g-start-time").datetimepicker();
+        $("#g-end-time").datetimepicker();
+
+        $("#show-info").click(function () {
+            var start_time = $("#start-time").val();
+            var end_time = $("#end-time").val();
+
+            var start_time_stamp = new Date(start_time);
+            start_time_stamp = start_time_stamp.getTime();
+
+            var end_time_stamp = new Date(end_time);
+            end_time_stamp = end_time_stamp.getTime();
+            
+            var data = {
+                'start_time': start_time,
+                'start_time_stamp': start_time_stamp,
+                'end_time': end_time,
+                'end_time_stamp': end_time_stamp
+            };
+            
+            $.post("get_scan_information", data, function (res) {
+
+                if (res.code == 1002) {
+                    showAlert(res.tag, res.msg, "#information");
+                    $("#information").fadeIn(1000);
+                } else if (res.code == 1001) {
+                    var content = '<br/><table class="table"><tbody>';
+                    content += '<tr><td><b>Overview</b></td><td><b>Count</b></td></tr>';
+                    content += '<tr><td>Scan Times: </td><td>' + res.task_count + '</td></tr>';
+                    content += '<tr><td>Vulnerabilities: </td><td>' + res.vulns_count + '</td></tr>';
+                    content += '<tr><td>Scanned Projects Count: </td><td>' + res.projects_count + '</td></tr>';
+                    content += '<tr><td>Files Count: </td><td>' + res.files_count + '</td></tr>';
+                    content += '<tr><td>Code Number: </td><td>' + res.code_number + '</td></tr>';
+                    content += '</tbody></table>';
+                    $("#information").html(content);
+                    $("#information").fadeIn(1000);
+                }
+            });
+            
+        });
+
+        $("#hide-info").click(function () {
+            $("#information").fadeOut(1000);
+        });
+
+        // graph colors
+        var colors = [
+            "#FF6384", "#36A2EB", "#FFCE56", "#2F4F4F", "#32CD32",
+            "#FFFF00", "#DAA520", "#FF8C00", "#FF4500", "#B22222",
+            "#000000", "#7FFFD4", "#1E90FF", "#C71585", "#0000CD",
+            "#E6E6FA", "#FF1493", "#DC143C", "#4682B4", "#00BFFF",
+            "#5F9EA0", "#48D1CC", "#00FA9A", "#556B2F", "#FFD700"
+        ];
+
+        // draw chart functions
+        var chart_vuls = null;
+        var chart_languages = null;
+        var chart_lines = null;
+        function draw_vuls_chart(ctx, data, type) {
+            if (chart_vuls != null) {
+                chart_vuls.destroy();
+            }
+
+            chart_vuls = new Chart(ctx, {
+                type: type,
+                data: data
+            });
+        }
+
+        function draw_languages_chart(ctx, data, type) {
+            if (chart_languages != null) {
+                chart_languages.destroy();
+            }
+
+            chart_languages = new Chart(ctx, {
+                type: type,
+                data: data
+            });
+        }
+
+        function draw_lines_chart(ctx, data, type) {
+            if (chart_lines != null) {
+                chart_lines.destroy()
+            }
+
+            chart_lines = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                stepSize: 1
+                            }
+                        }]
+                    }
+                }
+            })
+        }
+
+        // draw all data
+        $("#show-all-data").click(function () {
+            var data = {
+                "show_all": 1
+            };
+
+            // vulns graph
+            $.post("graph_vulns", data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (var i = 0; i < raw_data.data.length; i++) {
+                    labels.push(raw_data.data[i]["vuls"]);
+                    data.push(raw_data.data[i]["counts"]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-vulns");
+                draw_vuls_chart(ctx, g_data, "pie");
+            });
+
+            // languages vulns graph
+            $.post("graph_languages", data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (i in raw_data.data) {
+                    labels.push(i);
+                    data.push(raw_data.data[i]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-languages");
+                draw_languages_chart(ctx, g_data, "pie");
+            });
+
+            // lines graph
+            $.post("graph_lines", data, function (raw_data) {
+                var g_data = {
+                    labels: raw_data.labels,
+                    datasets: [
+                        {
+                            label: "vulnerabilities everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[0],
+                            pointBackgroundColor: colors[0],
+                            borderColor: colors[0],
+                            data: raw_data.vuls
+                        },
+                        {
+                            label: "scan times everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[1],
+                            pointBackgroundColor: colors[1],
+                            borderColor: colors[1],
+                            data: raw_data.scans
+                        }
+                    ]
+                };
+                var ctx = $("#g-lines");
+                draw_lines_chart(ctx, g_data, "line")
+            });
+
+        });
+
+        // draw part of data
+        $("#show-data").click(function () {
+            var start_time = $("#g-start-time").val();
+            var end_time = $("#g-end-time").val();
+            var start_time_stamp = new Date(start_time);
+            start_time_stamp = start_time_stamp.getTime();
+            var end_time_stamp = new Date(end_time);
+            end_time_stamp = end_time_stamp.getTime();
+
+            data = {
+                "start_time_stamp": start_time_stamp,
+                "end_time_stamp": end_time_stamp
+            };
+
+            $.post("graph_vulns",data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (var i = 0; i < raw_data.data.length; i++) {
+                    labels.push(raw_data.data[i]["vuls"]);
+                    data.push(raw_data.data[i]["counts"]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-vulns");
+                draw_vuls_chart(ctx, g_data, "pie");
+            });
+
+            $.post("graph_languages", data, function (raw_data) {
+                var labels = [];
+                var data = [];
+                for (i in raw_data.data) {
+                    labels.push(i);
+                    data.push(raw_data.data[i]);
+                }
+                var g_data = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                    }]
+                };
+                var ctx = $("#g-languages");
+                draw_languages_chart(ctx, g_data, "pie");
+            });
+
+            $.post("graph_lines", data, function (raw_data) {
+                var g_data = {
+                    labels: raw_data.labels,
+                    datasets: [
+                        {
+                            label: "vulnerabilities everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[0],
+                            pointBackgroundColor: colors[0],
+                            borderColor: colors[0],
+                            data: raw_data.vuls
+                        },
+                        {
+                            label: "scan times everyday",
+                            fill: false,
+                            pointRadius: 5,
+                            lineTension: 0,
+                            backgroundColor: colors[1],
+                            pointBackgroundColor: colors[1],
+                            borderColor: colors[1],
+                            data: raw_data.scans
+                        }
+                    ]
+                };
+                var ctx = $("#g-lines");
+                draw_lines_chart(ctx, g_data, "line");
+            });
+
+        });
+        $("#show-all-data").click();
+
+
+    });
+
+
 });

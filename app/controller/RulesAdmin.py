@@ -398,6 +398,16 @@ def all_whitelists_count():
     return str(whitelists_count)
 
 
+# api: get all tasks count
+@web.route(ADMIN_URL + '/all_tasks_count', methods=['GET'])
+def all_tasks_count():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    tasks_count = CobraTaskInfo.query.count()
+    return str(tasks_count)
+
 # api: get all languages count
 @web.route(ADMIN_URL + '/all_languages_count', methods=['GET'])
 def all_languages_count():
@@ -627,6 +637,88 @@ def edit_whitelist(whitelist_id):
         return render_template('rulesadmin/edit_whitelist.html', data=data)
 
 
+# show all tasks
+@web.route(ADMIN_URL + '/tasks/<int:page>', methods=['GET'])
+def tasks(page):
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    per_page = 10
+    tasks = CobraTaskInfo.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
+
+    # replace data
+    for task in tasks:
+        task.scan_way = "Full Scan" if task.scan_way == 1 else "Diff Scan"
+    data = {
+        'tasks': tasks,
+    }
+    return render_template('rulesadmin/tasks.html', data=data)
+
+
+# del the special task
+@web.route(ADMIN_URL + '/del_task', methods=['POST'])
+def del_task():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    task_id = request.form.get('id')
+    if not task_id or task_id == "":
+        return jsonify(tag='danger', msg='wrong task id.')
+
+    task = CobraTaskInfo.query.filter_by(id=task_id).first()
+    try:
+        db.session.delete(task)
+        db.session.commit()
+        return jsonify(tag='success', msg='delete success.')
+    except:
+        return jsonify(tag='danger', msg='unknown error.')
+
+
+# edit the special task
+@web.route(ADMIN_URL + '/edit_task/<int:task_id>', methods=['GET', 'POST'])
+def edit_task(task_id):
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    if request.method == 'POST':
+        branch = request.form.get('branch')
+        scan_way = request.form.get('scan_way')
+        new_version = request.form.get('new_version')
+        old_version = request.form.get('old_version')
+        target = request.form.get('target')
+
+        if not branch or branch == "":
+            return jsonify(tag='danger', msg='branch can not be empty')
+        if not scan_way or scan_way == "":
+            return jsonify(tag='danger', msg='scan way can not be empty')
+        if (scan_way == 2) and ((not new_version or new_version == "") or (not old_version or old_version == "")):
+            return jsonify(tag='danger', msg='In diff scan mode, new version and old version can not be empty')
+        if not target or target == "":
+            return jsonify(tag='danger', msg='Target can not be empty.')
+
+        task = CobraTaskInfo.query.filter_by(id=task_id).first()
+        task.branch = branch
+        task.scan_way = scan_way
+        task.new_version = new_version
+        task.old_version = old_version
+        task.target = target
+        task.updated_time = datetime.datetime.now()
+
+        try:
+            db.session.add(task)
+            db.session.commit()
+            return jsonify(tag='success', msg='save success.')
+        except:
+            return jsonify(tag='danger', msg='save failed. Try again later?')
+    else:
+        task = CobraTaskInfo.query.filter_by(id=task_id).first()
+        return render_template('rulesadmin/edit_task.html', data={
+            'task': task,
+        })
+
+
 # search_rules_bar
 @web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
 def search_rules_bar():
@@ -787,6 +879,7 @@ def dashboard():
     total_vulns_count = CobraResults.query.count()
     total_projects_count = CobraProjects.query.count()
     total_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]
+    total_code_number = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).first()[0]
 
     # today overview
     today_task_count = CobraTaskInfo.query.filter(
@@ -799,6 +892,9 @@ def dashboard():
         and_(CobraProjects.last_scan >= today_time_array, CobraProjects.last_scan <= tomorrow_time_array)
     ).count()
     today_files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).filter(
+        and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
+    ).first()[0]
+    today_code_number = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).filter(
         and_(CobraTaskInfo.time_start >= today_time_stamp, CobraTaskInfo.time_start <= tomorrow_time_stamp)
     ).first()[0]
 
@@ -834,20 +930,32 @@ def dashboard():
         # check if there is already a same vul name in different language
         flag = False
         for tv in total_vuls:
-            if te == tv['vuls']:
+            if te == tv.get('vuls'):
                 tv['counts'] += x.counts
                 flag = True
                 break
         if not flag:
             t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
             t['counts'] = x.counts
-        total_vuls.append(t)
+        if t:
+            total_vuls.append(t)
     today_vuls = []
     for x in all_vuls_today:
         t = {}
-        t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
-        t['counts'] = x.counts
-        today_vuls.append(t)
+        # get vul name
+        te = all_cobra_vuls[all_rules[x.rule_id]]
+        # check if there is already a same vul name in different language
+        flag = False
+        for tv in today_vuls:
+            if te == tv.get('vuls'):
+                tv['counts'] += x.counts
+                flag = True
+                break
+        if not flag:
+            t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+            t['counts'] = x.counts
+        if t:
+            today_vuls.append(t)
 
     data = {
         'total_task_count': total_task_count,
@@ -863,5 +971,250 @@ def dashboard():
         'avg_scan_time': avg_scan_time,
         'total_vuls': total_vuls,
         'today_vuls': today_vuls,
+        'total_code_number': total_code_number,
+        'today_code_number': today_code_number,
     }
     return render_template("rulesadmin/dashboard.html", data=data)
+
+
+@web.route(ADMIN_URL + "/get_scan_information", methods=['POST'])
+def get_scan_information():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    if request.method == "POST":
+        start_time = request.form.get("start_time")
+        end_time = request.form.get("end_time")
+        start_time_stamp = request.form.get("start_time_stamp")[0:10]
+        end_time_stamp = request.form.get("end_time_stamp")[0:10]
+        start_time_array = datetime.datetime.fromtimestamp(int(start_time_stamp))
+        end_time_array = datetime.datetime.fromtimestamp(int(end_time_stamp))
+
+        if start_time_stamp >= end_time_stamp:
+            return jsonify(tag="danger", msg="wrong date select.", code=1002)
+
+        task_count = CobraTaskInfo.query.filter(
+            and_(CobraTaskInfo.time_start >= start_time_stamp, CobraTaskInfo.time_start <= end_time_stamp)
+        ).count()
+        vulns_count = CobraResults.query.filter(
+            and_(CobraResults.created_at >= start_time_array, CobraResults.created_at <= end_time_array)
+        ).count()
+        projects_count = CobraProjects.query.filter(
+            and_(CobraProjects.last_scan >= start_time_array, CobraProjects.last_scan <= end_time_array)
+        ).count()
+        files_count = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).filter(
+            and_(CobraTaskInfo.time_start >= start_time_stamp, CobraTaskInfo.time_start <= end_time_stamp)
+        ).first()[0]
+        code_number = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).filter(
+            and_(CobraTaskInfo.time_start >= start_time_stamp, CobraTaskInfo.time_start <= end_time_stamp)
+        ).first()[0]
+
+        return jsonify(code=1001, task_count=task_count, vulns_count=vulns_count, projects_count=projects_count,
+                       files_count=int(files_count), code_number=int(code_number))
+
+
+@web.route(ADMIN_URL + "/graph_vulns", methods=['POST'])
+def graph_vulns():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    if request.method == "POST":
+        show_all = request.form.get("show_all")
+
+        cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id, ).all()
+        cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
+
+        all_rules = {}
+        for x in cobra_rules:
+            all_rules[x.id] = x.vul_id  # rule_id -> vul_id
+        all_cobra_vuls = {}
+        for x in cobra_vuls:
+            all_cobra_vuls[x.id] = x.name  # vul_id -> vul_name
+
+        if show_all:
+            # show all vulns
+            all_vuls = db.session.query(
+                CobraResults.rule_id, func.count("*").label('counts')
+            ).group_by(CobraResults.rule_id).all()
+
+            total_vuls = []
+            for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
+                t = {}
+                # get vul name
+                te = all_cobra_vuls[all_rules[x.rule_id]]
+                # check if there is already a same vul name in different language
+                flag = False
+                for tv in total_vuls:
+                    if te == tv['vuls']:
+                        tv['counts'] += x.counts
+                        flag = True
+                        break
+                if not flag:
+                    t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+                    t['counts'] = x.counts
+                if t:
+                    total_vuls.append(t)
+
+            return jsonify(data=total_vuls)
+        else:
+            # show part of vulns
+            start_time_stamp = request.form.get("start_time_stamp")[:10]
+            end_time_stamp = request.form.get("end_time_stamp")[:10]
+            if start_time_stamp >= end_time_stamp:
+                return jsonify(code=1002, tag="danger", msg="wrong datetime.")
+
+            start_time = datetime.datetime.fromtimestamp(int(start_time_stamp))
+            end_time = datetime.datetime.fromtimestamp(int(end_time_stamp))
+            # TODO: improve this
+            all_vuls = db.session.query(
+                CobraResults.rule_id, func.count("*").label('counts')
+            ).filter(
+                and_(CobraResults.created_at >= start_time, CobraResults.created_at <= end_time)
+            ).group_by(CobraResults.rule_id).all()
+
+            total_vuls = []
+            for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
+                t = {}
+                # get vul name
+                te = all_cobra_vuls[all_rules[x.rule_id]]
+                # check if there is already a same vul name in different language
+                flag = False
+                for tv in total_vuls:
+                    if te == tv['vuls']:
+                        tv['counts'] += x.counts
+                        flag = True
+                        break
+                if not flag:
+                    t['vuls'] = all_cobra_vuls[all_rules[x.rule_id]]
+                    t['counts'] = x.counts
+                if t:
+                    total_vuls.append(t)
+
+            return jsonify(data=total_vuls)
+
+
+@web.route(ADMIN_URL + "/graph_languages", methods=['POST'])
+def graph_languages():
+
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+
+    show_all = request.form.get("show_all")
+
+    return_value = dict()
+    hit_rules = None
+
+    if show_all:
+        hit_rules = db.session.query(CobraResults.rule_id).all()
+    else:
+        start_time_stamp = request.form.get("start_time_stamp")
+        end_time_stamp = request.form.get("end_time_stamp")
+        start_time = datetime.datetime.fromtimestamp(int(start_time_stamp[:10]))
+        end_time = datetime.datetime.fromtimestamp(int(end_time_stamp[:10]))
+        hit_rules = db.session.query(CobraResults.rule_id).filter(
+            and_(CobraResults.created_at >= start_time, CobraResults.created_at <= end_time)
+        ).all()
+
+    for rule_id in hit_rules:
+        language_id = db.session.query(CobraRules.language).filter_by(id=int(rule_id[0])).all()
+        language_id = int(language_id[0][0])
+        language_name = db.session.query(
+            CobraLanguages.language, CobraLanguages.extensions
+        ).filter_by(id=language_id).all()
+        language_name = language_name[0]
+        if return_value.get(language_name[0]):
+            return_value[language_name[0]] += 1
+        else:
+            return_value[language_name[0]] = 1
+    return jsonify(data=return_value)
+
+
+@web.route(ADMIN_URL + "/graph_lines", methods=['POST'])
+def graph_lines():
+    # everyday vulns count
+    # everyday scan count
+    if not is_login():
+        return redirect(ADMIN_URL + '/index')
+    show_all = request.form.get("show_all")
+    if show_all:
+        days = 15-1
+        vuls = list()
+        scans = list()
+        labels = list()
+        # get vulns count
+        end_date = datetime.datetime.today()
+        start_date = datetime.date.today() - datetime.timedelta(days=days)
+        start_date = datetime.datetime.combine(start_date, datetime.datetime.min.time())
+
+        d = start_date
+        while d < end_date:
+
+            all_vuls = db.session.query(
+                func.count("*").label('counts')
+            ).filter(
+                and_(CobraResults.created_at >= d, CobraResults.created_at <= d + datetime.timedelta(1))
+            ).all()
+            vuls.append(all_vuls[0][0])
+            labels.append(d.strftime("%Y%m%d"))
+            d += datetime.timedelta(1)
+
+        # get scan count
+        d = start_date
+        while d < end_date:
+            t = int(time.mktime(d.timetuple()))
+            all_scans = db.session.query(
+                func.count("*").label("counts")
+            ).filter(
+                and_(CobraTaskInfo.time_start >= t, CobraTaskInfo.time_start <= t + 3600*24)
+            ).all()
+            scans.append(all_scans[0][0])
+            d += datetime.timedelta(1)
+
+        return jsonify(labels=labels, vuls=vuls, scans=scans)
+
+    else:
+        start_time_stamp = request.form.get("start_time_stamp")[:10]
+        end_time_stamp = request.form.get("end_time_stamp")[:10]
+
+        labels = list()
+        vuls = list()
+        scans = list()
+
+        start_date = datetime.datetime.fromtimestamp(int(start_time_stamp[:10]))
+        end_date = datetime.datetime.fromtimestamp(int(end_time_stamp[:10]))
+
+        # get vulns count
+        d = start_date
+        while d < end_date:
+
+            t = end_date if d + datetime.timedelta(1) > end_date else d + datetime.timedelta(1)
+
+            all_vuls = db.session.query(
+                func.count("*").label('counts')
+            ).filter(
+                and_(CobraResults.created_at >= d, CobraResults.created_at <= t)
+            ).all()
+
+            labels.append(d.strftime("%Y%m%d"))
+            vuls.append(all_vuls[0][0])
+            d += datetime.timedelta(1)
+
+        # get scans count
+        d = start_date
+        while d < end_date:
+            t_end_date = end_date if d + datetime.timedelta(1) > end_date else d + datetime.timedelta(1)
+            t_start_date = time.mktime(d.timetuple())
+            t_end_date = time.mktime(t_end_date.timetuple())
+
+            all_scans = db.session.query(
+                func.count("*").label("counts")
+            ).filter(
+                and_(CobraTaskInfo.time_start >= t_start_date, CobraTaskInfo.time_start <= t_end_date)
+            ).all()
+            scans.append(all_scans[0][0])
+            d += datetime.timedelta(1)
+
+        return jsonify(labels=labels, vuls=vuls, scans=scans)
+

@@ -1,5 +1,11 @@
 {% extends "bootstrap/base.html" %}
 
+{% block head %}
+    {{ super() }}
+    <link href="/asset/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="/asset/js/Chart.js"></script>
+{% endblock %}
+
 {% block title %}Cobra Admin{% endblock %}
 
 {% block content %}
@@ -63,6 +69,15 @@
                         </button>
                     </div>
                 </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Tasks Manage</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_tasks">All Tasks
+                        </button>
+                        <!-- <button type="button" class="btn btn-primary btn-block" id="add_new_task">Add Task
+                        </button> -->
+                    </div>
+                </div>
             </div>
             <div class="col-md-10 column" id="search_rules_bar"></div>
             <div hidden class="col-md-10 column" id="operate_result"></div>
@@ -94,5 +109,6 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="/asset/js/admin.js"></script>
+    <script src="/asset/js/bootstrap-datetimepicker.min.js" charset="utf-8"></script>
+    <script src="/asset/js/admin.js" charset="utf-8"></script>
 {% endblock %}
