@@ -26,14 +26,6 @@ from app import CobraTaskInfo, CobraResults
 ADMIN_URL = '/admin'
 
 
-# check login function
-def is_login():
-    if session.get('is_login') and session.get('is_login') == True:
-        return True
-    else:
-        return False
-
-
 @web.route(ADMIN_URL + '/', methods=['GET'])
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
