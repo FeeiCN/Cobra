@@ -4,17 +4,28 @@ from app import db, CobraAdminUser
 
 # Change your username and password here
 username = 'admin'
-password = 'admin123456'
+password = 'admin123456!@#'
 role = 1    # 1: super admin, 2: admin, 3: rules admin
 
 
 # Do not edit these code below this line #
 ##########################################
+
+weak_password_list = [
+    "admin",
+    "root",
+    "toor",
+    "admin888",
+    "12345",
+    "123456",
+    "admin123456"
+]
+
 current_time = time.strftime('%Y-%m-%d %X', time.localtime())
 au = CobraAdminUser(username, password, role, None, None, current_time, current_time)
-if password == "admin123456" or password == "123456" or password == "admin" or \
-   password == "12345" or password == "root" or password == "toor" or password == "admin888":
+if password in weak_password_list:
     print '[*] WARNING: Weak password detected! You\'d better choose a strong password.'
+    exit(1)
 if len(password) < 6:
     print '[*] DANGER: Password length must be over 6 characters!'
     exit(1)
