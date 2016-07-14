@@ -174,8 +174,20 @@ manager.add_command('start', Server(host=host, port=port))
 manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
 
+# frontend and api
 from app.controller import route
-from app.controller import RulesAdmin
 from app.controller import api
+
+# backend
+from app.controller.backend import BackendAPIController
+from app.controller.backend import DashboardController
+from app.controller.backend import IndexController
+from app.controller.backend import LanguagesController
+from app.controller.backend import ProjectsController
+from app.controller.backend import RulesController
+from app.controller.backend import SearchController
+from app.controller.backend import TasksController
+from app.controller.backend import VulsController
+from app.controller.backend import WhiteListsController
 
 log.info('Cobra Engine Started')
