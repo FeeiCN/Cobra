@@ -6,8 +6,8 @@ from flask import session
 
 from DataDictClass import DataDict
 
-__author__ = "zhenming"
-__email__ = "zhenming@mogujie.com"
+__author__ = "lightless"
+__email__ = "root@lightless.me"
 
 
 class ValidateClass(object):

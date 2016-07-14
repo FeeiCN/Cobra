@@ -3,8 +3,8 @@
 # file: DataDictClass
 
 
-__author__ = "zhenming"
-__email__ = "zhenming@mogujie.com"
+__author__ = "lightless"
+__email__ = "root@lightless.me"
 
 
 class DataDict(dict):
