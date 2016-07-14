@@ -36,14 +36,14 @@ def index():
 
     if request.method == "POST":
 
-        validate_class = ValidateClass(request, 'username', 'password')
-        ret, msg = validate_class.check_args()
+        vc = ValidateClass(request, 'username', 'password')
+        ret, msg = vc.check_args()
 
         if not ret:
             return msg
 
-        au = CobraAdminUser.query.filter_by(username=validate_class.vars.get('username')).first()
-        if not au or not au.verify_password(validate_class.vars.get('password')):
+        au = CobraAdminUser.query.filter_by(username=vc.vars.username).first()
+        if not au or not au.verify_password(vc.vars.password):
             # login failed.
             return "Wrong username or password."
         else:

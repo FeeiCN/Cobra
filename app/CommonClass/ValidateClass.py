@@ -4,6 +4,8 @@
 
 from flask import session
 
+from DataDictClass import DataDict
+
 __author__ = "zhenming"
 __email__ = "zhenming@mogujie.com"
 
@@ -12,7 +14,7 @@ class ValidateClass(object):
     def __init__(self, req, *args):
         self.req = req
         self.args = args
-        self.vars = dict()
+        self.vars = DataDict()
 
     @staticmethod
     def check_login():
