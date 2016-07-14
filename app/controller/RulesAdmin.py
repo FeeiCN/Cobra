@@ -17,6 +17,7 @@ import datetime
 from flask import render_template, request, jsonify, session, escape, redirect
 from sqlalchemy.sql import func, and_
 
+from ..ValidateClass import ValidateClass
 from app import web, CobraRules, CobraVuls, db, CobraLanguages
 from app import CobraProjects, CobraWhiteList, CobraAdminUser
 from app import CobraTaskInfo, CobraResults
@@ -37,15 +38,19 @@ def is_login():
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
 
-    if is_login():
+    if ValidateClass.check_login():
         return redirect(ADMIN_URL + '/main')
 
     if request.method == "POST":
-        username = request.form.get('username')
-        password = request.form.get('password')
 
-        au = CobraAdminUser.query.filter_by(username=username).first()
-        if not au or not au.verify_password(password):
+        validate_class = ValidateClass(request, 'username', 'password')
+        ret, msg = validate_class.check_args()
+
+        if not ret:
+            return msg
+
+        au = CobraAdminUser.query.filter_by(username=validate_class.vars.get('username')).first()
+        if not au or not au.verify_password(validate_class.vars.get('password')):
             # login failed.
             return "Wrong username or password."
         else:
@@ -68,9 +73,8 @@ def index():
 # main view
 @web.route(ADMIN_URL + '/main', methods=['GET'])
 def main():
-    # check login
-    if not is_login():
-        return redirect(ADMIN_URL + '/index')
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + "/index")
     else:
         return render_template("rulesadmin/main.html")
 
@@ -79,8 +83,7 @@ def main():
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
 def rules(page):
 
-    # check login
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     per_page = 10
@@ -124,7 +127,7 @@ def rules(page):
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
 def add_new_rule():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -174,7 +177,7 @@ def add_new_rule():
 @web.route(ADMIN_URL + '/del_rule', methods=['POST'])
 def del_rule():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     vul_id = request.form['rule_id']
@@ -194,7 +197,7 @@ def del_rule():
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
 def edit_rule(rule_id):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -256,7 +259,7 @@ def edit_rule(rule_id):
 @web.route(ADMIN_URL + '/add_new_vul', methods=['GET', 'POST'])
 def add_new_vul():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -286,7 +289,7 @@ def add_new_vul():
 @web.route(ADMIN_URL + '/vuls/<int:page>', methods=['GET'])
 def vuls(page):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     per_page_vuls = 10
@@ -301,7 +304,7 @@ def vuls(page):
 @web.route(ADMIN_URL + '/del_vul', methods=['POST'])
 def del_vul():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     vul_id = request.form['vul_id']
@@ -321,7 +324,7 @@ def del_vul():
 @web.route(ADMIN_URL + '/edit_vul/<int:vul_id>', methods=['GET', 'POST'])
 def edit_vul(vul_id):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -358,7 +361,7 @@ def edit_vul(vul_id):
 @web.route(ADMIN_URL + '/all_rules_count', methods=['GET'])
 def all_rules_count():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     rules_count = CobraRules.query.count()
@@ -369,7 +372,7 @@ def all_rules_count():
 @web.route(ADMIN_URL + '/all_vuls_count', methods=['GET'])
 def all_vuls_count():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     vuls_count = CobraVuls.query.count()
@@ -380,7 +383,7 @@ def all_vuls_count():
 @web.route(ADMIN_URL + '/all_projects_count', methods=['GET'])
 def all_projects_count():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     projects_count = CobraProjects.query.count()
@@ -391,7 +394,7 @@ def all_projects_count():
 @web.route(ADMIN_URL + '/all_whitelists_count', methods=['GET'])
 def all_whitelists_count():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     whitelists_count = CobraWhiteList.query.count()
@@ -402,17 +405,18 @@ def all_whitelists_count():
 @web.route(ADMIN_URL + '/all_tasks_count', methods=['GET'])
 def all_tasks_count():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     tasks_count = CobraTaskInfo.query.count()
     return str(tasks_count)
 
+
 # api: get all languages count
 @web.route(ADMIN_URL + '/all_languages_count', methods=['GET'])
 def all_languages_count():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     languages_count = CobraLanguages.query.count()
@@ -423,7 +427,7 @@ def all_languages_count():
 @web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
 def projects(page):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     per_page = 10
@@ -438,7 +442,7 @@ def projects(page):
 @web.route(ADMIN_URL + '/del_project', methods=['POST'])
 def del_project():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -460,7 +464,7 @@ def del_project():
 @web.route(ADMIN_URL + '/edit_project/<int:project_id>', methods=['GET', 'POST'])
 def edit_project(project_id):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
@@ -507,7 +511,7 @@ def edit_project(project_id):
 @web.route(ADMIN_URL + '/whitelists/<int:page>', methods=['GET'])
 def whitelists(page):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     per_page = 10
@@ -522,7 +526,7 @@ def whitelists(page):
 @web.route(ADMIN_URL + '/add_whitelist', methods=['GET', 'POST'])
 def add_whitelist():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -564,7 +568,7 @@ def add_whitelist():
 @web.route(ADMIN_URL + '/del_whitelist', methods=['POST'])
 def del_whitelist():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     whitelist_id = request.form.get('whitelist_id')
@@ -584,7 +588,7 @@ def del_whitelist():
 @web.route(ADMIN_URL + '/edit_whitelist/<int:whitelist_id>', methods=['GET', 'POST'])
 def edit_whitelist(whitelist_id):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -640,7 +644,7 @@ def edit_whitelist(whitelist_id):
 # show all tasks
 @web.route(ADMIN_URL + '/tasks/<int:page>', methods=['GET'])
 def tasks(page):
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     per_page = 10
@@ -659,7 +663,7 @@ def tasks(page):
 @web.route(ADMIN_URL + '/del_task', methods=['POST'])
 def del_task():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     task_id = request.form.get('id')
@@ -679,7 +683,7 @@ def del_task():
 @web.route(ADMIN_URL + '/edit_task/<int:task_id>', methods=['GET', 'POST'])
 def edit_task(task_id):
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -723,7 +727,7 @@ def edit_task(task_id):
 @web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
 def search_rules_bar():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     languages = CobraLanguages.query.all()
@@ -741,7 +745,7 @@ def search_rules_bar():
 @web.route(ADMIN_URL + '/search_rules', methods=['POST'])
 def search_rules():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
@@ -790,6 +794,10 @@ def search_rules():
 
 @web.route(ADMIN_URL + "/add_new_language", methods=['GET', 'POST'])
 def add_new_language():
+
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + '/index')
+
     if request.method == "POST":
         language = request.form.get("language")
         extensions = request.form.get("extensions")
@@ -812,6 +820,10 @@ def add_new_language():
 
 @web.route(ADMIN_URL + "/languages", methods=['GET'])
 def languages():
+
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + "/index")
+
     languages = CobraLanguages.query.all()
     data = {
         'languages': languages,
@@ -821,6 +833,10 @@ def languages():
 
 @web.route(ADMIN_URL + "/del_language", methods=['POST'])
 def del_language():
+
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + "/index")
+
     cid = request.form.get("id")
     l = CobraLanguages.query.filter_by(id=cid).first()
     try:
@@ -833,6 +849,10 @@ def del_language():
 
 @web.route(ADMIN_URL + "/edit_language/<int:language_id>", methods=['POST', 'GET'])
 def edit_language(language_id):
+
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + "/index")
+
     if request.method == "POST":
         language = request.form.get("language")
         extensions = request.form.get("extensions")
@@ -862,7 +882,7 @@ def edit_language(language_id):
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id,).all()
@@ -980,7 +1000,7 @@ def dashboard():
 @web.route(ADMIN_URL + "/get_scan_information", methods=['POST'])
 def get_scan_information():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
@@ -1017,7 +1037,7 @@ def get_scan_information():
 @web.route(ADMIN_URL + "/graph_vulns", methods=['POST'])
 def graph_vulns():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
@@ -1098,7 +1118,7 @@ def graph_vulns():
 @web.route(ADMIN_URL + "/graph_languages", methods=['POST'])
 def graph_languages():
 
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     show_all = request.form.get("show_all")
@@ -1135,7 +1155,7 @@ def graph_languages():
 def graph_lines():
     # everyday vulns count
     # everyday scan count
-    if not is_login():
+    if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
     show_all = request.form.get("show_all")
     if show_all:
