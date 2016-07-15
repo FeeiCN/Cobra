@@ -784,16 +784,6 @@ $("#show_dashboard").click(function () {
             chart_lines = new Chart(ctx, {
                 type: type,
                 data: data,
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                min: 0,
-                                stepSize: 1
-                            }
-                        }]
-                    }
-                }
             })
         }
 
