@@ -7,6 +7,7 @@ import datetime
 
 from flask import redirect, jsonify, render_template, request
 from sqlalchemy.sql import func, and_
+from flask.ext.sqlalchemy import get_debug_queries
 
 from . import ADMIN_URL
 from app import web, db
@@ -263,27 +264,34 @@ def graph_languages():
     return_value = dict()
 
     if show_all:
-        hit_rules = db.session.query(CobraResults.rule_id).all()
+        hit_rules = db.session.query(
+            func.count(CobraResults.rule_id).label("cnt"), CobraLanguages.language
+        ).outerjoin(
+            CobraRules, CobraResults.rule_id == CobraRules.id
+        ).outerjoin(
+            CobraLanguages, CobraRules.language == CobraLanguages.id
+        ).group_by(CobraResults.rule_id).all()
     else:
         start_time_stamp = request.form.get("start_time_stamp")
         end_time_stamp = request.form.get("end_time_stamp")
         start_time = datetime.datetime.fromtimestamp(int(start_time_stamp[:10]))
         end_time = datetime.datetime.fromtimestamp(int(end_time_stamp[:10]))
-        hit_rules = db.session.query(CobraResults.rule_id).filter(
+        hit_rules = db.session.query(
+            func.count(CobraResults.rule_id).label("cnt"), CobraLanguages.language
+        ).outerjoin(
+            CobraRules, CobraResults.rule_id == CobraRules.id
+        ).outerjoin(
+            CobraLanguages, CobraRules.language == CobraLanguages.id
+        ).filter(
             and_(CobraResults.created_at >= start_time, CobraResults.created_at <= end_time)
-        ).all()
+        ).group_by(CobraResults.rule_id).all()
 
-    for rule_id in hit_rules:
-        language_id = db.session.query(CobraRules.language).filter_by(id=int(rule_id[0])).all()
-        language_id = int(language_id[0][0])
-        language_name = db.session.query(
-            CobraLanguages.language, CobraLanguages.extensions
-        ).filter_by(id=language_id).all()
-        language_name = language_name[0]
-        if return_value.get(language_name[0]):
-            return_value[language_name[0]] += 1
+    for res in hit_rules:
+        if return_value.get(res[1]):
+            return_value[res[1]] += res[0]
         else:
-            return_value[language_name[0]] = 1
+            return_value[res[1]] = res[0]
+
     return jsonify(data=return_value)
 
 
@@ -373,3 +381,4 @@ def graph_lines():
             d += datetime.timedelta(1)
 
         return jsonify(labels=labels, vuls=vuls, scans=scans)
+
