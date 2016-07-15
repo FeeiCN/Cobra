@@ -7,6 +7,7 @@ import datetime
 
 from flask import redirect, jsonify, render_template, request
 from sqlalchemy.sql import func, and_
+from flask.ext.sqlalchemy import get_debug_queries
 
 from . import ADMIN_URL
 from app import web, db
@@ -373,3 +374,12 @@ def graph_lines():
             d += datetime.timedelta(1)
 
         return jsonify(labels=labels, vuls=vuls, scans=scans)
+
+
+@web.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= 0.5:
+            web.logger.warning("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+                               (query.statement, query.parameters, query.duration, query.context))
+    return response

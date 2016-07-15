@@ -43,6 +43,9 @@ bootstrap = Bootstrap(web)
 # set bootstrap css and jquery js to local
 web.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
+# set RECORD QUERIES
+web.config['SQLALCHEMY_RECORD_QUERIES'] = True
+
 db = SQLAlchemy(web)
 
 # just use the migration script's app context when you import the models
