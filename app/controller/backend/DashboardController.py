@@ -382,10 +382,3 @@ def graph_lines():
 
         return jsonify(labels=labels, vuls=vuls, scans=scans)
 
-
-@web.after_request
-def after_request(response):
-    # for query in get_debug_queries():
-    #     web.logger.warning("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
-    #                        (query.statement, query.parameters, query.duration, query.context))
-    return response
