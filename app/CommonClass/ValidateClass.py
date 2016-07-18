@@ -2,9 +2,12 @@
 # coding: utf-8
 # file: ValidateClass.py
 
-from flask import session
+from functools import wraps
+
+from flask import session, redirect
 
 from DataDictClass import DataDict
+from app.controller.backend import ADMIN_URL
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -33,3 +36,12 @@ class ValidateClass(object):
 
         return True, None
 
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_login'):
+            return redirect(ADMIN_URL + '/index')
+        return f(*args, **kwargs)
+
+    return decorated_function

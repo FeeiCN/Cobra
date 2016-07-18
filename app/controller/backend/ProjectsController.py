@@ -4,11 +4,11 @@
 
 import time
 
-from flask import redirect, render_template, request, jsonify
+from flask import render_template, request, jsonify
 
 from . import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass
+from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraProjects
 
 
@@ -18,10 +18,8 @@ __email__ = "root@lightless.me"
 
 # show all projects
 @web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
+@login_required
 def projects(page):
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     per_page = 10
     project = CobraProjects.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
@@ -33,10 +31,8 @@ def projects(page):
 
 # del the special projects
 @web.route(ADMIN_URL + '/del_project', methods=['POST'])
+@login_required
 def del_project():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
 
@@ -59,10 +55,8 @@ def del_project():
 
 # edit the special projects
 @web.route(ADMIN_URL + '/edit_project/<int:project_id>', methods=['GET', 'POST'])
+@login_required
 def edit_project(project_id):
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
 

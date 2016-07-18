@@ -5,25 +5,22 @@
 import time
 import datetime
 
-from flask import redirect, jsonify, render_template, request
+from flask import jsonify, render_template, request
 from sqlalchemy.sql import func, and_
-from flask.ext.sqlalchemy import get_debug_queries
 
 from . import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass
 from app.models import CobraRules, CobraVuls, CobraTaskInfo
 from app.models import CobraLanguages, CobraResults, CobraProjects
+from app.CommonClass.ValidateClass import login_required
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
 
 
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
+@login_required
 def dashboard():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id,).all()
     cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
@@ -138,10 +135,8 @@ def dashboard():
 
 
 @web.route(ADMIN_URL + "/get_scan_information", methods=['POST'])
+@login_required
 def get_scan_information():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
         start_time_stamp = request.form.get("start_time_stamp")[0:10]
@@ -173,10 +168,8 @@ def get_scan_information():
 
 
 @web.route(ADMIN_URL + "/graph_vulns", methods=['POST'])
+@login_required
 def graph_vulns():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
         show_all = request.form.get("show_all")
@@ -254,10 +247,8 @@ def graph_vulns():
 
 
 @web.route(ADMIN_URL + "/graph_languages", methods=['POST'])
+@login_required
 def graph_languages():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     show_all = request.form.get("show_all")
 
@@ -296,11 +287,11 @@ def graph_languages():
 
 
 @web.route(ADMIN_URL + "/graph_lines", methods=['POST'])
+@login_required
 def graph_lines():
     # everyday vulns count
     # everyday scan count
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
+
     show_all = request.form.get("show_all")
     if show_all:
         days = 15-1
