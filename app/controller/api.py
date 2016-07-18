@@ -150,7 +150,7 @@ def status_task():
     domain = config.get('cobra', 'domain')
     result = {
         'status': status_text,
-        'text': u'放过',
+        'text': 'Success',
         'report': 'http://' + domain + '/report/' + scan_id,
         'allow_deploy': True
     }
