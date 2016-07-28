@@ -365,18 +365,12 @@
                 }
             }
 
-            var scan_way = $("input[name=scan_way]:checked").val();
             var old_version = $("input[name=old_version]").val();
             var new_version = $("input[name=new_version]").val();
 
-            if (!scan_way) {
-                alert('please select scan way');
-                return false;
-            }
-
-            if (scan_way == 2 && !(new_version && old_version)) {
-                alert('in diff scan mode, please provide new version and old version.')
-                return false;
+            var scan_way = 1;
+            if (!(new_version && old_version)) {
+                scan_way = 2
             }
 
             data.append('repository', url);
