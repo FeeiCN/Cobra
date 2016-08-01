@@ -108,6 +108,14 @@ class Static:
 
         rules = CobraRules.query.filter_by(status=1).all()
         extensions = None
+        # grep name is ggrep on mac
+        grep = '/bin/grep'
+        if 'darwin' == sys.platform:
+            log.info('In Mac OS X System')
+            for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
+                for filename in file_names:
+                    if 'ggrep' == filename:
+                        grep = os.path.join(root, filename)
         for rule in rules:
             for language in languages:
                 if language.id == rule.language:
@@ -115,14 +123,6 @@ class Static:
 
             if extensions is None:
                 log.warning("Rule Language Error")
-            # grep name is ggrep on mac
-            grep = '/bin/grep'
-            if 'darwin' == sys.platform:
-                log.info('In Mac OS X System')
-                for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
-                    for filename in file_names:
-                        if 'ggrep' == filename:
-                            grep = os.path.join(root, filename)
 
             filters = []
             for e in extensions:

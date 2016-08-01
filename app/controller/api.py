@@ -13,8 +13,8 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import time
-
-from utils import common
+import os
+from utils import common, config
 from flask import request, jsonify
 import ConfigParser
 import subprocess
@@ -76,10 +76,9 @@ def add_task():
 
     # Parse
     current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-    config = ConfigParser.ConfigParser()
-    config.read('config')
-    username = config.get('git', 'username')
-    password = config.get('git', 'password')
+
+    username = config.Config('git', 'username').value
+    password = config.Config('git', 'password').value
 
     gg = GitTools.Git(target, branch=branch, username=username, password=password)
     repo_author = gg.repo_author
@@ -112,13 +111,17 @@ def add_task():
             db.session.add(project)
         db.session.commit()
 
+        cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
+
+        if os.path.isfile(cobra_path) is not True:
+            return jsonify(code=1004, msg=u'Cobra Not Found')
         # Start Scanning
         subprocess.Popen(
-            ['python', '/home/mapp/cobra/cobra.py', "scan", "-p", str(project_id), "-i", str(task.id), "-t",
+            ['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t",
              gg.repo_directory])
         # Statistic Code
         subprocess.Popen(
-            ['python', '/home/mapp/cobra/cobra.py', "statistic", "-i", str(task.id), "-t",
+            ['python', cobra_path, "statistic", "-i", str(task.id), "-t",
              gg.repo_directory])
 
         result['scan_id'] = task.id
@@ -145,13 +148,11 @@ def status_task():
         3: 'error'
     }
     status_text = status[c.status]
-    config = ConfigParser.ConfigParser()
-    config.read('config')
-    domain = config.get('cobra', 'domain')
+    domain = config.Config('cobra', 'domain').value
     result = {
         'status': status_text,
         'text': 'Success',
-        'report': 'http://' + domain + '/report/' + scan_id,
+        'report': 'http://' + domain + '/report/' + str(scan_id),
         'allow_deploy': True
     }
     return jsonify(status=1001, result=result)

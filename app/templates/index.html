@@ -91,16 +91,16 @@
 <section id="search_container">
     <div id="search">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#config" data-toggle="tab">1.Config</a></li>
-            <li><a href="#log" data-toggle="tab">2.Scan</a></li>
-            <li><a href="#report" data-toggle="tab">3.Report</a></li>
+            <li class="active"><a href="#config" data-toggle="tab">Git/SVN</a></li>
+            <li><a href="#log" data-toggle="tab">Upload</a></li>
+            <li><a href="#report" data-toggle="tab">Gitlab AccessToken</a></li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane active" id="config">
                 <h3>Scan & Analyse Configuration</h3>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
                                 <label>GIT/SVN Repository</label>
@@ -128,22 +128,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6" style="border-left: 1px solid #ddd;">
-                        <div class="box_style_2" id="dropbox">
-                            <i class="icon-upload-cloud"></i>
-                            <h4><span>Drag and Drop</span> File Uploading</h4>
-                            <div align="center" id="selectFile"></div>
-                            <hr>
-                            <input type="file" class="btn_1" id="uploadFile" style="width: 100%;">
-                            <small>Support: tar.gz/rar/zip</small>
-                        </div>
-                    </div>
                 </div><!-- End row -->
                 <hr>
                 <button class="btn_1 green" id="scan"><i class="icon-search"></i>Scan now</button>
             </div><!-- End rab -->
             <div class="tab-pane" id="log">
                 <h3>Set config on step1</h3>
+                <div class="col-md-12" style="border-left: 1px solid #ddd;">
+                    <div class="box_style_2" id="dropbox">
+                        <i class="icon-upload-cloud"></i>
+                        <h4><span>Drag and Drop</span> File Uploading</h4>
+                        <div align="center" id="selectFile"></div>
+                        <hr>
+                        <input type="file" class="btn_1" id="uploadFile" style="width: 100%;">
+                        <small>Support: tar.gz/rar/zip</small>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="report">
                 <h3>Wait for the analyse & scan completed</h3>
@@ -201,87 +201,61 @@
     $(function () {
 
         $("#scan").on('click', function (e) {
+            $('.tab-content').plainOverlay('show');
             e.preventDefault();
-
-            var data = new FormData();
-            var allowFileTypes = ['.zip', '.rar', '.tar.gz'];
             var url = $("input[name=repository]").val();
             var branch = $("input[name=branch]").val();
-            var file = null;
-            if (fileList && fileList.length != 0) {
-                file = fileList[0];
-            } else if (files && files.length != 0) {
-                file = files[0];
-            }
-
-            if (file) {
-                // upload file
-                var isAllowUpload = false;
-                for (var i = 0; i < allowFileTypes.length; i++) {
-                    if (allowFileTypes[i] == file.name.substring(file.name.indexOf('.'))) {
-                        isAllowUpload = true;
-                    }
-                }
-                if (!isAllowUpload) {
-                    alert('only zip, rar, tar.gz allowed!');
-                    return false;
-                }
-            } else {
-                // check if url provide.
-                if (!url) {
-                    alert("Please provide gitlab url. If your repo is public");
-                    return false;
-                }
-            }
-
             var old_version = $("input[name=old_version]").val();
             var new_version = $("input[name=new_version]").val();
 
-            var scan_way = 1;
-            if (!(new_version && old_version)) {
-                scan_way = 2
-            }
-
-            data.append('repository', url);
-            data.append('branch', branch);
-            data.append('scan_way', scan_way);
-            data.append('old_version', old_version);
-            data.append('new_version', new_version);
-            if (fileList && fileList.length != 0) {
-                data.append('file', fileList[0]);
-            } else if (files && files.length != 0) {
-                data.append('file', files[0])
-            }
-
+            var data = {
+                'target': url,
+                'branch': branch,
+                'old_version': old_version,
+                'new_version': new_version,
+                'key': 'c1b6e8d63eb552a9219ee75692a3089df48631e6'
+            };
             $.ajax({
-                url: 'add',
+                url: '/api/add',
                 type: 'POST',
-                contentType: false,
-                processData: false,
-                data: data,
-            }).done(function (result) {
-                if (result.code == '1001') {
-                    $("#log > h3").text('Scanning...');
-                    $('.tab-content').plainOverlay('show');
-                    $("ul.nav-tabs > li").eq(1).find('a').trigger('click');
-                    /* Check Task Status @TODO */
-                } else {
-                    alert(result.msg);
+                data: JSON.stringify(data),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    if (result.code == 1001) {
+                        var scan_id = result.result['scan_id'];
+                        var data = {scan_id: scan_id, key: 'c1b6e8d63eb552a9219ee75692a3089df48631e6'};
+                        var interval_status_id = setInterval(function () {
+                            $.ajax({
+                                url: '/api/status',
+                                type: 'POST',
+                                data: JSON.stringify(data),
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
+                                async: false,
+                                success: function (result) {
+                                    if (result.status == 1001) {
+                                        if (result.result['status'] == 'done') {
+                                            $('.tab-content').plainOverlay('hide');
+                                            clearInterval(interval_status_id);
+                                            window.open(result.result['report'], '_blank');
+                                        }
+                                    } else {
+                                        alert(result.msg);
+                                    }
+                                }
+                            });
+                        }, 2000);
+                    } else {
+                        $('.tab-content').plainOverlay('hide');
+                        alert(result.msg);
+                    }
                 }
             });
-
         });
     });
 
-</script>
-
-<!-- Specific scripts -->
-{#<script src="asset/js/icheck.js"></script>#}
-<script>
-    {#    $('input').iCheck({#}
-    {#        checkboxClass: 'icheckbox_square-grey',#}
-    {#        radioClass: 'iradio_square-grey'#}
-    {#    });#}
 </script>
 </body>
 </html>
