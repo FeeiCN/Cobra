@@ -2,10 +2,11 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>language</th>
-            <th>vul type</th>
-            <th>description</th>
-            <th>last update time</th>
+            <th>Language</th>
+            <th>Vul type</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Update time</th>
             <th>Operation</th>
         </tr>
     </thead>
@@ -15,6 +16,7 @@
             <td>{{ rule.id }}</td>
             <td>{{ rule.language }}</td>
             <td>{{ rule.vul_id }}</td>
+            <td>{{ rule.status }}</td>
             <td>{{ rule.description }}</td>
             <td>{{ rule.updated_at }}</td>
             <td hidden id="rule-regex-{{ rule.id }}">{{ rule.regex }}</td>

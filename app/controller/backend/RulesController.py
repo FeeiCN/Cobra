@@ -18,12 +18,11 @@ __email__ = "root@lightless.me"
 # all rules button
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
 def rules(page):
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
     per_page = 10
-    cobra_rules = CobraRules.query.order_by('id desc').limit(per_page).offset((page-1)*per_page).all()
+    cobra_rules = CobraRules.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
     cobra_vuls = CobraVuls.query.all()
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
@@ -35,11 +34,17 @@ def rules(page):
         all_language[lang.id] = lang.language
 
     # replace id with real name
+    status_desc = {1: 'ON', 2: 'OFF'}
     for rule in cobra_rules:
         try:
             rule.vul_id = all_vuls[rule.vul_id]
         except KeyError:
             rule.vul_id = 'Unknown Type'
+
+        try:
+            rule.vul_id = status_desc[rule.status]
+        except KeyError:
+            rule.vul_id = 'Unknown'
 
         try:
             rule.language = all_language[rule.language]
@@ -62,7 +67,6 @@ def rules(page):
 # add new rules button
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
 def add_new_rule():
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
@@ -95,7 +99,6 @@ def add_new_rule():
 # del special rule
 @web.route(ADMIN_URL + '/del_rule', methods=['POST'])
 def del_rule():
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
@@ -117,7 +120,6 @@ def del_rule():
 # edit special rule
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
 def edit_rule(rule_id):
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
