@@ -49,7 +49,7 @@ def vuls(page):
         return redirect(ADMIN_URL + '/index')
 
     per_page_vuls = 10
-    all_vuls = CobraVuls.query.order_by('id').limit(per_page_vuls).offset((page-1)*per_page_vuls).all()
+    all_vuls = CobraVuls.query.order_by('id desc').limit(per_page_vuls).offset((page-1)*per_page_vuls).all()
     data = {
         'vuls': all_vuls
     }

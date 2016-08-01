@@ -23,7 +23,7 @@ def rules(page):
         return redirect(ADMIN_URL + '/index')
 
     per_page = 10
-    cobra_rules = CobraRules.query.order_by('id').limit(per_page).offset((page-1)*per_page).all()
+    cobra_rules = CobraRules.query.order_by('id desc').limit(per_page).offset((page-1)*per_page).all()
     cobra_vuls = CobraVuls.query.all()
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}

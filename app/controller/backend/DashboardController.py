@@ -7,7 +7,6 @@ import datetime
 
 from flask import redirect, jsonify, render_template, request
 from sqlalchemy.sql import func, and_
-from flask.ext.sqlalchemy import get_debug_queries
 
 from . import ADMIN_URL
 from app import web, db
@@ -21,11 +20,10 @@ __email__ = "root@lightless.me"
 
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])
 def dashboard():
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
-    cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id,).all()
+    cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id, ).all()
     cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
 
     # get today date time and timestamp
@@ -80,10 +78,10 @@ def dashboard():
         all_rules[x.id] = x.vul_id  # rule_id -> vul_id
     all_cobra_vuls = {}
     for x in cobra_vuls:
-        all_cobra_vuls[x.id] = x.name   # vul_id -> vul_name
+        all_cobra_vuls[x.id] = x.name  # vul_id -> vul_name
 
     total_vuls = []
-    for x in all_vuls:      # all_vuls: results group by rule_id and count(*)
+    for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
         t = {}
         # get vul name
         te = all_cobra_vuls[all_rules[x.rule_id]]
@@ -139,7 +137,6 @@ def dashboard():
 
 @web.route(ADMIN_URL + "/get_scan_information", methods=['POST'])
 def get_scan_information():
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
@@ -174,7 +171,6 @@ def get_scan_information():
 
 @web.route(ADMIN_URL + "/graph_vulns", methods=['POST'])
 def graph_vulns():
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
@@ -255,7 +251,6 @@ def graph_vulns():
 
 @web.route(ADMIN_URL + "/graph_languages", methods=['POST'])
 def graph_languages():
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
@@ -303,7 +298,7 @@ def graph_lines():
         return redirect(ADMIN_URL + '/index')
     show_all = request.form.get("show_all")
     if show_all:
-        days = 15-1
+        days = 15 - 1
         vuls = list()
         scans = list()
         labels = list()
@@ -314,7 +309,6 @@ def graph_lines():
 
         d = start_date
         while d < end_date:
-
             all_vuls = db.session.query(
                 func.count("*").label('counts')
             ).filter(
@@ -331,7 +325,7 @@ def graph_lines():
             all_scans = db.session.query(
                 func.count("*").label("counts")
             ).filter(
-                and_(CobraTaskInfo.time_start >= t, CobraTaskInfo.time_start <= t + 3600*24)
+                and_(CobraTaskInfo.time_start >= t, CobraTaskInfo.time_start <= t + 3600 * 24)
             ).all()
             scans.append(all_scans[0][0])
             d += datetime.timedelta(1)
@@ -352,7 +346,6 @@ def graph_lines():
         # get vulns count
         d = start_date
         while d < end_date:
-
             t = end_date if d + datetime.timedelta(1) > end_date else d + datetime.timedelta(1)
 
             all_vuls = db.session.query(
@@ -381,4 +374,3 @@ def graph_lines():
             d += datetime.timedelta(1)
 
         return jsonify(labels=labels, vuls=vuls, scans=scans)
-

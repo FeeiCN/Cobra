@@ -44,7 +44,7 @@ def languages():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + "/index")
 
-    languages = CobraLanguages.query.all()
+    languages = CobraLanguages.query.order_by('id desc').all()
     data = {
         'languages': languages,
     }
