@@ -10,10 +10,10 @@
 * w3af - https://github.com/andresriancho/w3af
 
 * Android Scan - https://github.com/AndroBugs/AndroBugs_Framework
-
 * CMS Scan - https://github.com/droope/droopescan
-
 * GrepBugs - https://github.com/foospidy/GrepBugs
+* Pixy - https://github.com/oliverklee/pixy
+* RIPS - https://github.com/ripsscanner/rips
 
 
 # Rules

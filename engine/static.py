@@ -117,13 +117,12 @@ class Static:
                     if 'ggrep' == filename:
                         grep = os.path.join(root, filename)
         for rule in rules:
+            # Filters
             for language in languages:
                 if language.id == rule.language:
                     extensions = language.extensions.split('|')
-
             if extensions is None:
                 log.warning("Rule Language Error")
-
             filters = []
             for e in extensions:
                 filters.append('--include=*' + e)
@@ -161,9 +160,11 @@ class Static:
                             params = [self.task_id, rule_id, m_file, m_line, m_code, current_time,
                                       current_time]
                             try:
+                                # Overleap min.js
                                 if m_file in white_list or ".min.js" in m_file:
                                     log.debug("In White list or min.js")
                                 else:
+                                    # Overleap Annotation
                                     # # // /* *
                                     match_result = re.match("(#)?(//)?(\*)?(/\*)?", m_code)
                                     if match_result.group(0) is not None and match_result.group(0) is not "":
