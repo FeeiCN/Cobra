@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -- coding:utf-8 --
 #
 # Copyright 2016 Feei. All Rights Reserved
 #
@@ -47,18 +48,33 @@ def report(id):
     time_end = task_info.time_end
     files = task_info.file_count
     code_number = task_info.code_number
+
+    # Vulnerabilities
     vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
+
+    # Vulnerabilities Info
     results = CobraResults.query.filter_by(task_id=id).all()
 
     # convert timestamp to datetime
     time_start = time.strftime("%H:%M:%S", time.localtime(time_start))
     time_end = time.strftime("%H:%M:%S", time.localtime(time_end))
 
+    # Every Level Amount
+    high_amount = 0
+    medium_amount = 0
+    low_amount = 0
+    unknown_amount = 0
+
+    # Vul Types
+    vul_types = []
+
     # find rules -> vuls
     vulnerabilities = []
     for result in results:
         rules = CobraRules.query.filter_by(id=result.rule_id).first()
         vul_type = CobraVuls.query.filter_by(id=rules.vul_id).first().name
+        if vul_type not in vul_types:
+            vul_types.append(vul_type)
 
         find = False
         for each_vul in vulnerabilities:
@@ -74,16 +90,20 @@ def report(id):
         each_vul['repair'] = rules.repair
         each_vul['line'] = result.line
         if rules.level == 3:
-            each_vul['level'] = 'H'
+            high_amount += 1
+            each_vul['level'] = u'高危'
             each_vul['color'] = 'red'
         elif rules.level == 2:
-            each_vul['level'] = 'M'
+            medium_amount += 1
+            each_vul['level'] = u'中危'
             each_vul['color'] = 'orange'
         elif rules.level == 1:
-            each_vul['level'] = 'L'
+            low_amount += 1
+            each_vul['level'] = u'低危'
             each_vul['color'] = 'black'
         else:
-            each_vul['level'] = 'Undefined'
+            unknown_amount += 1
+            each_vul['level'] = u'未定义'
             each_vul['color'] = '#555'
 
         for ev in vulnerabilities:
@@ -104,10 +124,18 @@ def report(id):
         'code_number': code_number,
         'vulnerabilities_count': vulnerabilities_count,
         'vulnerabilities': vulnerabilities,
+        'amount': {
+            'h': high_amount,
+            'm': medium_amount,
+            'l': low_amount,
+            'u': unknown_amount
+        },
+        'vul_types': vul_types
     }
     return render_template('report.html', data=data)
 
 
 @web.errorhandler(404)
-def page_not_found():
+def page_not_found(e):
+    log.debug(e)
     return render_template('404.html'), 404

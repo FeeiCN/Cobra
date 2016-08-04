@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Cobra is a code static scan system">
     <meta name="author" content="Feei <wufeifei@wufeifei.com>">
-    <title>Cobra Report</title>
+    <title>项目({{ data.project_name | upper }})代码安全审计报告 - {{ data.id }}</title>
 
     <!-- Favicons-->
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
@@ -22,13 +22,7 @@
 
     <!-- CSS -->
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
-
     <link href="{{ url_for('static', filename='css/prism.css') }}" rel="stylesheet"/>
-    <!-- Google web fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
-
     <style>
         .invoice-title h2, .invoice-title h3 {
             display: inline-block;
@@ -50,6 +44,14 @@
             text-indent: 30px;
             display: inline-block;
         }
+
+        .number {
+            display: inline;
+            font-size: 24px;
+            color: #F00;
+            font-weight: bold;
+            font-family: fantasy;
+        }
     </style>
 
     <!--[if lt IE 9]>
@@ -63,43 +65,53 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="invoice-title">
-                <h2>Cobra</h2>
-                <h3 class="pull-right">Report ID # {{ data.id }}</h3>
+                <h2>项目({{ data.project_name | upper }})代码安全审计报告</h2>
+                <h3 class="pull-right">Cobra报告编号 # {{ data.id }}</h3>
             </div>
             <hr>
             <div class="row">
                 <div class="col-xs-6">
                     <address>
-                        <h4>To:</h4>
-                        <span class="content"><strong>Author&nbsp;&nbsp;&nbsp;&nbsp;: </strong>{{ data.author }} </span><br/>
-                        <span class="content"><strong>PE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </strong>@puzhi </span><br/>
-                        <span class="content"><strong>Security&nbsp;: </strong>@zhijie/@hanshui/@shiqiao </span>
+                        <h4>报告给:</h4>
+                        <span class="content"><strong>项目所属人&nbsp;&nbsp;&nbsp;&nbsp;: </strong>{{ data.author }} </span><br/>
+                        <span class="content"><strong>项目PE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </strong>团队@PE </span><br/>
+                        <span class="content"><strong>安全对接人&nbsp;: </strong> @安全答疑 </span>
                     </address>
                 </div>
                 <div class="col-xs-6">
                     <address>
-                        <h4>Date:</h4>
-                        <span class="content"><strong>Report at: </strong>{{ data.task_created_at }}</span><br>
-                        <span class="content"><strong>Scan Time: </strong>{{ data.time_start }} - {{ data.time_end }} ({{ data.time_consume }})</span><br/>
+                        <h4>报告时间:</h4>
+                        <span class="content"><strong>报告生成时间: </strong>{{ data.task_created_at }}</span><br>
+                        <span class="content"><strong>项目扫描时间: </strong>{{ data.time_start }} - {{ data.time_end }}</span><br/>
+                        <span class="content"><strong>项目扫描耗时: </strong>{{ data.time_consume }})</span><br/>
                     </address>
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-6">
                     <address>
-                        <h4>Project:</h4>
-                        <span class="content"><strong>Project Name: </strong>{{ data.project_name }}</span><br>
-                        <span class="content"><strong>Project Repository: </strong>{{ data.project_repository }}</span>
-                        <span class="content"><strong>Project Description: </strong>{{ data.project_description }}</span>
+                        <h4>项目信息:</h4>
+                        <span class="content"><strong>项目名称: </strong>{{ data.project_name }}</span><br>
+                        <span class="content"><strong>项目仓库: </strong>{{ data.project_repository }}</span><br/>
+                        <span class="content"><strong>项目备注: </strong>{{ data.project_description }}</span>
                     </address>
                 </div>
                 <div class="col-xs-6">
                     <address>
-                        <h4>Result:</h4>
-                        <span class="content"><strong>Scan Files: </strong>{{ data.files }}</span><br/>
-                        <span class="content"><strong>Code Line Number: </strong>{{ data.code_number }}</span><br/>
-                        <span class="content"><strong>Vulnerabilities: </strong>{{ data.vulnerabilities_count }}</span><br/>
+                        <h4>扫描统计:</h4>
+                        <span class="content"><strong>漏洞数(个): </strong><div class="number">{{ data.vulnerabilities_count }}</div></span><br/>
+                        <span class="content"><strong>文件数(个): </strong><div class="number">{{ data.files }}</div></span><br/>
+                        <span class="content"><strong>代码数(行): </strong><div class="number">{{ data.code_number }}</div></span><br/>
+
                     </address>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 column">
+                    <h4>漏洞分布统计</h4>
+                    <div id="vul_distributing" style="height:400px;">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,22 +121,22 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><strong>Vulnerabilities</strong></h3>
+                    <h3 class="panel-title"><strong>漏洞列表</strong></h3>
                 </div>
                 <div class="panel-body">
 
                     {% for vulnerability in data.vulnerabilities %}
-                        <h4>{{ vulnerability.vul_type }}</h4>
+                        <h4>{{ vulnerability.vul_type }} (Amount: {{ vulnerability.data | length }})</h4>
                         <table class="table table-condensed">
                             <thead>
                             <tr>
-                                <td><strong>Level</strong></td>
-                                <td><strong>Rule</strong></td>
+                                <td><strong>等级</strong></td>
+                                <td><strong>触发规则</strong></td>
                                 <td>
-                                    <strong>Content</strong>
+                                    <strong>漏洞点</strong>
                                 </td>
-                                <td><strong>Repair</strong></td>
-                                <td class="text-right"><strong>Help</strong></td>
+                                <td><strong>修复方案</strong></td>
+                                <td class="text-right"><strong>其它</strong></td>
                             </tr>
                             </thead>
                             {% for each_vul in vulnerability.data %}
@@ -188,13 +200,65 @@
     </div><!-- End row-->
 
 
-    <div class="banner">
-        <h4>如何 <span>提高代码安全质量?</span></h4>
-        <p>跟着安全团队, 45天精通代码安全.</p>
-        {#        <a href="" class="btn_1 white">Read more</a>#}
-    </div>
+    {#    <div class="banner">#}
+    {#        <h4>如何 <span>提高代码安全质量?</span></h4>#}
+    {#        <p>跟着安全团队, 45天精通代码安全.</p>#}
+    {#        <a href="" class="btn_1 white">Read more</a>#}
+    {#    </div>#}
     <hr>
     {% include "footer.html" %}
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <script>
+        var types = [];
+        var vuls = [];
+        {% for vulnerability in data.vulnerabilities %}
+            types.push('{{ vulnerability.vul_type }}');
+            vuls.push({value: {{ vulnerability.data | length }}, name: '{{ vulnerability.vul_type }}'});
+        {% endfor %}
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: types
+            },
+            series: [
+                {
+                    name: '漏洞危害等级占比',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    radius: [0, '30%'],
+                    label: {
+                        normal: {
+                            position: 'inner'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: [
+                        {value: {{ data.amount.h }}, name: '高危', selected: true},
+                        {value: {{ data.amount.m }}, name: '中危'},
+                        {value: {{ data.amount.l }}, name: '低危'},
+                        {value: {{ data.amount.u }}, name: '未定级'}
+                    ]
+                },
+                {
+                    name: '各类漏洞占比',
+                    type: 'pie',
+                    radius: ['40%', '55%'],
+                    data: vuls
+                }
+            ]
+        };
+        var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+        vul_distributing.setOption(option);
+    </script>
 </body>
 </html>
