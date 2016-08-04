@@ -135,6 +135,9 @@ class Static:
             filters.append('--exclude-dir=.bzr')
             filters.append('--exclude=*.svn-base')
 
+            # Already Insert File Vul
+            already_insert_file_vul = {}
+
             # White list
             white_list = []
             ws = CobraWhiteList.query.filter_by(project_id=self.project_id, rule_id=rule.id, status=1).all()
@@ -146,7 +149,7 @@ class Static:
                 log.info('Scan rule id: {0}'.format(rule.id))
                 # -n Show Line number / -r Recursive / -P Perl regular expression
                 param = [grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory]
-                log.info(' '.join(param))
+                # log.info(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
@@ -166,8 +169,7 @@ class Static:
                             m_file = rr[0].strip()
                             m_line = code[0]
                             m_code = str(code[1].strip())
-                            params = [self.task_id, rule_id, m_file, m_line, m_code, current_time,
-                                      current_time]
+                            params = [self.task_id, rule_id, m_file, m_line, m_code, current_time, current_time]
                             try:
                                 # Overleap min.js
                                 if m_file in white_list or ".min.js" in m_file:
@@ -180,17 +182,18 @@ class Static:
                                         log.debug("In Annotation")
                                     else:
                                         log.debug('In Insert')
-                                        if rule.regex == "":
+                                        file_vul_key = str(self.task_id) + '_' + str(rule_id) + '_' + str(m_file)
+                                        if rule.regex.strip() == "":
                                             # Didn't filter line when regex is empty
-                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
-                                                                                     rule_id=rule_id,
-                                                                                     file=m_file).first()
+                                            if file_vul_key in already_insert_file_vul:
+                                                # log.info('In Cache Qeury')
+                                                r_content = 1
+                                            else:
+                                                # log.info('In DB Query')
+                                                r_content = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule_id, file=m_file).first()
                                             m_line = 0
                                         else:
-                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
-                                                                                     rule_id=rule_id,
-                                                                                     file=m_file,
-                                                                                     line=m_line).first()
+                                            r_content = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule_id, file=m_file, line=m_line).first()
                                         if r_content is not None:
                                             log.warning("Exists Result")
                                         else:
@@ -199,6 +202,8 @@ class Static:
                                                                    current_time)
                                             db.session.add(results)
                                             db.session.commit()
+                                            if rule.regex.strip() == "":
+                                                already_insert_file_vul[file_vul_key] = 1
                                             log.info('Insert Results Success')
                             except Exception as e:
                                 log.error('Insert Results Failed' + str(e.message))
