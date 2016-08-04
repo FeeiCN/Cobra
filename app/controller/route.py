@@ -77,14 +77,12 @@ def report(id):
     for result in results:
         # Cache For Rules
         if result.rule_id in cache_rules:
-            log.info("In Cache")
             rules = cache_rules[result.rule_id]
         else:
             rules = CobraRules.query.filter_by(id=result.rule_id).first()
             cache_rules[result.rule_id] = rules
         # Cache For Vul Type
         if rules.vul_id in cache_vul_types:
-            log.info("In Vul Type Cache")
             vul_type = cache_vul_types[rules.vul_id]
         else:
             vul_type = CobraVuls.query.filter_by(id=rules.vul_id).first().name

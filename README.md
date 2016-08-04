@@ -6,7 +6,7 @@
 Static code analysis common security issues and scan common security vulnerabilities
 
 ### Screenshot
-![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/SCREENSHOT.gif)
+![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANUAL.png)
 ![Cobra Report](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/REPORT.png)
 
 
