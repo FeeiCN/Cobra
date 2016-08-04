@@ -127,6 +127,14 @@ class Static:
             for e in extensions:
                 filters.append('--include=*' + e)
 
+            # Explode SVN Dir
+            filters.append('--exclude-dir=.svn')
+            filters.append('--exclude-dir=.cvs')
+            filters.append('--exclude-dir=.hg')
+            filters.append('--exclude-dir=.git')
+            filters.append('--exclude-dir=.bzr')
+            filters.append('--exclude=*.svn-base')
+
             # White list
             white_list = []
             ws = CobraWhiteList.query.filter_by(project_id=self.project_id, rule_id=rule.id, status=1).all()
@@ -137,8 +145,9 @@ class Static:
             try:
                 log.info('Scan rule id: {0}'.format(rule.id))
                 # -n Show Line number / -r Recursive / -P Perl regular expression
-                p = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory],
-                                     stdout=subprocess.PIPE)
+                param = [grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory]
+                log.info(' '.join(param))
+                p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
                 # Exists result

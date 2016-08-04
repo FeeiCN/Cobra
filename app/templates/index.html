@@ -226,7 +226,8 @@
                     if (result.code == 1001) {
                         var scan_id = result.result['scan_id'];
                         var data = {scan_id: scan_id, key: 'c1b6e8d63eb552a9219ee75692a3089df48631e6'};
-                        var interval_status_id = setInterval(function () {
+
+                        function get_status() {
                             $.ajax({
                                 url: '/api/status',
                                 type: 'POST',
@@ -238,15 +239,18 @@
                                     if (result.status == 1001) {
                                         if (result.result['status'] == 'done') {
                                             $('.tab-content').plainOverlay('hide');
-                                            clearInterval(interval_status_id);
                                             window.open(result.result['report'], '_blank');
+                                        } else {
+                                            setTimeout(get_status, 3000);
                                         }
                                     } else {
                                         alert(result.msg);
                                     }
                                 }
                             });
-                        }, 2000);
+                        }
+
+                        get_status();
                     } else {
                         $('.tab-content').plainOverlay('hide');
                         alert(result.msg);

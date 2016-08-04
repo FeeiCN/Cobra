@@ -16,13 +16,12 @@ import time
 import os
 from utils import common, config
 from flask import request, jsonify
-import ConfigParser
 import subprocess
 from app import web
 from app import CobraTaskInfo
 from app import CobraProjects
 from app import db
-from pickup import GitTools
+from pickup import GitTools, subversion
 
 # default api url
 API_URL = '/api'
@@ -47,6 +46,7 @@ def add_task():
     :return:
         The return value also in json format, usually is:
         {"code": 1001, "msg": "error reason or success."}
+        code: 1005: Unknown Protocol
         code: 1004: Unknown error, if you see this error code, most time is cobra's database error.
         code: 1003: You support the parameters is not json.
         code: 1002: Some parameters is empty. More information in "msg".
@@ -77,21 +77,35 @@ def add_task():
     # Parse
     current_time = time.strftime('%Y-%m-%d %X', time.localtime())
 
-    username = config.Config('git', 'username').value
-    password = config.Config('git', 'password').value
+    # Gitlab
+    if '.git' in target:
+        # Git
+        if 'gitlab' in target:
+            username = config.Config('git', 'username').value
+            password = config.Config('git', 'password').value
+        else:
+            username = False
+            password = False
+        gg = GitTools.Git(target, branch=branch, username=username, password=password)
+        repo_author = gg.repo_author
+        repo_name = gg.repo_name
+        repo_directory = gg.repo_directory
+        # Git Clone Error
+        if gg.clone() is False:
+            return jsonify(code=4001)
+    elif 'svn' in target:
+        # SVN
 
-    gg = GitTools.Git(target, branch=branch, username=username, password=password)
-    repo_author = gg.repo_author
-    repo_name = gg.repo_name
+        repo_name = 'mogujie'
+        repo_author = 'all'
+        repo_directory = config.Config('cobra', 'upload_directory').value + '/uploads/mogujie/appbeta/classes/controller'
+    else:
+        return jsonify(code=1005)
 
     if new_version == "" or old_version == "":
         scan_way = 1
     else:
         scan_way = 2
-
-    # Git Clone Error
-    if gg.clone() is False:
-        return jsonify(code=4001)
 
     # insert into task info table.
     task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, None, None, None, 1, None, 0,
@@ -117,12 +131,10 @@ def add_task():
             return jsonify(code=1004, msg=u'Cobra Not Found')
         # Start Scanning
         subprocess.Popen(
-            ['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t",
-             gg.repo_directory])
+            ['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
         # Statistic Code
         subprocess.Popen(
-            ['python', cobra_path, "statistic", "-i", str(task.id), "-t",
-             gg.repo_directory])
+            ['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
 
         result['scan_id'] = task.id
         result['project_id'] = project_id
