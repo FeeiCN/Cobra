@@ -98,7 +98,7 @@ def add_task():
 
         repo_name = 'mogujie'
         repo_author = 'all'
-        repo_directory = config.Config('cobra', 'upload_directory').value + '/uploads/mogujie/appbeta/classes/controller'
+        repo_directory = config.Config('cobra', 'upload_directory').value + '/uploads/mogujie'
     else:
         return jsonify(code=1005)
 
