@@ -12,7 +12,6 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import os
-import re
 import ConfigParser
 
 

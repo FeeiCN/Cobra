@@ -14,9 +14,9 @@
 #
 import time
 from utils import log
-from flask import request, jsonify, render_template
+from flask import jsonify, render_template
 
-from app import web, CobraTaskInfo, db, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
+from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
 
 @web.route('/', methods=['GET'])
@@ -25,9 +25,9 @@ def homepage():
     return render_template('index.html')
 
 
-@web.route('/report/<int:id>', methods=['GET'])
-def report(id):
-    task_info = CobraTaskInfo.query.filter_by(id=id).first()
+@web.route('/report/<int:task_id>', methods=['GET'])
+def report(task_id):
+    task_info = CobraTaskInfo.query.filter_by(id=task_id).first()
     if not task_info:
         return jsonify(status='4004', msg='report id not found')
 
@@ -44,10 +44,10 @@ def report(id):
     code_number = task_info.code_number
 
     # Vulnerabilities
-    vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
+    vulnerabilities_count = CobraResults.query.filter_by(task_id=task_id).count()
 
     # Vulnerabilities Info
-    results = CobraResults.query.filter_by(task_id=id).all()
+    results = CobraResults.query.filter_by(task_id=task_id).all()
 
     # convert timestamp to datetime
     time_start = time.strftime("%H:%M:%S", time.localtime(time_start))
@@ -85,6 +85,7 @@ def report(id):
         if vul_type not in vul_types:
             vul_types.append(vul_type)
 
+        each_vul = {}
         find = False
         for each_vul in vulnerabilities:
             if each_vul['vul_type'] == vul_type:
@@ -92,7 +93,6 @@ def report(id):
         if not find:
             vulnerabilities.append({'vul_type': vul_type, 'data': []})
 
-        each_vul = {}
         each_vul['rule'] = rules.description
         each_vul['file'] = result.file
         each_vul['code'] = result.code
@@ -120,7 +120,7 @@ def report(id):
                 ev['data'].append(each_vul)
 
     data = {
-        'id': int(id),
+        'id': int(task_id),
         'project_name': project_name,
         'project_repository': repository,
         'project_description': project_description,

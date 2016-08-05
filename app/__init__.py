@@ -11,19 +11,16 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import ConfigParser
 import os
 import sys
-import time
 import subprocess
 
 from flask import Flask
-from flask_migrate import MigrateCommand, Migrate
 from flask_script import Manager, Server, Option, Command
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 
-from utils import log
+from utils import log, config
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -32,11 +29,9 @@ template = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 asset = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates/asset')
 web = Flask(__name__, template_folder=template, static_folder=asset)
 
-config = ConfigParser.ConfigParser()
-config.read('config')
 web.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-web.config['SQLALCHEMY_DATABASE_URI'] = config.get('database', 'mysql')
-web.secret_key = config.get('cobra', 'secret_key')
+web.config['SQLALCHEMY_DATABASE_URI'] = config.Config('database', 'mysql').value
+web.secret_key = config.Config('cobra', 'secret_key').value
 
 bootstrap = Bootstrap(web)
 
@@ -50,7 +45,6 @@ db = SQLAlchemy(web)
 with web.app_context():
     from models import *
 
-migrate = Migrate(web, db)
 manager = Manager(web)
 
 
@@ -168,11 +162,10 @@ class Scan(Command):
             log.warning("Not Support SVN Repository")
 
 
-host = config.get('cobra', 'host')
-port = config.get('cobra', 'port')
+host = config.Config('cobra', 'host').value
+port = config.Config('cobra', 'port').value
 port = int(port)
 
-manager.add_command('db', MigrateCommand)
 manager.add_command('start', Server(host=host, port=port))
 manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
@@ -192,5 +185,3 @@ from app.controller.backend import SearchController
 from app.controller.backend import TasksController
 from app.controller.backend import VulsController
 from app.controller.backend import WhiteListsController
-
-log.info('Cobra Engine Started')

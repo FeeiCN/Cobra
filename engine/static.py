@@ -23,8 +23,8 @@ from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, Cob
 
 
 class Static:
-    def __init__(self, directory=None, task_id=None, project_id=None):
-        self.directory = directory
+    def __init__(self, directory_path=None, task_id=None, project_id=None):
+        self.directory = directory_path
         self.task_id = task_id
         self.project_id = project_id
 

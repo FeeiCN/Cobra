@@ -134,10 +134,10 @@ class CobraResults(db.Model):
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, task_id, rule_id, file, line, code, created_at, updated_at):
+    def __init__(self, task_id, rule_id, file_path, line, code, created_at, updated_at):
         self.task_id = task_id
         self.rule_id = rule_id
-        self.file = file
+        self.file = file_path
         self.line = line
         self.code = code
         self.created_at = created_at
