@@ -28,7 +28,7 @@ def tasks(page):
     # replace data
     for task in tasks:
         task.scan_way = "Full Scan" if task.scan_way == 1 else "Diff Scan"
-        task.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + task.id
+        task.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(task.id)
     data = {
         'tasks': tasks,
     }
