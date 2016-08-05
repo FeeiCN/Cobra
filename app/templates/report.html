@@ -11,14 +11,8 @@
     <meta name="author" content="Feei <wufeifei@wufeifei.com>">
     <title>项目({{ data.project_name | upper }})代码安全审计报告 - {{ data.id }}</title>
 
-    <!-- Favicons-->
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="img/apple-touch-icon-72x72-precomposed.png">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114"
-          href="img/apple-touch-icon-114x114-precomposed.png">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144"
-          href="img/apple-touch-icon-144x144-precomposed.png">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
 
     <!-- CSS -->
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
@@ -45,7 +39,7 @@
             display: inline-block;
         }
 
-        .number {
+        .sum_number {
             display: inline;
             font-size: 24px;
             color: #F00;
@@ -99,9 +93,9 @@
                 <div class="col-xs-6">
                     <address>
                         <h4>扫描统计:</h4>
-                        <span class="content"><strong>漏洞数(个): </strong><div class="number">{{ data.vulnerabilities_count }}</div></span><br/>
-                        <span class="content"><strong>文件数(个): </strong><div class="number">{{ data.files }}</div></span><br/>
-                        <span class="content"><strong>代码数(行): </strong><div class="number">{{ data.code_number }}</div></span><br/>
+                        <span class="content"><strong>漏洞数(个): </strong><div class="sum_number">{{ data.vulnerabilities_count }}</div></span><br/>
+                        <span class="content"><strong>文件数(个): </strong><div class="sum_number">{{ data.files }}</div></span><br/>
+                        <span class="content"><strong>代码数(行): </strong><div class="sum_number">{{ data.code_number }}</div></span><br/>
 
                     </address>
                 </div>
@@ -198,8 +192,6 @@
 
         </div><!-- End col-md-6-->
     </div><!-- End row-->
-
-
     {#    <div class="banner">#}
     {#        <h4>如何 <span>提高代码安全质量?</span></h4>#}
     {#        <p>跟着安全团队, 45天精通代码安全.</p>#}
@@ -260,5 +252,6 @@
         var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
         vul_distributing.setOption(option);
     </script>
+</div>
 </body>
 </html>

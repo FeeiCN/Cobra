@@ -8,7 +8,7 @@ Static code analysis common security issues and scan common security vulnerabili
 ### Screenshot
 ![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANUAL.png)
 ![Cobra Report](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/REPORT.png)
-
+![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANAGE.png)
 
 ### Links
 - Homepage:  http://wufeifei.github.io/cobra
