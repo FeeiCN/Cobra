@@ -1,7 +1,16 @@
-#!/usr/bin/env python2
-# coding: utf-8
-# file: profile.py
-
+#!/usr/bin/env python
+#
+# Copyright 2016 Feei. All Rights Reserved
+#
+# Author:   Feei <wufeifei@wufeifei.com>
+# Homepage: https://github.com/wufeifei/cobra
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# See the file 'doc/COPYING' for copying permission
+#
 from werkzeug.contrib.profiler import ProfilerMiddleware
 from app import web
 
