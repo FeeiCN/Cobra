@@ -2,6 +2,8 @@
 
 {% block head %}
     {{ super() }}
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
     <link href="/asset/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
     <script type="text/javascript" src="/asset/js/Chart.js"></script>
 {% endblock %}
