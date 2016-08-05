@@ -189,7 +189,7 @@ class Static:
                         if rule.regex.strip() == '':
                             # Find
                             file_path = line.strip().replace(self.directory, '')
-                            log.debug(file_path)
+                            log.debug('File: {0}'.format(file_path))
                             vul = CobraResults(self.task_id, rule.id, file_path, 0, '')
                             db.session.add(vul)
                         else:
@@ -209,11 +209,11 @@ class Static:
                                     log.info("In Annotation")
                                 else:
                                     log.info('In Insert')
-                                    r_content = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
-                                    if r_content is not None:
+                                    exist_result = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
+                                    if exist_result is not None:
                                         log.warning("Exists Result")
                                     else:
-                                        log.debug(file_path, str(line_number), code_content)
+                                        log.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
                                         vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
                                         db.session.add(vul)
                                         log.info('Insert Results Success')

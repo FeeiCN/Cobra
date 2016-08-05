@@ -135,7 +135,7 @@
                 <div class="panel-body">
 
                     {% for vulnerability in data.vulnerabilities %}
-                        <h4>{{ vulnerability.vul_type }} (Amount: {{ vulnerability.data | length }})</h4>
+                        <h4>{{ vulnerability.vul_type }} (总数: {{ vulnerability.data | length }})</h4>
                         <table class="table table-condensed">
                             <thead>
                             <tr>
