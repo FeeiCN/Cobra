@@ -235,10 +235,18 @@
                         }
                     },
                     data: [
-                        {value: {{ data.amount.h }}, name: '高危', selected: true},
-                        {value: {{ data.amount.m }}, name: '中危'},
-                        {value: {{ data.amount.l }}, name: '低危'},
-                        {value: {{ data.amount.u }}, name: '未定级'}
+                        {%  if data.amount.h != 0 %}
+                            {value: {{ data.amount.h }}, name: '高危', selected: true},
+                        {% endif %}
+                        {%  if data.amount.m != 0 %}
+                            {value: {{ data.amount.m }}, name: '中危'},
+                        {% endif %}
+                        {%  if data.amount.l != 0 %}
+                            {value: {{ data.amount.l }}, name: '低危'},
+                        {% endif %}
+                        {%  if data.amount.u != 0 %}
+                            {value: {{ data.amount.u }}, name: '未定级'}
+                        {% endif %}
                     ]
                 },
                 {
