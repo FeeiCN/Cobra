@@ -5,10 +5,10 @@
 
 Static code analysis common security issues and scan common security vulnerabilities
 
-### 项目介绍
+## 项目介绍
 眼镜蛇(Cobra)是一款定位于静态代码安全分析的工具，目标是为了找出源代码中存在的安全隐患或者漏洞。
 
-### 目标用户
+## 目标用户
 **1. 互联网企业**
 
 互联网公司可以将Cobra部署在企业内,供开发人员使用,用来扫描项目风险.
@@ -22,7 +22,7 @@ Static code analysis common security issues and scan common security vulnerabili
 
 白帽们可以通过定制完善Cobra扫描规则, 对开源项目进行代码审计,发现其中漏洞.
 
-### 应用场景
+## 应用场景
 
 **1.漏洞出现前（检测）**
 
@@ -40,7 +40,7 @@ Static code analysis common security issues and scan common security vulnerabili
 
 当企业修复漏洞后，可以通过设置修复/验证规则来限制以后所有提交的代码都需要过修复/验证规则，否则不予上线，减少相同漏洞再次出现的可能性。
 
-### 项目截图
+## 项目截图
 ##### Cobra自助扫描
 ![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANUAL.png)
 ##### Cobra扫描报告
@@ -48,7 +48,7 @@ Static code analysis common security issues and scan common security vulnerabili
 ##### Cobra管理后台
 ![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANAGE.png)
 
-### Links
+## 引用链接
 - Homepage:  http://wufeifei.github.io/cobra
 - Documents: https://github.com/wufeifei/cobra/wiki
 
