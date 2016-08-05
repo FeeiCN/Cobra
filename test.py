@@ -12,9 +12,11 @@
 # See the file 'doc/COPYING' for copying permission
 #
 
+import time
 import unittest
 from engine import static
 from pickup import subversion, GitTools, directory
+from app import db, CobraAdminUser
 
 
 class Test(unittest.TestCase):
@@ -36,8 +38,8 @@ class Test(unittest.TestCase):
 
     def test_git_diff(self):
         filename = 'test.php'
-        g = git.Git(filename, '123', '124')
-        git_diff = g.diff()
+        g = GitTools.Git(filename)
+        git_diff = g.diff('123', '124')
         print(git_diff)
 
     def test_git(self):
@@ -50,6 +52,15 @@ class Test(unittest.TestCase):
     def test_static_analyse(self):
         s = static.Static('php', ['php'])
         s.analyse()
+
+    def test_add_admin(self):
+        username = 'admin'
+        password = 'admin123456!@#'
+        role = 1  # 1: super admin, 2: admin, 3: rules admin
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+        au = CobraAdminUser(username, password, role, None, None, current_time, current_time)
+        db.session.add(au)
+        db.session.commit()
 
 
 if __name__ == '__main__':
