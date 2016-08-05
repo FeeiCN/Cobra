@@ -18,7 +18,6 @@ import time
 import subprocess
 from pickup import directory
 from utils import log
-from datetime import datetime
 from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
 
 
@@ -189,7 +188,7 @@ class Static:
                             continue
                         if rule.regex.strip() == '':
                             # Find
-                            file_path = line.strip()
+                            file_path = line.strip().replace(self.directory, '')
                             log.debug(file_path)
                             vul = CobraResults(self.task_id, rule.id, file_path, 0, '')
                             db.session.add(vul)
