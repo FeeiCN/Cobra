@@ -15,10 +15,9 @@
 import os
 from subprocess import call
 import subprocess
-import ConfigParser
 from urllib import quote
 
-from utils import log
+from utils import log, config
 
 """
 usage and example.
@@ -90,9 +89,7 @@ class Git:
     def __init__(self, repo_address, branch='master', username=None, password=None):
 
         # get upload directory
-        config = ConfigParser.ConfigParser()
-        config.read('config')
-        self.upload_directory = config.get('cobra', 'upload_directory') + os.sep
+        self.upload_directory = config.Config('cobra', 'upload_directory').value + os.sep
 
         self.repo_address = repo_address
         self.repo_username = username
@@ -120,8 +117,7 @@ class Git:
             return False
 
         # change work directory to the repo
-        current_dir = os.getcwd() + os.sep
-        repo_dir = current_dir + self.repo_directory
+        repo_dir = self.repo_directory
         os.chdir(repo_dir)
 
         cmd = 'git pull'
@@ -130,7 +126,7 @@ class Git:
         log.info(pull_out)
 
         # change work directory back.
-        os.chdir(current_dir)
+        os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
             log.info('Pull Done.')
