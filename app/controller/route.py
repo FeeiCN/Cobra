@@ -13,7 +13,7 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import time
-from utils import log
+from utils import log, common
 from flask import jsonify, render_template
 
 from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
@@ -126,12 +126,12 @@ def report(task_id):
         'project_description': project_description,
         'author': author,
         'task_created_at': task_created_at,
-        'time_consume': str(time_consume / 60) + "'" + str(time_consume % 60) + "''",
+        'time_consume': common.convert_time(time_consume),
         'time_start': time_start,
         'time_end': time_end,
-        'files': '{:20,}'.format(files),
-        'code_number': '{:20,}'.format(code_number),
-        'vulnerabilities_count': '{:20,}'.format(vulnerabilities_count),
+        'files': common.convert_number(files),
+        'code_number': common.convert_number(code_number),
+        'vulnerabilities_count': common.convert_number(vulnerabilities_count),
         'vulnerabilities': vulnerabilities,
         'amount': {
             'h': high_amount,

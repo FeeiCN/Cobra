@@ -25,6 +25,25 @@ def convert_timestamp(stamp):
     return processed_date
 
 
+#
+# 61 -> 1'1''
+#
+def convert_time(seconds):
+    one_minute = 60
+    minute = seconds / one_minute
+    if minute == 0:
+        return str(seconds % one_minute) + "'"
+    else:
+        return str(minute) + "''" + str(seconds % one_minute) + "'"
+
+
+#
+# 123456 -> 123,456
+#
+def convert_number(number):
+    return '{:20,}'.format(number)
+
+
 def verify_key(key):
     """verify api key"""
     auth = CobraAuth.query.filter_by(key=key).first()
