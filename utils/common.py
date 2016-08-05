@@ -41,7 +41,7 @@ def convert_time(seconds):
 # 123456 -> 123,456
 #
 def convert_number(number):
-    if number is None:
+    if number is None or number == 0:
         return 0
     number = int(number)
     return '{:20,}'.format(number)

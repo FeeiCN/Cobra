@@ -113,7 +113,9 @@
                 <div class="col-md-12 column">
                     <h4>漏洞分布统计</h4>
                     <div id="vul_distributing" style="height:400px;">
-
+                        {% if data.vul_count == 0 %}
+                            <h3 style="text-align: center;line-height: 400px;font-weight: bold;color: red;">赞, 未检测到漏洞 :)</h3>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-md-12 column">
@@ -133,7 +135,9 @@
                     <h3 class="panel-title"><strong>漏洞列表</strong></h3>
                 </div>
                 <div class="panel-body">
-
+                    {% if data.vul_count == 0 %}
+                        <h3>无漏洞</h3>
+                    {% endif %}
                     {% for vulnerability in data.vulnerabilities %}
                         <h4>{{ vulnerability.vul_type }} (总数: {{ vulnerability.data | length }})</h4>
                         <table class="table table-condensed">
@@ -178,7 +182,6 @@
             </div> <!-- .panel panel-default -->
         </div>
     </div>
-
     <hr>
     <!-- Containers -->
     <h3>Help</h3>
@@ -273,9 +276,10 @@
                 }
             ]
         };
+        {% if data.vul_count != 0 %}
         var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
         vul_distributing.setOption(option);
-
+        {% endif %}
 
         $(function () {
             /* Ext Chart */
