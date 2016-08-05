@@ -10,7 +10,7 @@ from . import ADMIN_URL
 from app import web, db
 from app.CommonClass.ValidateClass import ValidateClass
 from app.models import CobraTaskInfo
-
+from utils import config
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -28,6 +28,7 @@ def tasks(page):
     # replace data
     for task in tasks:
         task.scan_way = "Full Scan" if task.scan_way == 1 else "Diff Scan"
+        task.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + task.id
     data = {
         'tasks': tasks,
     }
@@ -37,7 +38,6 @@ def tasks(page):
 # del the special task
 @web.route(ADMIN_URL + '/del_task', methods=['POST'])
 def del_task():
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
@@ -58,7 +58,6 @@ def del_task():
 # edit the special task
 @web.route(ADMIN_URL + '/edit_task/<int:task_id>', methods=['GET', 'POST'])
 def edit_task(task_id):
-
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
 
