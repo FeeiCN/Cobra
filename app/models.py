@@ -134,7 +134,7 @@ class CobraResults(db.Model):
     created_at = db.Column(db.DateTime, nullable=True, default=None)
     updated_at = db.Column(db.DateTime, nullable=True, default=None)
 
-    def __init__(self, task_id, rule_id, file_path, line, code, created_at, updated_at):
+    def __init__(self, task_id, rule_id, file_path, line, code, created_at=None, updated_at=None):
         self.task_id = task_id
         self.rule_id = rule_id
         self.file = file_path
@@ -142,6 +142,15 @@ class CobraResults(db.Model):
         self.code = code
         self.created_at = created_at
         self.updated_at = updated_at
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+        if created_at is None:
+            self.created_at = current_time
+        else:
+            self.created_at = created_at
+        if updated_at is None:
+            self.updated_at = current_time
+        else:
+            self.updated_at = updated_at
 
     def __repr__(self):
         return "<CobraResults %r - %r>" % (self.id, self.task_id)

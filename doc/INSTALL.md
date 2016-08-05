@@ -15,6 +15,15 @@
 [sudo] yum install gcc-c++
 ```
 
+#### On Mac OS X
+```
+# grep
+brew install ggrep
+
+# find
+brew install findutils
+```
+
 #### Install Python Dependents
 ```
 cd /path/to/cobra

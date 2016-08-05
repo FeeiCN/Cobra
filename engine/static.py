@@ -108,35 +108,41 @@ class Static:
 
         rules = CobraRules.query.filter_by(status=1).all()
         extensions = None
-        # grep name is ggrep on mac
+        # `grep` (`ggrep` on Mac)
         grep = '/bin/grep'
+        # `find` (`gfind` on Mac)
+        find = '/bin/find'
         if 'darwin' == sys.platform:
-            log.info('In Mac OS X System')
+            ggrep = ''
+            gfind = ''
             for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
                 for filename in file_names:
                     if 'ggrep' == filename:
-                        grep = os.path.join(root, filename)
+                        ggrep = os.path.join(root, filename)
+            for root, dir_names, file_names in os.walk('/usr/local/Cellar/findutils'):
+                for filename in file_names:
+                    if 'gfind' == filename:
+                        gfind = os.path.join(root, filename)
+            if ggrep == '':
+                log.critical("brew install ggrep pleases!")
+                sys.exit(0)
+            else:
+                grep = ggrep
+            if gfind == '':
+                log.critical("brew install findutils pleases!")
+                sys.exit(0)
+            else:
+                find = gfind
+
         for rule in rules:
+            log.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
                 if language.id == rule.language:
                     extensions = language.extensions.split('|')
             if extensions is None:
-                log.warning("Rule Language Error")
-            filters = []
-            for e in extensions:
-                filters.append('--include=*' + e)
-
-            # Explode SVN Dir
-            filters.append('--exclude-dir=.svn')
-            filters.append('--exclude-dir=.cvs')
-            filters.append('--exclude-dir=.hg')
-            filters.append('--exclude-dir=.git')
-            filters.append('--exclude-dir=.bzr')
-            filters.append('--exclude=*.svn-base')
-
-            # Already Insert File Vul
-            already_insert_file_vul = {}
+                log.critical("Rule Language Error")
+                sys.exit(0)
 
             # White list
             white_list = []
@@ -146,71 +152,73 @@ class Static:
                     white_list.append(w.path)
 
             try:
-                log.info('Scan rule id: {0}'.format(rule.id))
-                # -n Show Line number / -r Recursive / -P Perl regular expression
-                param = [grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory]
+                if rule.regex.strip() == "":
+                    filters = []
+                    for index, e in enumerate(extensions):
+                        if index > 1:
+                            filters.append('-o')
+                        filters.append('-name')
+                        filters.append('*' + e)
+                    # Find Special Ext Files
+                    param = [find, self.directory, "-type", "f"] + filters
+                else:
+                    filters = []
+                    for e in extensions:
+                        filters.append('--include=*' + e)
+
+                    # Explode SVN Dir
+                    filters.append('--exclude-dir=.svn')
+                    filters.append('--exclude-dir=.cvs')
+                    filters.append('--exclude-dir=.hg')
+                    filters.append('--exclude-dir=.git')
+                    filters.append('--exclude-dir=.bzr')
+                    filters.append('--exclude=*.svn-base')
+                    # -n Show Line number / -r Recursive / -P Perl regular expression
+                    param = [grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory]
+
                 # log.info(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
                 # Exists result
                 if len(result[0]):
-                    log.info('Found:')
-                    per_line = str(result[0]).split("\n")
-                    log.debug(per_line)
-                    for r in range(0, len(per_line) - 1):
-                        try:
-                            rr = str(per_line[r]).replace(self.directory, '').split(':', 1)
-                            code = str(rr[1]).split(':', 1)
-                            if self.task_id is None:
-                                self.task_id = 0
-                            rule_id = rule.id
-                            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                            m_file = rr[0].strip()
-                            m_line = code[0]
-                            m_code = str(code[1].strip())
-                            params = [self.task_id, rule_id, m_file, m_line, m_code, current_time, current_time]
-                            try:
-                                # Overleap min.js
-                                if m_file in white_list or ".min.js" in m_file:
-                                    log.debug("In White list or min.js")
-                                else:
-                                    # Overleap Annotation
-                                    # # // /* *
-                                    match_result = re.match("(#)?(//)?(\*)?(/\*)?", m_code)
-                                    if match_result.group(0) is not None and match_result.group(0) is not "":
-                                        log.debug("In Annotation")
-                                    else:
-                                        log.debug('In Insert')
-                                        file_vul_key = str(self.task_id) + '_' + str(rule_id) + '_' + str(m_file)
-                                        if rule.regex.strip() == "":
-                                            # Didn't filter line when regex is empty
-                                            if file_vul_key in already_insert_file_vul:
-                                                # log.info('In Cache Qeury')
-                                                r_content = 1
-                                            else:
-                                                # log.info('In DB Query')
-                                                r_content = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule_id, file=m_file).first()
-                                            m_line = 0
-                                        else:
-                                            r_content = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule_id, file=m_file, line=m_line).first()
-                                        if r_content is not None:
-                                            log.warning("Exists Result")
-                                        else:
-                                            results = CobraResults(self.task_id, rule_id, m_file, m_line, m_code,
-                                                                   current_time,
-                                                                   current_time)
-                                            db.session.add(results)
-                                            db.session.commit()
-                                            if rule.regex.strip() == "":
-                                                already_insert_file_vul[file_vul_key] = 1
-                                            log.info('Insert Results Success')
-                            except Exception as e:
-                                log.error('Insert Results Failed' + str(e.message))
-                            log.debug(params)
-                        except Exception as e:
-                            log.critical('Error parsing result: ' + str(e.message))
+                    lines = str(result[0]).split("\n")
+                    for line in lines:
+                        line = line.strip()
+                        if line == '':
+                            continue
+                        if rule.regex.strip() == '':
+                            # Find
+                            file_path = line.strip()
+                            log.debug(file_path)
+                            vul = CobraResults(self.task_id, rule.id, file_path, 0, '')
+                            db.session.add(vul)
+                        else:
+                            # Grep
+                            line_split = line.replace(self.directory, '').split(':', 1)
+                            file_path = line_split[0].strip()
+                            code_content = line_split[1].split(':', 1)[1].strip()
+                            line_number = line_split[1].split(':', 1)[0].strip()
 
+                            if file_path in white_list or ".min.js" in file_path:
+                                log.info("In white list or min.js")
+                            else:
+                                # Annotation
+                                # # // /* *
+                                match_result = re.match("(#)?(//)?(\*)?(/\*)?", code_content)
+                                if match_result.group(0) is not None and match_result.group(0) is not "":
+                                    log.info("In Annotation")
+                                else:
+                                    log.info('In Insert')
+                                    r_content = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
+                                    if r_content is not None:
+                                        log.warning("Exists Result")
+                                    else:
+                                        log.debug(file_path, str(line_number), code_content)
+                                        vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
+                                        db.session.add(vul)
+                                        log.info('Insert Results Success')
+                    db.session.commit()
                 else:
                     log.info('Not Found')
 

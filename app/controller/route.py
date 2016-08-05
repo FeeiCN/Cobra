@@ -43,6 +43,11 @@ def report(task_id):
     files = task_info.file_count
     code_number = task_info.code_number
 
+    if code_number is None:
+        code_number = '统计中...'
+    else:
+        code_number = common.convert_number(code_number)
+
     # Vulnerabilities
     vulnerabilities_count = CobraResults.query.filter_by(task_id=task_id).count()
 
@@ -130,7 +135,7 @@ def report(task_id):
         'time_start': time_start,
         'time_end': time_end,
         'files': common.convert_number(files),
-        'code_number': common.convert_number(code_number),
+        'code_number': code_number,
         'vulnerabilities_count': common.convert_number(vulnerabilities_count),
         'vulnerabilities': vulnerabilities,
         'amount': {
