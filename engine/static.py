@@ -35,7 +35,7 @@ class Static:
         log.info('Start code static analyse...')
 
         d = directory.Directory(self.directory)
-        files = d.collect_files()
+        files = d.collect_files(self.task_id)
         log.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
 
         ext_language = {

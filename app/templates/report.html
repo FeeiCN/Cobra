@@ -48,7 +48,12 @@
         }
 
         pre {
-            width: 60%;
+            max-width: 750px;
+        }
+
+        #ext_distributing {
+            height: 500px;
+            margin-bottom: 30px;
         }
     </style>
 
@@ -108,6 +113,12 @@
                 <div class="col-md-12 column">
                     <h4>漏洞分布统计</h4>
                     <div id="vul_distributing" style="height:400px;">
+
+                    </div>
+                </div>
+                <div class="col-md-12 column">
+                    <h4>后缀分布统计</h4>
+                    <div id="ext_distributing">
 
                     </div>
                 </div>
@@ -204,6 +215,7 @@
     <hr>
     {% include "footer.html" %}
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
     <script>
         var types = [];
@@ -263,6 +275,101 @@
         };
         var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
         vul_distributing.setOption(option);
+
+
+        $(function () {
+            /* Ext Chart */
+            var ext_distributing = echarts.init(document.getElementById('ext_distributing'));
+            ext_distributing.showLoading();
+
+            $.get('/ext/{{ data.id }}', function (result) {
+                if (result.code == 1001) {
+                    var diskData = result.result;
+                    ext_distributing.hideLoading();
+
+                    function colorMappingChange(value) {
+                        var levelOption = getLevelOption(value);
+                        chart.setOption({
+                            series: [{
+                                levels: levelOption
+                            }]
+                        });
+                    }
+
+                    var formatUtil = echarts.format;
+
+                    function getLevelOption() {
+                        return [
+                            {
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 0,
+                                        gapWidth: 5
+                                    }
+                                }
+                            },
+                            {
+                                itemStyle: {
+                                    normal: {
+                                        gapWidth: 1
+                                    }
+                                }
+                            },
+                            {
+                                colorSaturation: [0.35, 0.5],
+                                itemStyle: {
+                                    normal: {
+                                        gapWidth: 1,
+                                        borderColorSaturation: 0.6
+                                    }
+                                }
+                            }
+                        ];
+                    }
+
+                    ext_distributing.setOption(option = {
+                        tooltip: {
+                            formatter: function (info) {
+                                var value = info.value;
+                                var treePathInfo = info.treePathInfo;
+                                var treePath = [];
+
+                                for (var i = 1; i < treePathInfo.length; i++) {
+                                    treePath.push(treePathInfo[i].name);
+                                }
+
+                                return [
+                                    '<div class="tooltip-title">' + formatUtil.encodeHTML(treePath.join('/')) + '</div>',
+                                    'Amount: ' + formatUtil.addCommas(value),
+                                ].join('');
+                            }
+                        },
+
+                        series: [
+                            {
+                                name: 'Ext',
+                                type: 'treemap',
+                                visibleMin: 300,
+                                label: {
+                                    show: true,
+                                    formatter: '{b}'
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        borderColor: '#fff'
+                                    }
+                                },
+                                levels: getLevelOption(),
+                                data: diskData
+                            }
+                        ]
+                    });
+                } else {
+                    alert(result.result);
+                }
+            }, 'JSON');
+        });
+
     </script>
 </div>
 </body>

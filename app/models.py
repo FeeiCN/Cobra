@@ -12,6 +12,7 @@
 # See the file 'doc/COPYING' for copying permission
 #
 
+import time
 from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
@@ -214,6 +215,36 @@ class CobraAuth(db.Model):
 
     def __repr__(self):
         return "<CobraAuth %r-%r>" % (self.name, self.key)
+
+
+class CobraExt(db.Model):
+    __tablename__ = 'ext'
+
+    id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    task_id = db.Column(db.Integer, default=None, nullable=True)
+    ext = db.Column(db.String(32), default=None, nullable=True)
+    amount = db.Column(db.Integer, default=None, nullable=True)
+    created_at = db.Column(db.DateTime, default=None, nullable=True)
+    updated_at = db.Column(db.DateTime, default=None, nullable=True)
+
+    def __init__(self, task_id, ext, amount, created_at=None, updated_at=None):
+        self.task_id = task_id
+        self.ext = ext
+        self.amount = amount
+        self.created_at = created_at
+        self.updated_at = updated_at
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+        if created_at is None:
+            self.created_at = current_time
+        else:
+            self.created_at = created_at
+        if updated_at is None:
+            self.updated_at = current_time
+        else:
+            self.updated_at = updated_at
+
+    def __repr__(self):
+        return "<CobraExt %r-%r>" % (self.ext, self.amount)
 
 
 class CobraAdminUser(db.Model):

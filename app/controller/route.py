@@ -12,17 +12,11 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import os
 import time
-from datetime import datetime
-import argparse
-import ConfigParser
-import magic
 from utils import log
 from flask import request, jsonify, render_template
-from werkzeug import secure_filename
 
-from app import web, CobraTaskInfo, db, CobraProjects, CobraResults, CobraRules, CobraVuls
+from app import web, CobraTaskInfo, db, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
 
 @web.route('/', methods=['GET'])
@@ -148,6 +142,20 @@ def report(id):
         'vul_types': vul_types
     }
     return render_template('report.html', data=data)
+
+
+@web.route('/ext/<int:task_id>', methods=['GET'])
+def ext_statistic(task_id):
+    # Ext Amount Statistic
+    exts = CobraExt.query.filter_by(task_id=task_id).all()
+    exts_result = []
+    for ext in exts:
+        exts_result.append({
+            'value': ext.amount,
+            'name': ext.ext,
+            'path': ext.ext
+        })
+    return jsonify(code=1001, result=exts_result)
 
 
 @web.errorhandler(404)
