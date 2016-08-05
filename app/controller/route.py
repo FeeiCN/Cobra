@@ -31,32 +31,31 @@ def report(task_id):
     if not task_info:
         return jsonify(status='4004', msg='report id not found')
 
+    # Task Info
     repository = task_info.target
     task_created_at = task_info.created_at
-    project = CobraProjects.query.filter_by(repository=repository).first()
-    project_name = project.name
-    author = project.author
-    project_description = project.remark
     time_consume = task_info.time_consume
     time_start = task_info.time_start
     time_end = task_info.time_end
     files = task_info.file_count
     code_number = task_info.code_number
-
     if code_number is None:
         code_number = '统计中...'
     else:
         code_number = common.convert_number(code_number)
-
-    # Vulnerabilities
-    vulnerabilities_count = CobraResults.query.filter_by(task_id=task_id).count()
-
-    # Vulnerabilities Info
-    results = CobraResults.query.filter_by(task_id=task_id).all()
-
     # convert timestamp to datetime
     time_start = time.strftime("%H:%M:%S", time.localtime(time_start))
     time_end = time.strftime("%H:%M:%S", time.localtime(time_end))
+
+    # Project Info
+    project = CobraProjects.query.filter_by(repository=repository).first()
+    project_name = project.name
+    author = project.author
+    project_description = project.remark
+
+    # Vulnerabilities Info
+    results = CobraResults.query.filter_by(task_id=task_id).all()
+    vul_count = len(results)
 
     # Every Level Amount
     high_amount = 0
@@ -90,7 +89,6 @@ def report(task_id):
         if vul_type not in vul_types:
             vul_types.append(vul_type)
 
-        each_vul = {}
         find = False
         for each_vul in vulnerabilities:
             if each_vul['vul_type'] == vul_type:
@@ -98,6 +96,7 @@ def report(task_id):
         if not find:
             vulnerabilities.append({'vul_type': vul_type, 'data': []})
 
+        each_vul = {}
         each_vul['rule'] = rules.description
         each_vul['file'] = result.file
         each_vul['code'] = result.code
@@ -136,7 +135,7 @@ def report(task_id):
         'time_end': time_end,
         'files': common.convert_number(files),
         'code_number': code_number,
-        'vulnerabilities_count': common.convert_number(vulnerabilities_count),
+        'vul_count': common.convert_number(vul_count),
         'vulnerabilities': vulnerabilities,
         'amount': {
             'h': high_amount,
