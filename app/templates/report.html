@@ -277,8 +277,8 @@
             ]
         };
         {% if data.vul_count != 0 %}
-        var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
-        vul_distributing.setOption(option);
+            var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+            vul_distributing.setOption(option);
         {% endif %}
 
         $(function () {
@@ -353,6 +353,7 @@
                             {
                                 name: 'Ext',
                                 type: 'treemap',
+                                roam: 'move',
                                 visibleMin: 300,
                                 label: {
                                     show: true,
