@@ -19,8 +19,9 @@ from flask import Flask
 from flask_script import Manager, Server, Option, Command
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
+from sqlalchemy import exc
 
-from utils import log, config
+from utils import log, config, common
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -162,6 +163,101 @@ class Scan(Command):
             log.warning("Not Support SVN Repository")
 
 
+class Install(Command):
+    def run(self):
+        # create database structure
+        log.debug("Start create database structure...")
+        try:
+            db.create_all()
+        except exc.SQLAlchemyError as e:
+            log.critical("MySQL database error: {0}\nFAQ: {1}".format(e, 'https://github.com/wufeifei/cobra/wiki/Error#mysql'))
+            sys.exit(0)
+        log.debug("Create Structure Success.")
+        # insert base data
+        from app.models import CobraAuth, CobraLanguages, CobraAdminUser, CobraVuls
+        # table `auth`
+        log.debug('Insert api key...')
+        auth = CobraAuth('manual', common.md5('CobraAuthKey'), 1)
+        db.session.add(auth)
+
+        # table `languages`
+        log.debug('Insert language...')
+        languages = {
+            "php": ".php|.php3|.php4|.php5",
+            "jsp": ".jsp",
+            "java": ".java",
+            "html": ".html|.htm|.phps|.phtml",
+            "js": ".js",
+            "backup": ".zip|.bak|.tar|.tar.gz|.rar",
+            "xml": ".xml",
+            "image": ".jpg|.png|.bmp|.gif|.ico|.cur",
+            "font": ".eot|.otf|.svg|.ttf|.woff",
+            "css": ".css|.less|.scss|.styl",
+            "exe": ".exe",
+            "shell": ".sh",
+            "log": ".log",
+            "text": ".txt|.text",
+            "flash": ".swf",
+            "yml": ".yml",
+            "cert": ".p12|.crt|.key|.pfx|.csr",
+            "psd": ".psd",
+            "iml": ".iml",
+            "spf": ".spf",
+            "markdown": ".md",
+            "office": ".doc|.docx|.wps|.rtf|.csv|.xls|.ppt",
+            "bat": ".bat",
+            "PSD": ".psd",
+            "Thumb": ".db",
+        }
+        for language, extensions in languages.iteritems():
+            a_language = CobraLanguages(language, extensions)
+            db.session.add(a_language)
+
+        # table `user`
+        log.debug('Insert admin user...')
+        username = 'admin'
+        password = 'admin123456!@#'
+        role = 1  # 1: super admin, 2: admin, 3: rules admin
+        a_user = CobraAdminUser(username, password, role)
+        db.session.add(a_user)
+
+        # table `vuls`
+        log.debug('Insert vuls...')
+        vuls = [
+            'SQL Injection',
+            'LFI/RFI',
+            'Header Injection',
+            'XSS',
+            'CSRF',
+            'Logic Bug',
+            'Command Execute',
+            'Code Execute',
+            'Information Disclosure',
+            'Data Exposure',
+            'Xpath Injection',
+            'LDAP Injection',
+            'XML/XXE Injection',
+            'Unserialize',
+            'Variables Override',
+            'URL Redirect',
+            'Weak Function',
+            'Buffer Overflow',
+            'Deprecated Function',
+            'Stack Trace',
+            'Resource Executable',
+            'SSRF',
+            'Misconfiguration',
+            'Components'
+        ]
+        for vul in vuls:
+            a_vul = CobraVuls(vul, 'Vul Description', 'Vul Repair')
+            db.session.add(a_vul)
+
+        # commit
+        db.session.commit()
+        log.debug('All Done.')
+
+
 host = config.Config('cobra', 'host').value
 port = config.Config('cobra', 'port').value
 port = int(port)
@@ -169,6 +265,7 @@ port = int(port)
 manager.add_command('start', Server(host=host, port=port))
 manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
+manager.add_command('install', Install())
 
 # frontend and api
 from app.controller import route

@@ -14,14 +14,11 @@
 #
 import time
 import os
-from utils import common, config
+from utils import config
 from flask import request, jsonify
 import subprocess
-from app import web
-from app import CobraTaskInfo
-from app import CobraProjects
-from app import db
-from pickup import GitTools, subversion
+from app import web, db, CobraAuth, CobraTaskInfo, CobraProjects
+from pickup import GitTools
 
 # default api url
 API_URL = '/api'
@@ -59,7 +56,9 @@ def add_task():
 
     # Params
     key = data.get('key')
-    if common.verify_key(key) is False:
+
+    auth = CobraAuth.query.filter_by(key=key).first()
+    if auth is None:
         return jsonify(code=4002, msg=u'Key verify failed')
     target = data.get('target')
     branch = data.get('branch')
@@ -108,14 +107,13 @@ def add_task():
         scan_way = 2
 
     # insert into task info table.
-    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, None, None, None, 1, None, 0,
-                         current_time, current_time)
+    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, '', '', '', 1, '', 0, current_time, current_time)
 
     p = CobraProjects.query.filter_by(repository=target).first()
     project = None
     if not p:
         # insert into project table.
-        project = CobraProjects(target, repo_name, repo_author, None, None, current_time, current_time)
+        project = CobraProjects(target, repo_name, repo_author, '', current_time)
         project_id = project.id
     else:
         project_id = p.id
@@ -130,11 +128,9 @@ def add_task():
         if os.path.isfile(cobra_path) is not True:
             return jsonify(code=1004, msg=u'Cobra Not Found')
         # Start Scanning
-        subprocess.Popen(
-            ['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
+        subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
         # Statistic Code
-        subprocess.Popen(
-            ['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
+        subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
 
         result['scan_id'] = task.id
         result['project_id'] = project_id
@@ -148,7 +144,8 @@ def add_task():
 def status_task():
     scan_id = request.json.get('scan_id')
     key = request.json.get('key')
-    if common.verify_key(key) is False:
+    auth = CobraAuth.query.filter_by(key=key).first()
+    if auth is None:
         return jsonify(code=4002, msg=u'Key verify failed')
     c = CobraTaskInfo.query.filter_by(id=scan_id).first()
     if not c:

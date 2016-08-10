@@ -207,7 +207,7 @@
                 'branch': branch,
                 'old_version': old_version,
                 'new_version': new_version,
-                'key': 'c1b6e8d63eb552a9219ee75692a3089df48631e6'
+                'key': "{{ data.key }}"
             };
             $.ajax({
                 url: '/api/add',
@@ -219,7 +219,7 @@
                 success: function (result) {
                     if (result.code == 1001) {
                         var scan_id = result.result['scan_id'];
-                        var data = {scan_id: scan_id, key: 'c1b6e8d63eb552a9219ee75692a3089df48631e6'};
+                        var data = {scan_id: scan_id, key: "{{ data.key }}"};
 
                         function get_status() {
                             $.ajax({

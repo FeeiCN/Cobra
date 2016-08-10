@@ -22,7 +22,10 @@ from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, Cob
 @web.route('/', methods=['GET'])
 @web.route('/index', methods=['GET'])
 def homepage():
-    return render_template('index.html')
+    data = {
+        'key': common.md5('CobraAuthKey')
+    }
+    return render_template('index.html', data=data)
 
 
 @web.route('/report/<int:task_id>', methods=['GET'])

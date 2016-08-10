@@ -12,7 +12,7 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import datetime
-from app import db, CobraAuth
+import hashlib
 
 
 def convert_timestamp(stamp):
@@ -47,7 +47,5 @@ def convert_number(number):
     return '{:20,}'.format(number)
 
 
-def verify_key(key):
-    """verify api key"""
-    auth = CobraAuth.query.filter_by(key=key).first()
-    return auth is not None
+def md5(content):
+    return hashlib.md5(content).hexdigest()
