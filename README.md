@@ -50,5 +50,6 @@ Static code analysis common security issues and scan common security vulnerabili
 
 ## 相关链接
 - Cobra文档 - https://github.com/wufeifei/cobra/wiki
+- 建议意见 - https://github.com/wufeifei/cobra/issues/new
 - 在线试用 - 敬请期待!
 
