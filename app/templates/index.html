@@ -233,7 +233,7 @@
                                     if (result.status == 1001) {
                                         if (result.result['status'] == 'done') {
                                             $('.tab-content').plainOverlay('hide');
-                                            window.open(result.result['report'], '_blank');
+                                            alert("Report URL:" + result.result['report']);
                                         } else {
                                             setTimeout(get_status, 3000);
                                         }
