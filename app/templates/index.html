@@ -193,10 +193,9 @@
     }
 
     $(function () {
-
         $("#scan").on('click', function (e) {
-            $('.tab-content').plainOverlay('show');
             e.preventDefault();
+            $('.tab-content').plainOverlay('show');
             var url = $("input[name=repository]").val();
             var branch = $("input[name=branch]").val();
             var old_version = $("input[name=old_version]").val();
@@ -215,7 +214,7 @@
                 data: JSON.stringify(data),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
-                async: false,
+                async: true,
                 success: function (result) {
                     if (result.code == 1001) {
                         var scan_id = result.result['scan_id'];
