@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="keywords" content="static code scan">
-    <meta name="description" content="Cobra is a code static scan system">
+    <meta name="description" content="Cobra is a code static security scan system">
     <meta name="author" content="Feei <wufeifei@wufeifei.com>">
     <title>Cobra - Static Code security scan & analyse</title>
 
@@ -23,6 +23,17 @@
     <!-- SPECIFIC CSS -->
     <link href="asset/css/skins/square/grey.css" rel="stylesheet">
     <link href="asset/css/date_time_picker.css" rel="stylesheet">
+
+    <style>
+        .bar {
+            width: 0%;
+            height: 30px;
+            background: #18cc18;
+            line-height: 30px;
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
 
     <!--[if lt IE 9]>
     <script src="asset/js/html5shiv.min.js"></script>
@@ -134,8 +145,11 @@
                         <h4><span>Drag and Drop</span> File Uploading</h4>
                         <div align="center" id="selectFile"></div>
                         <hr>
-                        <input type="file" class="btn_1" id="uploadFile" style="width: 100%;">
-                        <small>Support: tar.gz/rar/zip</small>
+                        <input type="file" class="btn_1" id="uploadFile" name="file" style="width: 100%;">
+                        <small>Support Extensions: {{ data.extensions }}</small>
+                        <div id="progress">
+                            <div class="bar"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -156,8 +170,12 @@
 <!-- Common scripts -->
 <script src="asset/js/jquery-1.11.2.min.js"></script>
 <script src="asset/js/common_scripts_min.js"></script>
-<script src="{{ url_for('static', filename='js/jquery.plainoverlay.min.js') }}"></script>
 <script src="asset/js/functions.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.plainoverlay.min.js') }}"></script>
+<!-- Upload -->
+<script src="{{ url_for('static', filename='js/jquery.ui.widget.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.iframe-transport.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.fileupload.js') }}"></script>
 <script>
 
     // drag and drop upload file
@@ -193,6 +211,8 @@
     }
 
     $(function () {
+
+        // Tab1
         $("#scan").on('click', function (e) {
             e.preventDefault();
             $('.tab-content').plainOverlay('show');
@@ -250,6 +270,60 @@
                     }
                 }
             });
+        });
+
+        // Tab2
+        $('#uploadFile').fileupload({
+            url: '/api/upload',
+            dataType: 'json',
+            done: function (e, data) {
+                if (data.result.code == 1001) {
+                    $('.tab-content').plainOverlay('show');
+                    var scan_id = data.result.result['scan_id'];
+                    var data = {scan_id: scan_id, key: "{{ data.key }}"};
+
+                    function get_status() {
+                        $.ajax({
+                            url: '/api/status',
+                            type: 'POST',
+                            data: JSON.stringify(data),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            async: false,
+                            success: function (result) {
+                                if (result.status == 1001) {
+                                    if (result.result['status'] == 'done') {
+                                        $('.tab-content').plainOverlay('hide');
+                                        alert("Report URL:" + result.result['report']);
+                                    } else {
+                                        setTimeout(get_status, 3000);
+                                    }
+                                } else {
+                                    alert(result.msg);
+                                }
+                            }
+                        });
+                    }
+
+                    get_status();
+                } else {
+                    alert(data.result.result);
+                }
+            },
+            start: function (e) {
+                $('#progress .bar').css('width', '0%');
+            },
+            stop: function (e) {
+                $('#progress .bar').css('width', '0%');
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress .bar').css(
+                        'width',
+                        progress + '%'
+                );
+                $('#progress .bar').text(progress + '%');
+            }
         });
     });
 

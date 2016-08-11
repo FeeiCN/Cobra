@@ -21,9 +21,11 @@ logs_directory: logs
 # NOTE: change it to a random string.(32\w)
 secret_key:
 
+[upload]
 # upload src store path, default: uploads
 # NOTE: no '/' or '\' at the end of the directory name.
-upload_directory: uploads
+directory: uploads
+extensions: .tar.gz|.rar|.zip
 
 #
 # Database

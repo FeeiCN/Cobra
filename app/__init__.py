@@ -39,6 +39,13 @@ bootstrap = Bootstrap(web)
 # set bootstrap css and jquery js to local
 web.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
+# upload directory
+upload_directory = os.path.join(config.Config('upload', 'directory').value, 'uploads')
+if os.path.isdir(upload_directory) is not True:
+    os.makedirs(upload_directory)
+web.config['UPLOAD_FOLDER'] = upload_directory
+web.config['MAX_CONTENT_LENGTH'] = int(config.Config('upload', 'max_size').value) * 1024 * 1024
+
 db = SQLAlchemy(web)
 
 # just use the migration script's app context when you import the models
@@ -89,22 +96,6 @@ class Scan(Command):
         Option('--pid', '-p', dest='pid', help='scan project id'),
     )
 
-    def parse_target(self, target=None):
-        if target[len(target) - 4:] == '.git':
-            return 'git'
-        elif os.path.isdir(target) is True:
-            return 'directory'
-        elif os.path.isfile(target) is True:
-            filename, file_extension = os.path.splitext(target)
-            if file_extension in ['.tar.gz', '.rar', '.zip']:
-                return 'compress'
-            else:
-                return 'file'
-        elif target[0:7] == 'http://' or target[0:8] == 'https://':
-            return 'svn'
-        else:
-            return False
-
     def run(self, target=None, tid=None, pid=None):
         if target is None:
             log.critical("Please set --target param")
@@ -130,37 +121,11 @@ class Scan(Command):
         else:
             task_id = None
 
-        target_type = self.parse_target(target)
-        if target_type is False:
-            log.error("""
-                Git Repository: must .git end
-                SVN Repository: can http:// or https://
-                Directory: must be local directory
-                File: must be single file or tar.gz/zip/rar compress file
-                """)
+        if os.path.isdir(target) is not True:
+            log.critical('Target is not directory')
+            sys.exit()
         from engine import static
-        s = static.Static(target, task_id=task_id, project_id=pid)
-        if target_type is 'directory':
-            s.analyse()
-        elif target_type is 'compress':
-            from utils.decompress import Decompress
-            # load an compressed file. only tar.gz, rar, zip supported.
-            dc = Decompress(target)
-            # decompress it. And there will create a directory named "222_test.tar".
-            dc.decompress()
-            s.analyse()
-        elif target_type is 'file':
-            s.analyse()
-        elif target_type is 'git':
-            from pickup.GitTools import Git
-            g = Git(target, branch='master')
-            g.get_repo()
-            if g.clone() is True:
-                s.analyse()
-            else:
-                log.critical("Git clone failed")
-        elif target_type is 'svn':
-            log.warning("Not Support SVN Repository")
+        static.Static(target, task_id=task_id, project_id=pid).analyse()
 
 
 class Install(Command):

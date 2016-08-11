@@ -12,13 +12,12 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import time
 import os
-from utils import config
+from utils import config, common
 from flask import request, jsonify
-import subprocess
-from app import web, db, CobraAuth, CobraTaskInfo, CobraProjects
-from pickup import GitTools
+from werkzeug.utils import secure_filename
+from app import web, CobraAuth, CobraTaskInfo
+from engine import scan
 
 # default api url
 API_URL = '/api'
@@ -49,12 +48,10 @@ def add_task():
         code: 1002: Some parameters is empty. More information in "msg".
         code: 1001: Success, no error.
     """
-    result = {}
     data = request.json
     if not data or data == "":
         return jsonify(code=1003, msg=u'Only support json, please post json data.')
 
-    # Params
     key = data.get('key')
 
     auth = CobraAuth.query.filter_by(key=key).first()
@@ -65,7 +62,7 @@ def add_task():
     new_version = data.get('new_version')
     old_version = data.get('old_version')
 
-    # Verify
+    # verify key
     if not key or key == "":
         return jsonify(code=1002, msg=u'key can not be empty.')
     if not target or target == "":
@@ -73,71 +70,8 @@ def add_task():
     if not branch or branch == "":
         return jsonify(code=1002, msg=u'branch can not be empty.')
 
-    # Parse
-    current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-
-    # Gitlab
-    if '.git' in target:
-        # Git
-        if 'gitlab' in target:
-            username = config.Config('git', 'username').value
-            password = config.Config('git', 'password').value
-        else:
-            username = False
-            password = False
-        gg = GitTools.Git(target, branch=branch, username=username, password=password)
-        repo_author = gg.repo_author
-        repo_name = gg.repo_name
-        repo_directory = gg.repo_directory
-        # Git Clone Error
-        if gg.clone() is False:
-            return jsonify(code=4001)
-    elif 'svn' in target:
-        # SVN
-
-        repo_name = 'mogujie'
-        repo_author = 'all'
-        repo_directory = os.path.join(config.Config('cobra', 'upload_directory').value, 'uploads/mogujie/')
-    else:
-        return jsonify(code=1005)
-
-    if new_version == "" or old_version == "":
-        scan_way = 1
-    else:
-        scan_way = 2
-
-    # insert into task info table.
-    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, 0, 0, 0, 1, 0, 0, current_time, current_time)
-
-    p = CobraProjects.query.filter_by(repository=target).first()
-    project = None
-    if not p:
-        # insert into project table.
-        project = CobraProjects(target, repo_name, repo_author, '', current_time)
-        project_id = project.id
-    else:
-        project_id = p.id
-    try:
-        db.session.add(task)
-        if not p:
-            db.session.add(project)
-        db.session.commit()
-
-        cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
-
-        if os.path.isfile(cobra_path) is not True:
-            return jsonify(code=1004, msg=u'Cobra Not Found')
-        # Start Scanning
-        subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
-        # Statistic Code
-        subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
-
-        result['scan_id'] = task.id
-        result['project_id'] = project_id
-        result['msg'] = u'success'
-        return jsonify(code=1001, result=result)
-    except Exception as e:
-        return jsonify(code=1004, msg=u'Unknown error, try again later?' + e.message)
+    code, result = scan.Scan(target).version(branch, new_version, old_version)
+    return jsonify(code=code, result=result)
 
 
 @web.route(API_URL + '/status', methods=['POST'])
@@ -165,3 +99,21 @@ def status_task():
         'allow_deploy': True
     }
     return jsonify(status=1001, result=result)
+
+
+@web.route(API_URL + '/upload', methods=['POST'])
+def upload_file():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        return jsonify(code=1002, result="File can't empty!")
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify(code=1002, result="File name can't empty!")
+    if file and common.allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(os.path.join(config.Config('upload', 'directory').value, 'uploads'), filename))
+        # scan job
+        code, result = scan.Scan(filename).compress()
+        return jsonify(code=code, result=result)
+    else:
+        return jsonify(code=1002, result="This extension can't support!")

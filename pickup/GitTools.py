@@ -13,7 +13,6 @@
 #
 
 import os
-from subprocess import call
 import subprocess
 from urllib import quote
 
@@ -89,7 +88,9 @@ class Git:
     def __init__(self, repo_address, branch='master', username=None, password=None):
 
         # get upload directory
-        self.upload_directory = config.Config('cobra', 'upload_directory').value + os.sep
+        self.upload_directory = os.path.join(config.Config('upload', 'directory').value, 'versions')
+        if os.path.isdir(self.upload_directory) is False:
+            os.makedirs(self.upload_directory)
 
         self.repo_address = repo_address
         self.repo_username = username
@@ -104,13 +105,13 @@ class Git:
         else:
             repo_name = repo_name.split('.')[0]
 
-        self.repo_directory = self.upload_directory + repo_user + os.sep + repo_name
+        self.repo_directory = os.path.join(os.path.join(self.upload_directory, repo_user), repo_name)
 
         log.info('Git class init.')
 
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-        log.info('Start Pull Repo')
+        log.info('Start Pull Repo...')
 
         if not self.__check_exist():
             log.info('No local repo exist. Please clone first.')
@@ -138,13 +139,13 @@ class Git:
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-        log.info('Start Clone Repo')
+        log.info('Start Clone Repo...')
         if os.path.isdir(self.repo_directory):
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
         if self.__check_exist():
             log.info('Repo Already Exist. Stop Clone.')
-            return False
+            return True
 
         # if no username or password provide, it may be a public repo.
         if not self.repo_username or not self.repo_password:

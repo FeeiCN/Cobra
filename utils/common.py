@@ -11,8 +11,10 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
+import sys
 import datetime
 import hashlib
+from utils import config, log
 
 
 def convert_timestamp(stamp):
@@ -49,3 +51,12 @@ def convert_number(number):
 
 def md5(content):
     return hashlib.md5(content).hexdigest()
+
+
+def allowed_file(filename):
+    config_extension = config.Config('upload', 'extensions').value
+    if config_extension == '':
+        log.critical('Please set config file upload->directory')
+        sys.exit(0)
+    allowed_extensions = config_extension.split('|')
+    return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
