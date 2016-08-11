@@ -24,7 +24,7 @@ secret_key: your_secret_key
 [upload]
 # upload src store path, default: uploads
 # NOTE: no '/' or '\' at the end of the directory name.
-directory: uploads
+directory: /tmp/cobra
 extensions: .tar.gz|.rar|.zip
 max_size: 200
 
