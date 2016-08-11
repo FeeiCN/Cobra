@@ -9,7 +9,7 @@
 Static code analysis common security issues and scan common security vulnerabilities
 
 ## 项目介绍
-眼镜蛇(Cobra)是一款定位于静态代码安全分析的工具，目标是为了找出源代码中存在的安全隐患或者漏洞。
+Cobra（眼镜蛇）是一款定位于静态代码安全漏洞分析系统。通过收集互联网常规漏洞的检测方法并输出成Cobra扫描规则，即可以自动化分析出源代码中存在的漏洞并生成完整的漏洞审计报告和详细的修复方案。
 
 ## 目标用户
 **1. 互联网企业**
@@ -23,7 +23,7 @@ Static code analysis common security issues and scan common security vulnerabili
 
 **3. 白帽**
 
-白帽们可以通过定制完善Cobra扫描规则, 对开源项目进行代码审计,发现其中漏洞.
+白帽们可以通过定制私有Cobra扫描规则, 对开源项目进行代码审计,发现其中漏洞.
 
 ## 应用场景
 

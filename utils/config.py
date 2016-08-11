@@ -24,4 +24,9 @@ class Config:
 
         config_file = os.path.join(self.project_directory, 'config')
         config.read(config_file)
-        self.value = config.get(level1, level2)
+        try:
+            value = config.get(level1, level2)
+        except Exception as e:
+            print("./config file configure failed.\nError: {0}\nSee Help: https://github.com/wufeifei/cobra/wiki/Config".format(e.message))
+            exit()
+        self.value = value
