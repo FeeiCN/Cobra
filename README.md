@@ -48,7 +48,8 @@ Static code analysis common security issues and scan common security vulnerabili
 ##### Cobra管理后台
 ![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANAGE.png)
 
-## 引用链接
-- Homepage:  http://wufeifei.github.io/cobra
-- Documents: https://github.com/wufeifei/cobra/wiki
+## 相关链接
+- Cobra文档 - https://github.com/wufeifei/cobra/wiki
+- 建议意见 - https://github.com/wufeifei/cobra/issues/new
+- 在线试用 - 敬请期待!
 
