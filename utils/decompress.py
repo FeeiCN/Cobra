@@ -16,7 +16,6 @@ import shutil
 import zipfile
 import tarfile
 import rarfile
-import magic
 from utils import config
 
 """example
@@ -56,7 +55,6 @@ class Decompress:
         self.upload_directory = os.path.join(config.Config('upload', 'directory').value, 'uploads')
         self.filename = filename
         self.filepath = os.path.join(self.upload_directory, filename)
-        self.filetype = magic.from_file(self.filepath, mime=True)
         self.dir_name = os.path.splitext(self.filename)[0]
 
     def decompress(self):
@@ -67,17 +65,20 @@ class Decompress:
             msg: None or error message
             dir_name: decompressed directory name. Usually, the directory name is the filename without file extension.
         """
-        if self.filetype == 'application/zip':
+        if '.zip' in self.filename:
             return self.__decompress_zip(), os.path.join(self.upload_directory, self.dir_name)
-        elif self.filetype == 'application/x-rar':
+        elif '.rar' in self.filename:
             return self.__decompress_rar(), os.path.join(self.upload_directory, self.dir_name)
-        elif self.filetype == 'application/x-gzip':
+        elif '.tgz' in self.filename or '.tar' in self.filename or '.gz' in self.filename:
+            """
+            Support Tar Extension
+            .tar: .tar | .tar.gz | .tar.bz2
+            .gz
+            .tgz
+            """
             return self.__decompress_tar_gz(), os.path.join(self.upload_directory, self.dir_name)
         else:
             return False, 'File type error, only zip, rar, tar.gz accepted.'
-
-    def get_file_type(self):
-        return self.filetype
 
     def __decompress_zip(self):
         """unzip a file."""
