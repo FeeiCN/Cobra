@@ -12,55 +12,52 @@
 # See the file 'doc/COPYING' for copying permission
 #
 
-import time
 import unittest
-from engine import static
-from pickup import subversion, GitTools, directory
-from app import db, CobraAdminUser
+import requests
+from utils import common, config
+import json
 
 
 class Test(unittest.TestCase):
-    project = '/Volumes/Statics/Project/Company/mogujie'
+    domain = '{0}:{1}'.format(config.Config('cobra', 'host').value, config.Config('cobra', 'port').value)
+    api = 'http://' + domain + '/api/{0}'
+    headers = {"Content-Type": "application/json"}
 
-    def test_svn_log(self):
-        filename = self.project + '/appbeta/classes/controller/safe/admin.php'
-        svn = subversion.Subversion(filename)
-        svn.log()
-        self.assertEqual('foo'.upper(), 'FOO')
+    key = common.md5('CobraAuthKey')
+    target = 'https://github.com/wufeifei/dict.git'
+    branch = 'master'
 
-    def test_svn_diff(self):
-        filename = self.project + '/appbeta/classes/controller/safe/admin.php'
-        svn = subversion.Subversion(filename, 'r717849', 'r718083')
-        diff = svn.diff()
-        # Print Result
-        for event, values in diff.iteritems():
-            print('{0} : {1}'.format(event, len(values)))
+    def test_api(self):
+        """
+        Cobra API Test
+        :return:
+        """
+        payload = json.dumps({
+            "key": self.key,
+            "target": self.target,
+            "branch": self.branch
+        })
 
-    def test_git_diff(self):
-        filename = 'test.php'
-        g = GitTools.Git(filename)
-        git_diff = g.diff('123', '124')
-        print(git_diff)
-
-    def test_git(self):
-        self.assertEqual('Test'.upper(), 'TEST')
-
-    def test_directory(self):
-        d = directory.Directory(self.project)
-        d.collect_files()
-
-    def test_static_analyse(self):
-        s = static.Static('php', ['php'])
-        s.analyse()
-
-    def test_add_admin(self):
-        username = 'admin'
-        password = 'admin123456!@#'
-        role = 1  # 1: super admin, 2: admin, 3: rules admin
-        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        au = CobraAdminUser(username, password, role, None, None, current_time, current_time)
-        db.session.add(au)
-        db.session.commit()
+        try:
+            response = requests.post(self.api.format('add'), data=payload, headers=self.headers)
+            response_json = response.json()
+            code = response_json.get('code')
+            self.assertEqual(code, 1001)
+            result = response_json.get('result')
+            scan_id = result.get('scan_id')
+            print("API Add: {0}".format(result))
+            status_query = json.dumps({
+                'key': self.key,
+                'scan_id': scan_id
+            })
+            status_response = requests.post(self.api.format('status'), data=status_query, headers=self.headers)
+            status_response_json = status_response.json()
+            code = status_response_json.get('status')
+            result = status_response_json.get('result')
+            print("API Status: {0}".format(result))
+            self.assertEqual(code, 1001)
+        except (requests.ConnectionError, requests.HTTPError) as e:
+            self.fail("API Add failed: {0}".format(e))
 
 
 if __name__ == '__main__':
