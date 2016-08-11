@@ -92,6 +92,7 @@ def add_file_handler(level, fmt, filename, mode, backup_count, limit, when):
     # If the filename is not set, use the default filename
     if filename is None:
         logs_directory = config.Config('cobra', 'logs_directory').value
+        logs_directory = os.path.join(config.Config().project_directory, logs_directory)
         if os.path.isdir(logs_directory) is not True:
             os.mkdir(logs_directory)
         filename = logs_directory + os.sep + time.strftime("%Y-%m-%d") + '.log'

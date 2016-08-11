@@ -107,7 +107,7 @@ def add_task():
         scan_way = 2
 
     # insert into task info table.
-    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, '', '', '', 1, '', 0, current_time, current_time)
+    task = CobraTaskInfo(target, branch, scan_way, new_version, old_version, 0, 0, 0, 1, 0, 0, current_time, current_time)
 
     p = CobraProjects.query.filter_by(repository=target).first()
     project = None
