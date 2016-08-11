@@ -1,8 +1,8 @@
 # Cobra
- [![Cobra Release](https://img.shields.io/github/release/wufeifei/cobra.svg?maxAge=2592000)]()
+ [![Cobra Release](https://img.shields.io/github/release/wufeifei/cobra.svg)]()
  [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/COPYING)
- [![Cobra Open Issue](https://img.shields.io/github/issues-raw/wufeifei/cobra.svg?maxAge=2592000)]()
- [![Cobra Close Issue](https://img.shields.io/github/issues-closed-raw/wufeifei/cobra.svg?maxAge=2592000)]()
+ [![Cobra Open Issue](https://img.shields.io/github/issues-raw/wufeifei/cobra.svg)]()
+ [![Cobra Close Issue](https://img.shields.io/github/issues-closed-raw/wufeifei/cobra.svg)]()
  [![GitHub stars](https://img.shields.io/github/stars/wufeifei/cobra.svg?style=social&label=Star)]()
  [![GitHub followers](https://img.shields.io/github/followers/wufeifei.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/wufeifei)
 
