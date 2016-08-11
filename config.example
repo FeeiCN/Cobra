@@ -19,13 +19,14 @@ debug: 0
 logs_directory: logs
 
 # NOTE: change it to a random string.(32\w)
-secret_key:
+secret_key: your_secret_key
 
 [upload]
 # upload src store path, default: uploads
 # NOTE: no '/' or '\' at the end of the directory name.
 directory: uploads
 extensions: .tar.gz|.rar|.zip
+max_size: 200
 
 #
 # Database
