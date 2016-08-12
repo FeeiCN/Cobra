@@ -59,4 +59,4 @@ def allowed_file(filename):
         log.critical('Please set config file upload->directory')
         sys.exit(0)
     allowed_extensions = config_extension.split('|')
-    return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
+    return "." in filename and filename.rsplit('.', 1)[1] in allowed_extensions

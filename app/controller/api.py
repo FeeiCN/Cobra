@@ -109,6 +109,7 @@ def upload_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify(code=1002, result="File name can't empty!")
+
     if file and common.allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(os.path.join(config.Config('upload', 'directory').value, 'uploads'), filename))
