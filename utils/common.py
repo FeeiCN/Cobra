@@ -27,10 +27,13 @@ def convert_timestamp(stamp):
     return processed_date
 
 
-#
-# 61 -> 1'1''
-#
 def convert_time(seconds):
+    """
+    Seconds to minute/second
+    Ex: 61 -> 1'1''
+    :param seconds:
+    :return:
+    """
     one_minute = 60
     minute = seconds / one_minute
     if minute == 0:
@@ -39,10 +42,13 @@ def convert_time(seconds):
         return str(minute) + "''" + str(seconds % one_minute) + "'"
 
 
-#
-# 123456 -> 123,456
-#
 def convert_number(number):
+    """
+    Convert number to , split
+    Ex: 123456 -> 123,456
+    :param number:
+    :return:
+    """
     if number is None or number == 0:
         return 0
     number = int(number)
@@ -50,10 +56,21 @@ def convert_number(number):
 
 
 def md5(content):
+    """
+    MD5 Hash
+    :param content:
+    :return:
+    """
     return hashlib.md5(content).hexdigest()
 
 
 def allowed_file(filename):
+    """
+    Allowd upload file
+    Config Path: ./config [upload]
+    :param filename:
+    :return:
+    """
     config_extension = config.Config('upload', 'extensions').value
     if config_extension == '':
         log.critical('Please set config file upload->directory')
