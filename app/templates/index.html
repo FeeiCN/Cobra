@@ -139,7 +139,7 @@
             </div><!-- End rab -->
             <div class="tab-pane" id="log">
                 <h3>Select compress file to upload</h3>
-                <div class="col-md-12" style="border-left: 1px solid #ddd;">
+                <div class="col-md-12">
                     <div class="box_style_2" id="dropbox">
                         <i class="icon-upload-cloud"></i>
                         <h4><span>Drag and Drop</span> File Uploading</h4>
@@ -252,7 +252,7 @@
                                     if (result.status == 1001) {
                                         if (result.result['status'] == 'done') {
                                             $('.tab-content').plainOverlay('hide');
-                                            alert("Report URL:" + result.result['report']);
+                                            window.open(result.result['report'], '_blank');
                                         } else {
                                             setTimeout(get_status, 3000);
                                         }
@@ -271,7 +271,6 @@
                 }
             });
         });
-
         // Tab2
         $('#uploadFile').fileupload({
             url: '/api/upload',
@@ -294,7 +293,7 @@
                                 if (result.status == 1001) {
                                     if (result.result['status'] == 'done') {
                                         $('.tab-content').plainOverlay('hide');
-                                        alert("Report URL:" + result.result['report']);
+                                        window.open(result.result['report'], '_blank');
                                     } else {
                                         setTimeout(get_status, 3000);
                                     }
