@@ -18,7 +18,6 @@ from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app import web, CobraAuth, CobraTaskInfo
 from engine import scan
-from utils import log
 
 # default api url
 API_URL = '/api'
@@ -110,7 +109,7 @@ def upload_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify(code=1002, result="File name can't empty!")
-    log.debug("test %s, %s" % (file, file.filename))
+
     if file and common.allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(os.path.join(config.Config('upload', 'directory').value, 'uploads'), filename))
