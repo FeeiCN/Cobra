@@ -43,7 +43,7 @@ def report(task_id):
     time_end = task_info.time_end
     files = task_info.file_count
     code_number = task_info.code_number
-    if code_number is None:
+    if code_number is None or code_number == 0:
         code_number = '统计中...'
     else:
         code_number = common.convert_number(code_number)
