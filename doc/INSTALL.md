@@ -16,9 +16,12 @@
 ```
 
 #### On Mac OS X
+
+On latest homebrew ggrep is moved to homebrew/dupes tap.
+
 ```
 # grep
-brew install ggrep
+brew install homebrew/dupes/grep
 
 # find
 brew install findutils
