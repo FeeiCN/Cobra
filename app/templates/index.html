@@ -272,9 +272,6 @@
             });
         });
         // Tab2
-        $("input[name=file]").on('change', function () {
-            $('.tab-content').plainOverlay('show');
-        });
         var process_bar = $('#progress .bar');
         $('#uploadFile').fileupload({
             url: '/api/upload',
@@ -297,6 +294,7 @@
                                     if (result.result['status'] == 'done') {
                                         $('.tab-content').plainOverlay('hide');
                                         window.open(result.result['report'], '_blank');
+                                        process_bar.css('width', '0%');
                                     } else {
                                         setTimeout(get_status, 3000);
                                     }
@@ -313,10 +311,11 @@
                 }
             },
             start: function (e) {
+                $('.tab-content').plainOverlay('show');
                 process_bar.css('width', '0%');
             },
             stop: function (e) {
-                process_bar.css('width', '0%');
+                process_bar.text('scanning...');
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -324,12 +323,7 @@
                         'width',
                         progress + '%'
                 );
-                if (process == 100) {
-                    process_bar.text('scanning...');
-                } else {
-                    process_bar.text(progress + '%');
-                }
-
+                process_bar.text('uploading(' + progress + '%)');
             }
         });
     });
