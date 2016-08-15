@@ -116,7 +116,7 @@ class Static:
             gfind = ''
             for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
                 for filename in file_names:
-                    if 'ggrep' == filename:
+                    if 'ggrep' == filename or 'grep' == filename:
                         ggrep = os.path.join(root, filename)
             for root, dir_names, file_names in os.walk('/usr/local/Cellar/findutils'):
                 for filename in file_names:
