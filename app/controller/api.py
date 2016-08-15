@@ -41,7 +41,7 @@ def add_task():
         }
     :return:
         The return value also in json format, usually is:
-        {"code": 1001, "msg": "error reason or success."}
+        {"code": 1001, "result": "error reason or success."}
         code: 1005: Unknown Protocol
         code: 1004: Unknown error, if you see this error code, most time is cobra's database error.
         code: 1003: You support the parameters is not json.
@@ -50,13 +50,13 @@ def add_task():
     """
     data = request.json
     if not data or data == "":
-        return jsonify(code=1003, msg=u'Only support json, please post json data.')
+        return jsonify(code=1003, result=u'Only support json, please post json data.')
 
     key = data.get('key')
 
     auth = CobraAuth.query.filter_by(key=key).first()
     if auth is None:
-        return jsonify(code=4002, msg=u'Key verify failed')
+        return jsonify(code=4002, result=u'Key verify failed')
     target = data.get('target')
     branch = data.get('branch')
     new_version = data.get('new_version')
@@ -64,11 +64,11 @@ def add_task():
 
     # verify key
     if not key or key == "":
-        return jsonify(code=1002, msg=u'key can not be empty.')
+        return jsonify(code=1002, result=u'key can not be empty.')
     if not target or target == "":
-        return jsonify(code=1002, msg=u'url can not be empty.')
+        return jsonify(code=1002, result=u'url can not be empty.')
     if not branch or branch == "":
-        return jsonify(code=1002, msg=u'branch can not be empty.')
+        return jsonify(code=1002, result=u'branch can not be empty.')
 
     code, result = scan.Scan(target).version(branch, new_version, old_version)
     return jsonify(code=code, result=result)
@@ -80,7 +80,7 @@ def status_task():
     key = request.json.get('key')
     auth = CobraAuth.query.filter_by(key=key).first()
     if auth is None:
-        return jsonify(code=4002, msg=u'Key verify failed')
+        return jsonify(code=4002, result=u'Key verify failed')
     c = CobraTaskInfo.query.filter_by(id=scan_id).first()
     if not c:
         return jsonify(status=4004)
