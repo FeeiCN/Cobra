@@ -95,6 +95,8 @@
                     <address>
                         <h4>项目信息:</h4>
                         <span class="content"><strong>项目名称: </strong>{{ data.project_name }}</span><br>
+                        <span class="content"><strong>项目域名: </strong>{{ data.project_url }}</span><br>
+                        <span class="content"><strong>项目框架: </strong>{{ data.project_framework }}</span><br>
                         <span class="content"><strong>项目仓库: </strong>{{ data.project_repository }}</span><br/>
                         <span class="content"><strong>项目备注: </strong>{{ data.project_description }}</span>
                     </address>
@@ -160,8 +162,14 @@
                                     <td>
                                         {% if each_vul.line == 0 %}
                                             <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}</span>
+                                            {% if each_vul.verify != '' %}
+                                                <a href="{{ each_vul.verify }}" class="btn_1 green" target="_blank">访问漏洞点</a>
+                                            {% endif %}
                                         {% else %}
                                             <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
+                                            {% if each_vul.verify != '' %}
+                                                <a href="{{ each_vul.verify }}" class="btn_1 green" target="_blank">访问漏洞点</a>
+                                            {% endif %}
                                             <pre><code class="language-php">{{ each_vul.code }}</code></pre>
                                         {% endif %}
                                     </td>

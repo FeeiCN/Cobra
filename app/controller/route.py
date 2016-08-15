@@ -15,7 +15,7 @@
 import time
 from utils import log, common, config
 from flask import jsonify, render_template
-
+from engine import detection
 from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
 
@@ -57,10 +57,14 @@ def report(task_id):
         project_name = repository
         author = 'Anonymous'
         project_description = 'Compress Project'
+        project_framework = ''
+        project_url = ''
     else:
         project_name = project.name
         author = project.author
         project_description = project.remark
+        project_framework = project.framework
+        project_url = project.url
 
     # Vulnerabilities Info
     results = CobraResults.query.filter_by(task_id=task_id).all()
@@ -111,6 +115,16 @@ def report(task_id):
         each_vul['code'] = result.code
         each_vul['repair'] = rules.repair
         each_vul['line'] = result.line
+
+        # verify
+        each_vul['verify'] = ''
+        if project_framework != '':
+            for rule in detection.Detection().rules:
+                if rule['name'] == project_framework:
+                    if result.file[:len(rule['public'])] == rule['public']:
+                        each_vul['verify'] = project_url + result.file.replace(rule['public'], '')
+
+        # level
         if rules.level == 3:
             high_amount += 1
             each_vul['level'] = u'高危'
@@ -137,6 +151,8 @@ def report(task_id):
         'project_name': project_name,
         'project_repository': repository,
         'project_description': project_description,
+        'project_url': project_url,
+        'project_framework': project_framework,
         'author': author,
         'task_created_at': task_created_at,
         'time_consume': common.convert_time(time_consume),

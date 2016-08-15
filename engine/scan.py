@@ -17,6 +17,7 @@ import subprocess
 from app import db, CobraProjects, CobraTaskInfo
 from utils import config, decompress
 from pickup import GitTools
+from engine import detection
 
 
 class Scan:
@@ -89,8 +90,10 @@ class Scan:
         p = CobraProjects.query.filter_by(repository=self.target).first()
         project = None
         if not p:
+            # detection framework for project
+            framework = detection.Detection(repo_directory).framework()
             # insert into project table.
-            project = CobraProjects(self.target, repo_name, repo_author, '', current_time)
+            project = CobraProjects(self.target, '', repo_name, repo_author, framework, '', '', current_time)
             project_id = project.id
         else:
             project_id = p.id
