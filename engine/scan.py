@@ -73,7 +73,7 @@ class Scan:
             # SVN
             repo_name = 'mogujie'
             repo_author = 'all'
-            repo_directory = os.path.join(config.Config('upload', 'directory').value, 'version/mogujie/')
+            repo_directory = os.path.join(config.Config('upload', 'directory').value, 'versions/mogujie/')
         else:
             return 1005, 'Repository must contained .git or svn'
 
