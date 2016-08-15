@@ -272,12 +272,15 @@
             });
         });
         // Tab2
+        $("input[name=file]").on('change', function () {
+            $('.tab-content').plainOverlay('show');
+        });
+        var process_bar = $('#progress .bar');
         $('#uploadFile').fileupload({
             url: '/api/upload',
             dataType: 'json',
             done: function (e, data) {
                 if (data.result.code == 1001) {
-                    $('.tab-content').plainOverlay('show');
                     var scan_id = data.result.result['scan_id'];
                     var data = {scan_id: scan_id, key: "{{ data.key }}"};
 
@@ -310,18 +313,23 @@
                 }
             },
             start: function (e) {
-                $('#progress .bar').css('width', '0%');
+                process_bar.css('width', '0%');
             },
             stop: function (e) {
-                $('#progress .bar').css('width', '0%');
+                process_bar.css('width', '0%');
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
-                $('#progress .bar').css(
+                process_bar.css(
                         'width',
                         progress + '%'
                 );
-                $('#progress .bar').text(progress + '%');
+                if (process == 100) {
+                    process_bar.text('scanning...');
+                } else {
+                    process_bar.text(progress + '%');
+                }
+
             }
         });
     });
