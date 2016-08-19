@@ -46,7 +46,8 @@ def del_task():
     if not ret:
         return jsonify(tag="danger", msg=msg)
 
-    task = CobraTaskInfo.query.filter_by(id=vc.vars.task_id).first()
+    #task = CobraTaskInfo.query.filter_by(id=vc.vars.task_id).first()
+    task = CobraTaskInfo.query.filter_by(id=vc.vars.id).first()
     try:
         db.session.delete(task)
         db.session.commit()

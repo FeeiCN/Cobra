@@ -74,7 +74,8 @@ class Scan:
             # SVN
             repo_name = 'mogujie'
             repo_author = 'all'
-            repo_directory = os.path.join(config.Config('upload', 'directory').value, 'versions/mogujie/')
+            #repo_directory = os.path.join(config.Config('upload', 'directory').value, 'versions/mogujie/')
+            repo_directory = os.path.join(config.Config('upload', 'directory').value, '') # remove fault path
         else:
             return 1005, 'Repository must contained .git or svn'
 

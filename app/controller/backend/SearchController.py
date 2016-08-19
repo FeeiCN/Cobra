@@ -41,7 +41,7 @@ def search_rules():
 
     if request.method == 'POST':
 
-        vc = ValidateClass(request, "language", "vul")
+        vc = ValidateClass(request, "search_language", "vul")
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)

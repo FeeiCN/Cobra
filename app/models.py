@@ -210,7 +210,7 @@ class CobraProjects(db.Model):
     Projects for all
     """
     __tablename__ = 'projects'
-    __table_args__ = ({"mysql_charset": "utf8mb4"})
+    __table_args__ = ({"mysql_charset": "latin1"})
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
     repository = db.Column(db.String(512), nullable=False, default=None, index=True)

@@ -214,7 +214,7 @@ class Static:
                                         log.warning("Exists Result")
                                     else:
                                         log.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
-                                        vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
+                                        vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content.encode('utf-8'))
                                         db.session.add(vul)
                                         log.info('Insert Results Success')
                     db.session.commit()
