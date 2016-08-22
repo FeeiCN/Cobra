@@ -16,8 +16,10 @@ import sys
 import re
 import time
 import subprocess
+import traceback
 from pickup import directory
 from utils import log
+from engine import parse
 from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
 
 
@@ -151,7 +153,7 @@ class Static:
                     white_list.append(w.path)
 
             try:
-                if rule.regex.strip() == "":
+                if rule.regex_location.strip() == "":
                     filters = []
                     for index, e in enumerate(extensions):
                         if index > 1:
@@ -173,7 +175,7 @@ class Static:
                     filters.append('--exclude-dir=.bzr')
                     filters.append('--exclude=*.svn-base')
                     # -n Show Line number / -r Recursive / -P Perl regular expression
-                    param = [grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory]
+                    param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
                 # log.info(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
@@ -186,7 +188,7 @@ class Static:
                         line = line.strip()
                         if line == '':
                             continue
-                        if rule.regex.strip() == '':
+                        if rule.regex_location.strip() == '':
                             # Find
                             file_path = line.strip().replace(self.directory, '')
                             log.debug('File: {0}'.format(file_path))
@@ -194,7 +196,7 @@ class Static:
                             db.session.add(vul)
                         else:
                             # Grep
-                            line_split = line.replace(self.directory, '').split(':', 1)
+                            line_split = line.split(':', 1)
                             file_path = line_split[0].strip()
                             code_content = line_split[1].split(':', 1)[1].strip()
                             line_number = line_split[1].split(':', 1)[0].strip()
@@ -202,26 +204,44 @@ class Static:
                             if file_path in white_list or ".min.js" in file_path:
                                 log.info("In white list or min.js")
                             else:
-                                # Annotation
+                                # annotation
                                 # # // /* *
                                 match_result = re.match("(#)?(//)?(\*)?(/\*)?", code_content)
                                 if match_result.group(0) is not None and match_result.group(0) is not "":
                                     log.info("In Annotation")
                                 else:
-                                    log.info('In Insert')
-                                    exist_result = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
-                                    if exist_result is not None:
-                                        log.warning("Exists Result")
+                                    # parse file function structure
+                                    found_vul = False
+                                    if file_path[-3:] == 'php' and rule.regex_repair != '':
+                                        parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
+                                        if parse_instance.is_controllable_param():
+                                            if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
+                                                found_vul = False
+                                            else:
+                                                found_vul = True
+                                        else:
+                                            return False
                                     else:
-                                        log.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
-                                        vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
-                                        db.session.add(vul)
-                                        log.info('Insert Results Success')
+                                        found_vul = True
+
+                                    file_path = file_path.replace(self.directory, '')
+
+                                    if found_vul:
+                                        log.info('In Insert')
+                                        exist_result = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
+                                        if exist_result is not None:
+                                            log.warning("Exists Result")
+                                        else:
+                                            log.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
+                                            vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
+                                            db.session.add(vul)
+                                            log.info('Insert Results Success')
                     db.session.commit()
                 else:
                     log.info('Not Found')
 
             except Exception as e:
+                print traceback.print_exc()
                 log.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task
