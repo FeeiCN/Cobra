@@ -21,6 +21,7 @@ class Detection:
         self.rules = [
             {
                 'name': 'Kohana',
+                'language': 'PHP',
                 'site': 'http://kohanaframework.org/',
                 'source': 'https://github.com/kohana/kohana',
                 'rules': {
@@ -31,6 +32,7 @@ class Detection:
             },
             {
                 'name': 'Laravel',
+                'language': 'PHP',
                 'site': 'http://laravel.com/',
                 'source': 'https://github.com/laravel/laravel',
                 'rules': {
@@ -39,6 +41,7 @@ class Detection:
             },
             {
                 'name': 'ThinkPHP',
+                'language': 'PHP',
                 'site': 'http://www.thinkphp.cn/',
                 'source': 'https://github.com/top-think/thinkphp',
                 'rules': {
@@ -47,10 +50,20 @@ class Detection:
             },
             {
                 'name': 'CodeIgniter',
+                'language': 'PHP',
                 'site': 'https://codeigniter.com/',
                 'source': 'https://github.com/bcit-ci/CodeIgniter',
                 'rules': {
                     'file': 'system/core/CodeIgniter.php'
+                }
+            },
+            {
+                'name': 'Tesla/MWP',
+                'language': 'Java',
+                'site': 'http://www.mogujie.com/',
+                'source': 'http://www.mogujie.com/',
+                'rules': {
+                    'file': 'pom.xml'
                 }
             }
         ]
@@ -58,7 +71,7 @@ class Detection:
     def framework(self):
         """
         Detection framework for project
-        :return:
+        :return: self.rules['name']
         """
         for rule in self.rules:
             log.info("Name: {0} Site: {1} Source: {2}".format(rule['name'], rule['site'], rule['source']))
@@ -79,7 +92,7 @@ class Detection:
             if rules_completed == rules_count:
                 log.info("Framework: {0}".format(rule['name']))
                 return rule['name']
-        return None
+        return ''
 
 
 if __name__ == '__main__':
