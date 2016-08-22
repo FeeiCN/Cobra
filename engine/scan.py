@@ -89,14 +89,21 @@ class Scan:
 
         p = CobraProjects.query.filter_by(repository=self.target).first()
         project = None
+
+        # detection framework for project
+        framework, language = detection.Detection(repo_directory).framework()
+        project_framework = '{0} ({1})'.format(framework, language)
         if not p:
-            # detection framework for project
-            framework = detection.Detection(repo_directory).framework()
             # insert into project table.
-            project = CobraProjects(self.target, '', repo_name, repo_author, framework, '', '', current_time)
+            project = CobraProjects(self.target, '', repo_name, repo_author, project_framework, '', '', current_time)
             project_id = project.id
         else:
             project_id = p.id
+            
+            # update project's framework
+            p.framework = project_framework
+            db.session.add(p)
+            db.session.commit()
         try:
             db.session.add(task)
             if not p:

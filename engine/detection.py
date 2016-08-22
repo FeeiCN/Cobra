@@ -71,6 +71,7 @@ class Detection:
     def framework(self):
         """
         Detection framework for project
+        :param: framework | language
         :return: self.rules['name']
         """
         for rule in self.rules:
@@ -91,7 +92,7 @@ class Detection:
                             rules_completed += 1
             if rules_completed == rules_count:
                 log.info("Framework: {0}".format(rule['name']))
-                return rule['name']
+                return rule['name'], rule['language']
         return ''
 
 

@@ -131,8 +131,9 @@ def report(task_id):
         if project_framework != '':
             for rule in detection.Detection().rules:
                 if rule['name'] == project_framework:
-                    if result.file[:len(rule['public'])] == rule['public']:
-                        each_vul['verify'] = project_url + result.file.replace(rule['public'], '')
+                    if 'public' in rule:
+                        if result.file[:len(rule['public'])] == rule['public']:
+                            each_vul['verify'] = project_url + result.file.replace(rule['public'], '')
 
         # level
         if rules.level == 3:

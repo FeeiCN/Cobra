@@ -119,20 +119,23 @@ class Git:
 
         # change work directory to the repo
         repo_dir = self.repo_directory
+        log.debug('cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
         cmd = 'git pull'
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
         log.info(pull_out)
+        log.info(pull_err)
 
         # change work directory back.
         os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-            log.info('Pull Done.')
+            log.info('Pull done.')
             return True
         else:
+            log.info('Pull failed')
             return False
 
     def clone(self):
@@ -140,12 +143,11 @@ class Git:
         :return: True - clone success, False - clone error.
         """
         log.info('Start Clone Repo...')
-        if os.path.isdir(self.repo_directory):
-            return self.pull()
-            # call(['rm', '-rf', self.repo_directory])
         if self.__check_exist():
             log.info('Repo Already Exist. Stop Clone.')
-            return True
+            log.debug('Directory exist, pull...')
+            return self.pull()
+            # call(['rm', '-rf', self.repo_directory])
 
         # if no username or password provide, it may be a public repo.
         if not self.repo_username or not self.repo_password:
@@ -163,6 +165,7 @@ class Git:
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
+        log.info(clone_out)
         log.info(clone_err)
 
         if 'not found' in clone_err or 'Not found' in clone_err:
