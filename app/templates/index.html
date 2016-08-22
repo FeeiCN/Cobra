@@ -105,7 +105,7 @@
             <div class="tab-pane active" id="config">
                 <h3>Github/Gitlab/Subversion Repository</h3>
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-8">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
                                 <label>GIT/SVN Repository</label>
@@ -132,6 +132,20 @@
                                 <input name="new_version" class="form-control" type="text">
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="col-md-12" style="padding-left:0;padding-right:0;">
+                            <div class="form-group">
+                                <label>Recently Scan SVN/GIT Project</label>
+                                <ul class="list_ok">
+                                    {% for task in data.recently_tasks %}
+                                        <li><a>{{ task.target }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div><!-- End row -->
                 <hr>

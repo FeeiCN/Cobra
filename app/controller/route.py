@@ -22,9 +22,19 @@ from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, Cob
 @web.route('/', methods=['GET'])
 @web.route('/index', methods=['GET'])
 def homepage():
+    tasks = CobraTaskInfo.query.order_by(CobraTaskInfo.id.desc()).limit(10).all()
+    recently_tasks = []
+    for task in tasks:
+        recently_tasks.append({
+            'id': task.id,
+            'target': task.target,
+            'branch': task.branch,
+            'scan_way': task.scan_way
+        })
     data = {
         'key': common.md5('CobraAuthKey'),
-        'extensions': config.Config('upload', 'extensions').value
+        'extensions': config.Config('upload', 'extensions').value,
+        'recently_tasks': recently_tasks
     }
     return render_template('index.html', data=data)
 
