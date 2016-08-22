@@ -15,7 +15,7 @@ import os
 import time
 import subprocess
 from app import db, CobraProjects, CobraTaskInfo
-from utils import config, decompress
+from utils import config, decompress, log
 from pickup import GitTools
 from engine import detection
 
@@ -35,7 +35,7 @@ class Scan:
             return 1002, result_d
         else:
             directory = result_d
-
+        log.info("Scan directory: {0}".format(directory))
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         task = CobraTaskInfo(self.target, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
         db.session.add(task)
@@ -99,7 +99,7 @@ class Scan:
             project_id = project.id
         else:
             project_id = p.id
-            
+
             # update project's framework
             p.framework = project_framework
             db.session.add(p)
