@@ -200,5 +200,4 @@ def ext_statistic(task_id):
 
 @web.errorhandler(404)
 def page_not_found(e):
-    log.debug(e)
     return render_template('404.html'), 404
