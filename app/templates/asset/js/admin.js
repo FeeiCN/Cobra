@@ -473,7 +473,7 @@ $("#show_all_rules").click(function () {
 
                 $("#add-new-rule-button").click(function () {
                     var vul_type = $("#vul_type").val();
-                    var lang = $("#language").val();
+                    var lang = $("#add-rule-language").val();
                     var regex_location = $("#regex-location").val();
                     var regex_repair = $("#regex-repair").val();
                     var repair_block = $("#repair-block:checked").val();

@@ -72,7 +72,7 @@ def add_new_rule():
 
     if request.method == 'POST':
         vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'regex_repair', 'repair_block',
-                           'regex_confirm', 'description', 'repair', 'level')
+                           'description', 'repair', 'level')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
@@ -83,9 +83,9 @@ def add_new_rule():
             language=vc.vars.language,
             regex_location=vc.vars.regex_location,
             regex_repair=vc.vars.regex_repair,
-            block_repair=vc.vars.block_repair,
+            block_repair=vc.vars.repair_block,
             description=vc.vars.description,
-            repair=vc.vars.reapir,
+            repair=vc.vars.repair,
             status=1,
             level=vc.vars.level,
             created_at=current_time,

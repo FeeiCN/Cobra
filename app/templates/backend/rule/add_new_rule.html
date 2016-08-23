@@ -11,8 +11,8 @@
         </select>
     </div>
     <div class="form-group col-md-3" style="padding-right: 0;">
-        <label for="language">Language</label>
-        <select id="language" class="form-control">
+        <label for="add-rule-language">Language</label>
+        <select id="add-rule-language" class="form-control">
             {% for lang in data.languages %}
                 <option value="{{ lang.id }}">
                     {{ lang.language }} ({{ lang.extensions }})
