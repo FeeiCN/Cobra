@@ -11,8 +11,10 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
+import sys
 import datetime
-from app import db, CobraAuth
+import hashlib
+from utils import config, log
 
 
 def convert_timestamp(stamp):
@@ -25,7 +27,53 @@ def convert_timestamp(stamp):
     return processed_date
 
 
-def verify_key(key):
-    """verify api key"""
-    auth = CobraAuth.query.filter_by(key=key).first()
-    return auth is not None
+def convert_time(seconds):
+    """
+    Seconds to minute/second
+    Ex: 61 -> 1'1''
+    :param seconds:
+    :return:
+    """
+    one_minute = 60
+    minute = seconds / one_minute
+    if minute == 0:
+        return str(seconds % one_minute) + "'"
+    else:
+        return str(minute) + "''" + str(seconds % one_minute) + "'"
+
+
+def convert_number(number):
+    """
+    Convert number to , split
+    Ex: 123456 -> 123,456
+    :param number:
+    :return:
+    """
+    if number is None or number == 0:
+        return 0
+    number = int(number)
+    return '{:20,}'.format(number)
+
+
+def md5(content):
+    """
+    MD5 Hash
+    :param content:
+    :return:
+    """
+    return hashlib.md5(content).hexdigest()
+
+
+def allowed_file(filename):
+    """
+    Allowd upload file
+    Config Path: ./config [upload]
+    :param filename:
+    :return:
+    """
+    config_extension = config.Config('upload', 'extensions').value
+    if config_extension == '':
+        log.critical('Please set config file upload->directory')
+        sys.exit(0)
+    allowed_extensions = config_extension.split('|')
+    return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions

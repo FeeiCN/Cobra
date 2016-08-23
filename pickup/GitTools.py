@@ -13,12 +13,10 @@
 #
 
 import os
-from subprocess import call
 import subprocess
-import ConfigParser
 from urllib import quote
 
-from utils import log
+from utils import log, config
 
 """
 usage and example.
@@ -90,9 +88,9 @@ class Git:
     def __init__(self, repo_address, branch='master', username=None, password=None):
 
         # get upload directory
-        config = ConfigParser.ConfigParser()
-        config.read('config')
-        self.upload_directory = config.get('cobra', 'upload_directory') + os.sep
+        self.upload_directory = os.path.join(config.Config('upload', 'directory').value, 'versions')
+        if os.path.isdir(self.upload_directory) is False:
+            os.makedirs(self.upload_directory)
 
         self.repo_address = repo_address
         self.repo_username = username
@@ -107,48 +105,49 @@ class Git:
         else:
             repo_name = repo_name.split('.')[0]
 
-        self.repo_directory = self.upload_directory + repo_user + os.sep + repo_name
+        self.repo_directory = os.path.join(os.path.join(self.upload_directory, repo_user), repo_name)
 
         log.info('Git class init.')
 
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-        log.info('Start Pull Repo')
+        log.info('Start Pull Repo...')
 
         if not self.__check_exist():
             log.info('No local repo exist. Please clone first.')
             return False
 
         # change work directory to the repo
-        current_dir = os.getcwd() + os.sep
-        repo_dir = current_dir + self.repo_directory
+        repo_dir = self.repo_directory
+        log.debug('cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
         cmd = 'git pull'
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
         log.info(pull_out)
+        log.info(pull_err)
 
         # change work directory back.
-        os.chdir(current_dir)
+        os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-            log.info('Pull Done.')
+            log.info('Pull done.')
             return True
         else:
+            log.info('Pull failed')
             return False
 
     def clone(self):
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-        log.info('Start Clone Repo')
-        if os.path.isdir(self.repo_directory):
-            return self.pull()
-            # call(['rm', '-rf', self.repo_directory])
+        log.info('Start Clone Repo...')
         if self.__check_exist():
             log.info('Repo Already Exist. Stop Clone.')
-            return False
+            log.debug('Directory exist, pull...')
+            return self.pull()
+            # call(['rm', '-rf', self.repo_directory])
 
         # if no username or password provide, it may be a public repo.
         if not self.repo_username or not self.repo_password:
@@ -166,6 +165,7 @@ class Git:
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
+        log.info(clone_out)
         log.info(clone_err)
 
         if 'not found' in clone_err or 'Not found' in clone_err:

@@ -16,15 +16,16 @@ import sys
 import re
 import time
 import subprocess
+import traceback
 from pickup import directory
 from utils import log
-from datetime import datetime
+from engine import parse
 from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
 
 
 class Static:
-    def __init__(self, directory=None, task_id=None, project_id=None):
-        self.directory = directory
+    def __init__(self, directory_path=None, task_id=None, project_id=None):
+        self.directory = directory_path
         self.task_id = task_id
         self.project_id = project_id
 
@@ -35,7 +36,7 @@ class Static:
         log.info('Start code static analyse...')
 
         d = directory.Directory(self.directory)
-        files = d.collect_files()
+        files = d.collect_files(self.task_id)
         log.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
 
         ext_language = {
@@ -108,25 +109,41 @@ class Static:
 
         rules = CobraRules.query.filter_by(status=1).all()
         extensions = None
+        # `grep` (`ggrep` on Mac)
+        grep = '/bin/grep'
+        # `find` (`gfind` on Mac)
+        find = '/bin/find'
+        if 'darwin' == sys.platform:
+            ggrep = ''
+            gfind = ''
+            for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
+                for filename in file_names:
+                    if 'ggrep' == filename or 'grep' == filename:
+                        ggrep = os.path.join(root, filename)
+            for root, dir_names, file_names in os.walk('/usr/local/Cellar/findutils'):
+                for filename in file_names:
+                    if 'gfind' == filename:
+                        gfind = os.path.join(root, filename)
+            if ggrep == '':
+                log.critical("brew install ggrep pleases!")
+                sys.exit(0)
+            else:
+                grep = ggrep
+            if gfind == '':
+                log.critical("brew install findutils pleases!")
+                sys.exit(0)
+            else:
+                find = gfind
+
         for rule in rules:
+            log.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
+            # Filters
             for language in languages:
                 if language.id == rule.language:
                     extensions = language.extensions.split('|')
-
             if extensions is None:
-                log.warning("Rule Language Error")
-            # grep name is ggrep on mac
-            grep = '/bin/grep'
-            if 'darwin' == sys.platform:
-                log.info('In Mac OS X System')
-                for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
-                    for filename in file_names:
-                        if 'ggrep' == filename:
-                            grep = os.path.join(root, filename)
-
-            filters = []
-            for e in extensions:
-                filters.append('--include=*' + e)
+                log.critical("Rule Language Error")
+                sys.exit(0)
 
             # White list
             white_list = []
@@ -136,70 +153,97 @@ class Static:
                     white_list.append(w.path)
 
             try:
-                log.info('Scan rule id: {0}'.format(rule.id))
-                # -n Show Line number / -r Recursive / -P Perl regular expression
-                p = subprocess.Popen([grep, "-n", "-r", "-P"] + filters + [rule.regex, self.directory],
-                                     stdout=subprocess.PIPE)
+                if rule.regex_location.strip() == "":
+                    filters = []
+                    for index, e in enumerate(extensions):
+                        if index > 1:
+                            filters.append('-o')
+                        filters.append('-name')
+                        filters.append('*' + e)
+                    # Find Special Ext Files
+                    param = [find, self.directory, "-type", "f"] + filters
+                else:
+                    filters = []
+                    for e in extensions:
+                        filters.append('--include=*' + e)
+
+                    # Explode SVN Dir
+                    filters.append('--exclude-dir=.svn')
+                    filters.append('--exclude-dir=.cvs')
+                    filters.append('--exclude-dir=.hg')
+                    filters.append('--exclude-dir=.git')
+                    filters.append('--exclude-dir=.bzr')
+                    filters.append('--exclude=*.svn-base')
+                    # -n Show Line number / -r Recursive / -P Perl regular expression
+                    param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
+
+                # log.info(' '.join(param))
+                p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
                 # Exists result
                 if len(result[0]):
-                    log.info('Found:')
-                    per_line = str(result[0]).split("\n")
-                    log.debug(per_line)
-                    for r in range(0, len(per_line) - 1):
-                        try:
-                            rr = str(per_line[r]).replace(self.directory, '').split(':', 1)
-                            code = str(rr[1]).split(':', 1)
-                            if self.task_id is None:
-                                self.task_id = 0
-                            rule_id = rule.id
-                            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                            m_file = rr[0].strip()
-                            m_line = code[0]
-                            m_code = str(code[1].strip())
-                            params = [self.task_id, rule_id, m_file, m_line, m_code, current_time,
-                                      current_time]
-                            try:
-                                if m_file in white_list or ".min.js" in m_file:
-                                    log.debug("In White list or min.js")
+                    lines = str(result[0]).strip().split("\n")
+                    for line in lines:
+                        line = line.strip()
+                        if line == '':
+                            continue
+                        if rule.regex_location.strip() == '':
+                            # Find
+                            file_path = line.strip().replace(self.directory, '')
+                            log.debug('File: {0}'.format(file_path))
+                            vul = CobraResults(self.task_id, rule.id, file_path, 0, '')
+                            db.session.add(vul)
+                        else:
+                            # Grep
+                            line_split = line.split(':', 1)
+                            file_path = line_split[0].strip()
+                            code_content = line_split[1].split(':', 1)[1].strip()
+                            line_number = line_split[1].split(':', 1)[0].strip()
+
+                            if file_path in white_list or ".min.js" in file_path:
+                                log.info("In white list or min.js")
+                            else:
+                                # annotation
+                                # # // /* *
+                                match_result = re.match("(#)?(//)?(\*)?(/\*)?", code_content)
+                                if match_result.group(0) is not None and match_result.group(0) is not "":
+                                    log.info("In Annotation")
                                 else:
-                                    # # // /* *
-                                    match_result = re.match("(#)?(//)?(\*)?(/\*)?", m_code)
-                                    if match_result.group(0) is not None and match_result.group(0) is not "":
-                                        log.debug("In Annotation")
-                                    else:
-                                        log.debug('In Insert')
-                                        if rule.regex == "":
-                                            # Didn't filter line when regex is empty
-                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
-                                                                                     rule_id=rule_id,
-                                                                                     file=m_file).first()
-                                            m_line = 0
+                                    # parse file function structure
+                                    found_vul = False
+                                    if file_path[-3:] == 'php' and rule.regex_repair != '':
+                                        parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
+                                        if parse_instance.is_controllable_param():
+                                            if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
+                                                log.info("Static: repaired")
+                                                continue
+                                            else:
+                                                found_vul = True
                                         else:
-                                            r_content = CobraResults.query.filter_by(task_id=self.task_id,
-                                                                                     rule_id=rule_id,
-                                                                                     file=m_file,
-                                                                                     line=m_line).first()
-                                        if r_content is not None:
+                                            log.info("Static: uncontrollable param")
+                                            continue
+                                    else:
+                                        found_vul = True
+
+                                    file_path = file_path.replace(self.directory, '')
+
+                                    if found_vul:
+                                        log.info('In Insert')
+                                        exist_result = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
+                                        if exist_result is not None:
                                             log.warning("Exists Result")
                                         else:
-                                            results = CobraResults(self.task_id, rule_id, m_file, m_line, m_code,
-                                                                   current_time,
-                                                                   current_time)
-                                            db.session.add(results)
-                                            db.session.commit()
+                                            log.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
+                                            vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
+                                            db.session.add(vul)
                                             log.info('Insert Results Success')
-                            except Exception as e:
-                                log.error('Insert Results Failed' + str(e.message))
-                            log.debug(params)
-                        except Exception as e:
-                            log.critical('Error parsing result: ' + str(e.message))
-
+                    db.session.commit()
                 else:
                     log.info('Not Found')
 
             except Exception as e:
+                print traceback.print_exc()
                 log.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task

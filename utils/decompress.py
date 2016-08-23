@@ -15,11 +15,8 @@ import os
 import shutil
 import zipfile
 import tarfile
-import ConfigParser
-
 import rarfile
-import magic
-
+from utils import config, log
 
 """example
 
@@ -55,12 +52,9 @@ class Decompress:
         """
         :param filename: a file name without path.
         """
-        config = ConfigParser.ConfigParser()
-        config.read('config')
-        self.upload_directory = config.get('cobra', 'upload_directory') + os.sep
+        self.upload_directory = os.path.join(config.Config('upload', 'directory').value, 'uploads')
         self.filename = filename
-        self.filepath = self.upload_directory + filename
-        self.filetype = magic.from_file(self.filepath, mime=True)
+        self.filepath = os.path.join(self.upload_directory, filename)
         self.dir_name = os.path.splitext(self.filename)[0]
 
     def decompress(self):
@@ -71,17 +65,40 @@ class Decompress:
             msg: None or error message
             dir_name: decompressed directory name. Usually, the directory name is the filename without file extension.
         """
-        if self.filetype == 'application/zip':
-            return self.__decompress_zip()
-        elif self.filetype == 'application/x-rar':
-            return self.__decompress_rar()
-        elif self.filetype == 'application/x-gzip':
-            return self.__decompress_tar_gz()
-        else:
-            return {'code': -1, 'msg': u'File type error, only zip, rar, tar.gz accepted.'}
 
-    def get_file_type(self):
-        return self.filetype
+        if '.zip' in self.filename:
+            return self.__decompress_zip(), self.get_real_directory()
+        elif '.rar' in self.filename:
+            return self.__decompress_rar(), self.get_real_directory()
+        elif '.tgz' in self.filename or '.tar' in self.filename or '.gz' in self.filename:
+            """
+            Support Tar Extension
+            .tar: .tar | .tar.gz | .tar.bz2
+            .gz
+            .tgz
+            """
+            return self.__decompress_tar_gz(), self.get_real_directory()
+        else:
+            return False, 'File type error, only zip, rar, tar.gz accepted.'
+
+    def get_real_directory(self):
+        """
+        get real directory
+        /path/project-v1.2/project-v1.2 -> /path/project-v1.2/
+        :param directory:
+        :return:
+        """
+        directory = os.path.join(self.upload_directory, self.dir_name)
+        file_count = 0
+        directory_path = None
+        for filename in os.listdir(directory):
+            directory_path = os.path.join(directory, filename)
+            file_count += 1
+        log.info("Decompress path count: {0}, directory path: {1}".format(file_count, directory_path))
+        if file_count == 1 and os.path.isdir(directory_path):
+            return directory_path
+        else:
+            return directory
 
     def __decompress_zip(self):
         """unzip a file."""
@@ -90,12 +107,12 @@ class Decompress:
         self.__check_filename_dir()
 
         # create the file directory to store the extract file.
-        os.mkdir(self.upload_directory + self.dir_name)
+        os.mkdir(os.path.join(self.upload_directory, self.dir_name))
 
-        zip_file.extractall(self.upload_directory + self.dir_name)
+        zip_file.extractall(os.path.join(self.upload_directory, self.dir_name))
         zip_file.close()
 
-        return {'code': 1, 'msg': u'Success', 'dir_name': self.dir_name}
+        return True
 
     def __decompress_rar(self):
         """extract a rar file."""
@@ -103,12 +120,11 @@ class Decompress:
         # check if there is a filename directory
         self.__check_filename_dir()
 
-        os.mkdir(self.upload_directory + self.dir_name)
+        os.mkdir(os.path.join(self.upload_directory, self.dir_name))
 
-        rar_file.extractall(self.upload_directory + self.dir_name)
+        rar_file.extractall(os.path.join(self.upload_directory, self.dir_name))
         rar_file.close()
-
-        return {'code': 1, 'msg': u'Success', 'dir_name': self.dir_name}
+        return True
 
     def __decompress_tar_gz(self):
         """extract a tar.gz file"""
@@ -116,18 +132,15 @@ class Decompress:
         # check if there is a filename directory
         self.__check_filename_dir()
 
-        os.mkdir(self.upload_directory + self.dir_name)
+        os.mkdir(os.path.join(self.upload_directory, self.dir_name))
 
-        tar_file.extractall(self.upload_directory + self.dir_name)
+        tar_file.extractall(os.path.join(self.upload_directory, self.dir_name))
         tar_file.close()
-
-        return {'code': 1, 'msg': u'Success', 'dir_name': self.dir_name}
+        return True
 
     def __check_filename_dir(self):
-        if os.path.isdir(self.upload_directory + self.dir_name):
-            shutil.rmtree(self.upload_directory + self.dir_name)
+        if os.path.isdir(os.path.join(self.upload_directory, self.dir_name)):
+            shutil.rmtree(os.path.join(self.upload_directory, self.dir_name))
 
     def __repr__(self):
         return "<decompress - %r>" % self.filename
-
-

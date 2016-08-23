@@ -1,15 +1,32 @@
 [cobra]
+#
+# Domain
+#
 domain: cobra.wufeifei.com
+
+#
+# 0.0.0.0   can bind any domain
+# 127.0.0.1 request localhost
+#
 host: 127.0.0.1
+
+#
+# default:80
+#
 port: 5000
 debug: 0
-logs_directory: logs
-# NOTE: change it to a random string.
-secret_key: averylongstringwhichishardtoguess
 
+logs_directory: logs
+
+# NOTE: change it to a random string.(32\w)
+secret_key: your_secret_key
+
+[upload]
 # upload src store path, default: uploads
 # NOTE: no '/' or '\' at the end of the directory name.
-upload_directory: uploads
+directory: /tmp/cobra
+extensions: tar.bz2|tar|gz|tgz|tar.gz|rar|zip
+max_size: 200
 
 #
 # Database

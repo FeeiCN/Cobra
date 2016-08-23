@@ -2,11 +2,11 @@
 # coding: utf-8
 # file: LanguagesController.py
 
-from flask import request, jsonify, render_template
+from flask import request, jsonify, render_template, redirect
 
 from .import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass, login_required
+from app.CommonClass.ValidateClass import ValidateClass
 from app.models import CobraLanguages
 
 
@@ -15,8 +15,10 @@ __email__ = "root@lightless.me"
 
 
 @web.route(ADMIN_URL + "/add_new_language", methods=['GET', 'POST'])
-@login_required
 def add_new_language():
+
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + '/index')
 
     if request.method == "POST":
 
@@ -37,10 +39,12 @@ def add_new_language():
 
 
 @web.route(ADMIN_URL + "/languages", methods=['GET'])
-@login_required
 def languages():
 
-    languages = CobraLanguages.query.all()
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + "/index")
+
+    languages = CobraLanguages.query.order_by('id desc').all()
     data = {
         'languages': languages,
     }
@@ -48,8 +52,10 @@ def languages():
 
 
 @web.route(ADMIN_URL + "/del_language", methods=['POST'])
-@login_required
 def del_language():
+
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + "/index")
 
     vc = ValidateClass(request, "id")
     ret, msg = vc.check_args()
@@ -66,8 +72,10 @@ def del_language():
 
 
 @web.route(ADMIN_URL + "/edit_language/<int:language_id>", methods=['POST', 'GET'])
-@login_required
 def edit_language(language_id):
+
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + "/index")
 
     if request.method == "POST":
 

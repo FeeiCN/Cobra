@@ -1,6 +1,6 @@
 <form class="form-inline">
 
-    <div class="form-group col-md-5">
+    <div class="form-group col-md-4">
         <label for="language">Language</label>
         <select id="language" class="form-control" style="width: 60%">
             <option value="all" selected>
@@ -13,7 +13,7 @@
             {% endfor %}
         </select>
     </div>
-    <div class="form-group col-md-5">
+    <div class="form-group col-md-4">
         <label for="vul">Vuls</label>
         <select id="vul" class="form-control" style="width: 80%;">
             <option value="all" selected>
@@ -26,8 +26,9 @@
             {% endfor %}
         </select>
     </div>
-    <div class="form-group col-md-2">
+    <div class="form-group col-md-4">
         <button class="btn btn-primary" id="search_rules_button">Search</button>
+        <button type="button" class="btn btn-primary" id="add_new_rules">Add Rule</button>
     </div>
 </form>
 <br />

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -- coding:utf-8 --
 #
 # Copyright 2016 Feei. All Rights Reserved
 #
@@ -11,155 +12,105 @@
 #
 # See the file 'doc/COPYING' for copying permission
 #
-import os
 import time
-from datetime import datetime
-import argparse
-import ConfigParser
-import magic
-from utils import log
-from flask import request, jsonify, render_template
-from werkzeug import secure_filename
-
-from app import web, CobraTaskInfo, db, CobraProjects, CobraResults, CobraRules, CobraVuls
+from utils import log, common, config
+from flask import jsonify, render_template
+from engine import detection
+from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
 
 @web.route('/', methods=['GET'])
 @web.route('/index', methods=['GET'])
 def homepage():
-    log.debug('In homepage Route')
-    return render_template('index.html')
+    tasks = CobraTaskInfo.query.order_by(CobraTaskInfo.id.desc()).limit(10).all()
+    recently_tasks = []
+    for task in tasks:
+        recently_tasks.append({
+            'id': task.id,
+            'target': task.target,
+            'branch': task.branch,
+            'scan_way': task.scan_way
+        })
+    data = {
+        'key': common.md5('CobraAuthKey'),
+        'extensions': config.Config('upload', 'extensions').value,
+        'recently_tasks': recently_tasks
+    }
+    return render_template('index.html', data=data)
 
 
-@web.route('/blank')
-def blank():
-    log.debug('In blank Route')
-    return render_template('blank.html')
-
-
-# @web.route('/api/add', methods=['POST'])
-# def add():
-#     log.debug('In api/add Route')
-#     key = request.form['key']
-#     name = request.form['name']
-#     type = request.form['type']
-#     repository = request.form['repository']
-#     branch = request.form['branch']
-#     version = request.form['version']
-#     old_version = request.form['old_version']
-#     files = request.form['files']
-#     author = request.form['author']
-#
-#     repo_type = 1
-#     CobraProjects(name, repo_type, repository, branch)
-
-
-@web.route('/add', methods=['POST'])
-def add():
-    log.debug('In add Route')
-    # url, username, password, scan_way, old_version, new_version
-    # if user upload a file, so we set the scan type to file scan
-    # if there is no upload file, we set the scan type to gitlab scan
-
-    # check scan way and version
-    scan_way = request.form['scan_way']
-    old_version = request.form['old_version']
-    new_version = request.form['new_version']
-    if not scan_way or not scan_way.isdigit():
-        return jsonify(code=1002, msg=u'please select scan method.')
-
-    if scan_way == '2':
-        if not old_version or not new_version:
-            return jsonify(code=1002, msg=u'in diff mode, please provide new version and old version.')
-    elif scan_way == '1':
-        old_version = None
-        new_version = None
-    else:
-        return jsonify(code=1002, msg=u'scan method error.')
-
-    task_type = 1
-    # check if there is a file or gitlab url
-    if len(request.files) == 0:
-        # no files, should check username and password
-        task_type = 1
-        url = request.form['repository']
-        branch = request.form['branch'] if request.form['branch'] != '' else 'master'
-
-        if not url:
-            return jsonify(code=1002, msg=u'please support gitlab url. '
-                                          u'If this is a public repo, just leave username and password blank')
-
-        # insert into db
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        new_task = CobraTaskInfo(task_type, None, url, branch, scan_way, old_version, new_version, current_time,
-                                 current_time)
-        db.session.add(new_task)
-        db.session.commit()
-    else:
-        # there is a file, check file format and uncompress it.
-        # get uploads directory
-        config = ConfigParser.ConfigParser()
-        config.read('config')
-        upload_directory = config.get('cobra', 'upload_directory') + os.sep
-        if os.path.isdir(upload_directory) is not True:
-            os.mkdir(upload_directory)
-        task_type = 2
-        upload_src = request.files['file']
-        filename = str(int(time.time())) + '_' + secure_filename(upload_src.filename)
-        filepath = upload_directory + filename
-        upload_src.save(filepath)
-
-        # if you upload a rar file, upload_src.mimetype will returns "application/octet-stream"
-        # rather than "application/x-rar"
-        # check file type via mime type
-        file_type = magic.from_file(filepath, mime=True)
-        if file_type != 'application/x-rar' and file_type != 'application/x-gzip' and file_type != 'application/zip':
-            os.remove(filepath)
-            return jsonify(code=1002, msg=u'only rar, zip and tar.gz supported.')
-
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        new_task = CobraTaskInfo(task_type, filename, None, None, scan_way, old_version, new_version, current_time,
-                                 current_time)
-        db.session.add(new_task)
-        db.session.commit()
-    return jsonify(code=1001, msg=u'success', id=123)
-
-
-@web.route('/status/<int:id>', methods=['GET'])
-def status(id):
-    log.debug('In status Route')
-    return jsonify(code=1001, msg='success', status='running')
-
-
-@web.route('/report/<int:id>', methods=['GET'])
-def report(id):
-    task_info = CobraTaskInfo.query.filter_by(id=id).first()
+@web.route('/report/<int:task_id>', methods=['GET'])
+def report(task_id):
+    task_info = CobraTaskInfo.query.filter_by(id=task_id).first()
     if not task_info:
         return jsonify(status='4004', msg='report id not found')
 
+    # Task Info
     repository = task_info.target
     task_created_at = task_info.created_at
-    project = CobraProjects.query.filter_by(repository=repository).first()
-    project_name = project.name
-    author = project.author
-    project_description = project.remark
     time_consume = task_info.time_consume
     time_start = task_info.time_start
     time_end = task_info.time_end
     files = task_info.file_count
     code_number = task_info.code_number
-    vulnerabilities_count = CobraResults.query.filter_by(task_id=id).count()
-    results = CobraResults.query.filter_by(task_id=id).all()
-
+    if code_number is None or code_number == 0:
+        code_number = '统计中...'
+    else:
+        code_number = common.convert_number(code_number)
     # convert timestamp to datetime
     time_start = time.strftime("%H:%M:%S", time.localtime(time_start))
     time_end = time.strftime("%H:%M:%S", time.localtime(time_end))
 
+    # Project Info
+    project = CobraProjects.query.filter_by(repository=repository).first()
+    if project is None:
+        project_name = repository
+        author = 'Anonymous'
+        project_description = 'Compress Project'
+        project_framework = ''
+        project_url = ''
+    else:
+        project_name = project.name
+        author = project.author
+        project_description = project.remark
+        project_framework = project.framework
+        project_url = project.url
+
+    # Vulnerabilities Info
+    results = CobraResults.query.filter_by(task_id=task_id).all()
+    vul_count = len(results)
+
+    # Every Level Amount
+    high_amount = 0
+    medium_amount = 0
+    low_amount = 0
+    unknown_amount = 0
+
+    # Cache Rules
+    cache_rules = {}
+    cache_vul_types = {}
+
+    # Vul Types
+    vul_types = []
+
     # find rules -> vuls
     vulnerabilities = []
     for result in results:
-        rules = CobraRules.query.filter_by(id=result.rule_id).first()
-        vul_type = CobraVuls.query.filter_by(id=rules.vul_id).first().name
+        # Cache For Rules
+        if result.rule_id in cache_rules:
+            rules = cache_rules[result.rule_id]
+        else:
+            rules = CobraRules.query.filter_by(id=result.rule_id).first()
+            cache_rules[result.rule_id] = rules
+        # Cache For Vul Type
+        if rules.vul_id in cache_vul_types:
+            vul_type = cache_vul_types[rules.vul_id]
+        else:
+            vul_type = CobraVuls.query.filter_by(id=rules.vul_id).first().name
+            cache_vul_types[rules.vul_id] = vul_type
+
+        if vul_type not in vul_types:
+            vul_types.append(vul_type)
 
         find = False
         for each_vul in vulnerabilities:
@@ -174,17 +125,32 @@ def report(id):
         each_vul['code'] = result.code
         each_vul['repair'] = rules.repair
         each_vul['line'] = result.line
+
+        # verify
+        each_vul['verify'] = ''
+        if project_framework != '':
+            for rule in detection.Detection().rules:
+                if rule['name'] == project_framework:
+                    if 'public' in rule:
+                        if result.file[:len(rule['public'])] == rule['public']:
+                            each_vul['verify'] = project_url + result.file.replace(rule['public'], '')
+
+        # level
         if rules.level == 3:
-            each_vul['level'] = 'H'
+            high_amount += 1
+            each_vul['level'] = u'高危'
             each_vul['color'] = 'red'
         elif rules.level == 2:
-            each_vul['level'] = 'M'
+            medium_amount += 1
+            each_vul['level'] = u'中危'
             each_vul['color'] = 'orange'
         elif rules.level == 1:
-            each_vul['level'] = 'L'
+            low_amount += 1
+            each_vul['level'] = u'低危'
             each_vul['color'] = 'black'
         else:
-            each_vul['level'] = 'Undefined'
+            unknown_amount += 1
+            each_vul['level'] = u'未定义'
             each_vul['color'] = '#555'
 
         for ev in vulnerabilities:
@@ -192,32 +158,46 @@ def report(id):
                 ev['data'].append(each_vul)
 
     data = {
-        'id': int(id),
+        'id': int(task_id),
         'project_name': project_name,
         'project_repository': repository,
         'project_description': project_description,
+        'project_url': project_url,
+        'project_framework': project_framework,
         'author': author,
         'task_created_at': task_created_at,
-        'time_consume': str(time_consume) + 's',
+        'time_consume': common.convert_time(time_consume),
         'time_start': time_start,
         'time_end': time_end,
-        'files': files,
+        'files': common.convert_number(files),
         'code_number': code_number,
-        'vulnerabilities_count': vulnerabilities_count,
+        'vul_count': common.convert_number(vul_count),
         'vulnerabilities': vulnerabilities,
+        'amount': {
+            'h': high_amount,
+            'm': medium_amount,
+            'l': low_amount,
+            'u': unknown_amount
+        },
+        'vul_types': vul_types
     }
     return render_template('report.html', data=data)
 
 
+@web.route('/ext/<int:task_id>', methods=['GET'])
+def ext_statistic(task_id):
+    # Ext Amount Statistic
+    exts = CobraExt.query.filter_by(task_id=task_id).all()
+    exts_result = []
+    for ext in exts:
+        exts_result.append({
+            'value': ext.amount,
+            'name': ext.ext,
+            'path': ext.ext
+        })
+    return jsonify(code=1001, result=exts_result)
+
+
 @web.errorhandler(404)
 def page_not_found(e):
-    log.debug('In 404 Route')
     return render_template('404.html'), 404
-
-
-def parse_option(self):
-    parser = argparse.ArgumentParser(description='Cobra is a open source Code Security Scan System')
-    parser.add_argument('string', metavar='project/path', type=str, nargs='+', help='Project Path')
-    parser.add_argument('--version', help='Cobra Version')
-    args = parser.parse_args()
-    print args.string[0]

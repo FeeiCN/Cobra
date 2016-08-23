@@ -21,7 +21,7 @@ __email__ = "root@lightless.me"
 def whitelists(page):
 
     per_page = 10
-    whitelists = CobraWhiteList.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
+    whitelists = CobraWhiteList.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
     data = {
         'whitelists': whitelists,
     }

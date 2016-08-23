@@ -22,7 +22,7 @@ __email__ = "root@lightless.me"
 def projects(page):
 
     per_page = 10
-    project = CobraProjects.query.order_by('id').limit(per_page).offset((page - 1) * per_page).all()
+    project = CobraProjects.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
     data = {
         'projects': project,
     }

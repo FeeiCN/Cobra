@@ -4,6 +4,42 @@
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">
+                    Cobra Statistic
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <div class="form-inline">
+                            <label for="g-start-time">Start Time: </label>
+                            <input type="text" class="form-control" id="g-start-time">&nbsp;&nbsp;&nbsp;
+                            <label for="g-end-time">End Time: </label>
+                            <input type="text" class="form-control" id="g-end-time">&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-data">Show Data</button>
+                            &nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-all-data">Show All Data</button>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 column">
+                        <h4>0x01 Cobra扫描漏洞结果</h4>
+                        <div id="vul_distributing" style="height:400px;">
+
+                        </div>
+                    </div>
+                    <div class="col-md-12 column">
+                        <h4>0x02 Cobra扫描数据统计</h4>
+                        <div id="vul_statistic" style="height:400px;">
+
+                        </div>
+                    </div>
+                </div> <!-- .row clearfix -->
+            </div> <!-- .panel-body -->
+        </div>
+
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">
                     Graph
                 </h3>
             </div>
@@ -15,16 +51,17 @@
                             <input type="text" class="form-control" id="g-start-time">&nbsp;&nbsp;&nbsp;
                             <label for="g-end-time">End Time: </label>
                             <input type="text" class="form-control" id="g-end-time">&nbsp;&nbsp;&nbsp;
-                            <button type="button" class="btn btn-success" id="show-data">Show Data</button>&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-data">Show Data</button>
+                            &nbsp;&nbsp;&nbsp;
                             <button type="button" class="btn btn-success" id="show-all-data">Show All Data</button>
                         </div>
 
                     </div>
-                    <div class="col-md-6 column"><br />
+                    <div class="col-md-6 column"><br/>
                         <label for="g-vulns">Each vulns count: </label>
                         <canvas id="g-vulns" width="10" height="10"></canvas>
                     </div>
-                    <div class="col-md-6 column"><br />
+                    <div class="col-md-6 column"><br/>
                         <label for="g-languages">Each Languages vulns count: </label>
                         <canvas id="g-languages" width="10" height="10"></canvas>
                     </div>
@@ -45,63 +82,63 @@
             <!-- Overview -->
             <div class="panel-body">
                 <div class="row clearfix">
-                    <div class="col-md-6 column"><br />
+                    <div class="col-md-6 column"><br/>
                         <table class="table">
                             <tbody>
-                                <tr>
-                                    <td><b>Today Overview</b></td>
-                                    <td><b>Count</b></td>
-                                </tr>
-                                <tr>
-                                    <td>Today Scan times: </td>
-                                    <td>{{ data.today_task_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Today Vulnerabilities: </td>
-                                    <td>{{ data.today_vulns_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Today Scanned Projects Count: </td>
-                                    <td>{{ data.today_projects_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Today Files Count: </td>
-                                    <td>{{ data.today_files_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Today Code Number: </td>
-                                    <td>{{ data.today_code_number }}</td>
-                                </tr>
+                            <tr>
+                                <td><b>Today Overview</b></td>
+                                <td><b>Count</b></td>
+                            </tr>
+                            <tr>
+                                <td>Today Scan times:</td>
+                                <td>{{ data.today_task_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Today Vulnerabilities:</td>
+                                <td>{{ data.today_vulns_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Today Scanned Projects Count:</td>
+                                <td>{{ data.today_projects_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Today Files Count:</td>
+                                <td>{{ data.today_files_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Today Code Number:</td>
+                                <td>{{ data.today_code_number }}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-md-6 column"><br />
+                    <div class="col-md-6 column"><br/>
                         <table class="table">
                             <tbody>
-                                <tr>
-                                    <td><b>Total Overview</b></td>
-                                    <td><b>Count</b></td>
-                                </tr>
-                                <tr>
-                                    <td>Total Scan times: </td>
-                                    <td>{{ data.total_task_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total Vulnerabilities: </td>
-                                    <td>{{ data.total_vulns_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total Scanned Projects count: </td>
-                                    <td>{{ data.total_projects_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total Files Count: </td>
-                                    <td>{{ data.total_files_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total Code Number: </td>
-                                    <td>{{ data.total_code_number }}</td>
-                                </tr>
+                            <tr>
+                                <td><b>Total Overview</b></td>
+                                <td><b>Count</b></td>
+                            </tr>
+                            <tr>
+                                <td>Total Scan times:</td>
+                                <td>{{ data.total_task_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Total Vulnerabilities:</td>
+                                <td>{{ data.total_vulns_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Total Scanned Projects count:</td>
+                                <td>{{ data.total_projects_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Total Files Count:</td>
+                                <td>{{ data.total_files_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Total Code Number:</td>
+                                <td>{{ data.total_code_number }}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -130,21 +167,21 @@
                 </h3>
             </div>
             <!-- scan times -->
-            <div class="panel-body"><br />
+            <div class="panel-body"><br/>
                 <table class="table">
                     <tbody>
-                        <tr>
-                            <td>Average Scanning Time: </td>
-                            <td>{{ data.avg_scan_time }} s</td>
-                        </tr>
-                        <tr>
-                            <td>Longest Scanning Time: </td>
-                            <td>{{ data.max_scan_time }} s</td>
-                        </tr>
-                        <tr>
-                            <td>Shortest Scanning Time: </td>
-                            <td>{{ data.min_scan_time }} s</td>
-                        </tr>
+                    <tr>
+                        <td>Average Scanning Time:</td>
+                        <td>{{ data.avg_scan_time }} s</td>
+                    </tr>
+                    <tr>
+                        <td>Longest Scanning Time:</td>
+                        <td>{{ data.max_scan_time }} s</td>
+                    </tr>
+                    <tr>
+                        <td>Shortest Scanning Time:</td>
+                        <td>{{ data.min_scan_time }} s</td>
+                    </tr>
                     </tbody>
                 </table>
             </div><!-- .panel body -->
@@ -157,8 +194,8 @@
                 </h3>
             </div>
             <!-- Vulnerabilities -->
-            <div class="panel-body"><br />
-                <div class="col-md-6 column"><br />
+            <div class="panel-body"><br/>
+                <div class="col-md-6 column"><br/>
                     <table class="table">
                         <tbody>
                         <tr>
@@ -166,15 +203,15 @@
                             <td><b>Count</b></td>
                         </tr>
                         {% for ev in data.today_vuls %}
-                        <tr>
-                        <td>{{ ev.vuls }}</td>
-                        <td>{{ ev.counts }}</td>
-                        </tr>
+                            <tr>
+                                <td>{{ ev.vuls }}</td>
+                                <td>{{ ev.counts }}</td>
+                            </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <div class="col-md-6 column"><br />
+                <div class="col-md-6 column"><br/>
                     <table class="table">
                         <tbody>
                         <tr>
@@ -183,8 +220,8 @@
                         </tr>
                         {% for ev in data.total_vuls %}
                             <tr>
-                            <td>{{ ev.vuls }}</td>
-                            <td>{{ ev.counts }}</td>
+                                <td>{{ ev.vuls }}</td>
+                                <td>{{ ev.counts }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -194,3 +231,139 @@
         </div><!-- .panel -->
     </div>
 </div>
+<script src="/asset/js/echarts.min.js" charset="utf-8"></script>
+<script>
+    option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            x: 'left',
+            data: ['XSS', 'LFI', 'SSRF', 'XXE', 'CSRF', 'RFI', 'TEST', 'TEST2', 'TEST3', 'TEST4']
+        },
+        series: [
+            {
+                name: '漏洞危害等级占比',
+                type: 'pie',
+                selectedMode: 'single',
+                radius: [0, '30%'],
+
+                label: {
+                    normal: {
+                        position: 'inner'
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        show: false
+                    }
+                },
+                data: [
+                    {value: 335, name: '高危', selected: true},
+                    {value: 679, name: '中危'},
+                    {value: 1548, name: '低危'}
+                ]
+            },
+            {
+                name: '各类漏洞占比',
+                type: 'pie',
+                radius: ['40%', '55%'],
+
+                data: [
+                    {value: 335, name: 'XSS'},
+                    {value: 310, name: 'LFI'},
+                    {value: 234, name: 'SSRF'},
+                    {value: 135, name: 'RFI'},
+                    {value: 1048, name: 'TEST'},
+                    {value: 251, name: 'TEST2'},
+                    {value: 147, name: 'TEST4'},
+                    {value: 102, name: 'TEST3'}
+                ]
+            }
+        ]
+    };
+    var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+    vul_distributing.setOption(option);
+
+    option_statistic = {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['Projects', 'Files', 'CodeNumber', 'Vuls', 'Scans']
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                data: ['周六', '周日', '周一', '周二', '周三', '周四', '周五']
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                name: 'Projects',
+                type: 'line',
+                stack: '总量',
+                areaStyle: {normal: {}},
+                data: [120, 132, 101, 134, 90, 230, 210]
+            },
+            {
+                name: 'Files',
+                type: 'line',
+                stack: '总量',
+                areaStyle: {normal: {}},
+                data: [220, 182, 191, 234, 290, 330, 310]
+            },
+            {
+                name: 'CodeNumber',
+                type: 'line',
+                stack: '总量',
+                areaStyle: {normal: {}},
+                data: [150, 232, 201, 154, 190, 330, 410]
+            },
+            {
+                name: 'Vuls',
+                type: 'line',
+                stack: '总量',
+                areaStyle: {normal: {}},
+                data: [320, 332, 301, 334, 390, 330, 320]
+            },
+            {
+                name: 'Intercept',
+                type: 'line',
+                stack: '总量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                areaStyle: {normal: {}},
+                data: [820, 932, 901, 934, 1290, 1330, 1320]
+            }
+        ]
+    };
+
+    var vul_statistic = echarts.init(document.getElementById('vul_statistic'));
+    vul_statistic.setOption(option_statistic);
+
+
+</script>

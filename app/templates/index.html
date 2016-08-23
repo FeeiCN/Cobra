@@ -10,18 +10,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="keywords" content="static code scan">
-    <meta name="description" content="Cobra is a code static scan system">
+    <meta name="description" content="Cobra is a code static security scan system">
     <meta name="author" content="Feei <wufeifei@wufeifei.com>">
     <title>Cobra - Static Code security scan & analyse</title>
 
-    <!-- Favicons-->
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="img/apple-touch-icon-72x72-precomposed.png">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114"
-          href="img/apple-touch-icon-114x114-precomposed.png">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144"
-          href="img/apple-touch-icon-144x144-precomposed.png">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
 
     <!-- CSS -->
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
@@ -30,10 +24,16 @@
     <link href="asset/css/skins/square/grey.css" rel="stylesheet">
     <link href="asset/css/date_time_picker.css" rel="stylesheet">
 
-    <!-- Google web fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+    <style>
+        .bar {
+            width: 0%;
+            height: 30px;
+            background: #18cc18;
+            line-height: 30px;
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
 
     <!--[if lt IE 9]>
     <script src="asset/js/html5shiv.min.js"></script>
@@ -96,16 +96,16 @@
 <section id="search_container">
     <div id="search">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#config" data-toggle="tab">1.Config</a></li>
-            <li><a href="#log" data-toggle="tab">2.Scan</a></li>
-            <li><a href="#report" data-toggle="tab">3.Report</a></li>
+            <li class="active"><a href="#config" data-toggle="tab">Git/SVN</a></li>
+            <li><a href="#log" data-toggle="tab">Upload</a></li>
+            {#            <li><a href="#report" data-toggle="tab">Gitlab AccessToken</a></li>#}
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane active" id="config">
-                <h3>Scan & Analyse Configuration</h3>
+                <h3>Github/Gitlab/Subversion Repository</h3>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
                                 <label>GIT/SVN Repository</label>
@@ -115,7 +115,7 @@
                         </div>
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>Gitlab Branch/Tag</label>
+                                <label>Gitlab Branch</label>
                                 <input type="text" class="form-control" name="branch"
                                        placeholder="Type your branch;Default master" value="master">
                             </div>
@@ -133,160 +133,46 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6" style="border-left: 1px solid #ddd;">
-                        <div class="box_style_2" id="dropbox">
-                            <i class="icon-upload-cloud"></i>
-                            <h4><span>Drag and Drop</span> File Uploading</h4>
-                            <div align="center" id="selectFile"></div>
-                            <hr>
-                            <input type="file" class="btn_1" id="uploadFile" style="width: 100%;">
-                            <small>Support: tar.gz/rar/zip</small>
+                    <div class="col-md-4">
+                        <div class="col-md-12" style="padding-left:0;padding-right:0;">
+                            <div class="form-group">
+                                <label>Recently Scan SVN/GIT Project</label>
+                                <ul class="list_ok">
+                                    {% for task in data.recently_tasks %}
+                                        <li><a>{{ task.target }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
+
+
                     </div>
                 </div><!-- End row -->
                 <hr>
                 <button class="btn_1 green" id="scan"><i class="icon-search"></i>Scan now</button>
             </div><!-- End rab -->
             <div class="tab-pane" id="log">
-                <h3>Set config on step1</h3>
+                <h3>Select compress file to upload</h3>
+                <div class="col-md-12">
+                    <div class="box_style_2" id="dropbox">
+                        <i class="icon-upload-cloud"></i>
+                        <h4><span>Drag and Drop</span> File Uploading</h4>
+                        <div align="center" id="selectFile"></div>
+                        <hr>
+                        <input type="file" class="btn_1" id="uploadFile" name="file" style="width: 100%;">
+                        <small>Support Extensions: {{ data.extensions }}</small>
+                        <div id="progress">
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="report">
-                <h3>Wait for the analyse & scan completed</h3>
+                <h3>TODO</h3>
             </div>
         </div>
     </div>
-</section><!-- End hero -->
-{#<div class="white_bg">#}
-{#    <div class="container margin_60">#}
-{#        <div class="main_title">#}
-{#            <h2>Scan & Analyse <span>Statistic</span> Sort</h2>#}
-{#        </div>#}
-{#        <div class="row add_bottom_45">#}
-{#            <div class="col-md-4 other_tours">#}
-{#                <ul>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Tour Eiffel<span#}
-{#                            class="other_tours_price">$42</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-30"></i>Shopping tour<span#}
-{#                            class="other_tours_price">$35</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Versailles tour<span#}
-{#                            class="other_tours_price">$20</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Montparnasse skyline<span#}
-{#                            class="other_tours_price">$26</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Pompidue<span class="other_tours_price">$26</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Senna River tour<span#}
-{#                            class="other_tours_price">$32</span></a>#}
-{#                    </li>#}
-{#                </ul>#}
-{#            </div>#}
-{#            <div class="col-md-4 other_tours">#}
-{#                <ul>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-1"></i>Notredame<span class="other_tours_price">$48</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-4"></i>Lafaiette<span class="other_tours_price">$55</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-30"></i>Trocadero<span#}
-{#                            class="other_tours_price">$76</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Open Bus tour<span#}
-{#                            class="other_tours_price">$55</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-30"></i>Louvre museum<span#}
-{#                            class="other_tours_price">$24</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-3"></i>Madlene Cathedral<span class="other_tours_price">$24</span></a>#}
-{#                    </li>#}
-{#                </ul>#}
-{#            </div>#}
-{#            <div class="col-md-4 other_tours">#}
-{#                <ul>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-37"></i>Montparnasse<span#}
-{#                            class="other_tours_price">$36</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-1"></i>D'Orsey museum<span#}
-{#                            class="other_tours_price">$28</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-50"></i>Gioconda Louvre musuem<span#}
-{#                            class="other_tours_price">$44</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Tour Eiffel<span#}
-{#                            class="other_tours_price">$56</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-50"></i>Ladefanse<span#}
-{#                            class="other_tours_price">$16</span></a>#}
-{#                    </li>#}
-{#                    <li><a href="#"><i class="icon_set_1_icon-44"></i>Notredame<span#}
-{#                            class="other_tours_price">$26</span></a>#}
-{#                    </li>#}
-{#                </ul>#}
-{#            </div>#}
-{#        </div><!-- End row -->#}
-{##}
-{#        <div class="banner colored add_bottom_30">#}
-{#            <h4>Discover our Top tours <span>from $34</span></h4>#}
-{#            <p>#}
-{#                Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in.#}
-{#            </p>#}
-{#            <a href="single_tour.html" class="btn_1 white">Read more</a>#}
-{#        </div>#}
-{#    </div><!-- End container -->#}
-{#</div><!-- End white_bg -->#}
-{##}
-{#<div class="container margin_60">#}
-{##}
-{#    <div class="main_title">#}
-{#        <h2>Some <span>good</span> reasons</h2>#}
-{#        <p>#}
-{#            Quisque at tortor a libero posuere laoreet vitae sed arcu. Curabitur consequat.#}
-{#        </p>#}
-{#    </div>#}
-{##}
-{#    <div class="row">#}
-{##}
-{#        <div class="col-md-4 wow zoomIn" data-wow-delay="0.2s">#}
-{#            <div class="feature_home">#}
-{#                <i class="icon_set_1_icon-41"></i>#}
-{#                <h3><span>+120</span> Premium tours</h3>#}
-{#                <p>#}
-{#                    Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in. Nec id tempor#}
-{#                    imperdiet deterruisset.#}
-{#                </p>#}
-{#                <a href="about.html" class="btn_1 outline">Read more</a>#}
-{#            </div>#}
-{#        </div>#}
-{##}
-{#        <div class="col-md-4 wow zoomIn" data-wow-delay="0.4s">#}
-{#            <div class="feature_home">#}
-{#                <i class="icon_set_1_icon-30"></i>#}
-{#                <h3><span>+1000</span> Customers</h3>#}
-{#                <p>#}
-{#                    Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in. Nec id tempor#}
-{#                    imperdiet deterruisset.#}
-{#                </p>#}
-{#                <a href="about.html" class="btn_1 outline">Read more</a>#}
-{#            </div>#}
-{#        </div>#}
-{##}
-{#        <div class="col-md-4 wow zoomIn" data-wow-delay="0.6s">#}
-{#            <div class="feature_home">#}
-{#                <i class="icon_set_1_icon-57"></i>#}
-{#                <h3><span>H24 </span> Support</h3>#}
-{#                <p>#}
-{#                    Lorem ipsum dolor sit amet, vix erat audiam ei. Cum doctus civibus efficiantur in. Nec id tempor#}
-{#                    imperdiet deterruisset.#}
-{#                </p>#}
-{#                <a href="about.html" class="btn_1 outline">Read more</a>#}
-{#            </div>#}
-{#        </div>#}
-{##}
-{#    </div><!--End row -->#}
-{##}
-{#</div><!-- End container -->#}
-
+</section>
 <footer>
     <div class="container">
         {% include "footer.html" %}
@@ -298,8 +184,12 @@
 <!-- Common scripts -->
 <script src="asset/js/jquery-1.11.2.min.js"></script>
 <script src="asset/js/common_scripts_min.js"></script>
-<script src="{{ url_for('static', filename='js/jquery.plainoverlay.min.js') }}"></script>
 <script src="asset/js/functions.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.plainoverlay.min.js') }}"></script>
+<!-- Upload -->
+<script src="{{ url_for('static', filename='js/jquery.ui.widget.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.iframe-transport.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.fileupload.js') }}"></script>
 <script>
 
     // drag and drop upload file
@@ -336,94 +226,122 @@
 
     $(function () {
 
+        // Tab1
         $("#scan").on('click', function (e) {
             e.preventDefault();
-
-            var data = new FormData();
-            var allowFileTypes = ['.zip', '.rar', '.tar.gz'];
+            $('.tab-content').plainOverlay('show');
             var url = $("input[name=repository]").val();
             var branch = $("input[name=branch]").val();
-            var file = null;
-            if (fileList && fileList.length != 0) {
-                file = fileList[0];
-            } else if (files && files.length != 0) {
-                file = files[0];
-            }
-
-            if (file) {
-                // upload file
-                var isAllowUpload = false;
-                for (var i = 0; i < allowFileTypes.length; i++) {
-                    if (allowFileTypes[i] == file.name.substring(file.name.indexOf('.'))) {
-                        isAllowUpload = true;
-                    }
-                }
-                if (!isAllowUpload) {
-                    alert('only zip, rar, tar.gz allowed!');
-                    return false;
-                }
-            } else {
-                // check if url provide.
-                if (!url) {
-                    alert("Please provide gitlab url. If your repo is public");
-                    return false;
-                }
-            }
-
-            var scan_way = $("input[name=scan_way]:checked").val();
             var old_version = $("input[name=old_version]").val();
             var new_version = $("input[name=new_version]").val();
 
-            if (!scan_way) {
-                alert('please select scan way');
-                return false;
-            }
-
-            if (scan_way == 2 && !(new_version && old_version)) {
-                alert('in diff scan mode, please provide new version and old version.')
-                return false;
-            }
-
-            data.append('repository', url);
-            data.append('branch', branch);
-            data.append('scan_way', scan_way);
-            data.append('old_version', old_version);
-            data.append('new_version', new_version);
-            if (fileList && fileList.length != 0) {
-                data.append('file', fileList[0]);
-            } else if (files && files.length != 0) {
-                data.append('file', files[0])
-            }
-
+            var data = {
+                'target': url,
+                'branch': branch,
+                'old_version': old_version,
+                'new_version': new_version,
+                'key': "{{ data.key }}"
+            };
             $.ajax({
-                url: 'add',
+                url: '/api/add',
                 type: 'POST',
-                contentType: false,
-                processData: false,
-                data: data,
-            }).done(function (result) {
-                if (result.code == '1001') {
-                    $("#log > h3").text('Scanning...');
-                    $('.tab-content').plainOverlay('show');
-                    $("ul.nav-tabs > li").eq(1).find('a').trigger('click');
-                    /* Check Task Status @TODO */
-                } else {
-                    alert(result.msg);
+                data: JSON.stringify(data),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                async: true,
+                success: function (result) {
+                    if (result.code == 1001) {
+                        var scan_id = result.result['scan_id'];
+                        var data = {scan_id: scan_id, key: "{{ data.key }}"};
+
+                        function get_status() {
+                            $.ajax({
+                                url: '/api/status',
+                                type: 'POST',
+                                data: JSON.stringify(data),
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
+                                async: false,
+                                success: function (result) {
+                                    if (result.status == 1001) {
+                                        if (result.result['status'] == 'done') {
+                                            $('.tab-content').plainOverlay('hide');
+                                            window.open(result.result['report'], '_blank');
+                                        } else {
+                                            setTimeout(get_status, 3000);
+                                        }
+                                    } else {
+                                        alert(result.result);
+                                    }
+                                }
+                            });
+                        }
+
+                        get_status();
+                    } else {
+                        $('.tab-content').plainOverlay('hide');
+                        alert(result.result);
+                    }
                 }
             });
+        });
+        // Tab2
+        var process_bar = $('#progress .bar');
+        $('#uploadFile').fileupload({
+            url: '/api/upload',
+            dataType: 'json',
+            done: function (e, data) {
+                if (data.result.code == 1001) {
+                    var scan_id = data.result.result['scan_id'];
+                    var data = {scan_id: scan_id, key: "{{ data.key }}"};
 
+                    function get_status() {
+                        $.ajax({
+                            url: '/api/status',
+                            type: 'POST',
+                            data: JSON.stringify(data),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            async: false,
+                            success: function (result) {
+                                if (result.status == 1001) {
+                                    if (result.result['status'] == 'done') {
+                                        $('.tab-content').plainOverlay('hide');
+                                        window.open(result.result['report'], '_blank');
+                                        process_bar.css('width', '0%');
+                                    } else {
+                                        setTimeout(get_status, 3000);
+                                    }
+                                } else {
+                                    alert(result.result);
+                                }
+                            }
+                        });
+                    }
+
+                    get_status();
+                } else {
+                    alert(data.result.result);
+                }
+            },
+            start: function (e) {
+                $('.tab-content').plainOverlay('show');
+                process_bar.css('width', '0%');
+            },
+            stop: function (e) {
+                process_bar.text('scanning...');
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                process_bar.css(
+                        'width',
+                        progress + '%'
+                );
+                process_bar.text('uploading(' + progress + '%)');
+            }
         });
     });
 
-</script>
-
-<!-- Specific scripts -->
-{#<script src="asset/js/icheck.js"></script>#}
-<script>
-    {#    $('input').iCheck({#}
-    {#        checkboxClass: 'icheckbox_square-grey',#}
-    {#        radioClass: 'iradio_square-grey'#}
-    {#    });#}
 </script>
 </body>
 </html>

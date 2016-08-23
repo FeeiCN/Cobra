@@ -4,12 +4,12 @@
 
 import time
 
-from flask import render_template, request, jsonify
+from flask import redirect, render_template, request, jsonify
 
 from . import ADMIN_URL
 from app import web, db
 from app.models import CobraRules, CobraVuls, CobraLanguages
-from app.CommonClass.ValidateClass import ValidateClass, login_required
+from app.CommonClass.ValidateClass import ValidateClass
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -17,11 +17,12 @@ __email__ = "root@lightless.me"
 
 # all rules button
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
-@login_required
 def rules(page):
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + '/index')
 
     per_page = 10
-    cobra_rules = CobraRules.query.order_by('id').limit(per_page).offset((page-1)*per_page).all()
+    cobra_rules = CobraRules.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
     cobra_vuls = CobraVuls.query.all()
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
@@ -33,11 +34,17 @@ def rules(page):
         all_language[lang.id] = lang.language
 
     # replace id with real name
+    status_desc = {1: 'ON', 0: 'OFF'}
     for rule in cobra_rules:
         try:
             rule.vul_id = all_vuls[rule.vul_id]
         except KeyError:
             rule.vul_id = 'Unknown Type'
+
+        try:
+            rule.status = status_desc[rule.status]
+        except KeyError:
+            rule.status = 'Unknown'
 
         try:
             rule.language = all_language[rule.language]
@@ -59,8 +66,9 @@ def rules(page):
 
 # add new rules button
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
-@login_required
 def add_new_rule():
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
         vc = ValidateClass(request, 'vul_type', 'language', 'regex', 'regex_confirm',
@@ -70,7 +78,8 @@ def add_new_rule():
             return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        rule = CobraRules(vc.vars.vul_type, vc.vars.language, vc.vars.regex, vc.vars.regex_confirm,
+        block_repair = 1
+        rule = CobraRules(vc.vars.vul_type, vc.vars.language, vc.vars.regex, vc.vars.regex_confirm, block_repair,
                           vc.vars.description, vc.vars.repair, 1, vc.vars.level, current_time, current_time)
         try:
             db.session.add(rule)
@@ -90,8 +99,9 @@ def add_new_rule():
 
 # del special rule
 @web.route(ADMIN_URL + '/del_rule', methods=['POST'])
-@login_required
 def del_rule():
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + '/index')
 
     vc = ValidateClass(request, "rule_id")
     vc.check_args()
@@ -110,8 +120,9 @@ def del_rule():
 
 # edit special rule
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
-@login_required
 def edit_rule(rule_id):
+    if not ValidateClass.check_login():
+        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
 
