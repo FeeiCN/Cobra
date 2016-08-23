@@ -22,6 +22,7 @@ class Parse:
     def __init__(self, rule, file_path, line, code):
         self.rule = rule
         self.file_path = file_path
+        log.info(file_path)
         self.line = line
         self.code = code
 
@@ -49,26 +50,25 @@ class Parse:
         result = p.communicate()
         if len(result[0]):
             functions = []
-            print(result[0])
-            index = 0
-            lines = str(result[0]).split("\n")
-            for line in lines:
-                index += 1
+            # log.debug(result[0])
+            lines = str(result[0]).strip().split("\n")
+            for index, line in enumerate(lines):
                 line = line.strip()
                 if line == '':
+                    log.info('Empty')
                     continue
                 function = line.split(':')
-                if len(function) == 2:
+                if len(function) >= 2:
                     function_name = re.findall(regex, function[1].strip())
                     if len(function_name) == 1:
                         function_name = function_name[0]
-                        if index > 1:
-                            functions[index - 2]['end'] = function[0]
+                        if index > 0:
+                            functions[index - 1]['end'] = function[0]
                         if index == len(lines) - 1:
                             end = sum(1 for l in open(self.file_path))
                             log.info('File lines: {0}'.format(end))
                         else:
-                            end = ''
+                            end = None
                         functions.append({
                             'function': function_name,
                             'start': function[0],
@@ -92,6 +92,7 @@ class Parse:
             block_start = 0
             block_end = 0
             for function in functions:
+                log.info("Function: {0} ({1} - {2})".format(function['function'], function['start'], function['end']))
                 # log.debug('{0} < {1} < {2}'.format(function['start'], self.line, function['end']))
                 if int(function['start']) < int(self.line) < int(function['end']):
                     if block_position == 0:
@@ -123,23 +124,26 @@ class Parse:
             if param_name[:1] == '$':
                 # get param block code
                 param_block_code = self.block_code(0)
+                log.debug(param_block_code)
                 # check = "" or = ''
                 """
                 check string
                 $param_name = ""
                 $param_name = ''
                 """
-                log.info("Check un controllable param ```{0}``` =".format(param_name))
+                log.info("Check un controllable param ```{0}``` = 'something'".format(param_name))
                 un_controllable_param_rule = [
                     # ```$param_name = 'http://wufeifei.com'```
                     r'\{0}\s?=\s?\'((\?(?=\\\\\')..|[^\'])*)\''.format(param_name),
                     # ```$param_name = "http://wufeifei.com"```
-                    r'\{0}\s?=\s?"((\?(?=\\\\")..|[^"])*)"'.format(param_name)
+                    r'\{0}\s?=\s?"((\?(?=\\\\")..|[^"])*)"'.format(param_name),
+                    # ```$param_name = CONST_VARIABLE```
+                    r'\$path\s?=\s?([A-Z_]*)'.format(param_name)
                 ]
                 for uc_rule in un_controllable_param_rule:
                     uc_rule_result = re.findall(uc_rule, param_block_code)
                     if len(uc_rule_result) >= 1:
-                        log.info("```$param_name = ''``` : {0} = {1}".format(param_name, uc_rule_result[0]))
+                        log.info("Found: ```$param_name = ''``` : {0} = {1}".format(param_name, uc_rule_result[0]))
                         return False
 
                 log.info("Check controllable param rule")
@@ -172,11 +176,14 @@ class Parse:
                         return True
                 return True
             else:
+                log.info("Not contained $")
                 return False
 
     def is_repair(self, repair_rule, block_repair):
         code = self.block_code(block_repair)
         repair_result = re.findall(repair_rule, code)
+        log.debug(code)
+        log.debug(repair_result)
         if len(repair_result) >= 1:
             log.info("Repaired")
             return True
@@ -186,6 +193,6 @@ class Parse:
 
 
 if __name__ == '__main__':
-    parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/tmp/cobra/versions/mogujie/appbeta/classes/admin/book.php', '3222', 'curl_setopt($ch,CURLOPT_URL,$url);')
+    parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/tmp/cobra/versions/mogujie/appbeta/classes/controller/mapi/mgj/v12/search.php', '484', 'curl_setopt($ch,CURLOPT_URL,$url);')
     if parse.is_controllable_param():
         parse.is_repair(r'curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)', 1)

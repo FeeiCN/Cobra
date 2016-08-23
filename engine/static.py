@@ -183,7 +183,7 @@ class Static:
 
                 # Exists result
                 if len(result[0]):
-                    lines = str(result[0]).split("\n")
+                    lines = str(result[0]).strip().split("\n")
                     for line in lines:
                         line = line.strip()
                         if line == '':
@@ -216,11 +216,13 @@ class Static:
                                         parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
                                         if parse_instance.is_controllable_param():
                                             if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
-                                                found_vul = False
+                                                log.info("Static: repaired")
+                                                continue
                                             else:
                                                 found_vul = True
                                         else:
-                                            return False
+                                            log.info("Static: uncontrollable param")
+                                            continue
                                     else:
                                         found_vul = True
 
