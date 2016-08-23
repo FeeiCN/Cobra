@@ -121,6 +121,11 @@ class Parse:
             param_name = param_name[0].strip()
             log.info('Param name: {0}'.format(param_name))
             # controllable param
+            # exclude class const (maybe misuse)
+            class_const = re.findall(r'\$this->([_A-Z]*)', param_name)
+            if len(class_const) >= 1 and class_const[0] != '':
+                log.info("Return: $param_name = class const")
+                return False
             if param_name[:1] == '$':
                 # get param block code
                 param_block_code = self.block_code(0)
