@@ -17,6 +17,7 @@
     <!-- CSS -->
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/prism.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/jquery.modal.min.css') }}" rel="stylesheet"/>
     <style>
         .invoice-title h2, .invoice-title h3 {
             display: inline-block;
@@ -93,7 +94,7 @@
             </div>
             <ul class="nav nav-tabs">
                 <li class="active"><a data-id="vul_d" data-toggle="tab">扫描结果</a></li>
-                <li><a data-id="vul_l" data-toggle="tab">漏洞详情</a></li>
+                <li><a data-id="vul_l" data-toggle="tab">漏洞列表</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="vul_d">
@@ -172,15 +173,19 @@
                                         <td>
                                             <strong>漏洞点</strong>
                                         </td>
-                                        <td><strong>修复方案</strong></td>
-                                        <td class="text-right"><strong>其它</strong></td>
+                                        <td class="text-right"><strong>操作</strong></td>
                                     </tr>
                                     </thead>
                                     {% for each_vul in vulnerability.data %}
                                         <tbody>
                                         <tr style="color:{{ each_vul.color }};">
                                             <td>{{ each_vul.level }}</td>
-                                            <td>{{ each_vul.rule }}</td>
+                                            <td>
+                                                <div class="tooltip_styled tooltip-effect-1">
+                                                    <span class="tooltip-item">{{ each_vul.rule }}</span>
+                                                    <div class="tooltip-content">{{ each_vul.repair }}</div>
+                                                </div>
+                                            </td>
                                             <td>
                                                 {% if each_vul.line == 0 %}
                                                     <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}</span>
@@ -195,12 +200,8 @@
                                                     <pre><code class="language-php">{{ each_vul.code }}</code></pre>
                                                 {% endif %}
                                             </td>
-                                            <td>{{ each_vul.repair }}</td>
                                             <td class="text-right">
-                                                <div class="tooltip_styled tooltip-effect-1">
-                                                    <span class="tooltip-item"><i class="icon_set_1_icon-74"></i></span>
-                                                    <div class="tooltip-content">误报? 请反馈给我们</div>
-                                                </div>
+                                                <a class="btn_1 green vul-detail" data-id="{{ each_vul.id }}">漏洞详情</a>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -214,12 +215,16 @@
             </div>
         </div>
     </div>
+    <div class="modal" style="display:none;">
+        <p>Vul Detail</p>
+    </div>
     <hr>
     <!-- Containers -->
     {% include "footer.html" %}
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/jquery.modal.min.js') }}" type="text/javascript" charset="utf-8"></script>
     <script>
         // Nav
         $(".nav-tabs li a").on('click', function () {
@@ -289,6 +294,15 @@
             var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
             vul_distributing.setOption(option);
         {% endif %}
+
+        $('.vul-detail').click(function (event) {
+            $(".modal").modal({
+                escapeClose: true,
+                clickClose: true,
+                showClose: true,
+                fadeDuration: 100
+            });
+        });
 
         {#        $(function () {#}
         /* Ext Chart */
