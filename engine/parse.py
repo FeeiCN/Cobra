@@ -107,8 +107,10 @@ class Parse:
             result = p.communicate()
             if len(result[0]):
                 param_block_code = result[0]
+                if param_block_code == '':
+                    param_block_code = False
             else:
-                param_block_code = ''
+                param_block_code = False
             return param_block_code
         else:
             log.info("Not found functions")
@@ -129,6 +131,9 @@ class Parse:
             if param_name[:1] == '$':
                 # get param block code
                 param_block_code = self.block_code(0)
+                if param_block_code is False:
+                    log.info("Found: param block code cant match")
+                    return True
                 log.debug(param_block_code)
                 # check = "" or = ''
                 """
@@ -186,6 +191,9 @@ class Parse:
 
     def is_repair(self, repair_rule, block_repair):
         code = self.block_code(block_repair)
+        if code is False:
+            log.info("Return: repair code not match")
+            return False
         repair_result = re.findall(repair_rule, code)
         log.debug(code)
         log.debug(repair_result)
