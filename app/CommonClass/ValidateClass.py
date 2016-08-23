@@ -21,7 +21,7 @@ class ValidateClass(object):
 
     @staticmethod
     def check_login():
-        if session.get('is_login') and session.get('is_login') == True:
+        if session.get('is_login') and session.get('is_login') is True:
             return True
         else:
             return False
@@ -30,7 +30,7 @@ class ValidateClass(object):
         for arg in self.args:
             _arg = self.req.form.get(arg)
             if not _arg or _arg == "":
-                return False, arg + ' can not be empty.'
+                return False, "".join([arg, ' can not be empty.'])
             else:
                 self.vars[arg] = _arg
 
