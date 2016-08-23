@@ -3,6 +3,7 @@
 # file: RulesController.py
 
 import time
+import datetime
 
 from flask import redirect, render_template, request, jsonify
 
@@ -70,22 +71,32 @@ def rules(page):
 def add_new_rule():
 
     if request.method == 'POST':
-        vc = ValidateClass(request, 'vul_type', 'language', 'regex', 'regex_confirm',
-                           'description', 'repair', 'level')
+        vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'regex_repair', 'repair_block',
+                           'regex_confirm', 'description', 'repair', 'level')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
 
-        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        block_repair = 1
-        rule = CobraRules(vc.vars.vul_type, vc.vars.language, vc.vars.regex, vc.vars.regex_confirm, block_repair,
-                          vc.vars.description, vc.vars.repair, 1, vc.vars.level, current_time, current_time)
+        current_time = datetime.datetime.now()
+        rule = CobraRules(
+            vul_id=vc.vars.vul_type,
+            language=vc.vars.language,
+            regex_location=vc.vars.regex_location,
+            regex_repair=vc.vars.regex_repair,
+            block_repair=vc.vars.block_repair,
+            description=vc.vars.description,
+            repair=vc.vars.reapir,
+            status=1,
+            level=vc.vars.level,
+            created_at=current_time,
+            updated_at=current_time
+        )
         try:
             db.session.add(rule)
             db.session.commit()
             return jsonify(tag='success', msg='add success.')
-        except:
-            return jsonify(tag='danger', msg='add failed, try again later?')
+        except Exception as e:
+            return jsonify(tag='danger', msg='add failed, try again later?' + e.message)
     else:
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
