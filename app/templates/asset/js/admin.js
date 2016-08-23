@@ -474,8 +474,9 @@ $("#show_all_rules").click(function () {
                 $("#add-new-rule-button").click(function () {
                     var vul_type = $("#vul_type").val();
                     var lang = $("#language").val();
-                    var regex = $("#regex").val();
-                    var regex_confirm = $("#confirm-regex").val();
+                    var regex_location = $("#regex-location").val();
+                    var regex_repair = $("#regex-repair").val();
+                    var repair_block = $("#repair-block:checked").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
                     var level = $("#level:checked").val();
@@ -493,19 +494,22 @@ $("#show_all_rules").click(function () {
                         showAlert('danger', 'description can not be blank.', '#add-new-rule-result');
                         return false;
                     }
-                    if (!regex || regex == "") {
-                        showAlert('danger', 'regex can not be blank.', '#add-new-rule-result');
+                    if (!regex_location || regex_location == "") {
+                        showAlert('danger', 'location regex can not be blank.', '#add-new-rule-result');
                         return false;
                     }
-                    if (!regex_confirm || regex_confirm == "") {
-                        showAlert('danger', 'regex confirm can not be blank.', '#add-new-rule-result');
+                    if (!regex_repair || regex_repair == "") {
+                        showAlert('danger', 'repair regex confirm can not be blank.', '#add-new-rule-result');
+                        return false;
+                    }
+                    if (!repair_block || repair_block == "") {
+                        showAlert('danger', 'repair block confirm can not be blank.', '#add-new-rule-result');
                         return false;
                     }
                     if (!repair || repair == "") {
                         showAlert('danger', 'repair can not be blank.', '#add-new-rule-result');
                         return false;
                     }
-
                     if (!level || level == "") {
                         showAlert('danger', 'level can not be blank.', "#add-new-rule-result");
                         return false;
@@ -515,8 +519,9 @@ $("#show_all_rules").click(function () {
                     var data = {
                         'vul_type': vul_type,
                         'language': lang,
-                        'regex': regex,
-                        'regex_confirm': regex_confirm,
+                        'regex_location': regex_location,
+                        'regex_repair': regex_repair,
+                        'repair_block': repair_block,
                         'description': description,
                         'repair': repair,
                         'level': level
