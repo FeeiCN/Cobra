@@ -10,6 +10,7 @@ from . import ADMIN_URL
 from app import web, db
 from app.models import CobraRules, CobraVuls, CobraLanguages
 from app.CommonClass.ValidateClass import ValidateClass
+from app.CommonClass.ValidateClass import login_required
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -17,9 +18,8 @@ __email__ = "root@lightless.me"
 
 # all rules button
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
+@login_required
 def rules(page):
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     per_page = 10
     cobra_rules = CobraRules.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
@@ -66,9 +66,8 @@ def rules(page):
 
 # add new rules button
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
+@login_required
 def add_new_rule():
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
         vc = ValidateClass(request, 'vul_type', 'language', 'regex', 'regex_confirm',
@@ -99,9 +98,8 @@ def add_new_rule():
 
 # del special rule
 @web.route(ADMIN_URL + '/del_rule', methods=['POST'])
+@login_required
 def del_rule():
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     vc = ValidateClass(request, "rule_id")
     vc.check_args()
@@ -120,9 +118,8 @@ def del_rule():
 
 # edit special rule
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
+@login_required
 def edit_rule(rule_id):
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
 
