@@ -28,7 +28,7 @@ class Detection:
                     'directory': 'system/guide/kohana',
                     'file': 'system/config/userguide.php',
                 },
-                'public': 'public'
+                'public': '/public'
             },
             {
                 'name': 'Laravel',
@@ -36,7 +36,7 @@ class Detection:
                 'site': 'http://laravel.com/',
                 'source': 'https://github.com/laravel/laravel',
                 'rules': {
-                    'file': 'artisan'
+                    'file': '/artisan'
                 }
             },
             {
@@ -45,7 +45,7 @@ class Detection:
                 'site': 'http://www.thinkphp.cn/',
                 'source': 'https://github.com/top-think/thinkphp',
                 'rules': {
-                    'file': 'ThinkPHP/ThinkPHP.php'
+                    'file': '/ThinkPHP/ThinkPHP.php'
                 }
             },
             {
@@ -54,7 +54,7 @@ class Detection:
                 'site': 'https://codeigniter.com/',
                 'source': 'https://github.com/bcit-ci/CodeIgniter',
                 'rules': {
-                    'file': 'system/core/CodeIgniter.php'
+                    'file': '/system/core/CodeIgniter.php'
                 }
             },
             {
@@ -63,7 +63,7 @@ class Detection:
                 'site': 'http://www.mogujie.com/',
                 'source': 'http://www.mogujie.com/',
                 'rules': {
-                    'file': 'pom.xml'
+                    'file': '/pom.xml'
                 }
             }
         ]
@@ -97,4 +97,4 @@ class Detection:
 
 
 if __name__ == '__main__':
-    Detection('/tmp/cobra/versions/mogujie/').framework()
+    Detection('/tmp/cobra/versions/mogujie').framework()
