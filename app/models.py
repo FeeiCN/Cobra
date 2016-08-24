@@ -215,7 +215,7 @@ class CobraProjects(db.Model):
     __table_args__ = ({"mysql_charset": "utf8mb4"})
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    repository = db.Column(db.String(512), nullable=False, default=None, index=True)
+    repository = db.Column(db.String(512), nullable=False, default=None)
     url = db.Column(db.String(512), nullable=False, default=None)
     name = db.Column(db.String(50), nullable=False, default=None)
     author = db.Column(db.String(50), nullable=False, default=None)
