@@ -128,9 +128,10 @@ $("#main-div").delegate("span", "click", function () {
                 $("#edit-rule-button").click(function () {
                     var vul_type = $("#vul_type").val();
                     var lang = $("#language").val();
-                    var regex = $("#regex").val();
+                    var regex_location = $("#regex-location").val();
                     var description = $("#description").val();
-                    var regex_confirm = $("#confirm-regex").val();
+                    var regex_repair = $("#regex-repair").val();
+                    var block_reapir = $("#repair-block:checked").val();
                     var repair = $("#repair").val();
                     var status = $("#status:checked").val();
                     var level = $("#level:checked").val();
@@ -148,12 +149,16 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert('danger', 'description can not be blank.', '#edit-rule-result');
                         return false;
                     }
-                    if (!regex || regex == "") {
-                        showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
+                    if (!regex_location || regex_location == "") {
+                        showAlert("danger", "regex location cannot be blank.", "#edit-rule-result");
                         return false;
                     }
-                    if (!regex_confirm || regex_confirm == "") {
-                        showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
+                    if (!regex_repair || regex_repair == "") {
+                        showAlert("danger", "regex repair cannot be blank.", "#edit-rule-result");
+                        return false;
+                    }
+                    if (!block_reapir || block_reapir == "") {
+                        showAlert("danger", "block repair cannot be blank.", "#edit-rule-result");
                         return false;
                     }
                     if (!repair || repair == "") {
@@ -173,8 +178,9 @@ $("#main-div").delegate("span", "click", function () {
                     var data = {
                         'vul_type': vul_type,
                         'language': lang,
-                        'regex': regex,
-                        'regex_confirm': regex_confirm,
+                        'regex_location': regex_location,
+                        'regex_repair': regex_repair,
+                        'block_repair': block_reapir,
                         'description': description,
                         'rule_id': cid,
                         'repair': repair,

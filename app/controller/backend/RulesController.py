@@ -6,6 +6,7 @@ import time
 import datetime
 
 from flask import redirect, render_template, request, jsonify
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
 from app import web, db
@@ -134,8 +135,8 @@ def edit_rule(rule_id):
 
     if request.method == 'POST':
 
-        vc = ValidateClass(request, "vul_type", "language", "regex", "regex_confirm", "description", "rule_id",
-                           "repair", "status", "level")
+        vc = ValidateClass(request, "vul_type", "language", "regex_location", "regex_repair", "block_repair",
+                           "description", "rule_id", "repair", "status", "level")
         ret, msg = vc.check_args()
 
         if not ret:
@@ -144,18 +145,19 @@ def edit_rule(rule_id):
         r = CobraRules.query.filter_by(id=rule_id).first()
         r.vul_id = vc.vars.vul_type
         r.language = vc.vars.language
-        r.regex = vc.vars.regex
-        r.regex_confirm = vc.vars.regex_confirm
+        r.block_repair = vc.vars.block_repair
+        r.regex_location = vc.vars.regex_location
+        r.regex_repair = vc.vars.regex_repair
         r.description = vc.vars.description
         r.repair = vc.vars.repair
         r.status = vc.vars.status
         r.level = vc.vars.level
-        r.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
+        r.updated_at = datetime.datetime.now()
         try:
             db.session.add(r)
             db.session.commit()
             return jsonify(tag='success', msg='save success.')
-        except:
+        except SQLAlchemyError:
             return jsonify(tag='danger', msg='save failed. Try again later?')
     else:
         r = CobraRules.query.filter_by(id=rule_id).first()
