@@ -15,7 +15,7 @@ import os
 import time
 import subprocess
 from app import db, CobraProjects, CobraTaskInfo
-from utils import config, decompress
+from utils import config, decompress, log
 from pickup import GitTools
 from engine import detection
 
@@ -35,7 +35,7 @@ class Scan:
             return 1002, result_d
         else:
             directory = result_d
-
+        log.info("Scan directory: {0}".format(directory))
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         task = CobraTaskInfo(self.target, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
         db.session.add(task)
@@ -74,7 +74,7 @@ class Scan:
             # SVN
             repo_name = 'mogujie'
             repo_author = 'all'
-            repo_directory = os.path.join(config.Config('upload', 'directory').value, 'versions/mogujie/')
+            repo_directory = os.path.join(config.Config('upload', 'directory').value, 'versions/mogujie')
         else:
             return 1005, 'Repository must contained .git or svn'
 
@@ -89,14 +89,21 @@ class Scan:
 
         p = CobraProjects.query.filter_by(repository=self.target).first()
         project = None
+
+        # detection framework for project
+        framework, language = detection.Detection(repo_directory).framework()
+        project_framework = '{0} ({1})'.format(framework, language)
         if not p:
-            # detection framework for project
-            framework = detection.Detection(repo_directory).framework()
             # insert into project table.
-            project = CobraProjects(self.target, '', repo_name, repo_author, framework, '', '', current_time)
+            project = CobraProjects(self.target, '', repo_name, repo_author, project_framework, '', '', current_time)
             project_id = project.id
         else:
             project_id = p.id
+
+            # update project's framework
+            p.framework = project_framework
+            db.session.add(p)
+            db.session.commit()
         try:
             db.session.add(task)
             if not p:

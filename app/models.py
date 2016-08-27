@@ -79,8 +79,9 @@ class CobraRules(db.Model):
     id = db.Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
     vul_id = db.Column(TINYINT, nullable=True, default=None, index=True)
     language = db.Column(TINYINT, nullable=True, default=None, index=True)
-    regex = db.Column(db.String(512), nullable=False, default=None)
-    regex_confirm = db.Column(db.String(512), nullable=False, default=None)
+    regex_location = db.Column(db.String(512), nullable=False, default=None)
+    regex_repair = db.Column(db.String(512), nullable=False, default=None)
+    block_repair = db.Column(TINYINT(2), nullable=False, default=None)
     description = db.Column(db.String(256), nullable=False, default=None)
     repair = db.Column(db.String(512), nullable=False, default=None)
     status = db.Column(TINYINT(2), nullable=False, default=None)
@@ -88,11 +89,12 @@ class CobraRules(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
-    def __init__(self, vul_id, language, regex, regex_confirm, description, repair, status, level, created_at=None, updated_at=None):
+    def __init__(self, vul_id, language, regex_location, regex_repair, block_repair, description, repair, status, level, created_at=None, updated_at=None):
         self.vul_id = vul_id
         self.language = language
-        self.regex = regex
-        self.regex_confirm = regex_confirm
+        self.regex_location = regex_location
+        self.regex_repair = regex_repair
+        self.block_repair = block_repair
         self.description = description
         self.repair = repair
         self.status = status
@@ -213,7 +215,7 @@ class CobraProjects(db.Model):
     __table_args__ = ({"mysql_charset": "utf8mb4"})
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    repository = db.Column(db.String(512), nullable=False, default=None, index=True)
+    repository = db.Column(db.String(512), nullable=False, default=None)
     url = db.Column(db.String(512), nullable=False, default=None)
     name = db.Column(db.String(50), nullable=False, default=None)
     author = db.Column(db.String(50), nullable=False, default=None)

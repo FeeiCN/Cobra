@@ -22,9 +22,19 @@ from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, Cob
 @web.route('/', methods=['GET'])
 @web.route('/index', methods=['GET'])
 def homepage():
+    tasks = CobraTaskInfo.query.order_by(CobraTaskInfo.id.desc()).limit(10).all()
+    recently_tasks = []
+    for task in tasks:
+        recently_tasks.append({
+            'id': task.id,
+            'target': task.target,
+            'branch': task.branch,
+            'scan_way': task.scan_way
+        })
     data = {
         'key': common.md5('CobraAuthKey'),
-        'extensions': config.Config('upload', 'extensions').value
+        'extensions': config.Config('upload', 'extensions').value,
+        'recently_tasks': recently_tasks
     }
     return render_template('index.html', data=data)
 
@@ -121,8 +131,9 @@ def report(task_id):
         if project_framework != '':
             for rule in detection.Detection().rules:
                 if rule['name'] == project_framework:
-                    if result.file[:len(rule['public'])] == rule['public']:
-                        each_vul['verify'] = project_url + result.file.replace(rule['public'], '')
+                    if 'public' in rule:
+                        if result.file[:len(rule['public'])] == rule['public']:
+                            each_vul['verify'] = project_url + result.file.replace(rule['public'], '')
 
         # level
         if rules.level == 3:
@@ -189,5 +200,4 @@ def ext_statistic(task_id):
 
 @web.errorhandler(404)
 def page_not_found(e):
-    log.debug(e)
     return render_template('404.html'), 404

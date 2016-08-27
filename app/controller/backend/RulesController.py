@@ -78,7 +78,8 @@ def add_new_rule():
             return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        rule = CobraRules(vc.vars.vul_type, vc.vars.language, vc.vars.regex, vc.vars.regex_confirm,
+        block_repair = 1
+        rule = CobraRules(vc.vars.vul_type, vc.vars.language, vc.vars.regex, vc.vars.regex_confirm, block_repair,
                           vc.vars.description, vc.vars.repair, 1, vc.vars.level, current_time, current_time)
         try:
             db.session.add(rule)

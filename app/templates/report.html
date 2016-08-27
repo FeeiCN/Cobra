@@ -17,6 +17,7 @@
     <!-- CSS -->
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/prism.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/jquery.modal.min.css') }}" rel="stylesheet"/>
     <style>
         .invoice-title h2, .invoice-title h3 {
             display: inline-block;
@@ -41,10 +42,9 @@
 
         .sum_number {
             display: inline;
-            font-size: 24px;
+            font-size: 20px;
             color: #F00;
             font-weight: bold;
-            font-family: fantasy;
         }
 
         pre {
@@ -75,160 +75,166 @@
             <div class="row">
                 <div class="col-xs-6">
                     <address>
-                        <h4>报告给:</h4>
-                        <span class="content"><strong>项目所属人&nbsp;&nbsp;&nbsp;&nbsp;: </strong> @{{ data.author }} </span><br/>
-                        <span class="content"><strong>项目PE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </strong> @PE </span><br/>
-                        <span class="content"><strong>安全对接人&nbsp;&nbsp;&nbsp;&nbsp;: </strong> @安全答疑 </span>
-                    </address>
-                </div>
-                <div class="col-xs-6">
-                    <address>
-                        <h4>报告时间:</h4>
-                        <span class="content"><strong>报告生成时间: </strong>{{ data.task_created_at }}</span><br>
-                        <span class="content"><strong>项目扫描时间: </strong>{{ data.time_start }} - {{ data.time_end }}</span><br/>
-                        <span class="content"><strong>项目扫描耗时: </strong>{{ data.time_consume }}</span><br/>
-                    </address>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6">
-                    <address>
                         <h4>项目信息:</h4>
-                        <span class="content"><strong>项目名称: </strong>{{ data.project_name }}</span><br>
+                        <span class="content"><strong>项目名称: </strong>{{ data.project_name }} (@{{ data.author }})</span><br>
                         <span class="content"><strong>项目域名: </strong>{{ data.project_url }}</span><br>
                         <span class="content"><strong>项目框架: </strong>{{ data.project_framework }}</span><br>
-                        <span class="content"><strong>项目仓库: </strong>{{ data.project_repository }}</span><br/>
-                        <span class="content"><strong>项目备注: </strong>{{ data.project_description }}</span>
+                        <span class="content"><strong>项目仓库: </strong>{{ data.project_repository }}</span>
                     </address>
                 </div>
                 <div class="col-xs-6">
                     <address>
-                        <h4>扫描统计:</h4>
-                        <span class="content"><strong>漏洞数(个): </strong><div class="sum_number">{{ data.vul_count }}</div></span><br/>
-                        <span class="content"><strong>文件数(个): </strong><div class="sum_number">{{ data.files }}</div></span><br/>
-                        <span class="content"><strong>代码数(行): </strong><div class="sum_number">{{ data.code_number }}</div></span><br/>
-
+                        <h4>扫描信息:</h4>
+                        <span class="content"><strong>报告时间: </strong>{{ data.task_created_at }}</span><br>
+                        <span class="content"><strong>扫描时间: </strong>{{ data.time_start }} - {{ data.time_end }} ({{ data.time_consume }})</span><br/>
+                        <span class="content"><strong>文件数(个): </strong>{{ data.files }}</span><br/>
+                        <span class="content"><strong>代码数(行): </strong>{{ data.code_number }}</span><br/>
                     </address>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 column">
-                    <h4>漏洞分布统计</h4>
-                    <div id="vul_distributing" style="height:400px;">
-                        {% if data.vul_count == 0 %}
-                            <h3 style="text-align: center;line-height: 400px;font-weight: bold;color: red;">赞, 未检测到漏洞 :)</h3>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-md-12 column">
-                    <h4>后缀分布统计</h4>
-                    <div id="ext_distributing">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-id="vul_d" data-toggle="tab">扫描结果</a></li>
+                <li><a data-id="vul_l" data-toggle="tab">漏洞列表</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="vul_d">
+                    <div class="row">
+                        <div class="col-md-6 column">
+                            <h4>漏洞分布统计</h4>
+                            <div id="vul_distributing" style="height:400px;">
+                                {% if data.vul_count == 0 %}
+                                    <h3 style="text-align: center;line-height: 400px;font-weight: bold;color: red;">赞, 未检测到漏洞 :)</h3>
+                                {% endif %}
+                            </div>
+                            {#                            <h4>后缀分布统计</h4>#}
+                            {#                            <div id="ext_distributing">#}
+                            {##}
+                            {#                            </div>#}
+                        </div>
+                        <div class="col-xs-6">
+                            <address>
+                                <h4>扫描统计</h4>
+                                <table class="table table-striped table-bordered table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>漏洞危害</th>
+                                        <th>数量</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>高危</td>
+                                        <td>{{ data.amount.h }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>中危</td>
+                                        <td>{{ data.amount.m }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>低危</td>
+                                        <td>{{ data.amount.l }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>未定义危害</td>
+                                        <td>{{ data.amount.u }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>共发现漏洞数</td>
+                                        <td>{{ data.vul_count }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </address>
+                        </div>
+                    </div><!-- End row -->
+                </div><!-- End rab -->
+                <div class="tab-pane" id="vul_l">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><strong>漏洞列表</strong></h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if data.vul_count == 0 %}
+                                <h3>无漏洞</h3>
+                            {% endif %}
+                            {% for vulnerability in data.vulnerabilities %}
+                                <h4>{{ vulnerability.vul_type }} (总数: {{ vulnerability.data | length }})</h4>
+                                <table class="table table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <td><strong>等级</strong></td>
+                                        <td><strong>触发规则</strong></td>
+                                        <td>
+                                            <strong>漏洞点</strong>
+                                        </td>
+                                        <td class="text-right"><strong>操作</strong></td>
+                                    </tr>
+                                    </thead>
+                                    {% for each_vul in vulnerability.data %}
+                                        <tbody>
+                                        <tr style="color:{{ each_vul.color }};">
+                                            <td>{{ each_vul.level }}</td>
+                                            <td>
+                                                <div class="tooltip_styled tooltip-effect-1">
+                                                    <span class="tooltip-item">{{ each_vul.rule }}</span>
+                                                    <div class="tooltip-content">{{ each_vul.repair }}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if each_vul.line == 0 %}
+                                                    <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}</span>
+                                                    {% if each_vul.verify != '' %}
+                                                        <a href="{{ each_vul.verify }}" class="btn_1 green" target="_blank">访问漏洞点</a>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
+                                                    {% if each_vul.verify != '' %}
+                                                        <a href="{{ each_vul.verify }}" class="btn_1 green" target="_blank">访问漏洞点</a>
+                                                    {% endif %}
+                                                    <pre><code class="language-php">{{ each_vul.code }}</code></pre>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-right">
+                                                <a class="btn_1 green vul-detail" data-id="{{ each_vul.id }}">漏洞详情</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    {% endfor %}
+                                </table>
+                            {% endfor %}
 
-                    </div>
+                        </div> <!-- .panel-body -->
+                    </div> <!-- .panel panel-default -->
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><strong>漏洞列表</strong></h3>
-                </div>
-                <div class="panel-body">
-                    {% if data.vul_count == 0 %}
-                        <h3>无漏洞</h3>
-                    {% endif %}
-                    {% for vulnerability in data.vulnerabilities %}
-                        <h4>{{ vulnerability.vul_type }} (总数: {{ vulnerability.data | length }})</h4>
-                        <table class="table table-condensed">
-                            <thead>
-                            <tr>
-                                <td><strong>等级</strong></td>
-                                <td><strong>触发规则</strong></td>
-                                <td>
-                                    <strong>漏洞点</strong>
-                                </td>
-                                <td><strong>修复方案</strong></td>
-                                <td class="text-right"><strong>其它</strong></td>
-                            </tr>
-                            </thead>
-                            {% for each_vul in vulnerability.data %}
-                                <tbody>
-                                <tr style="color:{{ each_vul.color }};">
-                                    <td>{{ each_vul.level }}</td>
-                                    <td>{{ each_vul.rule }}</td>
-                                    <td>
-                                        {% if each_vul.line == 0 %}
-                                            <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}</span>
-                                            {% if each_vul.verify != '' %}
-                                                <a href="{{ each_vul.verify }}" class="btn_1 green" target="_blank">访问漏洞点</a>
-                                            {% endif %}
-                                        {% else %}
-                                            <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
-                                            {% if each_vul.verify != '' %}
-                                                <a href="{{ each_vul.verify }}" class="btn_1 green" target="_blank">访问漏洞点</a>
-                                            {% endif %}
-                                            <pre><code class="language-php">{{ each_vul.code }}</code></pre>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ each_vul.repair }}</td>
-                                    <td class="text-right">
-                                        <div class="tooltip_styled tooltip-effect-1">
-                                            <span class="tooltip-item"><i class="icon_set_1_icon-74"></i></span>
-                                            <div class="tooltip-content">误报? 请反馈给我们</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            {% endfor %}
-                        </table>
-                    {% endfor %}
-
-                </div> <!-- .panel-body -->
-            </div> <!-- .panel panel-default -->
-        </div>
+    <div class="modal" style="display:none;">
+        <p>Vul Detail</p>
     </div>
     <hr>
     <!-- Containers -->
-    <h3>Help</h3>
-    <div class="row">
-        <div class="col-md-6">
-
-            <div class="box_style_2">
-                <i class="icon_set_1_icon-70"></i>
-                <h4>Need Help? <span>TT</span></h4>
-                <a href="mactt://message/user/100064" class="phone">@security</a>
-                <small>Service Time: 7*8 (09:30am - 06:30pm)</small>
-            </div>
-
-        </div><!-- End col-md-6-->
-        <div class="col-md-6">
-
-            <div class="box_style_2">
-                <i class="icon_set_1_icon-90"></i>
-                <h4><span>TT Offline?</span> Phone</h4>
-                <a href="mactt://message/user/910">@hanshui</a>/<a href="mactt://message/user/472">@zhijie</a>/<a
-                    href="mactt://message/user/1306">@shiqiao</a>
-                <br>
-                <br>
-                <small>Service Time: 7*24h</small>
-            </div>
-
-        </div><!-- End col-md-6-->
-    </div><!-- End row-->
-    {#    <div class="banner">#}
-    {#        <h4>如何 <span>提高代码安全质量?</span></h4>#}
-    {#        <p>跟着安全团队, 45天精通代码安全.</p>#}
-    {#        <a href="" class="btn_1 white">Read more</a>#}
-    {#    </div>#}
-    <hr>
     {% include "footer.html" %}
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/jquery.modal.min.js') }}" type="text/javascript" charset="utf-8"></script>
     <script>
+        // Nav
+        $(".nav-tabs li a").on('click', function () {
+            var id = $(this).attr('data-id');
+            $(".nav-tabs li").removeClass('active');
+            $(this).parent('li').addClass('active');
+            $(".tab-pane").removeClass('active');
+            $('#' + id).addClass('active');
+        });
+
         var types = [];
         var vuls = [];
         {% for vulnerability in data.vulnerabilities %}
@@ -289,99 +295,108 @@
             vul_distributing.setOption(option);
         {% endif %}
 
-        $(function () {
-            /* Ext Chart */
-            var ext_distributing = echarts.init(document.getElementById('ext_distributing'));
-            ext_distributing.showLoading();
-
-            $.get('/ext/{{ data.id }}', function (result) {
-                if (result.code == 1001) {
-                    var diskData = result.result;
-                    ext_distributing.hideLoading();
-
-                    function colorMappingChange(value) {
-                        var levelOption = getLevelOption(value);
-                        chart.setOption({
-                            series: [{
-                                levels: levelOption
-                            }]
-                        });
-                    }
-
-                    var formatUtil = echarts.format;
-
-                    function getLevelOption() {
-                        return [
-                            {
-                                itemStyle: {
-                                    normal: {
-                                        borderWidth: 0,
-                                        gapWidth: 5
-                                    }
-                                }
-                            },
-                            {
-                                itemStyle: {
-                                    normal: {
-                                        gapWidth: 1
-                                    }
-                                }
-                            },
-                            {
-                                colorSaturation: [0.35, 0.5],
-                                itemStyle: {
-                                    normal: {
-                                        gapWidth: 1,
-                                        borderColorSaturation: 0.6
-                                    }
-                                }
-                            }
-                        ];
-                    }
-
-                    ext_distributing.setOption(option = {
-                        tooltip: {
-                            formatter: function (info) {
-                                var value = info.value;
-                                var treePathInfo = info.treePathInfo;
-                                var treePath = [];
-
-                                for (var i = 1; i < treePathInfo.length; i++) {
-                                    treePath.push(treePathInfo[i].name);
-                                }
-
-                                return [
-                                    '<div class="tooltip-title">' + formatUtil.encodeHTML(treePath.join('/')) + '</div>',
-                                    'Amount: ' + formatUtil.addCommas(value),
-                                ].join('');
-                            }
-                        },
-
-                        series: [
-                            {
-                                name: 'Ext',
-                                type: 'treemap',
-                                roam: false,
-                                visibleMin: 300,
-                                label: {
-                                    show: true,
-                                    formatter: '{b}'
-                                },
-                                itemStyle: {
-                                    normal: {
-                                        borderColor: '#fff'
-                                    }
-                                },
-                                levels: getLevelOption(),
-                                data: diskData
-                            }
-                        ]
-                    });
-                } else {
-                    alert(result.result);
-                }
-            }, 'JSON');
+        $('.vul-detail').click(function (event) {
+            $(".modal").modal({
+                escapeClose: true,
+                clickClose: true,
+                showClose: true,
+                fadeDuration: 100
+            });
         });
+
+        {#        $(function () {#}
+        /* Ext Chart */
+        {#            var ext_distributing = echarts.init(document.getElementById('ext_distributing'));#}
+        {#            ext_distributing.showLoading();#}
+        {##}
+        {#            $.get('/ext/{{ data.id }}', function (result) {#}
+        {#                if (result.code == 1001) {#}
+        {#                    var diskData = result.result;#}
+        {#                    ext_distributing.hideLoading();#}
+        {##}
+        {#                    function colorMappingChange(value) {#}
+        {#                        var levelOption = getLevelOption(value);#}
+        {#                        chart.setOption({#}
+        {#                            series: [{#}
+        {#                                levels: levelOption#}
+        {#                            }]#}
+        {#                        });#}
+        {#                    }#}
+        {##}
+        {#                    var formatUtil = echarts.format;#}
+        {##}
+        {#                    function getLevelOption() {#}
+        {#                        return [#}
+        {#                            {#}
+        {#                                itemStyle: {#}
+        {#                                    normal: {#}
+        {#                                        borderWidth: 0,#}
+        {#                                        gapWidth: 5#}
+        {#                                    }#}
+        {#                                }#}
+        {#                            },#}
+        {#                            {#}
+        {#                                itemStyle: {#}
+        {#                                    normal: {#}
+        {#                                        gapWidth: 1#}
+        {#                                    }#}
+        {#                                }#}
+        {#                            },#}
+        {#                            {#}
+        {#                                colorSaturation: [0.35, 0.5],#}
+        {#                                itemStyle: {#}
+        {#                                    normal: {#}
+        {#                                        gapWidth: 1,#}
+        {#                                        borderColorSaturation: 0.6#}
+        {#                                    }#}
+        {#                                }#}
+        {#                            }#}
+        {#                        ];#}
+        {#                    }#}
+        {##}
+        {#                    ext_distributing.setOption(option = {#}
+        {#                        tooltip: {#}
+        {#                            formatter: function (info) {#}
+        {#                                var value = info.value;#}
+        {#                                var treePathInfo = info.treePathInfo;#}
+        {#                                var treePath = [];#}
+        {##}
+        {#                                for (var i = 1; i < treePathInfo.length; i++) {#}
+        {#                                    treePath.push(treePathInfo[i].name);#}
+        {#                                }#}
+        {##}
+        {#                                return [#}
+        {#                                    '<div class="tooltip-title">' + formatUtil.encodeHTML(treePath.join('/')) + '</div>',#}
+        {#                                    'Amount: ' + formatUtil.addCommas(value),#}
+        {#                                ].join('');#}
+        {#                            }#}
+        {#                        },#}
+        {##}
+        {#                        series: [#}
+        {#                            {#}
+        {#                                name: 'Ext',#}
+        {#                                type: 'treemap',#}
+        {#                                roam: false,#}
+        {#                                visibleMin: 300,#}
+        {#                                label: {#}
+        {#                                    show: true,#}
+        {#                                    formatter: '{b}'#}
+        {#                                },#}
+        {#                                itemStyle: {#}
+        {#                                    normal: {#}
+        {#                                        borderColor: '#fff'#}
+        {#                                    }#}
+        {#                                },#}
+        {#                                levels: getLevelOption(),#}
+        {#                                data: diskData#}
+        {#                            }#}
+        {#                        ]#}
+        {#                    });#}
+        {#                } else {#}
+        {#                    alert(result.result);#}
+        {#                }#}
+        {#            }, 'JSON');#}
+        {#        });#}
 
     </script>
 </div>

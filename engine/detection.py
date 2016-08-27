@@ -21,36 +21,49 @@ class Detection:
         self.rules = [
             {
                 'name': 'Kohana',
+                'language': 'PHP',
                 'site': 'http://kohanaframework.org/',
                 'source': 'https://github.com/kohana/kohana',
                 'rules': {
                     'directory': 'system/guide/kohana',
                     'file': 'system/config/userguide.php',
                 },
-                'public': 'public'
+                'public': '/public'
             },
             {
                 'name': 'Laravel',
+                'language': 'PHP',
                 'site': 'http://laravel.com/',
                 'source': 'https://github.com/laravel/laravel',
                 'rules': {
-                    'file': 'artisan'
+                    'file': '/artisan'
                 }
             },
             {
                 'name': 'ThinkPHP',
+                'language': 'PHP',
                 'site': 'http://www.thinkphp.cn/',
                 'source': 'https://github.com/top-think/thinkphp',
                 'rules': {
-                    'file': 'ThinkPHP/ThinkPHP.php'
+                    'file': '/ThinkPHP/ThinkPHP.php'
                 }
             },
             {
                 'name': 'CodeIgniter',
+                'language': 'PHP',
                 'site': 'https://codeigniter.com/',
                 'source': 'https://github.com/bcit-ci/CodeIgniter',
                 'rules': {
-                    'file': 'system/core/CodeIgniter.php'
+                    'file': '/system/core/CodeIgniter.php'
+                }
+            },
+            {
+                'name': 'Tesla/MWP',
+                'language': 'Java',
+                'site': 'http://www.mogujie.com/',
+                'source': 'http://www.mogujie.com/',
+                'rules': {
+                    'file': '/pom.xml'
                 }
             }
         ]
@@ -58,7 +71,8 @@ class Detection:
     def framework(self):
         """
         Detection framework for project
-        :return:
+        :param: framework | language
+        :return: self.rules['name']
         """
         for rule in self.rules:
             log.info("Name: {0} Site: {1} Source: {2}".format(rule['name'], rule['site'], rule['source']))
@@ -78,9 +92,9 @@ class Detection:
                             rules_completed += 1
             if rules_completed == rules_count:
                 log.info("Framework: {0}".format(rule['name']))
-                return rule['name']
-        return None
+                return rule['name'], rule['language']
+        return '', ''
 
 
 if __name__ == '__main__':
-    Detection('/tmp/cobra/versions/mogujie/').framework()
+    Detection('/tmp/cobra/versions/mogujie').framework()
