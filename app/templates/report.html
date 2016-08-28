@@ -334,6 +334,27 @@
             });
         });
 
+        // 如果URL中有筛选参数,修改select控件的值,并且自动跳转到漏洞页
+        function checkSearch() {
+            var params = window.location.search;
+            if (params == "") {
+                // 没有筛选参数,返回
+                return;
+            }
+            // 点击漏洞列表
+            $("a[data-id='vul_l']").click();
+
+            // 设置select控件的值
+            params = params.substring(1);
+            params = params.split("&");
+            for (var i = 0; i < params.length; i++) {
+                console.log(params[i]);
+                var temp_data = params[i].split("=");
+                $("#"+temp_data[0]).val(unescape(temp_data[1]));
+            }
+        }
+        checkSearch();
+
         // 点击search按钮
         $("#search-result-btn").click(function () {
             // 获取筛选条件
