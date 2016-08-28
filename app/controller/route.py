@@ -94,16 +94,20 @@ def report(task_id):
     total_vul_count = len(scan_results)
 
     # 获取出现的漏洞类型
-    res = db.session.query(CobraVuls.name).filter(
+    res = db.session.query(count().label("vul_number"), CobraVuls.name).filter(
         and_(
             CobraResults.task_id == task_id,
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id,
         )
     ).group_by(CobraVuls.name).all()
+    # 提供给筛选列表
     select_vul_type = list()
+    # 存下每种漏洞数量
+    chart_vuls_number = list()
     for r in res:
-        select_vul_type.append(r[0])
+        select_vul_type.append(r[1])
+        chart_vuls_number.append({"vuls_name": r[1], "vuls_number": r[0]})
 
     # 获取触发的规则类型
     res = db.session.query(CobraRules.description).filter(
@@ -224,6 +228,7 @@ def report(task_id):
         'vulnerabilities': vulnerabilities,
         "select_vul_type": select_vul_type,
         "select_rule_type": select_rule_type,
+        "chart_vuls_number": chart_vuls_number,
         'amount': {
             'h': high_amount,
             'm': medium_amount,

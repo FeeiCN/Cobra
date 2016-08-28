@@ -267,9 +267,9 @@
 
         var types = [];
         var vuls = [];
-        {% for vulnerability in data.vulnerabilities %}
-            types.push('{{ vulnerability.vul_type }}');
-            vuls.push({value: {{ vulnerability.data | length }}, name: '{{ vulnerability.vul_type }}'});
+        {% for chart_vuls in data.chart_vuls_number %}
+            types.push('{{ chart_vuls.vuls_name }}');
+            vuls.push({value: {{ chart_vuls.vuls_number }}, name: '{{ chart_vuls.vuls_name }}'});
         {% endfor %}
         option = {
             tooltip: {
