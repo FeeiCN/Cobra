@@ -156,17 +156,47 @@
                 </div><!-- End rab -->
                 <div class="tab-pane" id="vul_l">
                     <div class="panel panel-default">
-                        <div class="panel-heading">
+                        <div class="panel-heading" style="padding-bottom: 100px">
                             <h3 class="panel-title"><strong>漏洞列表</strong></h3>
+                            <div class="col-md-3" style="margin-top: 10px;">
+                                <label for="search_vul_type" style="color: #aaaaaa;">漏洞类型</label>
+                                <select id="search_vul_type" class="form-control" style="height: 30px;">
+                                    <option value="all">全部</option>
+                                    {% for vul in data.select_vul_type %}
+                                        <option value="{{ vul }}">{{ vul }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3" style="margin-top: 10px">
+                                <label for="search_rule" style="color: #aaaaaa;">触发规则</label>
+                                <select id="search_rule" class="form-control" style="height: 30px;">
+                                    <option value="all">全部</option>
+                                    {% for rule in data.select_rule_type %}
+                                        <option value="{{ rule }}">{{ rule }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3" style="margin-top: 10px;">
+                                <label for="search_level" style="color: #aaaaaa;">危害等级</label>
+                                <select id="search_level" class="form-control" style="height: 30px;">
+                                  <option value="all">全部</option>
+                                  <option value="3">高危</option>
+                                  <option value="2">中危</option>
+                                  <option value="1">低位</option>
+                                  <option value="0">未定义</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3" style="padding-top: 34px;padding-left: 40px;">
+                                <button class="btn btn-success" id="search-result-btn" style="width: 200px;height: 30px;padding-top: 4px;">筛选</button>
+                            </div>
+
                         </div>
                         <div class="panel-body">
                             {% if data.vul_count == 0 %}
                                 <h3>无漏洞</h3>
                             {% endif %}
-                            {% for vulnerability in data.vulnerabilities %}
-                                <h4>{{ vulnerability.vul_type }} (总数: {{ vulnerability.data | length }})</h4>
-                                <table class="table table-condensed">
-                                    <thead>
+                            <table class="table table-condensed">
+                                <thead>
                                     <tr>
                                         <td><strong>等级</strong></td>
                                         <td><strong>触发规则</strong></td>
@@ -175,9 +205,10 @@
                                         </td>
                                         <td class="text-right"><strong>操作</strong></td>
                                     </tr>
-                                    </thead>
+                                </thead>
+                                <tbody>
+                                {% for vulnerability in data.vulnerabilities %}
                                     {% for each_vul in vulnerability.data %}
-                                        <tbody>
                                         <tr style="color:{{ each_vul.color }};">
                                             <td>{{ each_vul.level }}</td>
                                             <td>
@@ -204,11 +235,10 @@
                                                 <a class="btn_1 green vul-detail" data-id="{{ each_vul.id }}">漏洞详情</a>
                                             </td>
                                         </tr>
-                                        </tbody>
                                     {% endfor %}
-                                </table>
-                            {% endfor %}
-
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div> <!-- .panel-body -->
                     </div> <!-- .panel panel-default -->
                 </div>
@@ -302,6 +332,26 @@
                 showClose: true,
                 fadeDuration: 100
             });
+        });
+
+        // 点击search按钮
+        $("#search-result-btn").click(function () {
+            // 获取筛选条件
+            var search_vul_type = $("#search_vul_type").val();
+            var search_rule = $("#search_rule").val();
+            var search_level = $("#search_level").val();
+
+            // 获取当前URL,不包含参数
+            var current_url = window.location.href.split("?");
+            current_url = current_url[0];
+
+            // 拼接跳转URL
+            var jump_url = current_url + "?search_vul_type=" + search_vul_type + "&";
+            jump_url += "search_rule=" + search_rule + "&";
+            jump_url += "search_level=" + search_level;
+
+            // 跳转
+            window.location.href = jump_url;
         });
 
         {#        $(function () {#}
