@@ -13,10 +13,12 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import time
-from utils import log, common, config
-from flask import jsonify, render_template
+
+from utils import common, config
+from flask import jsonify, render_template, request
 from sqlalchemy import and_
 from sqlalchemy.sql.functions import count
+
 from engine import detection
 from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
@@ -43,6 +45,12 @@ def homepage():
 
 @web.route('/report/<int:task_id>', methods=['GET'])
 def report(task_id):
+
+    # 获取筛选数据
+    search_vul_type = request.args.get("search_vul_type", None)
+    search_rule = request.args.get("search_rule", None)
+    search_level = request.args.get("search_level", None)
+    print search_vul_type, search_rule, search_level
 
     # 检测 task id 是否存在
     task_info = CobraTaskInfo.query.filter_by(id=task_id).first()
@@ -90,7 +98,7 @@ def report(task_id):
         and_(
             CobraResults.task_id == task_id,
             CobraResults.rule_id == CobraRules.id,
-            CobraVuls.id == CobraRules.vul_id
+            CobraVuls.id == CobraRules.vul_id,
         )
     ).group_by(CobraVuls.name).all()
     select_vul_type = list()
@@ -135,16 +143,28 @@ def report(task_id):
             unknown_amount = every_level[0]
 
     # 检索全部的漏洞信息
+    filter_group = (
+        CobraResults.task_id == task_id,
+        CobraResults.rule_id == CobraRules.id,
+        CobraVuls.id == CobraRules.vul_id,
+    )
+
+    # 根据传入的筛选条件添加SQL的条件
+    if search_vul_type is not None and search_vul_type != "all":
+        filter_group += (CobraVuls.name == search_vul_type,)
+    if search_rule is not None and search_rule != "all":
+        filter_group += (CobraRules.description == search_rule,)
+    if search_level is not None and search_level != "all":
+        filter_group += (CobraRules.level == search_level,)
+
+    # 构建SQL语句
     all_scan_results = db.session.query(
         CobraResults.file, CobraResults.line, CobraResults.code, CobraRules.description, CobraRules.level,
         CobraRules.regex_location, CobraRules.regex_repair, CobraRules.repair, CobraVuls.name
     ).filter(
-        and_(
-            CobraResults.task_id == task_id,
-            CobraResults.rule_id == CobraRules.id,
-            CobraVuls.id == CobraRules.vul_id,
-        )
-    ).all()
+        *filter_group
+    )
+    all_scan_results = all_scan_results.all()
 
     # 处理漏洞信息
     vulnerabilities = list()
