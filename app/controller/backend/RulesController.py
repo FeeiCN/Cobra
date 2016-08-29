@@ -3,13 +3,16 @@
 # file: RulesController.py
 
 import time
+import datetime
 
 from flask import redirect, render_template, request, jsonify
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
 from app import web, db
 from app.models import CobraRules, CobraVuls, CobraLanguages
 from app.CommonClass.ValidateClass import ValidateClass
+from app.CommonClass.ValidateClass import login_required
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -17,9 +20,8 @@ __email__ = "root@lightless.me"
 
 # all rules button
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
+@login_required
 def rules(page):
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     per_page = 10
     cobra_rules = CobraRules.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
@@ -66,27 +68,36 @@ def rules(page):
 
 # add new rules button
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
+@login_required
 def add_new_rule():
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
-        vc = ValidateClass(request, 'vul_type', 'language', 'regex', 'regex_confirm',
+        vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'regex_repair', 'repair_block',
                            'description', 'repair', 'level')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
 
-        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        block_repair = 1
-        rule = CobraRules(vc.vars.vul_type, vc.vars.language, vc.vars.regex, vc.vars.regex_confirm, block_repair,
-                          vc.vars.description, vc.vars.repair, 1, vc.vars.level, current_time, current_time)
+        current_time = datetime.datetime.now()
+        rule = CobraRules(
+            vul_id=vc.vars.vul_type,
+            language=vc.vars.language,
+            regex_location=vc.vars.regex_location,
+            regex_repair=vc.vars.regex_repair,
+            block_repair=vc.vars.repair_block,
+            description=vc.vars.description,
+            repair=vc.vars.repair,
+            status=1,
+            level=vc.vars.level,
+            created_at=current_time,
+            updated_at=current_time
+        )
         try:
             db.session.add(rule)
             db.session.commit()
             return jsonify(tag='success', msg='add success.')
-        except:
-            return jsonify(tag='danger', msg='add failed, try again later?')
+        except Exception as e:
+            return jsonify(tag='danger', msg='add failed, try again later?' + e.message)
     else:
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
@@ -99,9 +110,8 @@ def add_new_rule():
 
 # del special rule
 @web.route(ADMIN_URL + '/del_rule', methods=['POST'])
+@login_required
 def del_rule():
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     vc = ValidateClass(request, "rule_id")
     vc.check_args()
@@ -120,14 +130,13 @@ def del_rule():
 
 # edit special rule
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
+@login_required
 def edit_rule(rule_id):
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
 
-        vc = ValidateClass(request, "vul_type", "language", "regex", "regex_confirm", "description", "rule_id",
-                           "repair", "status", "level")
+        vc = ValidateClass(request, "vul_type", "language", "regex_location", "regex_repair", "block_repair",
+                           "description", "rule_id", "repair", "status", "level")
         ret, msg = vc.check_args()
 
         if not ret:
@@ -136,18 +145,19 @@ def edit_rule(rule_id):
         r = CobraRules.query.filter_by(id=rule_id).first()
         r.vul_id = vc.vars.vul_type
         r.language = vc.vars.language
-        r.regex = vc.vars.regex
-        r.regex_confirm = vc.vars.regex_confirm
+        r.block_repair = vc.vars.block_repair
+        r.regex_location = vc.vars.regex_location
+        r.regex_repair = vc.vars.regex_repair
         r.description = vc.vars.description
         r.repair = vc.vars.repair
         r.status = vc.vars.status
         r.level = vc.vars.level
-        r.updated_at = time.strftime('%Y-%m-%d %X', time.localtime())
+        r.updated_at = datetime.datetime.now()
         try:
             db.session.add(r)
             db.session.commit()
             return jsonify(tag='success', msg='save success.')
-        except:
+        except SQLAlchemyError:
             return jsonify(tag='danger', msg='save failed. Try again later?')
     else:
         r = CobraRules.query.filter_by(id=rule_id).first()

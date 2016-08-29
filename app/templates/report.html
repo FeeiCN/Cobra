@@ -156,17 +156,50 @@
                 </div><!-- End rab -->
                 <div class="tab-pane" id="vul_l">
                     <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><strong>漏洞列表</strong></h3>
+                        <div class="panel-heading" style="padding-bottom: 100px">
+                            <h3 class="panel-title">
+                                <strong>漏洞列表</strong>
+                                <span class="label label-default">满足筛选条件的漏洞共{{ data.filter_vul_number }}个</span>
+                            </h3>
+                            <div class="col-md-3" style="margin-top: 10px;">
+                                <label for="search_vul_type" style="color: #aaaaaa;">漏洞类型</label>
+                                <select id="search_vul_type" class="form-control" style="height: 30px;">
+                                    <option value="all">全部</option>
+                                    {% for vul in data.select_vul_type %}
+                                        <option value="{{ vul }}">{{ vul }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3" style="margin-top: 10px">
+                                <label for="search_rule" style="color: #aaaaaa;">触发规则</label>
+                                <select id="search_rule" class="form-control" style="height: 30px;">
+                                    <option value="all">全部</option>
+                                    {% for rule in data.select_rule_type %}
+                                        <option value="{{ rule }}">{{ rule }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3" style="margin-top: 10px;">
+                                <label for="search_level" style="color: #aaaaaa;">危害等级</label>
+                                <select id="search_level" class="form-control" style="height: 30px;">
+                                  <option value="all">全部</option>
+                                  <option value="3">高危</option>
+                                  <option value="2">中危</option>
+                                  <option value="1">低位</option>
+                                  <option value="0">未定义</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3" style="padding-top: 34px;padding-left: 40px;">
+                                <button class="btn btn-success" id="search-result-btn" style="width: 200px;height: 30px;padding-top: 4px;">筛选</button>
+                            </div>
+
                         </div>
                         <div class="panel-body">
                             {% if data.vul_count == 0 %}
                                 <h3>无漏洞</h3>
                             {% endif %}
-                            {% for vulnerability in data.vulnerabilities %}
-                                <h4>{{ vulnerability.vul_type }} (总数: {{ vulnerability.data | length }})</h4>
-                                <table class="table table-condensed">
-                                    <thead>
+                            <table class="table table-condensed">
+                                <thead>
                                     <tr>
                                         <td><strong>等级</strong></td>
                                         <td><strong>触发规则</strong></td>
@@ -175,9 +208,10 @@
                                         </td>
                                         <td class="text-right"><strong>操作</strong></td>
                                     </tr>
-                                    </thead>
+                                </thead>
+                                <tbody>
+                                {% for vulnerability in data.vulnerabilities %}
                                     {% for each_vul in vulnerability.data %}
-                                        <tbody>
                                         <tr style="color:{{ each_vul.color }};">
                                             <td>{{ each_vul.level }}</td>
                                             <td>
@@ -204,13 +238,33 @@
                                                 <a class="btn_1 green vul-detail" data-id="{{ each_vul.id }}">漏洞详情</a>
                                             </td>
                                         </tr>
-                                        </tbody>
                                     {% endfor %}
-                                </table>
-                            {% endfor %}
-
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div> <!-- .panel-body -->
                     </div> <!-- .panel panel-default -->
+                <nav style="text-align: center">
+                    <ul class="pagination">
+                        <li {% if data.current_page == 1 %}class="disabled"{% endif %}>
+                            <a href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        {% for i in range(data.total_pages) %}
+                            <li {% if i + 1 == data.current_page %}class="active"{% endif %}>
+                                <a href="{{ data.current_url }}&page={{ i + 1 }}">{{ i + 1 }} <span class="sr-only">(current)</span></a>
+                            </li>
+                        {% endfor %}
+
+                        <li {% if data.current_page == data.total_pages %}class="disabled"{% endif %}>
+                            <a href="#" aria-label="Previous">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
                 </div>
             </div>
         </div>
@@ -237,9 +291,9 @@
 
         var types = [];
         var vuls = [];
-        {% for vulnerability in data.vulnerabilities %}
-            types.push('{{ vulnerability.vul_type }}');
-            vuls.push({value: {{ vulnerability.data | length }}, name: '{{ vulnerability.vul_type }}'});
+        {% for chart_vuls in data.chart_vuls_number %}
+            types.push('{{ chart_vuls.vuls_name }}');
+            vuls.push({value: {{ chart_vuls.vuls_number }}, name: '{{ chart_vuls.vuls_name }}'});
         {% endfor %}
         option = {
             tooltip: {
@@ -302,6 +356,47 @@
                 showClose: true,
                 fadeDuration: 100
             });
+        });
+
+        // 如果URL中有筛选参数,修改select控件的值,并且自动跳转到漏洞页
+        function checkSearch() {
+            var params = window.location.search;
+            if (params == "") {
+                // 没有筛选参数,返回
+                return;
+            }
+            // 点击漏洞列表
+            $("a[data-id='vul_l']").click();
+
+            // 设置select控件的值
+            params = params.substring(1);
+            params = params.split("&");
+            for (var i = 0; i < params.length; i++) {
+                console.log(params[i]);
+                var temp_data = params[i].split("=");
+                $("#"+temp_data[0]).val(unescape(temp_data[1]));
+            }
+        }
+        checkSearch();
+
+        // 点击search按钮
+        $("#search-result-btn").click(function () {
+            // 获取筛选条件
+            var search_vul_type = $("#search_vul_type").val();
+            var search_rule = $("#search_rule").val();
+            var search_level = $("#search_level").val();
+
+            // 获取当前URL,不包含参数
+            var current_url = window.location.href.split("?");
+            current_url = current_url[0];
+
+            // 拼接跳转URL
+            var jump_url = current_url + "?search_vul_type=" + search_vul_type + "&";
+            jump_url += "search_rule=" + search_rule + "&";
+            jump_url += "search_level=" + search_level;
+
+            // 跳转
+            window.location.href = jump_url;
         });
 
         {#        $(function () {#}

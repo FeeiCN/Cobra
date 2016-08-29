@@ -8,7 +8,7 @@ from flask import redirect, request, session, escape, render_template
 
 from . import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass
+from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraAdminUser
 
 
@@ -55,9 +55,7 @@ def index():
 
 # main view
 @web.route(ADMIN_URL + '/main', methods=['GET'])
+@login_required
 def main():
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + "/index")
-    else:
-        return render_template("backend/index/main.html")
+    return render_template("backend/index/main.html")
 

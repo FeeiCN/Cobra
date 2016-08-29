@@ -4,11 +4,11 @@
 
 import time
 
-from flask import redirect, request, jsonify, render_template
+from flask import request, jsonify, render_template
 
 from . import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass
+from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraVuls
 
 __author__ = "lightless"
@@ -17,10 +17,8 @@ __email__ = "root@lightless.me"
 
 # add new vuls button
 @web.route(ADMIN_URL + '/add_new_vul', methods=['GET', 'POST'])
+@login_required
 def add_new_vul():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
 
@@ -43,10 +41,8 @@ def add_new_vul():
 
 # show all vuls click
 @web.route(ADMIN_URL + '/vuls/<int:page>', methods=['GET'])
+@login_required
 def vuls(page):
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     per_page_vuls = 10
     all_vuls = CobraVuls.query.order_by('id desc').limit(per_page_vuls).offset((page-1)*per_page_vuls).all()
@@ -58,10 +54,8 @@ def vuls(page):
 
 # del special vul
 @web.route(ADMIN_URL + '/del_vul', methods=['POST'])
+@login_required
 def del_vul():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     vc = ValidateClass(request, "vul_id")
     ret, msg = vc.check_args()
@@ -82,10 +76,8 @@ def del_vul():
 
 # edit special vul
 @web.route(ADMIN_URL + '/edit_vul/<int:vul_id>', methods=['GET', 'POST'])
+@login_required
 def edit_vul(vul_id):
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
 

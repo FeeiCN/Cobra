@@ -13,10 +13,14 @@
 # See the file 'doc/COPYING' for copying permission
 #
 import time
-from utils import log, common, config
-from flask import jsonify, render_template
+
+from utils import common, config
+from flask import jsonify, render_template, request
+from sqlalchemy import and_
+from sqlalchemy.sql.functions import count
+
 from engine import detection
-from app import web, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
+from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
 
 @web.route('/', methods=['GET'])
@@ -41,11 +45,20 @@ def homepage():
 
 @web.route('/report/<int:task_id>', methods=['GET'])
 def report(task_id):
+
+    # 获取筛选数据
+    search_vul_type = request.args.get("search_vul_type", None)
+    search_rule = request.args.get("search_rule", None)
+    search_level = request.args.get("search_level", None)
+    # 当前页码,默认为第一页
+    page = int(request.args.get("page", 1))
+
+    # 检测 task id 是否存在
     task_info = CobraTaskInfo.query.filter_by(id=task_id).first()
     if not task_info:
-        return jsonify(status='4004', msg='report id not found')
+        return jsonify(status="4004", msg="report id not found.")
 
-    # Task Info
+    # 获取task的信息
     repository = task_info.target
     task_created_at = task_info.created_at
     time_consume = task_info.time_consume
@@ -54,14 +67,15 @@ def report(task_id):
     files = task_info.file_count
     code_number = task_info.code_number
     if code_number is None or code_number == 0:
-        code_number = '统计中...'
+        code_number = u"统计中..."
     else:
         code_number = common.convert_number(code_number)
-    # convert timestamp to datetime
+
+    # 把时间戳转换成datetime
     time_start = time.strftime("%H:%M:%S", time.localtime(time_start))
     time_end = time.strftime("%H:%M:%S", time.localtime(time_end))
 
-    # Project Info
+    # 获取project信息
     project = CobraProjects.query.filter_by(repository=repository).first()
     if project is None:
         project_name = repository
@@ -76,86 +90,132 @@ def report(task_id):
         project_framework = project.framework
         project_url = project.url
 
-    # Vulnerabilities Info
-    results = CobraResults.query.filter_by(task_id=task_id).all()
-    vul_count = len(results)
+    # 获取漏洞总数量
+    scan_results = CobraResults.query.filter_by(task_id=task_id).all()
+    total_vul_count = len(scan_results)
 
-    # Every Level Amount
-    high_amount = 0
-    medium_amount = 0
-    low_amount = 0
-    unknown_amount = 0
+    # 获取出现的漏洞类型
+    res = db.session.query(count().label("vul_number"), CobraVuls.name).filter(
+        and_(
+            CobraResults.task_id == task_id,
+            CobraResults.rule_id == CobraRules.id,
+            CobraVuls.id == CobraRules.vul_id,
+        )
+    ).group_by(CobraVuls.name).all()
+    # 提供给筛选列表
+    select_vul_type = list()
+    # 存下每种漏洞数量
+    chart_vuls_number = list()
+    for r in res:
+        select_vul_type.append(r[1])
+        chart_vuls_number.append({"vuls_name": r[1], "vuls_number": r[0]})
 
-    # Cache Rules
-    cache_rules = {}
-    cache_vul_types = {}
+    # 获取触发的规则类型
+    res = db.session.query(CobraRules.description).filter(
+        and_(
+            CobraResults.task_id == task_id,
+            CobraResults.rule_id == CobraRules.id,
+            CobraVuls.id == CobraRules.vul_id
+        )
+    ).group_by(CobraRules.description).all()
+    select_rule_type = list()
+    for r in res:
+        select_rule_type.append(r[0])
 
-    # Vul Types
-    vul_types = []
-
-    # find rules -> vuls
-    vulnerabilities = []
-    for result in results:
-        # Cache For Rules
-        if result.rule_id in cache_rules:
-            rules = cache_rules[result.rule_id]
+    # 检索不同等级的漏洞数量
+    res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
+        and_(
+            CobraResults.task_id == task_id,
+            CobraResults.rule_id == CobraRules.id,
+            CobraVuls.id == CobraRules.vul_id,
+        )
+    ).group_by(CobraRules.level).all()
+    low_amount = medium_amount = high_amount = unknown_amount = 0
+    for every_level in res:
+        """
+        低危:1
+        中危:2
+        高危:3
+        未定义:其他值
+        """
+        if every_level[1] == 1:
+            low_amount = every_level[0]
+        elif every_level[1] == 2:
+            medium_amount = every_level[0]
+        elif every_level[1] == 3:
+            high_amount = every_level[0]
         else:
-            rules = CobraRules.query.filter_by(id=result.rule_id).first()
-            cache_rules[result.rule_id] = rules
-        # Cache For Vul Type
-        if rules.vul_id in cache_vul_types:
-            vul_type = cache_vul_types[rules.vul_id]
-        else:
-            vul_type = CobraVuls.query.filter_by(id=rules.vul_id).first().name
-            cache_vul_types[rules.vul_id] = vul_type
+            unknown_amount = every_level[0]
 
-        if vul_type not in vul_types:
-            vul_types.append(vul_type)
+    # 检索全部的漏洞信息
+    filter_group = (
+        CobraResults.task_id == task_id,
+        CobraResults.rule_id == CobraRules.id,
+        CobraVuls.id == CobraRules.vul_id,
+    )
 
-        find = False
-        for each_vul in vulnerabilities:
-            if each_vul['vul_type'] == vul_type:
-                find = True
-        if not find:
-            vulnerabilities.append({'vul_type': vul_type, 'data': []})
+    # 根据传入的筛选条件添加SQL的条件
+    if search_vul_type is not None and search_vul_type != "all":
+        filter_group += (CobraVuls.name == search_vul_type,)
+    if search_rule is not None and search_rule != "all":
+        filter_group += (CobraRules.description == search_rule,)
+    if search_level is not None and search_level != "all":
+        filter_group += (CobraRules.level == search_level,)
 
-        each_vul = {}
-        each_vul['rule'] = rules.description
-        each_vul['file'] = result.file
-        each_vul['code'] = result.code
-        each_vul['repair'] = rules.repair
-        each_vul['line'] = result.line
+    # 构建SQL语句
+    all_scan_results = db.session.query(
+        CobraResults.file, CobraResults.line, CobraResults.code, CobraRules.description, CobraRules.level,
+        CobraRules.regex_location, CobraRules.regex_repair, CobraRules.repair, CobraVuls.name
+    ).filter(
+        *filter_group
+    )
+    total_number = all_scan_results.all()
+    total_pages = len(total_number) / 10 + 1
+    all_scan_results = all_scan_results.limit(10).offset((page-1)*10).all()
 
-        # verify
-        each_vul['verify'] = ''
+    # 处理漏洞信息
+    vulnerabilities = list()
+    map_level = ["未定义", "低危", "中危", "高危"]
+    map_color = ["#555", "black", "orange", "red"]
+    for result in all_scan_results:
+
+        # 生成data数据
+        data_dict = dict()
+        data_dict["file"] = result[0]
+        data_dict["line"] = result[1]
+        data_dict["code"] = result[2]
+        data_dict["rule"] = result[3]
+        data_dict["level"] = map_level[result[4]]
+        data_dict["color"] = map_color[result[4]]
+        data_dict["repair"] = result[7]
+        data_dict['verify'] = ''
         if project_framework != '':
             for rule in detection.Detection().rules:
                 if rule['name'] == project_framework:
                     if 'public' in rule:
                         if result.file[:len(rule['public'])] == rule['public']:
-                            each_vul['verify'] = project_url + result.file.replace(rule['public'], '')
+                            data_dict['verify'] = project_url + result.file.replace(rule['public'], '')
 
-        # level
-        if rules.level == 3:
-            high_amount += 1
-            each_vul['level'] = u'高危'
-            each_vul['color'] = 'red'
-        elif rules.level == 2:
-            medium_amount += 1
-            each_vul['level'] = u'中危'
-            each_vul['color'] = 'orange'
-        elif rules.level == 1:
-            low_amount += 1
-            each_vul['level'] = u'低危'
-            each_vul['color'] = 'black'
-        else:
-            unknown_amount += 1
-            each_vul['level'] = u'未定义'
-            each_vul['color'] = '#555'
+        # 检索vulnerabilities中是否存在vul_type的类别
+        # 如果存在就添加到对应的data字典中
+        # 否则就新建一下
+        found = False
+        for v in vulnerabilities:
+            if v["vul_type"] == result[-1]:
+                # 直接添加
+                v["data"].append(data_dict)
+                # 修改标志
+                found = True
+                break
+        # 没有找到
+        if not found:
+            temp_dict = dict(vul_type=result[-1], data=list())
+            temp_dict["data"].append(data_dict)
+            vulnerabilities.append(temp_dict)
 
-        for ev in vulnerabilities:
-            if ev['vul_type'] == vul_type:
-                ev['data'].append(each_vul)
+        current_url = request.url.replace("&page={}".format(page), "").replace("page={}".format(page), "")
+        if "?" not in current_url:
+            current_url += "?"
 
     data = {
         'id': int(task_id),
@@ -171,15 +231,21 @@ def report(task_id):
         'time_end': time_end,
         'files': common.convert_number(files),
         'code_number': code_number,
-        'vul_count': common.convert_number(vul_count),
+        'vul_count': common.convert_number(total_vul_count),
         'vulnerabilities': vulnerabilities,
+        "select_vul_type": select_vul_type,
+        "select_rule_type": select_rule_type,
+        "chart_vuls_number": chart_vuls_number,
+        "current_page": page,
+        "total_pages": total_pages,
+        "filter_vul_number": len(total_number),
+        "current_url": current_url,
         'amount': {
             'h': high_amount,
             'm': medium_amount,
             'l': low_amount,
             'u': unknown_amount
         },
-        'vul_types': vul_types
     }
     return render_template('report.html', data=data)
 

@@ -1,5 +1,6 @@
 <form role="form">
-    <div class="form-group">
+<div style="margin-top: 20px;">
+    <div class="form-group col-md-3" style="padding-left: 0;">
         <label for="vul_id">Vul type</label>
         <select id="vul_type" class="form-control">
             {% for vul in data.vul_type %}
@@ -9,9 +10,9 @@
             {% endfor %}
         </select>
     </div>
-    <div class="form-group">
-        <label for="language">Language</label>
-        <select id="language" class="form-control">
+    <div class="form-group col-md-3" style="padding-right: 0;">
+        <label for="add-rule-language">Language</label>
+        <select id="add-rule-language" class="form-control">
             {% for lang in data.languages %}
                 <option value="{{ lang.id }}">
                     {{ lang.language }} ({{ lang.extensions }})
@@ -19,35 +20,47 @@
             {% endfor %}
         </select>
     </div>
-    <div class="form-group">
-        <label for="regex">Regex In Perl Mode</label>
-        <textarea class="form-control" id="regex"></textarea>
+    <div class="form-group col-md-3" style="padding-left: 50px">
+        <label>Repair Block</label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="repair-block" id="repair-block" value="0">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Function Up
+        </label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="repair-block" id="repair-block" value="1">
+            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Function Down
+        </label>
     </div>
-    <div class="form-group">
-        <label for="confirm-regex">Confirm Regex In Perl Mode</label>
-        <textarea class="form-control" id="confirm-regex"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="description">Description</label>
-        <textarea class="form-control" id="description"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="repair">Repair</label>
-        <textarea class="form-control" id="repair"></textarea>
-    </div>
-    <div class="form-group">
-        <label>Level</label>&nbsp;&nbsp;&nbsp;&nbsp;
-        <label class="radio-inline">
+    <div class="form-group col-md-3">
+        <label>Level</label>
+        <label class="radio" style="padding-left: 20px;">
             <input type="radio" name="level" id="level" value="1"> Low
         </label>
-        <label class="radio-inline">
+        <label class="radio" style="padding-left: 20px;">
             <input type="radio" name="level" id="level" value="2"> Medium
         </label>
-        <label class="radio-inline">
+        <label class="radio" style="padding-left: 20px;">
             <input type="radio" name="level" id="level" value="3" checked> High
         </label>
     </div>
+</div>
+    <div class="form-group">
+        <label for="regex-location">Regex Location</label>
+        <textarea class="form-control" id="regex-location" placeholder="Please input location regex."></textarea>
+    </div>
+    <div class="form-group">
+        <label for="regex-repair">Regex Repair</label>
+        <textarea class="form-control" id="regex-repair" placeholder="Please input repair regex."></textarea>
+    </div>
 
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" placeholder="Please input rule description."></textarea>
+    </div>
+    <div class="form-group">
+        <label for="repair">Repair</label>
+        <textarea class="form-control" id="repair" placeholder="Please input repair method."></textarea>
+    </div>
     <div id="add-new-rule-result" hidden></div>
-    <button type="button" class="btn btn-success" id="add-new-rule-button">Add</button>
+    <button type="button" class="btn btn-success" id="add-new-rule-button" style="width: 150px;">Add</button>
 </form>

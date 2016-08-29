@@ -1,6 +1,6 @@
 <form role="form">
-    <div class="form-group">
-        <label for="vul_id">Vul type</label>
+    <div class="form-group col-md-6" style="padding-left: 0">
+        <label for="vul_type">Vul type</label>
         <select id="vul_type" class="form-control">
             {% for vul in data.all_vuls %}
                 <option value="{{ vul.id }}" {% if vul.id == data.rule.vul_id %}selected{% endif %}>
@@ -9,7 +9,7 @@
             {% endfor %}
         </select>
     </div>
-    <div class="form-group">
+    <div class="form-group col-md-6" style="padding-right: 0">
         <label for="language">Language</label>
         <select id="language" class="form-control">
             {% for lang in data.all_lang %}
@@ -19,13 +19,47 @@
             {% endfor %}
         </select>
     </div>
-    <div class="form-group">
-        <label for="regex">Regex In Perl Mode</label>
-        <textarea class="form-control" id="regex">{{ data.rule.regex }}</textarea>
+    <div class="form-group col-md-4">
+        <label for="status">Status</label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="status" id="status" value="1"
+                   {% if data.rule.status == 1 %}checked{% endif %}> On
+        </label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="status" id="status" value="0"
+                   {% if data.rule.status == 0 %}checked{% endif %}> Off
+        </label>
+    </div>
+    <div class="form-group col-md-4">
+        <label>Repair Block</label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="repair-block" id="repair-block" value="0" {% if data.rule.block_repair == 0 %}checked{% endif %}>
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Function Up
+        </label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="repair-block" id="repair-block" value="1" {% if data.rule.block_repair == 1 %}checked{% endif %}>
+            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Function Down
+        </label>
+    </div>
+    <div class="form-group col-md-4">
+        <label>Level</label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="level" id="level" value="1" {% if data.rule.level == 1 %}checked{% endif %}> Low
+        </label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="level" id="level" value="2" {% if data.rule.level == 2 %}checked{% endif %}> Medium
+        </label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="level" id="level" value="3" {% if data.rule.level == 3 %}checked{% endif %}> High
+        </label>
     </div>
     <div class="form-group">
-        <label for="confirm-regex">Confirm Regex</label>
-        <textarea class="form-control" id="confirm-regex">{{ data.rule.regex_confirm }}</textarea>
+        <label for="regex-location">Regex Location</label>
+        <textarea class="form-control" id="regex-location">{{ data.rule.regex_location }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="regex-repair">Regex Repair</label>
+        <textarea class="form-control" id="regex-repair">{{ data.rule.regex_repair }}</textarea>
     </div>
     <div class="form-group">
         <label for="description">Description</label>
@@ -35,30 +69,10 @@
         <label for="repair">Repair</label>
         <textarea class="form-control" id="repair">{{ data.rule.repair }}</textarea>
     </div>
-    <div class="form-group">
-        <label for="status">Status</label>&nbsp;&nbsp;&nbsp;&nbsp;
-        <label class="radio-inline">
-            <input type="radio" name="status" id="status" value="1"
-                   {% if data.rule.status == 1 %}checked{% endif %}> On
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="status" id="status" value="0"
-                   {% if data.rule.status == 0 %}checked{% endif %}> Off
-        </label>
-    </div>
-    <div class="form-group">
-        <label>Level</label>&nbsp;&nbsp;&nbsp;&nbsp;
-        <label class="radio-inline">
-            <input type="radio" name="level" id="level" value="1" {% if data.rule.level == 1 %}checked{% endif %}> Low
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="level" id="level" value="2" {% if data.rule.level == 2 %}checked{% endif %}> Medium
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="level" id="level" value="3" {% if data.rule.level == 3 %}checked{% endif %}> High
-        </label>
-    </div>
+
     <div id="edit-rule-result" hidden></div>
-    <button type="button" class="btn btn-success" id="edit-rule-button">Save</button>&nbsp;&nbsp;
-    <button type="button" class="btn btn-primary" id="back-rule-button">Back</button>
+    <div style="text-align: center">
+    <button type="button" class="btn btn-success" id="edit-rule-button" style="width: 150px;margin: 20px;">Save</button>
+    <button type="button" class="btn btn-primary" id="back-rule-button" style="width: 150px;margin: 20px;">Back</button>
+    </div>
 </form>
