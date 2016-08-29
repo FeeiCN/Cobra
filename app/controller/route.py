@@ -45,7 +45,6 @@ def homepage():
 
 @web.route('/report/<int:task_id>', methods=['GET'])
 def report(task_id):
-
     # 获取筛选数据
     search_vul_type = request.args.get("search_vul_type", None)
     search_rule = request.args.get("search_rule", None)
@@ -169,14 +168,16 @@ def report(task_id):
     ).filter(
         *filter_group
     )
+    page_size = 5
     total_number = all_scan_results.all()
-    total_pages = len(total_number) / 10 + 1
-    all_scan_results = all_scan_results.limit(10).offset((page-1)*10).all()
+    total_pages = len(total_number) / page_size + 1
+    all_scan_results = all_scan_results.limit(page_size).offset((page - 1) * page_size).all()
 
     # 处理漏洞信息
     vulnerabilities = list()
     map_level = ["未定义", "低危", "中危", "高危"]
     map_color = ["#555", "black", "orange", "red"]
+    current_url = ''
     for result in all_scan_results:
 
         # 生成data数据
