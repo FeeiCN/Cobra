@@ -50,7 +50,8 @@ def report(task_id):
     search_vul_type = request.args.get("search_vul_type", None)
     search_rule = request.args.get("search_rule", None)
     search_level = request.args.get("search_level", None)
-    print search_vul_type, search_rule, search_level
+    # 当前页码,默认为第一页
+    page = int(request.args.get("page", 1))
 
     # 检测 task id 是否存在
     task_info = CobraTaskInfo.query.filter_by(id=task_id).first()
@@ -168,7 +169,9 @@ def report(task_id):
     ).filter(
         *filter_group
     )
-    all_scan_results = all_scan_results.all()
+    total_number = all_scan_results.all()
+    total_pages = len(total_number) / 10 + 1
+    all_scan_results = all_scan_results.limit(10).offset((page-1)*10).all()
 
     # 处理漏洞信息
     vulnerabilities = list()
@@ -210,6 +213,10 @@ def report(task_id):
             temp_dict["data"].append(data_dict)
             vulnerabilities.append(temp_dict)
 
+        current_url = request.url.replace("&page={}".format(page), "").replace("page={}".format(page), "")
+        if "?" not in current_url:
+            current_url += "?"
+
     data = {
         'id': int(task_id),
         'project_name': project_name,
@@ -229,6 +236,10 @@ def report(task_id):
         "select_vul_type": select_vul_type,
         "select_rule_type": select_rule_type,
         "chart_vuls_number": chart_vuls_number,
+        "current_page": page,
+        "total_pages": total_pages,
+        "filter_vul_number": len(total_number),
+        "current_url": current_url,
         'amount': {
             'h': high_amount,
             'm': medium_amount,

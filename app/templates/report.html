@@ -157,7 +157,10 @@
                 <div class="tab-pane" id="vul_l">
                     <div class="panel panel-default">
                         <div class="panel-heading" style="padding-bottom: 100px">
-                            <h3 class="panel-title"><strong>漏洞列表</strong></h3>
+                            <h3 class="panel-title">
+                                <strong>漏洞列表</strong>
+                                <span class="label label-default">满足筛选条件的漏洞共{{ data.filter_vul_number }}个</span>
+                            </h3>
                             <div class="col-md-3" style="margin-top: 10px;">
                                 <label for="search_vul_type" style="color: #aaaaaa;">漏洞类型</label>
                                 <select id="search_vul_type" class="form-control" style="height: 30px;">
@@ -241,6 +244,27 @@
                             </table>
                         </div> <!-- .panel-body -->
                     </div> <!-- .panel panel-default -->
+                <nav style="text-align: center">
+                    <ul class="pagination">
+                        <li {% if data.current_page == 1 %}class="disabled"{% endif %}>
+                            <a href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        {% for i in range(data.total_pages) %}
+                            <li {% if i + 1 == data.current_page %}class="active"{% endif %}>
+                                <a href="{{ data.current_url }}&page={{ i + 1 }}">{{ i + 1 }} <span class="sr-only">(current)</span></a>
+                            </li>
+                        {% endfor %}
+
+                        <li {% if data.current_page == data.total_pages %}class="disabled"{% endif %}>
+                            <a href="#" aria-label="Previous">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
                 </div>
             </div>
         </div>
