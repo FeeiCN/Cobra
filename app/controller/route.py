@@ -80,8 +80,8 @@ def report(task_id):
         project_name = repository
         author = 'Anonymous'
         project_description = 'Compress Project'
-        project_framework = ''
-        project_url = ''
+        project_framework = 'Unknown Framework'
+        project_url = 'Unknown URL'
     else:
         project_name = project.name
         author = project.author

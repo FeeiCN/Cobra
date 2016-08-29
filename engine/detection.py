@@ -93,7 +93,7 @@ class Detection:
             if rules_completed == rules_count:
                 log.info("Framework: {0}".format(rule['name']))
                 return rule['name'], rule['language']
-        return '', ''
+        return 'Unknown Framework', 'Unknown Language'
 
 
 if __name__ == '__main__':
