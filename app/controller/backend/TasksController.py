@@ -4,7 +4,7 @@
 
 import datetime
 
-from flask import redirect, render_template, request, jsonify
+from flask import render_template, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
