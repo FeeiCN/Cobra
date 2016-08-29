@@ -5,10 +5,11 @@
 import datetime
 
 from flask import redirect, render_template, request, jsonify
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass
+from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraTaskInfo
 from utils import config
 
@@ -18,9 +19,8 @@ __email__ = "root@lightless.me"
 
 # show all tasks
 @web.route(ADMIN_URL + '/tasks/<int:page>', methods=['GET'])
+@login_required
 def tasks(page):
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     per_page = 10
     tasks = CobraTaskInfo.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
@@ -37,29 +37,28 @@ def tasks(page):
 
 # del the special task
 @web.route(ADMIN_URL + '/del_task', methods=['POST'])
+@login_required
 def del_task():
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     vc = ValidateClass(request, "id")
     ret, msg = vc.check_args()
     if not ret:
         return jsonify(tag="danger", msg=msg)
 
-    task = CobraTaskInfo.query.filter_by(id=vc.vars.task_id).first()
+    task = CobraTaskInfo.query.filter_by(id=vc.vars.id).first()
     try:
         db.session.delete(task)
         db.session.commit()
         return jsonify(tag='success', msg='delete success.')
-    except:
+    except SQLAlchemyError as e:
+        print e
         return jsonify(tag='danger', msg='unknown error.')
 
 
 # edit the special task
 @web.route(ADMIN_URL + '/edit_task/<int:task_id>', methods=['GET', 'POST'])
+@login_required
 def edit_task(task_id):
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
 
     if request.method == 'POST':
 
@@ -95,7 +94,8 @@ def edit_task(task_id):
             db.session.add(task)
             db.session.commit()
             return jsonify(tag='success', msg='save success.')
-        except:
+        except SQLAlchemyError as e:
+            print e
             return jsonify(tag='danger', msg='save failed. Try again later?')
     else:
         task = CobraTaskInfo.query.filter_by(id=task_id).first()
