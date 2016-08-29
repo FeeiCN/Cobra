@@ -212,7 +212,7 @@ class Static:
                                 else:
                                     # parse file function structure
                                     found_vul = False
-                                    if file_path[-3:] == 'php' and rule.regex_repair != '':
+                                    if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
                                         parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
                                         if parse_instance.is_controllable_param():
                                             if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
