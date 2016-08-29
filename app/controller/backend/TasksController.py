@@ -23,7 +23,7 @@ def tasks(page):
         return redirect(ADMIN_URL + '/index')
 
     per_page = 10
-    tasks = CobraTaskInfo.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
+    tasks = CobraTaskInfo.query.order_by(CobraTaskInfo.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
 
     # replace data
     for task in tasks:

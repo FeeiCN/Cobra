@@ -24,7 +24,7 @@ __email__ = "root@lightless.me"
 def rules(page):
 
     per_page = 10
-    cobra_rules = CobraRules.query.order_by('id desc').limit(per_page).offset((page - 1) * per_page).all()
+    cobra_rules = CobraRules.query.order_by(CobraRules.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
     cobra_vuls = CobraVuls.query.all()
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
