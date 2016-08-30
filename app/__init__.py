@@ -175,7 +175,7 @@ class Install(Command):
             "PSD": ".psd",
             "Thumb": ".db",
         }
-        for language, extensions in languages.iteritems():
+        for language, extensions in languages.items():
             a_language = CobraLanguages(language, extensions)
             db.session.add(a_language)
 

@@ -17,7 +17,7 @@ import time
 import subprocess
 from app import db, CobraProjects, CobraTaskInfo
 from utils import config, decompress, log
-from pickup import GitTools
+from pickup import git
 from engine import detection
 
 
@@ -48,7 +48,7 @@ class Scan:
         subprocess.Popen(['python', cobra_path, "scan", "-p", str(0), "-i", str(task.id), "-t", directory])
         # Statistic Code
         subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", directory])
-        result = {}
+        result = dict()
         result['scan_id'] = task.id
         result['project_id'] = 0
         result['msg'] = u'success'
@@ -64,7 +64,7 @@ class Scan:
             else:
                 username = False
                 password = False
-            gg = GitTools.Git(self.target, branch=branch, username=username, password=password)
+            gg = git.Git(self.target, branch=branch, username=username, password=password)
             repo_author = gg.repo_author
             repo_name = gg.repo_name
             repo_directory = gg.repo_directory
@@ -119,7 +119,7 @@ class Scan:
             subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
             # Statistic Code
             subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
-            result = {}
+            result = dict()
             result['scan_id'] = task.id
             result['project_id'] = project_id
             result['msg'] = u'success'

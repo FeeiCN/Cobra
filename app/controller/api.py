@@ -105,12 +105,12 @@ def upload_file():
     # check if the post request has the file part
     if 'file' not in request.files:
         return jsonify(code=1002, result="File can't empty!")
-    file = request.files['file']
-    if file.filename == '':
+    file_instance = request.files['file']
+    if file_instance.filename == '':
         return jsonify(code=1002, result="File name can't empty!")
-    if file and common.allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(os.path.join(config.Config('upload', 'directory').value, 'uploads'), filename))
+    if file_instance and common.allowed_file(file_instance.filename):
+        filename = secure_filename(file_instance.filename)
+        file_instance.save(os.path.join(os.path.join(config.Config('upload', 'directory').value, 'uploads'), filename))
         # scan job
         code, result = scan.Scan(filename).compress()
         return jsonify(code=code, result=result)

@@ -212,7 +212,6 @@ class Static:
                                     log.info("In Annotation")
                                 else:
                                     # parse file function structure
-                                    found_vul = False
                                     if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
                                         parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
                                         if parse_instance.is_controllable_param():
@@ -244,7 +243,7 @@ class Static:
                     log.info('Not Found')
 
             except Exception as e:
-                print traceback.print_exc()
+                print(traceback.print_exc())
                 log.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task

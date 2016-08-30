@@ -14,7 +14,7 @@
 import subprocess
 import sys
 import logging
-import ConfigParser
+from utils import config
 
 
 class Subversion:
@@ -26,10 +26,8 @@ class Subversion:
         self.current_version = current_version
         self.online_version = online_version
 
-        config = ConfigParser.ConfigParser()
-        config.read('config')
-        self.username = config.get('svn', 'username')
-        self.password = config.get('svn', 'password')
+        self.username = config.Config('svn', 'username').value
+        self.password = config.Config('svn', 'password').value
 
         # Test SVN
         cmd = self.svn + " info --no-auth-cache --non-interactive --username='%s' --password='%s' %s" % (

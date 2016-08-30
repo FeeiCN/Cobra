@@ -22,7 +22,7 @@ from utils import log, config
 usage and example.
 
 #!/usr/bin/env python
-from pickup.GitTools import Git
+from pickup.git import Git
 repo_address = 'your repo address here'
 
 # create a git object.

@@ -85,7 +85,7 @@ class Decompress:
         """
         get real directory
         /path/project-v1.2/project-v1.2 -> /path/project-v1.2/
-        :param directory:
+        :param:
         :return:
         """
         directory = os.path.join(self.upload_directory, self.dir_name)
