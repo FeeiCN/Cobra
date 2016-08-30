@@ -1,7 +1,16 @@
-#!/usr/bin/env python2
-# coding: utf-8
-# file: ValidateClass.py
+# -*- coding: utf-8 -*-
 
+"""
+    common.validate
+    ~~~~~~~~~~~~~~~
+
+    Implements validate
+
+    :author:    Feei <wufeifei#wufeifei.com>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2016 Feei. All rights reserved
+"""
 from functools import wraps
 
 from flask import session, redirect

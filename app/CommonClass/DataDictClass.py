@@ -1,7 +1,16 @@
-#!/usr/bin/env python2
-# coding: utf-8
-# file: DataDictClass
+# -*- coding: utf-8 -*-
 
+"""
+    commonclass.datadict
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Implements data dict
+
+    :author:    Feei <wufeifei#wufeifei.com>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2016 Feei. All rights reserved
+"""
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -35,4 +44,3 @@ class DataDict(dict):
     def __delitem__(self, key):
         super(DataDict, self).__delitem__(key)
         del self.__dict__[key]
-

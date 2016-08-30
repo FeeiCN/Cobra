@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# Copyright 2016 Feei. All Rights Reserved
-#
-# :author:   Feei <wufeifei@wufeifei.com>
-# :homepage: https://github.com/wufeifei/cobra
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#
-# See the file 'docs/COPYING' for copying permission
-#
+
+"""
+    profile
+    ~~~~~~~
+
+    Implements the profile performance for cobra
+
+    :author:    Feei <wufeifei#wufeifei.com>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2016 Feei. All rights reserved
+"""
 from werkzeug.contrib.profiler import ProfilerMiddleware
 from app import web
 

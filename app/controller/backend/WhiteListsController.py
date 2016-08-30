@@ -1,7 +1,16 @@
-#!/usr/bin/env python2
-# coding: utf-8
-# file: WhiteListsController.py
+# -*- coding: utf-8 -*-
 
+"""
+    backend.whitelist
+    ~~~~~~~~~~~~~~~~~
+
+    Implements whitelist controller
+
+    :author:    Feei <wufeifei#wufeifei.com>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2016 Feei. All rights reserved
+"""
 import time
 
 from flask import jsonify, render_template, request

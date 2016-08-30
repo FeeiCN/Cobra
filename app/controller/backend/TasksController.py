@@ -1,7 +1,16 @@
-#!/usr/bin/env python2
-# coding: utf-8
-# file: TasksController.py
+# -*- coding: utf-8 -*-
 
+"""
+    backend.tasks
+    ~~~~~~~~~~~~~
+
+    Implements tasks controller
+
+    :author:    Feei <wufeifei#wufeifei.com>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2016 Feei. All rights reserved
+"""
 import datetime
 
 from flask import render_template, request, jsonify

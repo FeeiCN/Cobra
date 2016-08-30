@@ -1,7 +1,16 @@
-#!/usr/bin/env python2
-# coding: utf-8
-# file: SearchController.py
+# -*- coding: utf-8 -*-
 
+"""
+    backend.search
+    ~~~~~~~~~~~~~~
+
+    Implements search controller
+
+    :author:    Feei <wufeifei#wufeifei.com>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2016 Feei. All rights reserved
+"""
 from flask import request, render_template, jsonify
 
 from . import ADMIN_URL
