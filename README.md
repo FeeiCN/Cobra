@@ -45,11 +45,11 @@ Cobra（眼镜蛇）是一款定位于静态代码安全漏洞分析系统。通
 
 ## 项目截图
 ##### Cobra自助扫描
-![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANUAL.png)
+![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
 ##### Cobra扫描报告
-![Cobra Report](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/REPORT.png)
+![Cobra Report](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
 ##### Cobra管理后台
-![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/doc/MANAGE.png)
+![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
 
 ## 相关链接
 - Cobra文档 - https://github.com/wufeifei/cobra/wiki
