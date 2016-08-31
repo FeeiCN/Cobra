@@ -66,7 +66,35 @@ class Detection:
                 'rules': {
                     'file': '/pom.xml'
                 }
-            }
+            },
+            {
+                'name': 'Drupal',
+                'language': 'PHP',
+                'site': 'https://drupal.org/project/drupal',
+                'source': 'https://github.com/drupal/drupal',
+                'rules': {
+                    'file': '/core/misc/drupal.js'
+                }
+            },
+            {
+                'name': 'Joomla',
+                'language': 'PHP',
+                'site': 'https://www.joomla.org/',
+                'source': 'https://github.com/joomla/joomla-cms',
+                'rules': {
+                    'file': '/media/system/js/validate.js'
+                }
+            },
+            {
+                'name': 'Wordpress',
+                'language': 'PHP',
+                'site': 'http://wordpress.org/',
+                'source': 'https://github.com/WordPress/WordPress',
+                'rules': {
+                    'file': '/wp-admin/wp-admin.css',
+                    'file2': 'wp-includes/js/tinymce/tiny_mce_popup.js'
+                }
+            },
         ]
 
     def framework(self):
