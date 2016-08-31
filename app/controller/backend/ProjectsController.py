@@ -55,6 +55,36 @@ def del_project():
             return jsonify(tag='danger', msg='unknown error. please try later?')
     else:
         return 'Method error!'
+@web.route(ADMIN_URL + '/add_new_project/', methods = ['GET', 'POST'])
+def add_project():
+    if not ValidateClass.check_login():
+	return redirect(ADMIN_URL + '/index')
+    if request.method == "POST":
+
+        vc = ValidateClass(request, "name", "repository", "author", "remark")
+        ret, msg = vc.check_args()
+        if not ret:
+            return jsonify(tag="danger", msg=msg)
+
+        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+	project = CobraProjects(vc.vars.repository, 'xcar.com.cn',vc.vars.name, vc.vars.author,'','1', vc.vars.remark,current_time, current_time, current_time)
+
+
+        # update project data
+        #project.name = vc.vars.name
+        #project.author = vc.vars.author
+        #project.remark = vc.vars.remark
+        #project.repository = vc.vars.repository
+        #project.updated_at = current_time
+        try:
+            db.session.add(project)
+            db.session.commit()
+            return jsonify(tag='success', msg='save success.')
+        except:
+            return jsonify(tag='danger', msg='Unknown error.')
+    else:
+        return render_template('backend/project/add_project.html',data={}
+        )
 
 
 # edit the special projects

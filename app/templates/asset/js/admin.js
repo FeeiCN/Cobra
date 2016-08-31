@@ -287,7 +287,45 @@ $("#main-div").delegate("span", "click", function () {
         }
 
     } else if (target === "project") {
-        if (type === "edit") {
+	if (type === "add") {
+	    $.get("add_project/", function(data){
+		$("#main-div").html(data);
+		$("add-project-button").click(function(){
+		    var name = $("#name").val();
+                    var repository = $("#repository").val();
+                    var author = $("#author").val();
+                    var remark = $("#remark").val();
+
+                    if (!name || name == "") {
+                        showAlert('danger', 'name can not be empty!', 'add-project-result');
+                        return false;
+                    }
+                    if (!repository || repository == "") {
+                        showAlert('danger', 'repository can not be empty!', '#add-project-result');
+                        return false;
+                    }
+                    if (!remark || remark == "") {
+                        showAlert('danger', 'remark can not be empty!', '#add-project-result');
+                        return false;
+                    }
+                    if (!author || author == "") {
+                        showAlert('danger', 'author cannot be empty!', '#add-project-result');
+                        return false;
+                    }
+
+                    data = {
+                        'name': name,
+                        'repository': repository,
+                        'author': author,
+                        'remark': remark
+                    };
+                    $.post('add_project/' , data, function (res) {
+                        showAlert(res.tag, res.msg, '#add-project-result');
+                    });
+		});
+	    });
+	}
+        else if (type === "edit") {
             $.get("edit_project/" + cid, function (data) {
                 $("#main-div").html(data);
 
@@ -589,6 +627,47 @@ $("#show_all_projects").click(function () {
 
     $.get('projects/1', function (data) {
         $("#main-div").html(data);
+	$("#add_new_project").click(function () {
+            $.get('add_new_project', function (data) {
+                $("#main-div").html(data);
+
+                $("#add-project-button").click(function () {
+		    var name = $("#name").val();
+                    var repository = $("#repository").val();
+                    var author = $("#author").val();
+                    var remark = $("#remark").val();
+
+                    if (!name || name == "") {
+                        showAlert('danger', 'name can not be empty!', 'add-project-result');
+                        return false;
+                    }
+                    if (!repository || repository == "") {
+                        showAlert('danger', 'repository can not be empty!', '#add-project-result');
+                        return false;
+                    }
+                    if (!remark || remark == "") {
+                        showAlert('danger', 'remark can not be empty!', '#add-project-result');
+                        return false;
+                    }
+                    if (!author || author == "") {
+                        showAlert('danger', 'author cannot be empty!', '#add-project-result');
+                        return false;
+                    }
+
+                    data = {
+                        'name': name,
+                        'repository': repository,
+                        'author': author,
+                        'remark': remark
+                    };
+                    $.post('add_new_project/' , data, function (res) {
+                        showAlert(res.tag, res.msg, '#add-project-result');
+                    });
+
+                });
+
+            });
+        });
     });
 
     make_pagination(1, 'projects');
