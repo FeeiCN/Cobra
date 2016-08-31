@@ -13,7 +13,7 @@
     <tbody id="main-table">
     {% for task in data.tasks %}
         <tr>
-            <td><a href="http://cobra.mogujie.org/report/{{ task.id }}" target="_blank">{{ task.id }}</a></td>
+            <td><a href="{{ task.report }}" target="_blank">{{ task.id }}</a></td>
             <td>{{ task.branch }}</td>
             <td>{{ task.scan_way }}</td>
             <td>{{ task.file_count }}</td>

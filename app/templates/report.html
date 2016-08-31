@@ -77,8 +77,8 @@
                     <address>
                         <h4>项目信息:</h4>
                         <span class="content"><strong>项目名称: </strong>{{ data.project_name }} (@{{ data.author }})</span><br>
-                        <span class="content"><strong>项目域名: </strong>{{ data.project_url }}</span><br>
-                        <span class="content"><strong>项目框架: </strong>{{ data.project_framework }}</span><br>
+                        <span class="content"><strong>项目域名: </strong>{{ data.project_url|default('Unkown URL', True) }}</span><br>
+                        <span class="content"><strong>项目框架: </strong>{{ data.project_framework|default('Unkown Framework', True) }}</span><br>
                         <span class="content"><strong>项目仓库: </strong>{{ data.project_repository }}</span>
                     </address>
                 </div>
@@ -182,11 +182,11 @@
                             <div class="col-md-3" style="margin-top: 10px;">
                                 <label for="search_level" style="color: #aaaaaa;">危害等级</label>
                                 <select id="search_level" class="form-control" style="height: 30px;">
-                                  <option value="all">全部</option>
-                                  <option value="3">高危</option>
-                                  <option value="2">中危</option>
-                                  <option value="1">低位</option>
-                                  <option value="0">未定义</option>
+                                    <option value="all">全部</option>
+                                    <option value="3">高危</option>
+                                    <option value="2">中危</option>
+                                    <option value="1">低位</option>
+                                    <option value="0">未定义</option>
                                 </select>
                             </div>
                             <div class="col-md-3" style="padding-top: 34px;padding-left: 40px;">
@@ -200,14 +200,14 @@
                             {% endif %}
                             <table class="table table-condensed">
                                 <thead>
-                                    <tr>
-                                        <td><strong>等级</strong></td>
-                                        <td><strong>触发规则</strong></td>
-                                        <td>
-                                            <strong>漏洞点</strong>
-                                        </td>
-                                        <td class="text-right"><strong>操作</strong></td>
-                                    </tr>
+                                <tr>
+                                    <td><strong>等级</strong></td>
+                                    <td><strong>触发规则</strong></td>
+                                    <td>
+                                        <strong>漏洞点</strong>
+                                    </td>
+                                    <td class="text-right"><strong>操作</strong></td>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 {% for vulnerability in data.vulnerabilities %}
@@ -244,27 +244,27 @@
                             </table>
                         </div> <!-- .panel-body -->
                     </div> <!-- .panel panel-default -->
-                <nav style="text-align: center">
-                    <ul class="pagination">
-                        <li {% if data.current_page == 1 %}class="disabled"{% endif %}>
-                            <a href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-
-                        {% for i in range(data.total_pages) %}
-                            <li {% if i + 1 == data.current_page %}class="active"{% endif %}>
-                                <a href="{{ data.current_url }}&page={{ i + 1 }}">{{ i + 1 }} <span class="sr-only">(current)</span></a>
+                    <nav style="text-align: center">
+                        <ul class="pagination">
+                            <li {% if data.current_page == 1 %}class="disabled"{% endif %}>
+                                <a href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
                             </li>
-                        {% endfor %}
 
-                        <li {% if data.current_page == data.total_pages %}class="disabled"{% endif %}>
-                            <a href="#" aria-label="Previous">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                            {% for i in range(data.total_pages) %}
+                                <li {% if i + 1 == data.current_page %}class="active"{% endif %}>
+                                    <a href="{{ data.current_url }}&page={{ i + 1 }}">{{ i + 1 }} <span class="sr-only">(current)</span></a>
+                                </li>
+                            {% endfor %}
+
+                            <li {% if data.current_page == data.total_pages %}class="disabled"{% endif %}>
+                                <a href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -374,7 +374,7 @@
             for (var i = 0; i < params.length; i++) {
                 console.log(params[i]);
                 var temp_data = params[i].split("=");
-                $("#"+temp_data[0]).val(unescape(temp_data[1]));
+                $("#" + temp_data[0]).val(unescape(temp_data[1]));
             }
         }
         checkSearch();
