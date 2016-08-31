@@ -20,6 +20,10 @@ from utils import log
 
 
 class Parse:
+    """
+    Parse code syntax
+    """
+
     def __init__(self, rule, file_path, line, code):
         self.rule = rule
         self.file_path = file_path
