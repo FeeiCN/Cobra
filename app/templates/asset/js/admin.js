@@ -89,7 +89,7 @@ function next(cp, tp, t) {
 $("#search_rules_bar").delegate("button#search_rules_button", "click", function (event) {
 
     $("#paginate").html("");
-    event.preventDefault();
+    event.preventdefault();
 
     var language = $("#language").val();
     var vul = $("#vul").val();
@@ -137,35 +137,35 @@ $("#main-div").delegate("span", "click", function () {
 
                     // check data
                     if (!vul_type || vul_type == "") {
-                        showAlert('danger', 'vul type error.', '#edit-rule-result');
+                        showalert('danger', 'vul type error.', '#edit-rule-result');
                         return false;
                     }
                     if (!lang || lang == "") {
-                        showAlert('danger', 'language error.', '#edit-rule-result');
+                        showalert('danger', 'language error.', '#edit-rule-result');
                         return false;
                     }
                     if (!description || description == "") {
-                        showAlert('danger', 'description can not be blank.', '#edit-rule-result');
+                        showalert('danger', 'description can not be blank.', '#edit-rule-result');
                         return false;
                     }
                     if (!regex || regex == "") {
-                        showAlert('danger', 'regex can not be blank.', '#edit-rule-result');
+                        showalert('danger', 'regex can not be blank.', '#edit-rule-result');
                         return false;
                     }
                     if (!regex_confirm || regex_confirm == "") {
-                        showAlert('danger', 'confirm regex can not be blank', '#edit-rule-result');
+                        showalert('danger', 'confirm regex can not be blank', '#edit-rule-result');
                         return false;
                     }
                     if (!repair || repair == "") {
-                        showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
+                        showalert('danger', 'repair can not be blank.', '#edit-rule-result');
                         return false;
                     }
                     if (!status || status == "") {
-                        showAlert('danger', 'status error.', '#edit-rule-result');
+                        showalert('danger', 'status error.', '#edit-rule-result');
                         return false;
                     }
                     if (!level || level == "") {
-                        showAlert('danger', 'level can not be blank.', '#edit-rule-result');
+                        showalert('danger', 'level can not be blank.', '#edit-rule-result');
                         return false;
                     }
 
@@ -182,7 +182,7 @@ $("#main-div").delegate("span", "click", function () {
                         'level': level
                     };
                     $.post('edit_rule/' + cid, data, function (res) {
-                        showAlert(res.tag, res.msg, "#edit-rule-result");
+                        showalert(res.tag, res.msg, "#edit-rule-result");
                     });
                 });
 
@@ -223,19 +223,19 @@ $("#main-div").delegate("span", "click", function () {
             var repair = $("<div/>").text($("#rule-repair-" + cid).text()).html();
             var level = $("<div/>").text($("#rule-level-" + cid).text()).html();
             console.log(level);
-            $("#view-title").html("Rule Details.");
-            var content = "<b>Regex: </b>" + regex + "<br />";
-            content += "<b>Confirm Regex: </b>" + confirm_regex + "<br />";
-            content += "<b>Repair: </b>" + repair + "<br />";
-            content += "<b>Level: </b>" + level + "<br />";
+            $("#view-title").html("rule details.");
+            var content = "<b>regex: </b>" + regex + "<br />";
+            content += "<b>confirm regex: </b>" + confirm_regex + "<br />";
+            content += "<b>repair: </b>" + repair + "<br />";
+            content += "<b>level: </b>" + level + "<br />";
             $("#view-body").html(content);
         } else if (type === "del") {
             $.post('del_rule', {'rule_id': cid}, function (data) {
                 var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
-                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
                 tt += '<span aria-hidden="true">&times;</span></button>';
                 tt += '<strong>' + data.msg + '</strong></div>';
-                $("#operate_result").html(tt).fadeIn(1000);
+                $("#operate_result").html(tt).fadein(1000);
                 $("#show_all_rules").click();
             });
         }
@@ -243,12 +243,12 @@ $("#main-div").delegate("span", "click", function () {
     } else if (target === "vul") {
         if (type === 'view') {
             var repair = $("<div/>").text($("#vul-repair-" + cid).text()).html();
-            $("#view-title").html("Vul Details.");
-            var content = "<b>Repair: </b>" + repair + "<br />";
+            $("#view-title").html("vul details.");
+            var content = "<b>repair: </b>" + repair + "<br />";
             $("#view-body").html(content);
         } else if (type === "del") {
             $.post('del_vul', {'vul_id': cid}, function (result) {
-                showAlert(result.tag, result.msg, "#operate_result");
+                showalert(result.tag, result.msg, "#operate_result");
                 $("#show_all_vuls").click();
             });
         } else if (type === "edit") {
@@ -260,15 +260,15 @@ $("#main-div").delegate("span", "click", function () {
                     var repair = $("#repair").val();
 
                     if (!name || name == "") {
-                        showAlert('danger', 'name can not be blank.', '#edit-vul-result');
+                        showalert('danger', 'name can not be blank.', '#edit-vul-result');
                         return false;
                     }
                     if (!description || description == "") {
-                        showAlert('danger', 'description can not be blank.', '#edit-vul-result');
+                        showalert('danger', 'description can not be blank.', '#edit-vul-result');
                         return false;
                     }
                     if (!repair || repair == "") {
-                        showAlert('danger', 'repair can not be blank.', '#edit-vul-result');
+                        showalert('danger', 'repair can not be blank.', '#edit-vul-result');
                         return false;
                     }
 
@@ -279,14 +279,58 @@ $("#main-div").delegate("span", "click", function () {
                         'repair': repair
                     };
                     $.post('edit_vul/' + cid, data, function (res) {
-                        showAlert(res.tag, res.msg, '#edit-vul-result');
-                    });
-                });
+                        showalert(res.tag, res.msg, '#edit-vul-result');
+                    }); });
 
             });
         }
 
     } else if (target === "project") {
+	if(type === "run") {
+	    var project_id = cid;
+	    //$(".containter").plainoverlay('show');
+	    var data = {'project_id':project_id,'key':'0dcbe720a3c93b2ab0070b0d5294a97a'}
+	    $.ajax({
+	    	'url':'/api/add',
+		'type':'post',
+		'data':JSON.stringify(data),
+		'datatype':'json',
+		'async':true,
+		'contentType':'application/json;charset=utf-8',
+		'success':function(result){
+		    if(result.code == 1001) {
+		        var scan_id = result.result['scan_id'];   
+			var data    = {'scan_id':scan_id, 'key':'0dcbe720a3c93b2ab0070b0d5294a97a'};
+			function get_status()
+			{
+			    $.ajax({
+				'url':'/api/status',
+			        'type':'POST',
+				'data':JSON.stringify(data),
+				'dataType':'json',
+				'async':false,
+				'contentType':'application/json;charset=utf-8',
+				'success':function(result){
+					if(result.result['status'] == 'done') {
+						alert('Scanning project ' +project_id+' done.');
+						window.open(result.result['report'], '_blank');
+						}
+					else{
+					       setTimeout(get_status, 300);	
+					}
+				}
+			    });
+			}
+			get_status();
+
+		    }
+		    else
+		    {
+			alert(result.result);
+		    }
+		}
+	    });
+	}
 	if (type === "add") {
 	    $.get("add_project/", function(data){
 		$("#main-div").html(data);

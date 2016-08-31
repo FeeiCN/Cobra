@@ -55,12 +55,14 @@ def report(task_id):
     project = CobraProjects.query.filter_by(repository=repository).first()
     if project is None:
         project_name = repository
+	project_id   = 0 #add l4yn3
         author = 'Anonymous'
         project_description = 'Compress Project'
         project_framework = ''
         project_url = ''
     else:
         project_name = project.name
+	project_id  = project.id
         author = project.author
         project_description = project.remark
         project_framework = project.framework
@@ -111,10 +113,12 @@ def report(task_id):
 
         each_vul = {}
         each_vul['rule'] = rules.description
+	each_vul['rule_id'] = rules.id
         each_vul['file'] = result.file
         each_vul['code'] = result.code
         each_vul['repair'] = rules.repair
         each_vul['line'] = result.line
+	each_vul['line_id'] = result.id
 
         # verify
         each_vul['verify'] = ''
@@ -149,6 +153,7 @@ def report(task_id):
     data = {
         'id': int(task_id),
         'project_name': project_name,
+	'project_id':project_id,
         'project_repository': repository,
         'project_description': project_description,
         'project_url': project_url,

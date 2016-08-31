@@ -77,13 +77,17 @@ class Scan:
             #repo_directory = os.path.join(config.Config('upload', 'directory').value, 'versions/mogujie/')
             repo_directory = os.path.join(config.Config('upload', 'directory').value, '') # remove fault path
         else:
-            return 1005, 'Repository must contained .git or svn'
+            #return 1005, 'Repository must contained .git or svn'
+	    repo_directory = self.target
+	    #new_version = 'master'
+	    #old_version = 'master'
+	    if not os.path.exists(repo_directory):
+                return 1004, 'Repo_directory Not Found'
 
         if new_version == "" or old_version == "":
             scan_way = 1
         else:
             scan_way = 2
-
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         # insert into task info table.
         task = CobraTaskInfo(self.target, branch, scan_way, new_version, old_version, 0, 0, 0, 1, 0, 0, current_time, current_time)
