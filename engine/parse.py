@@ -70,21 +70,19 @@ class Parse:
                         log.info('Function name: {0} - {1} - Prev Func: {2}'.format(index, function_name, prev_function_name))
                         if index > 0 and prev_function_name in functions:
                             functions[prev_function_name]['end'] = function[0]
-                        if index == len(lines) - 1:
-                            end = sum(1 for l in open(self.file_path))
-                            log.info('File lines: {0}'.format(end))
-                        else:
-                            end = None
                         prev_function_name = function_name
                         functions[function_name] = {
-                            'function': function_name,
                             'start': function[0],
-                            'end': end  # next function's start
+                            'end': None  # next function's start
                         }
                     else:
                         log.info("Can't find function name: {0}".format(line))
                 else:
                     print("没有分隔符(:)或改行为注释 {0}".format(function[1]))
+            end = sum(1 for l in open(self.file_path))
+            for name, value in functions.items():
+                if value['end'] is None:
+                    functions[name]['end'] = end
             return functions
         else:
             return False
@@ -215,7 +213,7 @@ class Parse:
 
 if __name__ == '__main__':
     try:
-        parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/tmp/cobra/versions/mogujie/uni/classes/crond/test/baoluo.php', '57', "curl_setopt($ch, CURLOPT_URL, $url);")
+        parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/tmp/cobra/versions/mogujie/appbeta/classes/crond/haigou/itemupdate.php', '478', "curl_setopt($ch, CURLOPT_URL, $url);")
         if parse.is_controllable_param():
             parse.is_repair(r'fff', 0)
     except Exception as e:
