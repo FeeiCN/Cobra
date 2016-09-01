@@ -68,7 +68,7 @@ class Parse:
                     if len(function_name) == 1:
                         function_name = function_name[0]
                         log.info('Function name: {0} - {1} - Prev Func: {2}'.format(index, function_name, prev_function_name))
-                        if index > 0:
+                        if index > 0 and prev_function_name in functions:
                             functions[prev_function_name]['end'] = function[0]
                         if index == len(lines) - 1:
                             end = sum(1 for l in open(self.file_path))
@@ -128,7 +128,6 @@ class Parse:
     def is_controllable_param(self):
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
-            print(param_name)
             param_name = param_name[0].strip()
             log.info('Param name: {0}'.format(param_name))
             # controllable param
@@ -216,7 +215,7 @@ class Parse:
 
 if __name__ == '__main__':
     try:
-        parse = Parse('unserialize\s*\(\s*(.+?)\s*\)', '/tmp/cobra/versions/mogujie/appbeta/classes/controller/zadmin/mobile/appbackend/resource.php', '92', "$info      = unserialize($item_info['info']);")
+        parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/tmp/cobra/versions/mogujie/uni/classes/crond/test/baoluo.php', '57', "curl_setopt($ch, CURLOPT_URL, $url);")
         if parse.is_controllable_param():
             parse.is_repair(r'fff', 0)
     except Exception as e:
