@@ -213,16 +213,20 @@ class Static:
                                 else:
                                     # parse file function structure
                                     if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
-                                        parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
-                                        if parse_instance.is_controllable_param():
-                                            if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
-                                                log.info("Static: repaired")
-                                                continue
+                                        try:
+                                            parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
+                                            if parse_instance.is_controllable_param():
+                                                if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
+                                                    log.info("Static: repaired")
+                                                    continue
+                                                else:
+                                                    found_vul = True
                                             else:
-                                                found_vul = True
-                                        else:
-                                            log.info("Static: uncontrollable param")
-                                            continue
+                                                log.info("Static: uncontrollable param")
+                                                continue
+                                        except:
+                                            print(traceback.print_exc())
+                                            found_vul = False
                                     else:
                                         found_vul = True
 
