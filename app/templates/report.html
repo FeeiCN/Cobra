@@ -206,7 +206,6 @@
                                     <td>
                                         <strong>漏洞点</strong>
                                     </td>
-                                    <td class="text-right"><strong>操作</strong></td>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -233,9 +232,6 @@
                                                     {% endif %}
                                                     <pre><code class="language-php">{{ each_vul.code }}</code></pre>
                                                 {% endif %}
-                                            </td>
-                                            <td class="text-right">
-                                                <a class="btn_1 green vul-detail" data-id="{{ each_vul.id }}">漏洞详情</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
