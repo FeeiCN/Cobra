@@ -16,6 +16,7 @@ import os
 import sys
 import re
 import subprocess
+import traceback
 from utils import log
 
 
@@ -46,39 +47,44 @@ class Parse:
                 sys.exit(0)
             else:
                 grep = ggrep
-        regex = r'(?:function\s+)(\w+)\s*'
+        regex = r'(?:function\s+)(\w+)\s*\('
         param = [grep, "-n", "-r", "-P"] + [regex, self.file_path]
 
         p = subprocess.Popen(param, stdout=subprocess.PIPE)
         result = p.communicate()
         if len(result[0]):
-            functions = []
+            functions = {}
             # log.debug(result[0])
             lines = str(result[0]).strip().split("\n")
+            prev_function_name = ''
             for index, line in enumerate(lines):
                 line = line.strip()
                 if line == '':
                     log.info('Empty')
                     continue
                 function = line.split(':')
-                if len(function) >= 2:
+                if len(function) >= 2 and function[1].strip()[:2] not in ['//', '#', '/*']:
                     function_name = re.findall(regex, function[1].strip())
                     if len(function_name) == 1:
                         function_name = function_name[0]
+                        log.info('Function name: {0} - {1} - Prev Func: {2}'.format(index, function_name, prev_function_name))
                         if index > 0:
-                            functions[index - 1]['end'] = function[0]
+                            functions[prev_function_name]['end'] = function[0]
                         if index == len(lines) - 1:
                             end = sum(1 for l in open(self.file_path))
                             log.info('File lines: {0}'.format(end))
                         else:
                             end = None
-                        functions.append({
+                        prev_function_name = function_name
+                        functions[function_name] = {
                             'function': function_name,
                             'start': function[0],
                             'end': end  # next function's start
-                        })
+                        }
                     else:
                         log.info("Can't find function name: {0}".format(line))
+                else:
+                    print("没有分隔符(:)或改行为注释 {0}".format(function[1]))
             return functions
         else:
             return False
@@ -94,16 +100,16 @@ class Parse:
         if functions:
             block_start = 0
             block_end = 0
-            for function in functions:
-                log.info("Function: {0} ({1} - {2})".format(function['function'], function['start'], function['end']))
+            for function_name, function_value in functions.items():
+                log.info("Function S-E: {0} ({1} - {2})".format(function_name, function_value['start'], function_value['end']))
                 # log.debug('{0} < {1} < {2}'.format(function['start'], self.line, function['end']))
-                if int(function['start']) < int(self.line) < int(function['end']):
+                if int(function_value['start']) < int(self.line) < int(function_value['end']):
                     if block_position == 0:
-                        block_start = function['start']
+                        block_start = function_value['start']
                         block_end = int(self.line) - 1
                     elif block_position == 1:
                         block_start = int(self.line) + 1
-                        block_end = function['end']
+                        block_end = function_value['end']
             # get param block code
             param = ['sed', "-n", "{0},{1}p".format(block_start, block_end), self.file_path]
             p = subprocess.Popen(param, stdout=subprocess.PIPE)
@@ -209,6 +215,9 @@ class Parse:
 
 
 if __name__ == '__main__':
-    parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/tmp/cobra/versions/mogujie/appbeta/classes/controller/mapi/mgj/v12/search.php', '484', 'curl_setopt($ch,CURLOPT_URL,$url);')
-    if parse.is_controllable_param():
-        parse.is_repair(r'curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)', 1)
+    try:
+        parse = Parse('unserialize\s*\(\s*(.+?)\s*\)', '/tmp/cobra/versions/mogujie/appbeta/classes/controller/zadmin/mobile/appbackend/resource.php', '92', "$info      = unserialize($item_info['info']);")
+        if parse.is_controllable_param():
+            parse.is_repair(r'fff', 0)
+    except Exception as e:
+        print(traceback.print_exc())
