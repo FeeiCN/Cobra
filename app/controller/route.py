@@ -177,7 +177,7 @@ def report(task_id):
     ).filter(
         *filter_group
     )
-    page_size = 5
+    page_size = 10
     total_number = all_scan_results.all()
     total_pages = len(total_number) / page_size + 1
     all_scan_results = all_scan_results.limit(page_size).offset((page - 1) * page_size).all()
