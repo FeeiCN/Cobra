@@ -18,7 +18,6 @@ from app import web
 from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraLanguages, CobraVuls, CobraRules
 
-
 __author__ = "lightless"
 __email__ = "root@lightless.me"
 
@@ -27,7 +26,6 @@ __email__ = "root@lightless.me"
 @web.route(ADMIN_URL + '/search_rules_bar', methods=['GET'])
 @login_required
 def search_rules_bar():
-
     languages = CobraLanguages.query.all()
     vuls = CobraVuls.query.all()
 
@@ -43,7 +41,6 @@ def search_rules_bar():
 @web.route(ADMIN_URL + '/search_rules', methods=['POST'])
 @login_required
 def search_rules():
-
     if request.method == 'POST':
 
         vc = ValidateClass(request, "language", "vul")
@@ -87,4 +84,3 @@ def search_rules():
         }
 
         return render_template('backend/rule/rules.html', data=data)
-

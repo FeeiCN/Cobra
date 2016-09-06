@@ -206,6 +206,7 @@
                                     <td>
                                         <strong>漏洞点</strong>
                                     </td>
+                                    <td><strong>操作</strong></td>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -232,6 +233,12 @@
                                                     {% endif %}
                                                     <pre><code class="language-php">{{ each_vul.code }}</code></pre>
                                                 {% endif %}
+                                            </td>
+                                            <td class="text-right">
+                                                <div class="tooltip_styled tooltip-effect-1">
+                                                    <span class="tooltip-item"><i project_id="{{ data.project_id }}" file_path="{{ each_vul.file }}" rule_id="{{ each_vul.rule_id }}" class="icon_set_1_icon-74"></i></span>
+                                                    <div class="tooltip-content">经过审计未发现问题，加入白名单</div>
+                                                </div>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -490,6 +497,29 @@
         {#        });#}
 
     </script>
+    <script>
+        $(function () {
+            $('.icon_set_1_icon-74').click(function () {
+                var myself = $(this);
+                var rule_id = $(this).attr('rule_id');
+                var project_path = $(this).attr('file_path');
+                var data = {'project_id': '{{ data.project_id }}', 'rule_id': rule_id, 'path': project_path, 'reason': 'Remark'};
+                $.ajax({
+                    'url': '/admin/add_whitelist',
+                    'type': 'POST',
+                    'data': data,
+                    //'contentType':'application/json; charset=utf-8',
+                    'async': false,
+                    'success': function (result) {
+                        if (result.tag == 'success') {
+                            alert('Add whitelist success!');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </div>
 </body>
 </html>
+

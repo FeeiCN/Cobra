@@ -77,12 +77,14 @@ def report(task_id):
     project = CobraProjects.query.filter_by(repository=repository).first()
     if project is None:
         project_name = repository
+        project_id = 0  # add l4yn3
         author = 'Anonymous'
         project_description = 'Compress Project'
         project_framework = 'Unknown Framework'
         project_url = 'Unknown URL'
     else:
         project_name = project.name
+        project_id = project.id
         author = project.author
         project_description = project.remark
         project_framework = project.framework
@@ -162,8 +164,16 @@ def report(task_id):
 
     # 构建SQL语句
     all_scan_results = db.session.query(
-        CobraResults.file, CobraResults.line, CobraResults.code, CobraRules.description, CobraRules.level,
-        CobraRules.regex_location, CobraRules.regex_repair, CobraRules.repair, CobraVuls.name
+        CobraResults.file,
+        CobraResults.line,
+        CobraResults.code,
+        CobraRules.description,
+        CobraRules.level,
+        CobraRules.regex_location,
+        CobraRules.regex_repair,
+        CobraRules.repair,
+        CobraVuls.name,
+        CobraResults.rule_id
     ).filter(
         *filter_group
     )
@@ -189,6 +199,8 @@ def report(task_id):
         data_dict["color"] = map_color[result[4]]
         data_dict["repair"] = result[7]
         data_dict['verify'] = ''
+        data_dict['rule_id'] = result[9]
+
         if project_framework != '':
             for rule in detection.Detection().rules:
                 if rule['name'] == project_framework:
@@ -220,6 +232,7 @@ def report(task_id):
     data = {
         'id': int(task_id),
         'project_name': project_name,
+        'project_id': project_id,
         'project_repository': repository,
         'project_description': project_description,
         'project_url': project_url,
@@ -266,4 +279,4 @@ def ext_statistic(task_id):
 
 @web.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template('404.html', error=e), 404
