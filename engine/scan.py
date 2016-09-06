@@ -15,6 +15,7 @@
 import os
 import time
 import subprocess
+import getpass
 from app import db, CobraProjects, CobraTaskInfo
 from utils import config, decompress, log
 from pickup import git
@@ -75,15 +76,18 @@ class Scan:
             # SVN
             repo_name = 'mogujie'
             repo_author = 'all'
-            repo_directory = os.path.join(config.Config('upload', 'directory').value, 'versions/mogujie')
+            repo_directory = config.Config('upload', 'directory').value
         else:
-            return 1005, 'Repository must contained .git or svn'
+            repo_name = 'Local Project'
+            repo_author = getpass.getuser()
+            repo_directory = self.target
+            if not os.path.exists(repo_directory):
+                return 1004, 'Repo_directory Not Found'
 
         if new_version == "" or old_version == "":
             scan_way = 1
         else:
             scan_way = 2
-
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         # insert into task info table.
         task = CobraTaskInfo(self.target, branch, scan_way, new_version, old_version, 0, 0, 0, 1, 0, 0, current_time, current_time)

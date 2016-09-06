@@ -1,10 +1,11 @@
+<button type="button" class="btn btn-primary btn-block" id="add_new_project">Add Project</button>
 <table class="table table-bordered table-hover">
     <thead>
     <tr>
         <th>#</th>
         <th>Name</th>
         <th>Author</th>
-        <th>Repository</th>
+        <th>Project Path</th>
         <th>Remark</th>
         <th>Last scan time</th>
         <th>Operation</th>
@@ -25,6 +26,9 @@
                 {#                      data-toggle="modal" data-target="#view-modal">#}
                 {#                </span>&nbsp;&nbsp;#}
                 <span class="glyphicon glyphicon-remove" aria-hidden="true" id="del-project-{{ project.id }}"></span>
+&nbsp;&nbsp;
+ <span class="glyphicon glyphicon-expand" aria-hidden="true" id="run-project-{{ project.id }}"></span>&nbsp;&nbsp;
+
             </td>
         </tr>
     {% endfor %}

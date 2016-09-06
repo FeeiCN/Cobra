@@ -15,7 +15,7 @@ import os
 from utils import config, common
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
-from app import web, CobraAuth, CobraTaskInfo
+from app import web, CobraAuth, CobraTaskInfo, CobraProjects
 from engine import scan
 
 # default api url
@@ -60,6 +60,16 @@ def add_task():
     branch = data.get('branch')
     new_version = data.get('new_version')
     old_version = data.get('old_version')
+
+    project_id = data.get('project_id')
+    if project_id:
+        project = CobraProjects.query.filter_by(id=project_id).first()
+        if not project:
+            return jsonify(code=1002, result=u'not find the project.')
+        target = project.repository
+        branch = 'master'
+        new_version = ""
+        old_version = ""
 
     # verify key
     if not key or key == "":

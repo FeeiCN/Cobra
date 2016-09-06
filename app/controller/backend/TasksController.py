@@ -30,7 +30,6 @@ __email__ = "root@lightless.me"
 @web.route(ADMIN_URL + '/tasks/<int:page>', methods=['GET'])
 @login_required
 def tasks(page):
-
     per_page = 10
     tasks = CobraTaskInfo.query.order_by(CobraTaskInfo.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
 
@@ -48,7 +47,6 @@ def tasks(page):
 @web.route(ADMIN_URL + '/del_task', methods=['POST'])
 @login_required
 def del_task():
-
     vc = ValidateClass(request, "id")
     ret, msg = vc.check_args()
     if not ret:
@@ -60,7 +58,7 @@ def del_task():
         db.session.commit()
         return jsonify(tag='success', msg='delete success.')
     except SQLAlchemyError as e:
-        print e
+        print(e)
         return jsonify(tag='danger', msg='unknown error.')
 
 
@@ -68,7 +66,6 @@ def del_task():
 @web.route(ADMIN_URL + '/edit_task/<int:task_id>', methods=['GET', 'POST'])
 @login_required
 def edit_task(task_id):
-
     if request.method == 'POST':
 
         # vc = ValidateClass(request, "branch", "scan_way", "new_version", "old_version", "target")
@@ -104,7 +101,7 @@ def edit_task(task_id):
             db.session.commit()
             return jsonify(tag='success', msg='save success.')
         except SQLAlchemyError as e:
-            print e
+            print(e)
             return jsonify(tag='danger', msg='save failed. Try again later?')
     else:
         task = CobraTaskInfo.query.filter_by(id=task_id).first()
