@@ -30,16 +30,17 @@ def convert_timestamp(stamp):
 def convert_time(seconds):
     """
     Seconds to minute/second
-    Ex: 61 -> 1'1''
+    Ex: 61 -> 1′1″
     :param seconds:
     :return:
+    :link: https://en.wikipedia.org/wiki/Prime_(symbol)
     """
     one_minute = 60
     minute = seconds / one_minute
     if minute == 0:
-        return str(seconds % one_minute) + "'"
+        return str(seconds % one_minute) + "″"
     else:
-        return str(minute) + "''" + str(seconds % one_minute) + "'"
+        return str(minute) + "′" + str(seconds % one_minute) + "″"
 
 
 def convert_number(number):
