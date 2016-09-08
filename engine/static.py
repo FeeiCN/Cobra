@@ -168,13 +168,11 @@ class Static:
                     for e in extensions:
                         filters.append('--include=*' + e)
 
-                    # Explode SVN Dir
-                    filters.append('--exclude-dir=.svn')
-                    filters.append('--exclude-dir=.cvs')
-                    filters.append('--exclude-dir=.hg')
-                    filters.append('--exclude-dir=.git')
-                    filters.append('--exclude-dir=.bzr')
-                    filters.append('--exclude=*.svn-base')
+                    # explode dirs
+                    explode_dirs = ['.svn', '.cvs', '.hg', '.git', '.bzr']
+                    for explode_dir in explode_dirs:
+                        filters.append('--exclude-dir={0}'.format(explode_dir))
+                    
                     # -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
