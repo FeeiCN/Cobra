@@ -161,7 +161,8 @@ class Git:
         # clone repo with username and password
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password
-        cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '"'
+        cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '" -b master'
+        log.info(cmd)
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
