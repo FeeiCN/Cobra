@@ -172,7 +172,7 @@ class Static:
                     explode_dirs = ['.svn', '.cvs', '.hg', '.git', '.bzr']
                     for explode_dir in explode_dirs:
                         filters.append('--exclude-dir={0}'.format(explode_dir))
-                    
+
                     # -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
@@ -260,5 +260,4 @@ class Static:
             db.session.commit()
         except Exception as e:
             log.critical("Set start time failed:" + e.message)
-
         log.info("Scan Done")
