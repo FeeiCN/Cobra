@@ -133,6 +133,7 @@ $("#main-div").delegate("span", "click", function () {
                     var regex_repair = $("#regex-repair").val();
                     var block_reapir = $("#repair-block:checked").val();
                     var repair = $("#repair").val();
+                    var author = $("input[name=author]").val();
                     var status = $("#status:checked").val();
                     var level = $("#level:checked").val();
 
@@ -165,6 +166,10 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
                         return false;
                     }
+                    if (!author || author == "") {
+                        showAlert('danger', 'author can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
                     if (!status || status == "") {
                         showAlert('danger', 'status error.', '#edit-rule-result');
                         return false;
@@ -184,6 +189,7 @@ $("#main-div").delegate("span", "click", function () {
                         'description': description,
                         'rule_id': cid,
                         'repair': repair,
+                        'author': author,
                         'status': status,
                         'level': level
                     };

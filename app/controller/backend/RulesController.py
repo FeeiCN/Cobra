@@ -31,7 +31,6 @@ __email__ = "root@lightless.me"
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
 @login_required
 def rules(page):
-
     per_page = 10
     cobra_rules = CobraRules.query.order_by(CobraRules.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
     cobra_vuls = CobraVuls.query.all()
@@ -79,7 +78,6 @@ def rules(page):
 @web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
 @login_required
 def add_new_rule():
-
     if request.method == 'POST':
         vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'regex_repair', 'repair_block',
                            'description', 'repair', 'level')
@@ -121,7 +119,6 @@ def add_new_rule():
 @web.route(ADMIN_URL + '/del_rule', methods=['POST'])
 @login_required
 def del_rule():
-
     vc = ValidateClass(request, "rule_id")
     vc.check_args()
     vul_id = vc.vars.rule_id
@@ -141,11 +138,9 @@ def del_rule():
 @web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
 @login_required
 def edit_rule(rule_id):
-
     if request.method == 'POST':
 
-        vc = ValidateClass(request, "vul_type", "language", "regex_location", "regex_repair", "block_repair",
-                           "description", "rule_id", "repair", "status", "level")
+        vc = ValidateClass(request, "vul_type", "language", "regex_location", "regex_repair", "block_repair", "description", "rule_id", "repair", "author", "status", "level")
         ret, msg = vc.check_args()
 
         if not ret:
@@ -159,6 +154,7 @@ def edit_rule(rule_id):
         r.regex_repair = vc.vars.regex_repair
         r.description = vc.vars.description
         r.repair = vc.vars.repair
+        r.author = vc.vars.author
         r.status = vc.vars.status
         r.level = vc.vars.level
         r.updated_at = datetime.datetime.now()
