@@ -37,6 +37,7 @@ class Parse:
         self.line = line
         self.code = code
         self.param_name = None
+        self.param_value = None
 
     def functions(self):
         logging.info('---------------------- [-]. Functions --------------------------------------')
@@ -189,7 +190,7 @@ class Parse:
                 logging.info("Check controllable param rule")
                 controllable_param_rule = [
                     {
-                        'rule': r'\\s?=\s?(\$\w+(?:\[(?:[^[\]]|(\?R))*\])*)'.format(param_name),
+                        'rule': r'(\{0}\s?=\s?\$\w+(?:\[(?:[^[\]]|\?R)*\])*)'.format(param_name),
                         'example': '$param_name = $variable',
                         'test': """
                             $param_name = $_GET
@@ -200,18 +201,18 @@ class Parse:
                             """
                     },
                     {
-                        'rule': r'function\s+\w+\s?\(.*(\{0})'.format(param_name),
+                        'rule': r'(function\s*\w+\s*\(.*\{0})'.format(param_name),
                         'example': 'function ($param_name)',
                         'test': """
                             function ($param_name)
                             function ($some, $param_name)
                             """
                     }
-
                 ]
                 for c_rule in controllable_param_rule:
                     c_rule_result = re.findall(c_rule['rule'], param_block_code)
                     if len(c_rule_result) >= 1:
+                        self.param_value = c_rule_result[0]
                         logging.info("R: True (New rule: controllable param: {0}, {1})".format(param_name, c_rule['example']))
                         return True
                 logging.info("R: True")
