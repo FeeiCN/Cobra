@@ -229,8 +229,8 @@ class Parse:
             logging.debug("R: Un Repair (repair code not match)")
             return False
         # replace repair {{PARAM}} const
-        if '{{PARAM}' in repair_rule:
-            repair_rule = repair_rule.replace('{{PARAM}', self.param_name)
+        if '{{PARAM}}' in repair_rule:
+            repair_rule = repair_rule.replace('{{PARAM}}', self.param_name)
         repair_result = re.findall(repair_rule, code)
         logging.debug(code)
         logging.debug(repair_result)
