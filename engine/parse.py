@@ -148,9 +148,9 @@ class Parse:
     def is_controllable_param(self):
         logging.info('---------------------- [2]. Param is controllable --------------------------------------')
         param_name = re.findall(self.rule, self.code)
-        param_name = param_name[0].strip()
-        self.param_name = param_name
         if len(param_name) == 1:
+            param_name = param_name[0].strip()
+            self.param_name = param_name
             logging.info('P: {0}'.format(param_name))
             # controllable param
             # exclude class const (maybe misuse)
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     try:
         parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/Volumes/Statics/Project/Company/mogujie/appbeta/classes/crond/trade/chenxitest.php', '60', "curl_setopt($curl, CURLOPT_URL, $file); #output")
         if parse.is_controllable_param():
-            parse.is_repair(r'fff', 2)
+            parse.is_repair(r'$url', 2)
         else:
             print("UC")
     except Exception as e:
