@@ -26,12 +26,10 @@
     <div class="form-group col-md-4">
         <label for="status">Status</label>
         <label class="radio" style="padding-left: 25px;">
-            <input type="radio" name="status" id="status" value="1"
-                   {% if data.rule.status == 1 %}checked{% endif %}> On
+            <input type="radio" name="status" id="status" value="1" {% if data.rule.status == 1 %}checked{% endif %}> On
         </label>
         <label class="radio" style="padding-left: 25px;">
-            <input type="radio" name="status" id="status" value="0"
-                   {% if data.rule.status == 0 %}checked{% endif %}> Off
+            <input type="radio" name="status" id="status" value="0" {% if data.rule.status == 0 %}checked{% endif %}> Off
         </label>
     </div>
     <div class="form-group col-md-4">
@@ -39,6 +37,10 @@
         <label class="radio" style="padding-left: 25px;">
             <input type="radio" name="repair-block" id="repair-block" value="0" {% if data.rule.block_repair == 0 %}checked{% endif %}>
             <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Function Up
+        </label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="repair-block" id="repair-block" value="2" {% if data.rule.block_repair == 2 %}checked{% endif %}>
+            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Location Rule Line
         </label>
         <label class="radio" style="padding-left: 25px;">
             <input type="radio" name="repair-block" id="repair-block" value="1" {% if data.rule.block_repair == 1 %}checked{% endif %}>
