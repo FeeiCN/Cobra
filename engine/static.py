@@ -211,6 +211,7 @@ class Static:
                                 if match_result.group(0) is not None and match_result.group(0) is not "":
                                     logging.info("In Annotation")
                                 else:
+                                    param_value = None
                                     # parse file function structure
                                     if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
                                         try:
@@ -220,6 +221,8 @@ class Static:
                                                     logging.info("Static: repaired")
                                                     continue
                                                 else:
+                                                    if parse_instance.param_value is not None:
+                                                        param_value = parse_instance.param_value
                                                     found_vul = True
                                             else:
                                                 logging.info("Static: uncontrollable param")
@@ -238,6 +241,9 @@ class Static:
                                         if exist_result is not None:
                                             logging.warning("Exists Result")
                                         else:
+                                            code_content = '# 触发位置\r' + code_content
+                                            if param_value is not None:
+                                                code_content = '# 参数可控\r' + param_value + '\r//\r// ------ 省略部分代码 ------\r//\r' + code_content
                                             logging.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
                                             vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
                                             db.session.add(vul)
