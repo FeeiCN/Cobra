@@ -18,10 +18,12 @@ import re
 import time
 import subprocess
 import traceback
+import logging
 from pickup import directory
-from utils import log
 from engine import parse
 from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
+
+logging = logging.getLogger(__name__)
 
 
 class Static:
@@ -32,13 +34,13 @@ class Static:
 
     def analyse(self):
         if self.directory is None:
-            log.critical("Please set directory")
+            logging.critical("Please set directory")
             sys.exit()
-        log.info('Start code static analyse...')
+        logging.info('Start code static analyse...')
 
         d = directory.Directory(self.directory)
         files = d.collect_files(self.task_id)
-        log.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
+        logging.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
 
         ext_language = {
             # Image
@@ -101,10 +103,10 @@ class Static:
         }
         for ext in files:
             if ext in ext_language:
-                log.info('{0} - {1}'.format(ext, files[ext]))
+                logging.info('{0} - {1}'.format(ext, files[ext]))
                 continue
             else:
-                log.info(ext)
+                logging.info(ext)
 
         languages = CobraLanguages.query.all()
 
@@ -126,24 +128,24 @@ class Static:
                     if 'gfind' == filename:
                         gfind = os.path.join(root, filename)
             if ggrep == '':
-                log.critical("brew install ggrep pleases!")
+                logging.critical("brew install ggrep pleases!")
                 sys.exit(0)
             else:
                 grep = ggrep
             if gfind == '':
-                log.critical("brew install findutils pleases!")
+                logging.critical("brew install findutils pleases!")
                 sys.exit(0)
             else:
                 find = gfind
 
         for rule in rules:
-            log.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
+            logging.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
                 if language.id == rule.language:
                     extensions = language.extensions.split('|')
             if extensions is None:
-                log.critical("Rule Language Error")
+                logging.critical("Rule Language Error")
                 sys.exit(0)
 
             # White list
@@ -176,7 +178,7 @@ class Static:
                     # -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
-                # log.info(' '.join(param))
+                # logging.info(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
@@ -190,7 +192,7 @@ class Static:
                         if rule.regex_location.strip() == '':
                             # Find
                             file_path = line.strip().replace(self.directory, '')
-                            log.debug('File: {0}'.format(file_path))
+                            logging.debug('File: {0}'.format(file_path))
                             vul = CobraResults(self.task_id, rule.id, file_path, 0, '')
                             db.session.add(vul)
                         else:
@@ -201,13 +203,13 @@ class Static:
                             line_number = line_split[1].split(':', 1)[0].strip()
 
                             if file_path in white_list or ".min.js" in file_path:
-                                log.info("In white list or min.js")
+                                logging.info("In white list or min.js")
                             else:
                                 # annotation
                                 # # // /* *
                                 match_result = re.match("(#)?(//)?(\*)?(/\*)?", code_content)
                                 if match_result.group(0) is not None and match_result.group(0) is not "":
-                                    log.info("In Annotation")
+                                    logging.info("In Annotation")
                                 else:
                                     # parse file function structure
                                     if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
@@ -215,12 +217,12 @@ class Static:
                                             parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
                                             if parse_instance.is_controllable_param():
                                                 if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
-                                                    log.info("Static: repaired")
+                                                    logging.info("Static: repaired")
                                                     continue
                                                 else:
                                                     found_vul = True
                                             else:
-                                                log.info("Static: uncontrollable param")
+                                                logging.info("Static: uncontrollable param")
                                                 continue
                                         except:
                                             print(traceback.print_exc())
@@ -231,22 +233,22 @@ class Static:
                                     file_path = file_path.replace(self.directory, '')
 
                                     if found_vul:
-                                        log.info('In Insert')
+                                        logging.info('In Insert')
                                         exist_result = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
                                         if exist_result is not None:
-                                            log.warning("Exists Result")
+                                            logging.warning("Exists Result")
                                         else:
-                                            log.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
+                                            logging.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
                                             vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
                                             db.session.add(vul)
-                                            log.info('Insert Results Success')
+                                            logging.info('Insert Results Success')
                     db.session.commit()
                 else:
-                    log.info('Not Found')
+                    logging.info('Not Found')
 
             except Exception as e:
                 print(traceback.print_exc())
-                log.critical('Error calling grep: ' + str(e))
+                logging.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task
         t = CobraTaskInfo.query.filter_by(id=self.task_id).first()
@@ -259,5 +261,5 @@ class Static:
             db.session.add(t)
             db.session.commit()
         except Exception as e:
-            log.critical("Set start time failed:" + e.message)
-        log.info("Scan Done")
+            logging.critical("Set start time failed:" + e.message)
+        logging.info("Scan Done")

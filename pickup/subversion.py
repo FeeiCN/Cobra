@@ -16,6 +16,8 @@ import sys
 import logging
 from utils import config
 
+logging = logging.getLogger(__name__)
+
 
 class Subversion:
     """Subversion Utility Class"""

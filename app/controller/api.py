@@ -12,11 +12,14 @@
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
 import os
+import logging
 from utils import config, common
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app import web, CobraAuth, CobraTaskInfo, CobraProjects
 from engine import scan
+
+logging = logging.getLogger(__name__)
 
 # default api url
 API_URL = '/api'
@@ -78,7 +81,7 @@ def add_task():
         return jsonify(code=1002, result=u'url can not be empty.')
     if not branch or branch == "":
         return jsonify(code=1002, result=u'branch can not be empty.')
-
+    logging.info('Test')
     code, result = scan.Scan(target).version(branch, new_version, old_version)
     return jsonify(code=code, result=result)
 

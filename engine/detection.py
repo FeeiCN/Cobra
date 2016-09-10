@@ -13,7 +13,9 @@
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
 import os
-from utils import log
+import logging
+
+logging = logging.getLogger(__name__)
 
 
 class Detection:
@@ -104,15 +106,15 @@ class Detection:
         :return: self.rules['name']
         """
         for rule in self.rules:
-            log.info("Name: {0} Site: {1} Source: {2}".format(rule['name'], rule['site'], rule['source']))
+            logging.info("Name: {0} Site: {1} Source: {2}".format(rule['name'], rule['site'], rule['source']))
             rules_types = ['file', 'directory']
             rules_count = len(rule['rules'])
             rules_completed = 0
-            log.info('Rules Count: {0} Rules Info: {1}'.format(rules_count, rule['rules']))
+            logging.info('Rules Count: {0} Rules Info: {1}'.format(rules_count, rule['rules']))
             for rule_type in rules_types:
                 if rule_type in rule['rules']:
                     target = os.path.join(self.project_directory, rule['rules'][rule_type])
-                    log.debug('Detection({0}): {1}'.format(rule_type, target))
+                    logging.debug('Detection({0}): {1}'.format(rule_type, target))
                     if rule_type == 'file':
                         if os.path.isfile(target):
                             rules_completed += 1
@@ -120,7 +122,7 @@ class Detection:
                         if os.path.isdir(target):
                             rules_completed += 1
             if rules_completed == rules_count:
-                log.info("Framework: {0}".format(rule['name']))
+                logging.info("Framework: {0}".format(rule['name']))
                 return rule['name'], rule['language']
         return '', ''
 
