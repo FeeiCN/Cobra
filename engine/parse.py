@@ -17,8 +17,10 @@ import sys
 import re
 import subprocess
 import traceback
+from utils import log
 import logging
 
+log.Log()
 logging = logging.getLogger(__name__)
 
 
@@ -97,39 +99,50 @@ class Parse:
         :param block_position:
                 0:up
                 1:down
+                2:location_line
         :return:
         """
-        functions = self.functions()
         logging.info('---------------------- [-]. Block code B:{0} --------------------------------------'.format(block_position))
-        if functions:
-            block_start = 0
-            block_end = 0
-            for function_name, function_value in functions.items():
-                in_this_function = ''
-                if int(function_value['start']) < int(self.line) < int(function_value['end']):
-                    in_this_function = '<---- {0}'.format(self.line)
-                    if block_position == 0:
-                        block_start = function_value['start']
-                        block_end = int(self.line)
-                    elif block_position == 1:
-                        block_start = int(self.line)
-                        block_end = function_value['end']
-                logging.info("F: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
-            # get param block code
-            logging.info('C: {0} - {1}p'.format(block_start, block_end))
-            param = ['sed', "-n", "{0},{1}p".format(block_start, block_end), self.file_path]
-            p = subprocess.Popen(param, stdout=subprocess.PIPE)
-            result = p.communicate()
-            if len(result[0]):
-                param_block_code = result[0]
-                if param_block_code == '':
-                    param_block_code = False
-            else:
-                param_block_code = False
-            return param_block_code
+        if block_position == 2:
+            line_rule = '{0}p'.format(self.line)
+            code = self.get_code(line_rule)
+            logging.info("C: {0}".format(code))
+            return code
         else:
-            logging.info("Not found functions")
-            return False
+            functions = self.functions()
+            if functions:
+                block_start = 0
+                block_end = 0
+                for function_name, function_value in functions.items():
+                    in_this_function = ''
+                    if int(function_value['start']) < int(self.line) < int(function_value['end']):
+                        in_this_function = '<---- {0}'.format(self.line)
+                        if block_position == 0:
+                            block_start = function_value['start']
+                            block_end = int(self.line) - 1
+                        elif block_position == 1:
+                            block_start = int(self.line) + 1
+                            block_end = function_value['end']
+                    logging.info("F: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
+                # get param block code
+                logging.info('C: {0} - {1}p'.format(block_start, block_end))
+                line_rule = "{0},{1}p".format(block_start, block_end)
+                return self.get_code(line_rule)
+            else:
+                logging.info("Not found functions")
+                return False
+
+    def get_code(self, line_rule):
+        param = ['sed', "-n", line_rule, self.file_path]
+        p = subprocess.Popen(param, stdout=subprocess.PIPE)
+        result = p.communicate()
+        if len(result[0]):
+            param_block_code = result[0]
+            if param_block_code == '':
+                param_block_code = False
+        else:
+            param_block_code = False
+        return param_block_code
 
     def is_controllable_param(self):
         logging.info('---------------------- [2]. Param is controllable --------------------------------------')
@@ -203,6 +216,8 @@ class Parse:
             else:
                 logging.info("R: False (Not contained $)")
                 return False
+        else:
+            logging.warning("Not Found Param")
 
     def is_repair(self, repair_rule, block_repair):
         logging.info('---------------------- [3]. Is repair B:{0} --------------------------------------'.format(block_repair))
@@ -223,8 +238,10 @@ class Parse:
 
 if __name__ == '__main__':
     try:
-        parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/path/to/your.php', '478', "curl_setopt($ch, CURLOPT_URL, $url);")
+        parse = Parse('curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)', '/Volumes/Statics/Project/Company/mogujie/appbeta/classes/crond/trade/chenxitest.php', '60', "curl_setopt($curl, CURLOPT_URL, $file); #output")
         if parse.is_controllable_param():
-            parse.is_repair(r'fff', 1)
+            parse.is_repair(r'fff', 2)
+        else:
+            print("UC")
     except Exception as e:
         print(traceback.print_exc())
