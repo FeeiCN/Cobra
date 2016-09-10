@@ -80,7 +80,7 @@ def rules(page):
 def add_new_rule():
     if request.method == 'POST':
         vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'regex_repair', 'repair_block',
-                           'description', 'repair', 'level')
+                           'description', 'repair', 'author', 'level')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
@@ -94,6 +94,7 @@ def add_new_rule():
             block_repair=vc.vars.repair_block,
             description=vc.vars.description,
             repair=vc.vars.repair,
+            author=vc.vars.author,
             status=1,
             level=vc.vars.level,
             created_at=current_time,
