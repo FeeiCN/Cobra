@@ -214,6 +214,7 @@ class Parse:
                     if len(c_rule_result) >= 1:
                         logging.info("R: True (New rule: controllable param: {0}, {1})".format(param_name, c_rule['example']))
                         return True
+                logging.info("R: True")
                 return True
             else:
                 logging.info("R: False (Not contained $)")
