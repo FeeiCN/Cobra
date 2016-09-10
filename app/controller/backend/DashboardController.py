@@ -300,7 +300,10 @@ def graph_languages():
         else:
             return_value[res[1]] = res[0]
     # 修改结果中的None为Unknown
-    return_value.update(Unknown=return_value.pop(None))
+    try:
+        return_value.update(Unknown=return_value.pop(None))
+    except KeyError:
+        pass
     return jsonify(data=return_value)
 
 
