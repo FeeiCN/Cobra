@@ -36,6 +36,7 @@ class Parse:
         logging.info(file_path)
         self.line = line
         self.code = code
+        self.param_name = None
 
     def functions(self):
         logging.info('---------------------- [-]. Functions --------------------------------------')
@@ -147,8 +148,9 @@ class Parse:
     def is_controllable_param(self):
         logging.info('---------------------- [2]. Param is controllable --------------------------------------')
         param_name = re.findall(self.rule, self.code)
+        param_name = param_name[0].strip()
+        self.param_name = param_name
         if len(param_name) == 1:
-            param_name = param_name[0].strip()
             logging.info('P: {0}'.format(param_name))
             # controllable param
             # exclude class const (maybe misuse)
@@ -225,6 +227,9 @@ class Parse:
         if code is False:
             logging.debug("R: Un Repair (repair code not match)")
             return False
+        # replace repair {{PARAM}} const
+        if '{{PARAM}' in repair_rule:
+            repair_rule = repair_rule.replace('{{PARAM}', self.param_name)
         repair_result = re.findall(repair_rule, code)
         logging.debug(code)
         logging.debug(repair_result)
