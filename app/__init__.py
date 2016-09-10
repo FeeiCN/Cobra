@@ -15,6 +15,7 @@
 import os
 import sys
 import subprocess
+import logging
 
 from flask import Flask
 from flask_script import Manager, Server, Option, Command
@@ -22,7 +23,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from sqlalchemy import exc
 
-from utils import log, config, common
+from utils import config, common
+
+logging = logging.getLogger(__name__)
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -65,15 +68,14 @@ class Statistic(Command):
 
     def run(self, target=None, tid=None):
         if target is None:
-            log.critical("Please set --target param")
+            logging.critical("Please set --target param")
             sys.exit()
         if tid is None:
-            log.critical("Please set --tid param")
+            logging.critical("Please set --tid param")
             sys.exit()
 
         # Statistic Code
-        p = subprocess.Popen(
-            ['cloc', target], stdout=subprocess.PIPE)
+        p = subprocess.Popen(['cloc', target], stdout=subprocess.PIPE)
         (output, err) = p.communicate()
         rs = output.split("\n")
         for r in rs:
@@ -85,9 +87,9 @@ class Statistic(Command):
                     try:
                         db.session.add(t)
                         db.session.commit()
-                        log.info("Statistic code number done")
+                        logging.info("Statistic code number done")
                     except Exception as e:
-                        log.error("Statistic code number failed" + str(e.message))
+                        logging.error("Statistic code number failed" + str(e.message))
 
 
 class Scan(Command):
@@ -99,17 +101,17 @@ class Scan(Command):
 
     def run(self, target=None, tid=None, pid=None):
         if target is None:
-            log.critical("Please set --target param")
+            logging.critical("Please set --target param")
             sys.exit()
         if tid is not None:
             task_id = tid
             # Start Time For Task
             t = CobraTaskInfo.query.filter_by(id=tid).first()
             if t is None:
-                log.critical("Task id doesn't exists.")
+                logging.critical("Task id doesn't exists.")
                 sys.exit()
             if t.status not in [0, 1]:
-                log.critical("Task Already Scan.")
+                logging.critical("Task Already Scan.")
                 sys.exit()
             t.status = 1
             t.time_start = int(time.time())
@@ -118,12 +120,12 @@ class Scan(Command):
                 db.session.add(t)
                 db.session.commit()
             except Exception as e:
-                log.error("Set start time failed" + str(e.message))
+                logging.error("Set start time failed" + str(e.message))
         else:
             task_id = None
 
         if os.path.isdir(target) is not True:
-            log.critical('Target is not directory')
+            logging.critical('Target is not directory')
             sys.exit()
         from engine import static
         static.Static(target, task_id=task_id, project_id=pid).analyse()
@@ -132,22 +134,22 @@ class Scan(Command):
 class Install(Command):
     def run(self):
         # create database structure
-        log.debug("Start create database structure...")
+        logging.debug("Start create database structure...")
         try:
             db.create_all()
         except exc.SQLAlchemyError as e:
-            log.critical("MySQL database error: {0}\nFAQ: {1}".format(e, 'https://github.com/wufeifei/cobra/wiki/Error#mysql'))
+            logging.critical("MySQL database error: {0}\nFAQ: {1}".format(e, 'https://github.com/wufeifei/cobra/wiki/Error#mysql'))
             sys.exit(0)
-        log.debug("Create Structure Success.")
+        logging.debug("Create Structure Success.")
         # insert base data
         from app.models import CobraAuth, CobraLanguages, CobraAdminUser, CobraVuls
         # table `auth`
-        log.debug('Insert api key...')
+        logging.debug('Insert api key...')
         auth = CobraAuth('manual', common.md5('CobraAuthKey'), 1)
         db.session.add(auth)
 
         # table `languages`
-        log.debug('Insert language...')
+        logging.debug('Insert language...')
         languages = {
             "php": ".php|.php3|.php4|.php5",
             "jsp": ".jsp",
@@ -180,7 +182,7 @@ class Install(Command):
             db.session.add(a_language)
 
         # table `user`
-        log.debug('Insert admin user...')
+        logging.debug('Insert admin user...')
         username = 'admin'
         password = 'admin123456!@#'
         role = 1  # 1: super admin, 2: admin, 3: rules admin
@@ -188,7 +190,7 @@ class Install(Command):
         db.session.add(a_user)
 
         # table `vuls`
-        log.debug('Insert vuls...')
+        logging.debug('Insert vuls...')
         vuls = [
             'SQL Injection',
             'LFI/RFI',
@@ -221,7 +223,7 @@ class Install(Command):
 
         # commit
         db.session.commit()
-        log.debug('All Done.')
+        logging.debug('All Done.')
 
 
 host = config.Config('cobra', 'host').value

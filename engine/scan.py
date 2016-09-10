@@ -16,10 +16,13 @@ import os
 import time
 import subprocess
 import getpass
+import logging
 from app import db, CobraProjects, CobraTaskInfo
-from utils import config, decompress, log
+from utils import config, decompress
 from pickup import git
 from engine import detection
+
+logging = logging.getLogger(__name__)
 
 
 class Scan:
@@ -37,7 +40,7 @@ class Scan:
             return 1002, result_d
         else:
             directory = result_d
-        log.info("Scan directory: {0}".format(directory))
+        logging.info("Scan directory: {0}".format(directory))
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         task = CobraTaskInfo(self.target, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
         db.session.add(task)

@@ -16,8 +16,10 @@ import shutil
 import zipfile
 import tarfile
 import rarfile
-from utils import config, log
+import logging
+from utils import config
 
+logging = logging.getLogger(__name__)
 """example
 
 Decompress a compressed file.
@@ -94,7 +96,7 @@ class Decompress:
         for filename in os.listdir(directory):
             directory_path = os.path.join(directory, filename)
             file_count += 1
-        log.info("Decompress path count: {0}, directory path: {1}".format(file_count, directory_path))
+        logging.info("Decompress path count: {0}, directory path: {1}".format(file_count, directory_path))
         if file_count == 1 and os.path.isdir(directory_path):
             return directory_path
         else:

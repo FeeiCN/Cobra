@@ -14,9 +14,11 @@
 
 import os
 import subprocess
+import logging
 from urllib import quote
+from utils import config
 
-from utils import log, config
+logging = logging.getLogger(__name__)
 
 """
 usage and example.
@@ -107,45 +109,45 @@ class Git:
 
         self.repo_directory = os.path.join(os.path.join(self.upload_directory, repo_user), repo_name)
 
-        log.info('Git class init.')
+        logging.info('Git class init.')
 
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-        log.info('Start Pull Repo...')
+        logging.info('Start Pull Repo...')
 
         if not self.__check_exist():
-            log.info('No local repo exist. Please clone first.')
+            logging.info('No local repo exist. Please clone first.')
             return False
 
         # change work directory to the repo
         repo_dir = self.repo_directory
-        log.debug('cd directory: {0}'.format(repo_dir))
+        logging.debug('cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
         cmd = 'git pull'
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
-        log.info(pull_out)
-        log.info(pull_err)
+        logging.info(pull_out)
+        logging.info(pull_err)
 
         # change work directory back.
         os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-            log.info('Pull done.')
+            logging.info('Pull done.')
             return True
         else:
-            log.info('Pull failed')
+            logging.info('Pull failed')
             return False
 
     def clone(self):
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-        log.info('Start Clone Repo...')
+        logging.info('Start Clone Repo...')
         if self.__check_exist():
-            log.info('Repo Already Exist. Stop Clone.')
-            log.debug('Directory exist, pull...')
+            logging.info('Repo Already Exist. Stop Clone.')
+            logging.debug('Directory exist, pull...')
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
 
@@ -162,30 +164,30 @@ class Git:
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password
         cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '" -b master'
-        log.info(cmd)
+        logging.info(cmd)
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
-        log.info(clone_out)
-        log.info(clone_err)
+        logging.info(clone_out)
+        logging.info(clone_err)
 
         if 'not found' in clone_err or 'Not found' in clone_err:
-            log.info("repo doesn't exist.")
+            logging.info("repo doesn't exist.")
             return False
         elif 'already exists' in clone_err:
-            log.info("repo has already cloned.")
+            logging.info("repo has already cloned.")
             return False
         elif 'Authentication failed' in clone_err:
-            log.info("Authentication failed.")
+            logging.info("Authentication failed.")
             return False
 
-        log.info('clone done. Switching to branch ' + self.repo_branch)
+        logging.info('clone done. Switching to branch ' + self.repo_branch)
         # check out to special branch
         if self.checkout(self.repo_branch):
-            log.info('checkout success.')
+            logging.info('checkout success.')
             return True
         else:
-            log.info('checkout failed.')
+            logging.info('checkout failed.')
             return False
 
     def diff(self, new_version, old_version, raw_output=False):
@@ -197,7 +199,7 @@ class Git:
         :return: the diff result in str, raw or formatted.
         """
         if not self.__check_exist():
-            log.info('No local repo exist. Please clone it first.')
+            logging.info('No local repo exist. Please clone it first.')
             return False
 
         # change the work directory to the repo.
@@ -208,11 +210,11 @@ class Git:
         cmd = 'git diff ' + old_version + ' ' + new_version
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
-        log.info(diff_out)
+        logging.info(diff_out)
 
         # change the work directory back.
         os.chdir(current_dir)
-        log.info('diff done.')
+        logging.info('diff done.')
         if raw_output:
             return diff_out
         else:
@@ -226,7 +228,7 @@ class Git:
                  False-checkout failed. Maybe no branch name.
         """
         if not self.__check_exist():
-            log.info('No repo directory.')
+            logging.info('No repo directory.')
             return False
 
         current_dir = os.getcwd()
@@ -235,7 +237,7 @@ class Git:
         cmd = "git checkout " + branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
-        log.info(checkout_err)
+        logging.info(checkout_err)
 
         # Already on
         # did not match
@@ -288,7 +290,7 @@ class Git:
         :return:
         """
         if self.__check_exist():
-            log.info('repo already exist. Try to pull the repo')
+            logging.info('repo already exist. Try to pull the repo')
             return self.pull()
         else:
             return self.clone()

@@ -13,8 +13,10 @@
 """
 import time
 import os
-from utils import log
+import logging
 from app import db, CobraExt
+
+logging = logging.getLogger(__name__)
 
 
 class Directory:
@@ -28,7 +30,7 @@ class Directory:
 
     def files(self, directory, level=1):
         if level == 1:
-            log.debug(directory)
+            logging.debug(directory)
         for filename in os.listdir(directory):
             path = os.path.join(directory, filename)
 
@@ -37,14 +39,14 @@ class Directory:
             self.type_nums.setdefault(file_extension.lower(), []).append(filename)
 
             # Directory Structure
-            # log.debug('|  ' * (level - 1) + '|--' + filename)
+            # logging.debug('|  ' * (level - 1) + '|--' + filename)
             if os.path.isdir(path):
                 self.files(path, level + 1)
             if os.path.isfile(path):
                 path = path.replace(self.path, '')
                 self.file.append(path)
                 self.file_id += 1
-                log.debug("{0}, {1}".format(self.file_id, path))
+                logging.debug("{0}, {1}".format(self.file_id, path))
 
     """
     :return {'file_nums': 50, 'collect_time': 2, '.php': {'file_count': 2, 'file_list': ['/path/a.php', '/path/b.php']}}
@@ -58,7 +60,7 @@ class Directory:
             extension = extension.strip()
             self.result[extension] = {'file_count': len(values), 'file_list': []}
             # .php : 123
-            log.debug('{0} : {1}'.format(extension, len(values)))
+            logging.debug('{0} : {1}'.format(extension, len(values)))
             if task_id is not None:
                 # Store
                 ext = CobraExt(task_id, extension, len(values))
