@@ -84,12 +84,13 @@ class CobraRules(db.Model):
     block_repair = db.Column(TINYINT(2), nullable=False, default=None)
     description = db.Column(db.String(256), nullable=False, default=None)
     repair = db.Column(db.String(512), nullable=False, default=None)
+    author = db.Column(db.String(56), nullable=False, default=None)
     status = db.Column(TINYINT(2), nullable=False, default=None)
     level = db.Column(TINYINT(2), nullable=False, default=None)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
-    def __init__(self, vul_id, language, regex_location, regex_repair, block_repair, description, repair, status, level, created_at=None, updated_at=None):
+    def __init__(self, vul_id, language, regex_location, regex_repair, block_repair, description, repair, status, author, level, created_at=None, updated_at=None):
         self.vul_id = vul_id
         self.language = language
         self.regex_location = regex_location
@@ -98,6 +99,7 @@ class CobraRules(db.Model):
         self.description = description
         self.repair = repair
         self.status = status
+        self.author = author
         self.level = level
         self.created_at = created_at
         self.updated_at = updated_at
