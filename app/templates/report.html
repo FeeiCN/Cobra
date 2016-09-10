@@ -160,7 +160,7 @@
                                 <select id="search_vul_type" class="form-control" style="height: 30px;">
                                     <option value="all">全部</option>
                                     {% for vul in data.select_vul_type %}
-                                        <option value="{{ vul }}">{{ vul }}</option>
+                                        <option value="{{ vul[1] }}">{{ vul[0] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -169,7 +169,7 @@
                                 <select id="search_rule" class="form-control" style="height: 30px;">
                                     <option value="all">全部</option>
                                     {% for rule in data.select_rule_type %}
-                                        <option value="{{ rule }}">{{ rule }}</option>
+                                        <option value="{{ rule[1] }}">{{ rule[0] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -240,26 +240,9 @@
                             </table>
                         </div> <!-- .panel-body -->
                     </div> <!-- .panel panel-default -->
+
                     <nav style="text-align: center">
-                        <ul class="pagination">
-                            <li {% if data.current_page == 1 %}class="disabled"{% endif %}>
-                                <a href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-
-                            {% for i in range(data.total_pages) %}
-                                <li {% if i + 1 == data.current_page %}class="active"{% endif %}>
-                                    <a href="{{ data.current_url }}&page={{ i + 1 }}">{{ i + 1 }} <span class="sr-only">(current)</span></a>
-                                </li>
-                            {% endfor %}
-
-                            <li {% if data.current_page == data.total_pages %}class="disabled"{% endif %}>
-                                <a href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
+                        {{ data.pagination.links | safe }}
                     </nav>
                 </div>
             </div>

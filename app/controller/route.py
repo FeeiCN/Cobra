@@ -15,6 +15,7 @@ import time
 
 from utils import common, config
 from flask import jsonify, render_template, request
+from flask_paginate import Pagination
 from sqlalchemy import and_
 from sqlalchemy.sql.functions import count
 
@@ -95,32 +96,32 @@ def report(task_id):
     total_vul_count = len(scan_results)
 
     # 获取出现的漏洞类型
-    res = db.session.query(count().label("vul_number"), CobraVuls.name).filter(
+    res = db.session.query(count().label("vul_number"), CobraVuls.name, CobraVuls.id).filter(
         and_(
             CobraResults.task_id == task_id,
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id,
         )
-    ).group_by(CobraVuls.name).all()
+    ).group_by(CobraVuls.name, CobraVuls.id).all()
     # 提供给筛选列表
     select_vul_type = list()
     # 存下每种漏洞数量
     chart_vuls_number = list()
     for r in res:
-        select_vul_type.append(r[1])
+        select_vul_type.append([r[1], r[2]])
         chart_vuls_number.append({"vuls_name": r[1], "vuls_number": r[0]})
 
     # 获取触发的规则类型
-    res = db.session.query(CobraRules.description).filter(
+    res = db.session.query(CobraRules.description, CobraRules.id).filter(
         and_(
             CobraResults.task_id == task_id,
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id
         )
-    ).group_by(CobraRules.description).all()
+    ).group_by(CobraRules.id).all()
     select_rule_type = list()
     for r in res:
-        select_rule_type.append(r[0])
+        select_rule_type.append([r[0], r[1]])
 
     # 检索不同等级的漏洞数量
     res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
@@ -156,9 +157,9 @@ def report(task_id):
 
     # 根据传入的筛选条件添加SQL的条件
     if search_vul_type is not None and search_vul_type != "all":
-        filter_group += (CobraVuls.name == search_vul_type,)
+        filter_group += (CobraVuls.id == search_vul_type,)
     if search_rule is not None and search_rule != "all":
-        filter_group += (CobraRules.description == search_rule,)
+        filter_group += (CobraRules.id == search_rule,)
     if search_level is not None and search_level != "all":
         filter_group += (CobraRules.level == search_level,)
 
@@ -177,7 +178,7 @@ def report(task_id):
     ).filter(
         *filter_group
     )
-    page_size = 10
+    page_size = 5
     total_number = all_scan_results.all()
     total_pages = len(total_number) / page_size + 1
     all_scan_results = all_scan_results.limit(page_size).offset((page - 1) * page_size).all()
@@ -229,6 +230,9 @@ def report(task_id):
         if "?" not in current_url:
             current_url += "?"
 
+    # 设置分页
+    pagination = Pagination(page=page, total=len(total_number), per_page=page_size, bs_version=3)
+
     data = {
         'id': int(task_id),
         'project_name': project_name,
@@ -253,6 +257,7 @@ def report(task_id):
         "total_pages": total_pages,
         "filter_vul_number": len(total_number),
         "current_url": current_url,
+        "pagination": pagination,
         'amount': {
             'h': high_amount,
             'm': medium_amount,
