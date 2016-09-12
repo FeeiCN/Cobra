@@ -270,6 +270,7 @@ $("#main-div").delegate("span", "click", function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
+                    var third_v_id = $('input[name=third_v_id]').val();
 
                     if (!name || name == "") {
                         showAlert('danger', 'name can not be blank.', '#edit-vul-result');
@@ -288,7 +289,8 @@ $("#main-div").delegate("span", "click", function () {
                         'vul_id': cid,
                         'name': name,
                         'description': description,
-                        'repair': repair
+                        'repair': repair,
+                        'third_v_id': third_v_id
                     };
                     $.post('edit_vul/' + cid, data, function (res) {
                         showAlert(res.tag, res.msg, '#edit-vul-result');
@@ -644,7 +646,7 @@ $("#show_all_vuls").click(function () {
     $.get('vuls/1', function (data) {
         $("#main-div").html(data);
 
-// Add new vuls.
+        // Add new vuls.
         $("#add_new_vuls").click(function () {
             $.get('add_new_vul', function (data) {
                 $("#main-div").html(data);
@@ -660,6 +662,7 @@ $("#show_all_vuls").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
+                    var third_v_id = $('input[name=third_v_id]').val();
 
                     if (name == "" || !name) {
                         showAlert('danger', 'name can not be blank.', '#add-new-vul-result');
@@ -676,7 +679,8 @@ $("#show_all_vuls").click(function () {
                     var data = {
                         'name': name,
                         'description': description,
-                        'repair': repair
+                        'repair': repair,
+                        'third_v_id': third_v_id
                     };
                     $.post('add_new_vul', data, function (res) {
                         showAlert(res.tag, res.msg, "#add-new-vul-result");

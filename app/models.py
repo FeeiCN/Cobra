@@ -128,13 +128,15 @@ class CobraVuls(db.Model):
     name = db.Column(db.String(56), nullable=False, default=None)
     description = db.Column(db.String(512), nullable=False, default=None)
     repair = db.Column(db.String(512), nullable=False, default=None)
+    third_v_id = db.Column(INTEGER, nullable=False, default=None)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
-    def __init__(self, name, description, repair, created_at=None, updated_at=None):
+    def __init__(self, name, description, repair, third_v_id, created_at=None, updated_at=None):
         self.name = name
         self.description = description
         self.repair = repair
+        self.third_v_id = third_v_id
         self.created_at = created_at
         self.updated_at = updated_at
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
