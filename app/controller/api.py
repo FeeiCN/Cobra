@@ -64,8 +64,9 @@ def add_task():
     new_version = data.get('new_version')
     old_version = data.get('old_version')
 
+    # one-click scan for manage projects
     project_id = data.get('project_id')
-    if project_id:
+    if project_id is not None:
         project = CobraProjects.query.filter_by(id=project_id).first()
         if not project:
             return jsonify(code=1002, result=u'not find the project.')
@@ -104,10 +105,16 @@ def status_task():
     }
     status_text = status[c.status]
     domain = config.Config('cobra', 'domain').value
+    # project_id
+    project_info = CobraProjects.query.filter_by(repository=c.target).first()
+    if project_info:
+        report = 'http://' + domain + '/report/' + str(project_info.id)
+    else:
+        report = 'http://' + domain
     result = {
         'status': status_text,
         'text': 'Success',
-        'report': 'http://' + domain + '/report/' + str(scan_id),
+        'report': report,
         'allow_deploy': True
     }
     return jsonify(status=1001, result=result)

@@ -43,8 +43,8 @@ def homepage():
     return render_template('index.html', data=data)
 
 
-@web.route('/report/<int:task_id>', methods=['GET'])
-def report(task_id):
+@web.route('/report/<int:project_id>', methods=['GET'])
+def report(project_id):
     # 获取筛选数据
     search_vul_type = request.args.get("search_vul_type", None)
     search_rule = request.args.get("search_rule", None)
@@ -53,9 +53,10 @@ def report(task_id):
     page = int(request.args.get("page", 1))
 
     # 检测 task id 是否存在
-    task_info = CobraTaskInfo.query.filter_by(id=task_id).first()
-    if not task_info:
+    project_info = CobraProjects.query.filter_by(id=project_id).first()
+    if not project_info:
         return jsonify(status="4004", msg="report id not found.")
+    task_info = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.id.desc()).first()
 
     # 获取task的信息
     repository = task_info.target
@@ -75,8 +76,7 @@ def report(task_id):
     time_end = time.strftime("%H:%M:%S", time.localtime(time_end))
 
     # 获取project信息
-    project = CobraProjects.query.filter_by(repository=repository).first()
-    if project is None:
+    if project_info is None:
         project_name = repository
         project_id = 0  # add l4yn3
         author = 'Anonymous'
@@ -84,21 +84,21 @@ def report(task_id):
         project_framework = 'Unknown Framework'
         project_url = 'Unknown URL'
     else:
-        project_name = project.name
-        project_id = project.id
-        author = project.author
-        project_description = project.remark
-        project_framework = project.framework
-        project_url = project.url
+        project_name = project_info.name
+        project_id = project_info.id
+        author = project_info.author
+        project_description = project_info.remark
+        project_framework = project_info.framework
+        project_url = project_info.url
 
     # 获取漏洞总数量
-    scan_results = CobraResults.query.filter_by(task_id=task_id).all()
+    scan_results = CobraResults.query.filter_by(project_id=project_id).all()
     total_vul_count = len(scan_results)
 
     # 获取出现的漏洞类型
     res = db.session.query(count().label("vul_number"), CobraVuls.name, CobraVuls.id).filter(
         and_(
-            CobraResults.task_id == task_id,
+            CobraResults.project_id == project_id,
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id,
         )
@@ -114,7 +114,7 @@ def report(task_id):
     # 获取触发的规则类型
     res = db.session.query(CobraRules.description, CobraRules.id).filter(
         and_(
-            CobraResults.task_id == task_id,
+            CobraResults.project_id == project_id,
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id
         )
@@ -126,7 +126,7 @@ def report(task_id):
     # 检索不同等级的漏洞数量
     res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
         and_(
-            CobraResults.task_id == task_id,
+            CobraResults.project_id == project_id,
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id,
         )
@@ -150,7 +150,7 @@ def report(task_id):
 
     # 检索全部的漏洞信息
     filter_group = (
-        CobraResults.task_id == task_id,
+        CobraResults.project_id == project_id,
         CobraResults.rule_id == CobraRules.id,
         CobraVuls.id == CobraRules.vul_id,
     )
@@ -234,7 +234,7 @@ def report(task_id):
     pagination = Pagination(page=page, total=len(total_number), per_page=page_size, bs_version=3)
 
     data = {
-        'id': int(task_id),
+        'id': int(project_id),
         'project_name': project_name,
         'project_id': project_id,
         'project_repository': repository,

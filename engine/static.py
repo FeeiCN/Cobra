@@ -190,15 +190,22 @@ class Static:
                         if line == '':
                             continue
                         if rule.regex_location.strip() == '':
-                            # Find
+                            # Find (special file)
                             file_path = line.strip().replace(self.directory, '')
                             logging.debug('File: {0}'.format(file_path))
-                            vul = CobraResults(self.task_id, rule.id, file_path, 0, '')
-                            db.session.add(vul)
+                            exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path).first()
+                            if exist_result is not None:
+                                logging.warning("Exists Result")
+                            else:
+                                vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, 0, '', 0)
+                                db.session.add(vul)
                         else:
                             # Grep
                             line_split = line.split(':', 1)
                             file_path = line_split[0].strip()
+                            if len(line_split) < 2:
+                                logging.info("Line len < 2 {0}".format(line))
+                                continue
                             code_content = line_split[1].split(':', 1)[1].strip()
                             line_number = line_split[1].split(':', 1)[0].strip()
 
@@ -237,15 +244,15 @@ class Static:
 
                                     if found_vul:
                                         logging.info('In Insert')
-                                        exist_result = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
+                                        exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path, line=line_number).first()
                                         if exist_result is not None:
-                                            logging.warning("Exists Result")
+                                            logging.info("Exists Result")
                                         else:
                                             code_content = '# 触发位置\r' + code_content
                                             if param_value is not None:
                                                 code_content = '# 参数可控\r' + param_value + '\r//\r// ------ 省略部分代码 ------\r//\r' + code_content
                                             logging.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
-                                            vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
+                                            vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, line_number, code_content, 0)
                                             db.session.add(vul)
                                             logging.info('Insert Results Success')
                     db.session.commit()

@@ -179,22 +179,26 @@ class CobraResults(db.Model):
     __tablename__ = 'results'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    task_id = db.Column(INTEGER(11), nullable=False, default=None)
-    rule_id = db.Column(INTEGER(11), nullable=False, default=None)
+    task_id = db.Column(INTEGER, nullable=False, default=None)
+    project_id = db.Column(INTEGER, nullable=False, default=None)
+    rule_id = db.Column(INTEGER, nullable=False, default=None)
     file = db.Column(db.String(512), nullable=False, default=None)
     line = db.Column(INTEGER(11), nullable=False, default=None)
     code = db.Column(db.String(512), nullable=False, default=None)
+    status = db.Column(TINYINT, default=None, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
     __table_args__ = (Index('ix_task_id_rule_id', task_id, rule_id), {"mysql_charset": "utf8mb4"})
 
-    def __init__(self, task_id, rule_id, file_path, line, code, created_at=None, updated_at=None):
+    def __init__(self, task_id, project_id, rule_id, file_path, line, code, status, created_at=None, updated_at=None):
         self.task_id = task_id
+        self.project_id = project_id
         self.rule_id = rule_id
         self.file = file_path
         self.line = line
         self.code = code
+        self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
