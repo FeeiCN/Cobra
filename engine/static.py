@@ -21,7 +21,8 @@ import traceback
 import logging
 from pickup import directory
 from engine import parse
-from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
+from utils.queue import Queue
+from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
 
 logging = logging.getLogger(__name__)
 
@@ -31,6 +32,12 @@ class Static:
         self.directory = directory_path
         self.task_id = task_id
         self.project_id = project_id
+        # project info
+        project_info = CobraProjects.query.filter_by(id=project_id).first()
+        if project_info:
+            self.project_name = project_info.name
+        else:
+            self.project_name = 'Undefined Project'
 
     def analyse(self):
         if self.directory is None:
@@ -138,6 +145,18 @@ class Static:
             else:
                 find = gfind
 
+        """
+        all vulnerabilities
+        vulnerabilities_all[vuln_id] = {'name': 'vuln_name', 'third_v_id': 'third_v_id'}
+        """
+        vulnerabilities_all = {}
+        vulnerabilities = CobraVuls.query.all()
+        for v in vulnerabilities:
+            vulnerabilities_all[v.id] = {
+                'name': v.name,
+                'third_v_id': v.third_v_id
+            }
+
         for rule in rules:
             logging.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
@@ -195,10 +214,25 @@ class Static:
                             logging.debug('File: {0}'.format(file_path))
                             exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path).first()
                             if exist_result is not None:
+                                # push queue
+                                if exist_result.status == 0:
+                                    try:
+                                        q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, 0, 0, exist_result.id)
+                                        q.push()
+                                    except Exception as e:
+                                        print(traceback.print_exc())
+                                        logging.critical(e.message)
                                 logging.warning("Exists Result")
                             else:
                                 vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, 0, '', 0)
                                 db.session.add(vul)
+                                try:
+                                    # push queue
+                                    q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, 0, 0, vul.id)
+                                    q.push()
+                                except Exception as e:
+                                    print(traceback.print_exc())
+                                    logging.critical(e.message)
                         else:
                             # Grep
                             line_split = line.split(':', 1)
@@ -247,6 +281,14 @@ class Static:
                                         exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path, line=line_number).first()
                                         if exist_result is not None:
                                             logging.info("Exists Result")
+                                            # push queue
+                                            if exist_result.status == 0:
+                                                try:
+                                                    q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, line_number, code_content, exist_result.id)
+                                                    q.push()
+                                                except Exception as e:
+                                                    print(traceback.print_exc())
+                                                    logging.critical(e.message)
                                         else:
                                             code_content = '# 触发位置\r' + code_content
                                             if param_value is not None:
@@ -254,8 +296,14 @@ class Static:
                                             logging.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
                                             vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, line_number, code_content, 0)
                                             db.session.add(vul)
+                                            db.session.commit()
+                                            try:
+                                                q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, line_number, code_content, vul.id)
+                                                q.push()
+                                            except Exception as e:
+                                                print(traceback.print_exc())
+                                                logging.critical(e.message)
                                             logging.info('Insert Results Success')
-                    db.session.commit()
                 else:
                     logging.info('Not Found')
 

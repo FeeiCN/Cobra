@@ -185,6 +185,10 @@ class CobraResults(db.Model):
     file = db.Column(db.String(512), nullable=False, default=None)
     line = db.Column(INTEGER(11), nullable=False, default=None)
     code = db.Column(db.String(512), nullable=False, default=None)
+    """
+    0: 漏洞扫完后初始化状态
+    1: 已推送给第三方漏洞管理平台
+    """
     status = db.Column(TINYINT, default=None, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)

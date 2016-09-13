@@ -60,6 +60,28 @@ class Test(unittest.TestCase):
         except (requests.ConnectionError, requests.HTTPError) as e:
             self.fail("API Add failed: {0}".format(e))
 
+    def test_push(self):
+        from daemon import push_vulnerabilities, error_handler
+        from utils.third_party import Vulnerabilities
+        v = Vulnerabilities()
+        data = [{
+            "name": "Cobra发现(/path/to/mogujie)项目一处SSRF漏洞",
+            "time": "2016-09-12 17:01:40",
+            "vuln_type": "10000000",
+            "filepath": "/path/to/test.php",
+            "linenum": "123",
+            "code": "\r\n\r\n$str = $_GET['test'];\r\necho $str;",
+            "summitid": v.key,
+            "signid": '12',
+            'description': '\r\n\r\n该漏洞由Cobra(代码安全审计系统)自动发现并报告!'
+        }]
+        push_vulnerabilities.apply_async(data, link_error=error_handler.s(), serializer='json')
+
+    def test_config(self):
+        from utils.config import Config
+        status = Config('third_party_vulnerabilities', 'status').value
+        self.assertTrue(int(status))
+
 
 if __name__ == '__main__':
     unittest.main()
