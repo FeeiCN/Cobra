@@ -218,7 +218,7 @@ class Install(Command):
             'Components'
         ]
         for vul in vuls:
-            a_vul = CobraVuls(vul, 'Vul Description', 'Vul Repair', '')
+            a_vul = CobraVuls(vul, 'Vul Description', 'Vul Repair', 0)
             db.session.add(a_vul)
 
         # commit
