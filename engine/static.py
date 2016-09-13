@@ -158,6 +158,8 @@ class Static:
             }
 
         for rule in rules:
+            rule.regex_location = rule.regex_location.strip()
+            rule.regex_repair = rule.regex_repair.strip()
             logging.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
@@ -175,7 +177,7 @@ class Static:
                     white_list.append(w.path)
 
             try:
-                if rule.regex_location.strip() == "":
+                if rule.regex_location == "":
                     filters = []
                     for index, e in enumerate(extensions):
                         if index > 1:
@@ -208,7 +210,7 @@ class Static:
                         line = line.strip()
                         if line == '':
                             continue
-                        if rule.regex_location.strip() == '':
+                        if rule.regex_location == '':
                             # Find (special file)
                             file_path = line.strip().replace(self.directory, '')
                             logging.debug('File: {0}'.format(file_path))
@@ -254,25 +256,29 @@ class Static:
                                 else:
                                     param_value = None
                                     # parse file function structure
-                                    if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
-                                        try:
-                                            parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
-                                            if parse_instance.is_controllable_param():
-                                                if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
-                                                    logging.info("Static: repaired")
-                                                    continue
-                                                else:
-                                                    if parse_instance.param_value is not None:
-                                                        param_value = parse_instance.param_value
-                                                    found_vul = True
-                                            else:
-                                                logging.info("Static: uncontrollable param")
-                                                continue
-                                        except:
-                                            print(traceback.print_exc())
-                                            found_vul = False
-                                    else:
+                                    only_match = rule.regex_location[:1] == '(' and rule.regex_location[-1] == ')'
+                                    if only_match:
                                         found_vul = True
+                                    else:
+                                        if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
+                                            try:
+                                                parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
+                                                if parse_instance.is_controllable_param():
+                                                    if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
+                                                        logging.info("Static: repaired")
+                                                        continue
+                                                    else:
+                                                        if parse_instance.param_value is not None:
+                                                            param_value = parse_instance.param_value
+                                                        found_vul = True
+                                                else:
+                                                    logging.info("Static: uncontrollable param")
+                                                    continue
+                                            except:
+                                                print(traceback.print_exc())
+                                                found_vul = False
+                                        else:
+                                            found_vul = True
 
                                     file_path = file_path.replace(self.directory, '')
 
