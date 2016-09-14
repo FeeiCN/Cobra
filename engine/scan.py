@@ -18,10 +18,11 @@ import subprocess
 import getpass
 import logging
 from app import db, CobraProjects, CobraTaskInfo
-from utils import config, decompress
+from utils import config, decompress, log
 from pickup import git
 from engine import detection
 
+log.Log()
 logging = logging.getLogger(__name__)
 
 
@@ -61,6 +62,7 @@ class Scan:
     def version(self, branch=None, new_version=None, old_version=None):
         # Gitlab
         if '.git' in self.target:
+            logging.info('Gitlab project')
             # Git
             if 'gitlab' in self.target:
                 username = config.Config('git', 'username').value
@@ -100,24 +102,26 @@ class Scan:
 
         # detection framework for project
         framework, language = detection.Detection(repo_directory).framework()
-        project_framework = '{0} ({1})'.format(framework, language)
+        if framework != '' or language != '':
+            project_framework = '{0} ({1})'.format(framework, language)
+        else:
+            project_framework = ''
+        project_id = 0
         if not p:
             # insert into project table.
             project = CobraProjects(self.target, '', repo_name, repo_author, project_framework, '', '', current_time)
-            project_id = project.id
         else:
             project_id = p.id
-
             # update project's framework
             p.framework = project_framework
             db.session.add(p)
-            db.session.commit()
         try:
             db.session.add(task)
             if not p:
                 db.session.add(project)
             db.session.commit()
-
+            if not p:
+                project_id = project.id
             cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
 
             if os.path.isfile(cobra_path) is not True:

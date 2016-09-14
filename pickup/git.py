@@ -99,7 +99,7 @@ class Git:
         self.repo_password = password
         self.repo_branch = branch
         repo_user = self.repo_address.split('/')[-2]
-        repo_name = self.repo_address.split('/')[-1]
+        repo_name = self.repo_address.split('/')[-1].replace('.git', '')
         self.repo_author = repo_user
         self.repo_name = repo_name
         if '.git' not in repo_name:

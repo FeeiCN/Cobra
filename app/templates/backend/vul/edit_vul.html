@@ -2,25 +2,31 @@
     <div class="col-md-12 column">
         <div class="page-header">
             <h3>
-                Edit vul type
+                Edit vulnerabilities type
                 <small></small>
             </h3>
         </div>
     </div>
 </div>
 <form role="form">
-    <div class="form-group">
-        <label for="name">Vul Name</label>
+    <div class="form-group col-md-8">
+        <label for="name">Vulnerabilities Name</label>
         <textarea class="form-control" id="name">{{ data.vul.name }}</textarea>
     </div>
-    <div class="form-group">
-        <label for="description">Vul Description</label>
+    <div class="form-group col-md-4">
+        <label for="repair">Third Vulnerabilities ID</label>
+        <input class="form-control" name="third_v_id" value="{{ data.vul.third_v_id }}"/>
+    </div>
+    <div class="form-group col-md-12">
+        <label for="description">Vulnerabilities Description</label>
         <textarea class="form-control" id="description">{{ data.vul.description }}</textarea>
     </div>
-    <div class="form-group">
+    <div class="form-group col-md-12">
         <label for="repair">Repair</label>
         <textarea class="form-control" id="repair">{{ data.vul.repair }}</textarea>
     </div>
-    <div id="edit-vul-result" hidden></div>
-    <button type="button" class="btn btn-success" id="edit-vul-button">Save</button>
+    <div class="col-md-12">
+        <div id="edit-vul-result" hidden></div>
+        <button type="button" class="btn btn-success" id="edit-vul-button">Save</button>
+    </div>
 </form>

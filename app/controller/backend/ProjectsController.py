@@ -16,6 +16,7 @@ import time
 from flask import render_template, request, jsonify, redirect
 
 from . import ADMIN_URL
+from utils import config
 from app import web, db
 from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraProjects
@@ -29,9 +30,11 @@ __email__ = "root@lightless.me"
 @login_required
 def projects(page):
     per_page = 10
-    project = CobraProjects.query.order_by(CobraProjects.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    projects = CobraProjects.query.order_by(CobraProjects.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    for project in projects:
+        project.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
     data = {
-        'projects': project,
+        'projects': projects,
     }
     return render_template("backend/project/projects.html", data=data)
 

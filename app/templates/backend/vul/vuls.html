@@ -1,13 +1,14 @@
 <button type="button" class="btn btn-primary btn-block" id="add_new_vuls">Add Vul</button>
 <table class="table table-bordered table-hover">
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>name</th>
-            <th>description</th>
-            <th>last update time</th>
-            <th>Operation</th>
-        </tr>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Third V ID</th>
+        <th>Last Update Time</th>
+        <th>Operation</th>
+    </tr>
     </thead>
     <tbody id="main-table">
     {% for vul in data.vuls %}
@@ -15,6 +16,7 @@
             <td>{{ vul.id }}</td>
             <td>{{ vul.name }}</td>
             <td>{{ vul.description }}</td>
+            <td>{{ vul.third_v_id }}</td>
             <td>{{ vul.updated_at }}</td>
             <td hidden id="vul-repair-{{ vul.id }}">{{ vul.repair }}</td>
             <td>
