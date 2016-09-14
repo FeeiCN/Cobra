@@ -391,7 +391,9 @@ $("#main-div").delegate("span", "click", function () {
                 $("#edit-project-button").click(function () {
                     var name = $("#name").val();
                     var repository = $("#repository").val();
+                    var url = $("#url").val();
                     var author = $("#author").val();
+                    var pe = $("#pe").val();
                     var remark = $("#remark").val();
 
                     if (!name || name == "") {
@@ -402,6 +404,10 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert('danger', 'repository can not be empty!', '#edit-project-result');
                         return false;
                     }
+                    if (!url || url == "") {
+                        showAlert('danger', 'url can not be empty!', '#edit-project-result');
+                        return false;
+                    }
                     if (!remark || remark == "") {
                         showAlert('danger', 'remark can not be empty!', '#edit-project-result');
                         return false;
@@ -410,13 +416,19 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert('danger', 'author cannot be empty!', '#edit-project-result');
                         return false;
                     }
+                    if (!pe || pe == "") {
+                        showAlert('danger', 'pe cannot be empty!', '#edit-project-result');
+                        return false;
+                    }
 
                     data = {
                         'project_id': cid,
                         'name': name,
                         'repository': repository,
+                        'url': url,
                         'author': author,
-                        'remark': remark
+                        'remark': remark,
+                        'pe': pe
                     };
                     $.post('edit_project/' + cid, data, function (res) {
                         showAlert(res.tag, res.msg, '#edit-project-result');
@@ -706,7 +718,9 @@ $("#show_all_projects").click(function () {
                 $("#add-project-button").click(function () {
                     var name = $("#name").val();
                     var repository = $("#repository").val();
+                    var url = $("#url").val();
                     var author = $("#author").val();
+                    var pe = $("#pe").val();
                     var remark = $("#remark").val();
 
                     if (!name || name == "") {
@@ -717,6 +731,10 @@ $("#show_all_projects").click(function () {
                         showAlert('danger', 'repository can not be empty!', '#add-project-result');
                         return false;
                     }
+                    if (!url || url == "") {
+                        showAlert('danger', 'url can not be empty!', '#add-project-result');
+                        return false;
+                    }
                     if (!remark || remark == "") {
                         showAlert('danger', 'remark can not be empty!', '#add-project-result');
                         return false;
@@ -725,12 +743,18 @@ $("#show_all_projects").click(function () {
                         showAlert('danger', 'author cannot be empty!', '#add-project-result');
                         return false;
                     }
+                    if (!pe || pe == "") {
+                        showAlert('danger', 'pe cannot be empty!', '#add-project-result');
+                        return false;
+                    }
 
                     data = {
                         'name': name,
                         'repository': repository,
+                        'url': url,
                         'author': author,
-                        'remark': remark
+                        'remark': remark,
+                        'pe': pe
                     };
                     $.post('add_new_project/', data, function (res) {
                         showAlert(res.tag, res.msg, '#add-project-result');
