@@ -50,6 +50,8 @@ def report(project_id):
     search_rule = request.args.get("search_rule", None)
     search_level = request.args.get("search_level", None)
     search_task = request.args.get("search_task", None)
+    if search_task == 'all':
+        search_task = None
 
     # 当前页码,默认为第一页
     page = int(request.args.get("page", 1))
