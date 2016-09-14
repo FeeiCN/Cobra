@@ -49,6 +49,8 @@ def report(project_id):
     search_vul_type = request.args.get("search_vul_type", None)
     search_rule = request.args.get("search_rule", None)
     search_level = request.args.get("search_level", None)
+    search_task = request.args.get("search_task", None)
+
     # 当前页码,默认为第一页
     page = int(request.args.get("page", 1))
 
@@ -56,7 +58,12 @@ def report(project_id):
     project_info = CobraProjects.query.filter_by(id=project_id).first()
     if not project_info:
         return jsonify(status="4004", msg="report id not found.")
-    task_info = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.id.desc()).first()
+    if search_task is None:
+        task_info = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.id.desc()).first()
+    else:
+        task_info = CobraTaskInfo.query.filter_by(id=search_task).first()
+        if task_info is None:
+            return jsonify(code=4004, msg="Task not exists")
 
     # 获取task的信息
     repository = task_info.target
@@ -91,18 +98,29 @@ def report(project_id):
         project_framework = project_info.framework
         project_url = project_info.url
 
-    # 获取漏洞总数量
-    scan_results = CobraResults.query.filter_by(project_id=project_id).all()
+    if search_task is None:
+        # 获取漏洞总数量
+        scan_results = CobraResults.query.filter_by(project_id=project_id).all()
+        # 获取出现的漏洞类型
+        res = db.session.query(count().label("vul_number"), CobraVuls.name, CobraVuls.id).filter(
+            and_(
+                CobraResults.project_id == project_id,
+                CobraResults.rule_id == CobraRules.id,
+                CobraVuls.id == CobraRules.vul_id,
+            )
+        ).group_by(CobraVuls.name, CobraVuls.id).all()
+    else:
+        scan_results = CobraResults.query.filter_by(task_id=search_task).all()
+        # 获取出现的漏洞类型
+        res = db.session.query(count().label("vul_number"), CobraVuls.name, CobraVuls.id).filter(
+            and_(
+                CobraResults.task_id == search_task,
+                CobraResults.rule_id == CobraRules.id,
+                CobraVuls.id == CobraRules.vul_id,
+            )
+        ).group_by(CobraVuls.name, CobraVuls.id).all()
     total_vul_count = len(scan_results)
 
-    # 获取出现的漏洞类型
-    res = db.session.query(count().label("vul_number"), CobraVuls.name, CobraVuls.id).filter(
-        and_(
-            CobraResults.project_id == project_id,
-            CobraResults.rule_id == CobraRules.id,
-            CobraVuls.id == CobraRules.vul_id,
-        )
-    ).group_by(CobraVuls.name, CobraVuls.id).all()
     # 提供给筛选列表
     select_vul_type = list()
     # 存下每种漏洞数量
@@ -112,25 +130,43 @@ def report(project_id):
         chart_vuls_number.append({"vuls_name": r[1], "vuls_number": r[0]})
 
     # 获取触发的规则类型
-    res = db.session.query(CobraRules.description, CobraRules.id).filter(
-        and_(
-            CobraResults.project_id == project_id,
-            CobraResults.rule_id == CobraRules.id,
-            CobraVuls.id == CobraRules.vul_id
-        )
-    ).group_by(CobraRules.id).all()
+    if search_task is None:
+        res = db.session.query(CobraRules.description, CobraRules.id).filter(
+            and_(
+                CobraResults.project_id == project_id,
+                CobraResults.rule_id == CobraRules.id,
+                CobraVuls.id == CobraRules.vul_id
+            )
+        ).group_by(CobraRules.id).all()
+    else:
+        res = db.session.query(CobraRules.description, CobraRules.id).filter(
+            and_(
+                CobraResults.task_id == search_task,
+                CobraResults.rule_id == CobraRules.id,
+                CobraVuls.id == CobraRules.vul_id
+            )
+        ).group_by(CobraRules.id).all()
     select_rule_type = list()
     for r in res:
         select_rule_type.append([r[0], r[1]])
 
     # 检索不同等级的漏洞数量
-    res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
-        and_(
-            CobraResults.project_id == project_id,
-            CobraResults.rule_id == CobraRules.id,
-            CobraVuls.id == CobraRules.vul_id,
-        )
-    ).group_by(CobraRules.level).all()
+    if search_task is None:
+        res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
+            and_(
+                CobraResults.project_id == project_id,
+                CobraResults.rule_id == CobraRules.id,
+                CobraVuls.id == CobraRules.vul_id,
+            )
+        ).group_by(CobraRules.level).all()
+    else:
+        res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
+            and_(
+                CobraResults.task_id == search_task,
+                CobraResults.rule_id == CobraRules.id,
+                CobraVuls.id == CobraRules.vul_id,
+            )
+        ).group_by(CobraRules.level).all()
     low_amount = medium_amount = high_amount = unknown_amount = 0
     for every_level in res:
         """
@@ -149,11 +185,18 @@ def report(project_id):
             unknown_amount = every_level[0]
 
     # 检索全部的漏洞信息
-    filter_group = (
-        CobraResults.project_id == project_id,
-        CobraResults.rule_id == CobraRules.id,
-        CobraVuls.id == CobraRules.vul_id,
-    )
+    if search_task is None:
+        filter_group = (
+            CobraResults.project_id == project_id,
+            CobraResults.rule_id == CobraRules.id,
+            CobraVuls.id == CobraRules.vul_id,
+        )
+    else:
+        filter_group = (
+            CobraResults.task_id == search_task,
+            CobraResults.rule_id == CobraRules.id,
+            CobraVuls.id == CobraRules.vul_id,
+        )
 
     # 根据传入的筛选条件添加SQL的条件
     if search_vul_type is not None and search_vul_type != "all":
@@ -233,6 +276,9 @@ def report(project_id):
     # 设置分页
     pagination = Pagination(page=page, total=len(total_number), per_page=page_size, bs_version=3)
 
+    # 任务信息
+    tasks = CobraTaskInfo.query.filter_by(target=repository).order_by(CobraTaskInfo.updated_at.desc()).all()
+
     data = {
         'id': int(project_id),
         'project_name': project_name,
@@ -264,6 +310,7 @@ def report(project_id):
             'l': low_amount,
             'u': unknown_amount
         },
+        'tasks': tasks
     }
     return render_template('report.html', data=data)
 
