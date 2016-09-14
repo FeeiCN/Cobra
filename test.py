@@ -44,14 +44,16 @@ class Test(unittest.TestCase):
             response = requests.post(self.api.format('add'), data=payload, headers=self.headers)
             response_json = response.json()
             code = response_json.get('code')
-            self.assertEqual(code, 1001)
+            print(code)
+            # self.assertEqual(code, 1001)
         except (requests.ConnectionError, requests.HTTPError) as e:
             self.fail("API Add failed: {0}".format(e))
 
     def test_all_projects(self):
         with open('/Volumes/Statics/Downloads/all-projects.txt') as f:
-            for line in f:
+            for index, line in enumerate(f):
                 self.target = line.strip()
+                print(index, self.target)
                 self.test_api()
 
     def test_push(self):
