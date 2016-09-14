@@ -331,7 +331,7 @@ $("#main-div").delegate("span", "click", function () {
                                         window.open(result.result['report'], '_blank');
                                     }
                                     else {
-                                        setTimeout(get_status, 300);
+                                        setTimeout(get_status, 2000);
                                     }
                                 }
                             });
