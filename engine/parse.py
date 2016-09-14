@@ -106,8 +106,12 @@ class Parse:
         """
         logging.info('---------------------- [-]. Block code B:{0} --------------------------------------'.format(block_position))
         if block_position == 2:
+            if self.line is None or self.line == 0:
+                logging.critical("Line number exception: {0}".format(self.line))
+                return False
             line_rule = '{0}p'.format(self.line)
             code = self.get_code(line_rule)
+            code = code.strip()
             logging.info("C: {0}".format(code))
             return code
         else:
@@ -127,7 +131,7 @@ class Parse:
                             block_end = function_value['end']
                     logging.info("F: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
                 # get param block code
-                logging.info('C: {0} - {1}p'.format(block_start, block_end))
+                logging.info('B: {0} - {1}p'.format(block_start, block_end))
                 line_rule = "{0},{1}p".format(block_start, block_end)
                 return self.get_code(line_rule)
             else:
@@ -182,7 +186,7 @@ class Parse:
                     r'\$path\s?=\s?([A-Z_]*)'.format(param_name)
                 ]
                 for uc_rule in un_controllable_param_rule:
-                    uc_rule_result = re.findall(uc_rule, param_block_code)
+                    uc_rule_result = re.findall(re.escape(uc_rule), param_block_code)
                     if len(uc_rule_result) >= 1:
                         logging.info("R: False ($param = '' : {0} = {1})".format(param_name, uc_rule_result[0]))
                         return False
@@ -210,7 +214,7 @@ class Parse:
                     }
                 ]
                 for c_rule in controllable_param_rule:
-                    c_rule_result = re.findall(c_rule['rule'], param_block_code)
+                    c_rule_result = re.findall(re.escape(c_rule['rule']), param_block_code)
                     if len(c_rule_result) >= 1:
                         self.param_value = c_rule_result[0]
                         logging.info("R: True (New rule: controllable param: {0}, {1})".format(param_name, c_rule['example']))

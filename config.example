@@ -21,7 +21,7 @@ directory: /tmp/cobra
 extensions: tar.bz2|tar|gz|tgz|tar.gz|rar|zip
 max_size: 200
 
-[third_vulnerabilities]
+[third_party_vulnerabilities]
 # Push vulnerabilities to third vulnerabilities ?
 status: 0
 
