@@ -61,8 +61,8 @@ def add_task():
         return jsonify(code=4002, result=u'Key verify failed')
     target = data.get('target')
     branch = data.get('branch')
-    new_version = data.get('new_version')
-    old_version = data.get('old_version')
+    new_version = data.get('new_version', '')
+    old_version = data.get('old_version', '')
 
     # one-click scan for manage projects
     project_id = data.get('project_id')
@@ -82,7 +82,7 @@ def add_task():
         return jsonify(code=1002, result=u'url can not be empty.')
     if not branch or branch == "":
         return jsonify(code=1002, result=u'branch can not be empty.')
-    logging.info('Test')
+
     code, result = scan.Scan(target).version(branch, new_version, old_version)
     return jsonify(code=code, result=result)
 
