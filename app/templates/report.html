@@ -260,7 +260,22 @@
     </div>
     <hr>
     <!-- Containers -->
-    {% include "footer.html" %}
+    <div class="row">
+        <div class="col-md-6">
+            <div>
+                <p style="float:left;">
+                    Copyright &copy; 2016 <a href="http://wufeifei.com/cobra" target="_blank">Cobra</a>. All rights reserved
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <p style="float:right;">
+                    <a href="https://github.com/wufeifei/cobra" target="_blank">Github</a>
+                </p>
+            </div>
+        </div>
+    </div>
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
