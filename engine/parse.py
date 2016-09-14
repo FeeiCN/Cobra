@@ -106,8 +106,12 @@ class Parse:
         """
         logging.info('---------------------- [-]. Block code B:{0} --------------------------------------'.format(block_position))
         if block_position == 2:
+            if self.line is None or self.line == 0:
+                logging.critical("Line number exception: {0}".format(self.line))
+                return False
             line_rule = '{0}p'.format(self.line)
             code = self.get_code(line_rule)
+            code = code.strip()
             logging.info("C: {0}".format(code))
             return code
         else:
