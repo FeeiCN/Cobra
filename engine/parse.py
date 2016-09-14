@@ -127,7 +127,7 @@ class Parse:
                             block_end = function_value['end']
                     logging.info("F: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
                 # get param block code
-                logging.info('C: {0} - {1}p'.format(block_start, block_end))
+                logging.info('B: {0} - {1}p'.format(block_start, block_end))
                 line_rule = "{0},{1}p".format(block_start, block_end)
                 return self.get_code(line_rule)
             else:
