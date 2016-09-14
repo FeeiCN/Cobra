@@ -14,7 +14,7 @@
 import time
 
 from utils import common, config
-from flask import jsonify, render_template, request
+from flask import jsonify, render_template, request, abort
 from flask_paginate import Pagination
 from sqlalchemy import and_
 from sqlalchemy.sql.functions import count
@@ -59,13 +59,13 @@ def report(project_id):
     # 检测 task id 是否存在
     project_info = CobraProjects.query.filter_by(id=project_id).first()
     if not project_info:
-        return jsonify(status="4004", msg="report id not found.")
+        abort(404)
     if search_task is None:
         task_info = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.id.desc()).first()
     else:
         task_info = CobraTaskInfo.query.filter_by(id=search_task).first()
         if task_info is None:
-            return jsonify(code=4004, msg="Task not exists")
+            abort(404)
 
     # 获取task的信息
     repository = task_info.target

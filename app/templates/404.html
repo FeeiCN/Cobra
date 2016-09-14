@@ -20,8 +20,8 @@
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
 
     <!-- SPECIFIC CSS -->
-    <link href="asset/css/skins/square/grey.css" rel="stylesheet">
-    <link href="asset/css/date_time_picker.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/skins/square/grey.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/date_time_picker.css') }}" rel="stylesheet">
 
     <!--[if lt IE 9]>
     <script src="asset/js/html5shiv.min.js"></script>
@@ -50,76 +50,35 @@
 <div class="layer"></div>
 <!-- Mobile menu overlay mask -->
 
-<!-- Header================================================== -->
-<header>
-    <div id="top_line">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 col-sm-6 col-xs-6"><i class="icon-clock"></i><strong>Static Code security scan &
-                    analyse</strong></div>
-
-                <div class="col-md-6 col-sm-6 col-xs-6">
-                    <ul id="top_links">
-                        <li><a href="https://github.com/wufeifei/cobra" id="wishlist_link">Github</a></li>
-                    </ul>
-                </div>
-            </div><!-- End row -->
-        </div><!-- End container-->
-    </div><!-- End top line-->
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3 col-sm-3 col-xs-3">
-                <div id="logo">
-                    <a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" width="160"
-                                              height="34" alt="City tours" data-retina="true" class="logo_normal"></a>
-                    <a href="/"><img src="{{ url_for('static', filename='img/logo_sticky.png') }}" width="160"
-                                              height="34" alt="City tours" data-retina="true" class="logo_sticky"></a>
-                </div>
-            </div>
-        </div>
-    </div><!-- container -->
-</header><!-- End Header -->
+{% include "header.html" %}
 
 <section id="hero">
  	<div class="intro_title error">
     	<h1 class="animated fadeInDown">404</h1>
-        <p class="animated fadeInDown">Oops!! Page not found</p>
-       <a href="index.html" class="animated fadeInUp button_intro">Back to home</a> <a href="all_tours_list.html" class="animated fadeInUp button_intro outline">View all tours</a>
+        <p class="animated fadeInDown">未找到相关资源</p>
+       <a href="/" class="animated fadeInUp button_intro">返回Cobra首页</a>
 	</div>
 
 </section>
 <!-- End hero -->
 
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div>
-                    <p>Copyright &copy; 2016 Cobra. All Righsts Reserved</p>
-                </div>
-            </div>
-        </div><!-- End row -->
-    </div><!-- End container -->
-</footer><!-- End footer -->
-
-<div id="toTop"></div><!-- Back to top button -->
+{% include "footer.html" %}
 
 <!-- Common scripts -->
-<script src="asset/js/jquery-1.11.2.min.js"></script>
-<script src="asset/js/common_scripts_min.js"></script>
-<script src="asset/js/functions.js"></script>
+<script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/common_scripts_min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/functions.js') }}"></script>
 
 <!-- Specific scripts -->
-<script src="asset/js/icheck.js"></script>
+<script src="{{ url_for('static', filename='js/icheck.js') }}"></script>
 <script>
     $('input').iCheck({
         checkboxClass: 'icheckbox_square-grey',
         radioClass: 'iradio_square-grey'
     });
 </script>
-<script src="asset/js/bootstrap-datepicker.js"></script>
-<script src="asset/js/bootstrap-timepicker.js"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap-timepicker.js') }}"></script>
 <script>
     $('input.date-pick').datepicker('setDate', 'today');
     $('input.time-pick').timepicker({
@@ -127,7 +86,7 @@
         showInpunts: false
     })
 </script>
-<script src="asset/js/jquery.ddslick.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.ddslick.js') }}"></script>
 <script>
     $("select.ddslick").each(function () {
         $(this).ddslick({
@@ -135,6 +94,6 @@
         });
     });
 </script>
-<script src="asset/js/datepicker_advanced.js"></script>
+<script src="{{ url_for('static', filename='js/datepicker_advanced.js') }}"></script>
 </body>
 </html>
