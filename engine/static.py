@@ -296,11 +296,11 @@ class Static:
                                                     print(traceback.print_exc())
                                                     logging.critical(e.message)
                                         else:
-                                            code_content = '# 触发位置\r' + code_content
-                                            if param_value is not None:
-                                                code_content = '# 参数可控\r' + param_value + '\r//\r// ------ 省略部分代码 ------\r//\r' + code_content
-                                            logging.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
                                             code_content = code_content.encode('unicode_escape')
+                                            code_content = '# Trigger\r' + code_content
+                                            if param_value is not None:
+                                                code_content = '# Param\r' + param_value + '\r//\r// ------ Continue... ------\r//\r' + code_content
+                                            logging.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
                                             vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, line_number, code_content, 0)
                                             db.session.add(vul)
                                             db.session.commit()
