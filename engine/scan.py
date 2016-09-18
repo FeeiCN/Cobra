@@ -72,7 +72,7 @@ class Scan:
         if os.path.isfile(cobra_path) is not True:
             return 1004, 'Cobra Not Found'
         # Start Scanning
-        subprocess.Popen(['python', cobra_path, "scan", "-p", str(0), "-i", str(task.id), "-t", directory])
+        subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", directory])
         # Statistic Code
         subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", directory])
         result = dict()
