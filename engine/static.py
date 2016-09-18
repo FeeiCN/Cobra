@@ -248,15 +248,20 @@ class Static:
                             if file_path in white_list or ".min.js" in file_path:
                                 logging.info("In white list or min.js")
                             else:
-                                # annotation
-                                # # // /* *
+                                only_match = rule.regex_location[:1] == '(' and rule.regex_location[-1] == ')'
+                                """
+                                annotation (注释过滤)
+                                # // /* *
+
+                                Exclude:
+                                - (rule_location) - 当定位规则左右两边为括号时不过滤注释行,比如硬编码密码
+                                """
                                 match_result = re.match("(#)?(//)?(\*)?(/\*)?", code_content)
-                                if match_result.group(0) is not None and match_result.group(0) is not "":
+                                if match_result.group(0) is not None and match_result.group(0) is not "" and only_match is not True:
                                     logging.info("In Annotation")
                                 else:
                                     param_value = None
                                     # parse file function structure
-                                    only_match = rule.regex_location[:1] == '(' and rule.regex_location[-1] == ')'
                                     if only_match:
                                         found_vul = True
                                     else:
