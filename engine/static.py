@@ -302,6 +302,8 @@ class Static:
                                                     logging.critical(e.message)
                                         else:
                                             code_content = code_content.encode('unicode_escape')
+                                            if len(code_content) > 512:
+                                                code_content = code_content[:500] + '...'
                                             code_content = '# Trigger\r' + code_content
                                             if param_value is not None:
                                                 code_content = '# Param\r' + param_value + '\r//\r// ------ Continue... ------\r//\r' + code_content
