@@ -863,8 +863,19 @@ $("#show_all_tasks").click(function () {
 });
 
 
-// add new task click
+// show all web frame works
+$("#show_all_frames").click(function () {
+    $("#main-div").load("frames");
+    $("#paginate").html("");
+});
 
+// add new frame button click
+
+// edit web frame rule
+
+// delete web frame rule
+
+// turn web frame rule status
 
 // dashboard click
 $("#show_dashboard").click(function () {

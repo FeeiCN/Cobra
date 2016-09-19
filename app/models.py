@@ -13,9 +13,12 @@
 """
 
 import time
+import datetime
+
 from sqlalchemy.schema import UniqueConstraint, Index
 from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT
 from werkzeug.security import check_password_hash, generate_password_hash
+
 from app import db
 
 
@@ -419,3 +422,49 @@ class CobraAdminUser(db.Model):
 
     def generate_password(self, password):
         self.password = generate_password_hash(password)
+
+
+class CobraWebFrameRules(db.Model):
+    """
+    Save web framework rules information.
+    """
+    __tablename__ = "web_frames_rules"
+    __table_args__ = ({"mysql_charset": "utf8mb4"})
+
+    id = db.Column(INTEGER(10, unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    frame_id = db.Column(INTEGER(10, unsigned=True), nullable=False, default=None)     # 框架ID
+    path_rule = db.Column(db.String(512), nullable=False, default=None)    # 路径规则
+    content_rule = db.Column(db.String(512), nullable=False, default=None)    # 文件内容规则
+    status = db.Column(TINYINT(1, unsigned=True), nullable=False, default=None)     # 状态1-开启，2-关闭
+    created_time = db.Column(db.DATETIME, nullable=False, default=None)
+    updated_time = db.Column(db.DATETIME, nullable=False, default=None)
+
+    def __init__(self, frame_id, path_rule, content_rule, status=0, created_time=datetime.datetime.now(), updated_time=datetime.datetime.now()):
+        self.frame_id = frame_id
+        self.path_rule = path_rule
+        self.content_rule = content_rule
+        self.status = status
+        self.created_time = created_time
+        self.updated_time = updated_time
+
+    def __repr__(self):
+        return "<CobraWebFrameRules {id}-{path}>".format(id=self.id, path=self.path_rule)
+
+
+class CobraWebFrame(db.Model):
+    """
+    Save web frame type.
+    """
+    __tablename__ = "web_frames"
+    __table_args__ = ({"mysql_charset": "utf8mb4"})
+
+    id = db.Column(INTEGER(10, unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    frame_name = db.Column(db.String(64), nullable=False, default=None)     # 框架名称
+    description = db.Column(db.String(256), nullable=False, default=None)   # 框架描述
+
+    def __init__(self, frame_name, description):
+        self.frame_name = frame_name
+        self.description = description
+
+    def __repr__(self):
+        return "<CobraWebFrame {id}-{frame_name}>".format(id=self.id, frame_name=self.frame_name)
