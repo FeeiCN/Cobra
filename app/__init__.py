@@ -30,10 +30,10 @@ logging = logging.getLogger(__name__)
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+# 应用配置
 template = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 asset = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates/asset')
 web = Flask(__name__, template_folder=template, static_folder=asset)
-
 web.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 web.config['SQLALCHEMY_DATABASE_URI'] = config.Config('database', 'mysql').value
 web.secret_key = config.Config('cobra', 'secret_key').value
@@ -59,8 +59,15 @@ with web.app_context():
 
 manager = Manager(web)
 
+host = config.Config('cobra', 'host').value
+port = config.Config('cobra', 'port').value
+port = int(port)
+
 
 class Statistic(Command):
+    """
+    统计代码相关信息(代码行数/注释行数/空白行数)
+    """
     option_list = (
         Option('--target', '-t', dest='target', help='directory'),
         Option('--tid', '-i', dest='tid', help='scan task id')
@@ -93,6 +100,9 @@ class Statistic(Command):
 
 
 class Scan(Command):
+    """
+    扫描漏洞
+    """
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
         Option('--tid', '-i', dest='tid', help='scan task id'),
@@ -132,6 +142,10 @@ class Scan(Command):
 
 
 class Install(Command):
+    """
+    初始化表结构
+    """
+
     def run(self):
         # create database structure
         logging.debug("Start create database structure...")
@@ -226,20 +240,37 @@ class Install(Command):
         logging.debug('All Done.')
 
 
-host = config.Config('cobra', 'host').value
-port = config.Config('cobra', 'port').value
-port = int(port)
+class Repair(Command):
+    """
+    检测已有漏洞修复状况
+    Usage: python cobra.py repair --pid=your_project_id
+    """
+    option_list = (
+        Option('--pid', '-p', dest='pid', help='scan project id'),
+    )
 
+    def run(self, pid=None):
+        from app.models import CobraResults, CobraRules
+        if pid is None:
+            logging.critical("Please set --pid param")
+            sys.exit()
+        result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter_by(project_id=pid).all()
+        for index, (result_info, rule_info) in enumerate(result_all):
+            print result_info, rule_info
+
+
+# 命令行
 manager.add_command('start', Server(host=host, port=port))
 manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
 manager.add_command('install', Install())
+manager.add_command('repair', Repair())
 
-# frontend and api
+# 前端路由
 from app.controller import route
 from app.controller import api
 
-# backend
+# 后端服务
 from app.controller.backend import BackendAPIController
 from app.controller.backend import DashboardController
 from app.controller.backend import IndexController

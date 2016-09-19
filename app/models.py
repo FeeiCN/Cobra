@@ -114,7 +114,7 @@ class CobraRules(db.Model):
             self.updated_at = updated_at
 
     def __repr__(self):
-        return "<CobraRules %r - %r: %r>" % (self.id, self.language, self.regex)
+        return "<CobraRules %r - %r: %r>" % (self.id, self.language, self.regex_location)
 
 
 class CobraVuls(db.Model):
@@ -188,6 +188,7 @@ class CobraResults(db.Model):
     """
     0: 漏洞扫完后初始化状态
     1: 已推送给第三方漏洞管理平台
+    2: 已经修复
     """
     status = db.Column(TINYINT, default=None, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=None)

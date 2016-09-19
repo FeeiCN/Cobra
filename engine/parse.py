@@ -75,7 +75,7 @@ class Parse:
                     function_name = re.findall(regex, function[1].strip())
                     if len(function_name) == 1:
                         function_name = function_name[0]
-                        logging.info('F: {0}.{1} - PF: {2}'.format(index, function_name, prev_function_name))
+                        logging.debug('F: {0}.{1} - PF: {2}'.format(index, function_name, prev_function_name))
                         if index > 0 and prev_function_name in functions:
                             functions[prev_function_name]['end'] = function[0]
                         prev_function_name = function_name
@@ -129,7 +129,7 @@ class Parse:
                         elif block_position == 1:
                             block_start = int(self.line) + 1
                             block_end = function_value['end']
-                    logging.info("F: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
+                    logging.debug("F: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
                 # get param block code
                 logging.info('B: {0} - {1}p'.format(block_start, block_end))
                 line_rule = "{0},{1}p".format(block_start, block_end)
