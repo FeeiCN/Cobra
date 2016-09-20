@@ -43,19 +43,41 @@ class Scan:
             directory = result_d
         logging.info("Scan directory: {0}".format(directory))
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        task = CobraTaskInfo(self.target, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
+
+        p = CobraProjects.query.filter_by(repository=directory).first()
+
+        # detection framework for project
+        framework, language = detection.Detection(directory).framework()
+        if framework != '' or language != '':
+            project_framework = '{0} ({1})'.format(framework, language)
+        else:
+            project_framework = ''
+        if not p:
+            # insert into project table.
+            repo_name = directory.split('/')[-1]
+            project = CobraProjects(directory, '', repo_name, 'Upload', project_framework, '', '', current_time)
+            db.session.add(project)
+            db.session.commit()
+            project_id = project.id
+        else:
+            project_id = p.id
+            # update project's framework
+            p.framework = project_framework
+            db.session.add(p)
+
+        task = CobraTaskInfo(directory, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
         db.session.add(task)
         db.session.commit()
         cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
         if os.path.isfile(cobra_path) is not True:
             return 1004, 'Cobra Not Found'
         # Start Scanning
-        subprocess.Popen(['python', cobra_path, "scan", "-p", str(0), "-i", str(task.id), "-t", directory])
+        subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", directory])
         # Statistic Code
         subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", directory])
         result = dict()
         result['scan_id'] = task.id
-        result['project_id'] = 0
+        result['project_id'] = project_id
         result['msg'] = u'success'
         return 1001, result
 
