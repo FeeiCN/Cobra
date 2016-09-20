@@ -865,17 +865,9 @@ $("#show_all_tasks").click(function () {
 
 // show all web frame works
 $("#show_all_frames").click(function () {
-    $("#main-div").load("frames");
+    $("#main-div").load("frame_rules");
     $("#paginate").html("");
 });
-
-// add new frame button click
-
-// edit web frame rule
-
-// delete web frame rule
-
-// turn web frame rule status
 
 // dashboard click
 $("#show_dashboard").click(function () {

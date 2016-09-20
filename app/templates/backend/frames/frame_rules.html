@@ -22,7 +22,7 @@
 </style>
 
 <div class="page-header">
-  <h1>Web Frames Manage <small></small></h1>
+  <h1>Web Frame Rules Manage <small></small></h1>
 </div>
 
 <div class="add-new-frame-btn">
@@ -42,23 +42,34 @@
     <tr>
         <th>#</th>
         <th>Frame Name</th>
-        <th>Frame Description</th>
+        <th>Path Rule</th>
+        <th>Content Rule</th>
+        <th style="text-align: center;">Status</th>
         <th style="text-align: center;">Operation</th>
     </tr>
     </thead>
     <tbody id="main-table">
     {% for frame in data.frames %}
         <tr>
-            <td>{{ frame[0] }}</td>
-            <td id="f-name-{{ frame[0] }}">{{ frame[1] }}</td>
-            <td id="f-content-{{ frame[0] }}">{{ frame[2] }}</td>
+            <td>{{ frame[-1] }}</td>
+            <td id="frame-name-{{ frame[-1] }}">{{ frame[0] }}</td>
+            <td id="frame-path-{{ frame[-1] }}">{{ frame[2] }}</td>
+            <td id="frame-content-{{ frame[-1] }}">{{ frame[3] if frame[3] else "None" }}</td>
+            <td align="center">
+            <span class="glyphicon glyphicon-{{ "ok" if frame[4] else "remove" }}" aria-hidden="true" id="edit-frames-{{ frame[-1] }}"
+                      data-toggle="tooltip" data-placement="top" title="{{ "On" if frame[4] else "Off" }}"
+                      style="color: {{ "green" if frame[4] else "red" }};"></span>
+            </td>
             <td class="operation" align="center">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-f-{{ frame[0] }}"
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-frames-{{ frame[-1] }}"
                       data-toggle="tooltip" data-placement="top" title="edit this rule"
                       style="color: darkblue;"></span>
-                <span class="glyphicon glyphicon-trash" aria-hidden="true" id="del-f-{{ frame[0] }}"
+                <span class="glyphicon glyphicon-trash" aria-hidden="true" id="del-frames-{{ frame[-1] }}"
                       data-toggle="tooltip" data-placement="top" title="delete this rule"
                       style="color: darkred;"></span>
+                <span class="glyphicon glyphicon-off" aria-hidden="true" id="update-frames-{{ frame[-1] }}"
+                      data-toggle="tooltip" data-placement="top" title="turn status"
+                      style="color: darkgreen;"></span>
             </td>
         </tr>
     {% endfor %}
@@ -112,22 +123,42 @@
             $("#main-div").load("frames");
         });
 
+        // 切换状态按钮点击
+        $("span[id^=update-frames-]").click(function () {
+            var web_frame_rule_id = $(this).attr("id").split('-')[2];
+            $(".modal-footer").hide();
+            $.post("update_web_frame_status", {"id": web_frame_rule_id}, function (retValue) {
+                if (retValue.code == 1001) {
+                    $("#quick-tip").modal();
+                    $(".modal-body").html("Update successful.");
+                    $('#quick-tip').on('hidden.bs.modal', function (e) {
+                        $("#show_all_frames").click();
+                    });
+                } else {
+                    $("#quick-tip").modal();
+                    $(".modal-body").html(retValue.message);
+                }
+            });
+        });
+
         // 删除规则按钮点击
-        $("span[id^=del-f-]").click(function () {
-            var web_frame_id = $(this).attr("id").split('-')[2];
-            console.log($(this).attr("id"));
-            var bodyHtml = 'Would you like to <span style="color: red">delete</span> the web frame?<br />';
-            bodyHtml += "Frame: " + $("td[id^=f-name-" + web_frame_id + "]").html() + "<br />";
+        $("span[id^=del-frames-]").click(function () {
+            var web_frame_rule_id = $(this).attr("id").split('-')[2];
+            var bodyHtml = 'Would you like to <span style="color: red">delete</span> the web frame rule?<br />';
+            bodyHtml += "Frame: " + $("td[id^=frame-name-" + web_frame_rule_id + "]").html() + "<br />";
+            bodyHtml += "Path Rule: " + $("td[id^=frame-path-" + web_frame_rule_id + "]").html() + "<br />";
+            bodyHtml += "Content Rule: " + $("td[id^=frame-content-" + web_frame_rule_id + "]").html() + "<br />";
             $("#delete-tip-body").html(bodyHtml);
             $("#delete-tip").modal();
 
+
             $("#delete_web_frame_rule").click(function () {
-                $.post("delete_frame", {"id": web_frame_id}, function (retValue) {
+                $.post("delete_web_frame", {"id": web_frame_rule_id}, function (retValue) {
                     if (retValue.code == 1001) {
                         $("#quick-tip").modal();
                         $("#quick-tip-body").html("Delete successful");
                         $('#quick-tip').on('hidden.bs.modal', function () {
-                            $(".show-frame-btn").click();
+                            $("#show_all_frames").click();
                         });
                     } else {
                         $("#quick-tip").modal();
@@ -138,9 +169,9 @@
         });
 
         // 编辑规则按钮
-        $("span[id^=edit-f-]").click(function () {
-            var web_frame_id = $(this).attr("id").split("-")[2];
-            $.get("edit_frame/" + web_frame_id, function (tpl) {
+        $("span[id^=edit-frames-]").click(function () {
+            var web_frame_rule_id = $(this).attr("id").split("-")[2];
+            $.get("edit_frame_rule/" + web_frame_rule_id, function (tpl) {
                 $("#main-div").html(tpl);
             });
         });
