@@ -1,0 +1,99 @@
+<style>
+    .frame-type {
+        width: 50%;
+        display: inline-block;
+    }
+    .add-btn {
+        margin-left: 20px;
+    }
+    .save-btn {
+        width: 150px;
+        text-align: center;
+    }
+</style>
+
+<div class="page-header">
+  <h1>Add New Web Frame Rules<small></small></h1>
+</div>
+
+<form role="form" style="margin-bottom: 20px">
+    <div class="form-group col-md-6">
+        <label for="frame-type">Web Frame: </label><br>
+        <select id="frame-type" class="form-control frame-type" style="width: 50%; display: inline-block">
+            <option value="-1" selected>Please Choose Web Frame</option>
+            {% for frame in data.frames %}
+                <option value="{{ frame[0] }}">{{ frame[1] }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-success add-btn">Add new web frame</button>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label>Status: </label><br />
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="status" id="status" value="1"> On
+        </label>
+        <label class="radio" style="padding-left: 25px;">
+            <input type="radio" name="status" id="status" value="0" checked> Off
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="path-rule">Path rule: </label>
+        <textarea class="form-control" id="path-rule" placeholder="Please input path rule."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="content-rule">Content rule: </label>
+        <textarea class="form-control" id="content-rule" placeholder="Please input content rule, optional."></textarea>
+    </div>
+    <div class="alert-tip"></div>
+    <div style="text-align: center">
+        <button type="button" class="btn btn-success save-btn">Save</button>
+    </div>
+</form>
+
+<script>
+
+    $(".add-btn").click(function (event) {
+        event.preventDefault();
+        $("#main-div").load("add_frame");
+    });
+
+    $(".save-btn").click(function (event) {
+        event.preventDefault();
+        var data = {
+            "web_frame": $("#frame-type").val(),
+            "status": $("#status:checked").val(),
+            "path_rule": $("#path-rule").val(),
+            "content_rule": $("#content-rule").val()
+        };
+        if (data["web_frame"] == -1) {
+            var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert" id="alert">';
+            alertHtml += '<button type="button" class="close" data-dismiss="alert">';
+            alertHtml += '<span aria-hidden="true">&times;</span>';
+            alertHtml += '<span class="sr-only">Close</span>';
+            alertHtml += '</button><span>Please choose web frame.</span></div>';
+            $(".alert-tip").html(alertHtml);
+            return false;
+        }
+        if (data["path_rule"] == "") {
+            var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert" id="alert">';
+            alertHtml += '<button type="button" class="close" data-dismiss="alert">';
+            alertHtml += '<span aria-hidden="true">&times;</span>';
+            alertHtml += '<span class="sr-only">Close</span>';
+            alertHtml += '</button><span>path rule can not be blank</span></div>';
+            $(".alert-tip").html(alertHtml);
+            return false;
+        }
+        $.post("add_frame_rule", data, function (returnValue) {
+            var alertHtml = '<div class="alert alert-' + returnValue.tag + ' alert-dismissible" role="alert" id="alert">';
+            alertHtml += '<button type="button" class="close" data-dismiss="alert">';
+            alertHtml += '<span aria-hidden="true">&times;</span>';
+            alertHtml += '<span class="sr-only">Close</span>';
+            alertHtml += '</button><span>' + returnValue.message + '</span></div>';
+            $(".alert-tip").html(alertHtml);
+            return false;
+        });
+    });
+</script>

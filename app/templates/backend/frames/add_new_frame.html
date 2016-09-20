@@ -1,0 +1,66 @@
+<style>
+    .save-btn {
+        width: 150px;
+        text-align: center;
+    }
+</style>
+
+<div class="page-header">
+  <h1>Add New Web Frame<small></small></h1>
+</div>
+
+<form role="form" style="margin-bottom: 20px">
+
+    <div class="form-group">
+        <label for="frame_name">Frame Name: </label>
+        <input type="text" id="frame_name" placeholder="Please input web frame name" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="description">Frame Description: </label>
+        <textarea class="form-control" id="description" placeholder="Please input frame description." rows="5"></textarea>
+    </div>
+    <div class="alert-tip"></div>
+    <div style="text-align: center">
+        <button type="button" class="btn btn-success save-btn">Save</button>
+    </div>
+</form>
+
+<script>
+
+    $(".save-btn").click(function (event) {
+        event.preventDefault();
+        var data = {
+            "frame_name": $("#frame_name").val(),
+            "description": $("#description").val()
+        };
+        var alertHtml = "";
+        if (data["frame_name"] == "") {
+            alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert" id="alert">';
+            alertHtml += '<button type="button" class="close" data-dismiss="alert">';
+            alertHtml += '<span aria-hidden="true">&times;</span>';
+            alertHtml += '<span class="sr-only">Close</span>';
+            alertHtml += '</button><span>Frame name can not be blank</span></div>';
+            $(".alert-tip").html(alertHtml);
+            return false;
+        }
+        if (data["description"] == "") {
+            alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert" id="alert">';
+            alertHtml += '<button type="button" class="close" data-dismiss="alert">';
+            alertHtml += '<span aria-hidden="true">&times;</span>';
+            alertHtml += '<span class="sr-only">Close</span>';
+            alertHtml += '</button><span>Frame description can not be blank</span></div>';
+            $(".alert-tip").html(alertHtml);
+            return false;
+        }
+        $.post("add_frame", data, function (returnValue) {
+            alertHtml = '<div class="alert alert-' + returnValue.tag + ' alert-dismissible" role="alert" id="alert">';
+            alertHtml += '<button type="button" class="close" data-dismiss="alert">';
+            alertHtml += '<span aria-hidden="true">&times;</span>';
+            alertHtml += '<span class="sr-only">Close</span>';
+            alertHtml += '</button><span>' + returnValue.message + '</span></div>';
+            $(".alert-tip").html(alertHtml);
+            return false;
+        });
+    });
+</script>
