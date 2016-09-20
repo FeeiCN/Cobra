@@ -58,12 +58,12 @@ def add_frame_rule():
             db.session.commit()
             return jsonify(tag="success", message="Add success.")
         except SQLAlchemyError as e:
-            return jsonify(tag="warning", message=e)
+            return jsonify(tag="warning", message=e.message)
     else:
         web_frames = db.session.query(
             CobraWebFrame.id, CobraWebFrame.frame_name, CobraWebFrame.description
         ).all()
-        print(web_frames)
+        # print(web_frames)
         return render_template("backend/frames/add_new_frame_rule.html", data=dict(frames=web_frames))
 
 
@@ -86,7 +86,86 @@ def add_frame():
             db.session.commit()
             return jsonify(tag="success", message="Add Successful.")
         except SQLAlchemyError as e:
-            return jsonify(tag="danger", message=e)
+            return jsonify(tag="danger", message=e.message)
 
     else:
         return render_template("backend/frames/add_new_frame.html")
+
+
+@web.route(ADMIN_URL + "/update_web_frame_status", methods=['POST'])
+@login_required
+def update_web_frame_status():
+    web_frame_rule_id = request.form.get("id", "")
+    if web_frame_rule_id == "":
+        return jsonify(code=1004, message="id can't be blank")
+
+    r = CobraWebFrameRules.query.filter(CobraWebFrameRules.id == web_frame_rule_id).first()
+    r.status = not r.status
+    try:
+        db.session.add(r)
+        db.session.commit()
+        return jsonify(code=1001, message="Update successful")
+    except SQLAlchemyError as e:
+        return jsonify(code=1004, message=e.message)
+
+
+@web.route(ADMIN_URL + "/delete_web_frame", methods=['POST'])
+@login_required
+def delete_web_frame():
+    web_frame_rule_id = request.form.get("id", "")
+    if web_frame_rule_id == "":
+        return jsonify(code=1004, message="id can't be empty")
+
+    r = CobraWebFrameRules.query.filter(CobraWebFrameRules.id == web_frame_rule_id).first()
+    try:
+        db.session.delete(r)
+        db.session.commit()
+        return jsonify(code=1001, message="Delete successful")
+    except SQLAlchemyError as e:
+        return jsonify(code=1004, message=e.message)
+
+
+@web.route(ADMIN_URL + "/edit_frame_rule/<int:fid>", methods=["GET"])
+@web.route(ADMIN_URL + "/edit_frame_rule", methods=["POST"])
+@login_required
+def edit_frame_rule(fid=None):
+    if request.method == "POST":
+        # print(request.form)
+        status = request.form.get("status", 0)
+        web_frame = request.form.get("web_frame", None)
+        path_rule = request.form.get("path_rule", None)
+        content_rule = request.form.get("content_rule", "")
+        fid = request.form.get("fid", "")
+
+        # 检查参数合法性
+        if fid == "":
+            return jsonify(tag="danger", message="fid can't be blank.")
+        if web_frame is None or web_frame == "" or not web_frame.isdigit():
+            return jsonify(tag="danger", message="Web frame can't be blank.")
+        if path_rule is None or path_rule == "":
+            return jsonify(tag="danger", message="Path rule can't be blank.")
+        web_frame_rule = CobraWebFrame.query.filter(CobraWebFrame.id == web_frame).all()
+        if not len(web_frame_rule):
+            return jsonify(tag="danger", message="No selected web frame.")
+
+        # 插入数据
+        web_frame_rule = CobraWebFrameRules.query.filter(CobraWebFrameRules.id == fid).first()
+        web_frame_rule.status = status
+        web_frame_rule.frame_id = web_frame
+        web_frame_rule.path_rule = path_rule
+        web_frame_rule.content_rule = content_rule
+        try:
+            db.session.add(web_frame_rule)
+            db.session.commit()
+            return jsonify(tag="success", message="Save successful.")
+        except SQLAlchemyError as e:
+            return jsonify(tag="warning", message=e.message)
+    else:
+        web_frame_rule = db.session.query(
+            CobraWebFrame.id, CobraWebFrame.frame_name, CobraWebFrameRules.frame_id,
+            CobraWebFrameRules.path_rule, CobraWebFrameRules.content_rule, CobraWebFrameRules.status,
+        ).filter(CobraWebFrameRules.id == fid).first()
+        frames = db.session.query(CobraWebFrame.id, CobraWebFrame.frame_name, CobraWebFrame.description).all()
+        return render_template("backend/frames/edit_frame_rules.html",
+                               data=dict(frame_rule=web_frame_rule, frames=frames, fid=fid))
+
