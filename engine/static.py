@@ -20,8 +20,7 @@ import traceback
 import logging
 from engine.core import Core
 from pickup import directory
-from utils.queue import Queue
-from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
+from app import db, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
 
 logging = logging.getLogger(__name__)
 
@@ -159,7 +158,7 @@ class Static:
         for rule in rules:
             rule.regex_location = rule.regex_location.strip()
             rule.regex_repair = rule.regex_repair.strip()
-            logging.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
+            logging.info('------------------\r\nScan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
                 if language.id == rule.language:
@@ -198,7 +197,7 @@ class Static:
                     # -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
-                # logging.info(' '.join(param))
+                logging.info(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
@@ -209,54 +208,34 @@ class Static:
                         line = line.strip()
                         if line == '':
                             continue
-                        # Grep
-                        line_split = line.split(':', 1)
-                        file_path = line_split[0].strip()
-                        if len(line_split) < 2:
-                            logging.info("Line len < 2 {0}".format(line))
-                            continue
-                        code_content = line_split[1].split(':', 1)[1].strip()
-                        line_number = line_split[1].split(':', 1)[0].strip()
-
-                        ret_status, ret_result = Core(file_path, line_number, code_content, rule.regex_location, rule.regex_repair, rule.block_repair, white_list).analyse()
+                        # 处理grep结果
+                        if ':' in line:
+                            line_split = line.split(':', 1)
+                            file_path = line_split[0].strip()
+                            code_content = line_split[1].split(':', 1)[1].strip()
+                            line_number = line_split[1].split(':', 1)[0].strip()
+                        else:
+                            # 搜索文件
+                            file_path = line
+                            code_content = ''
+                            line_number = 0
+                        # 核心规则校验
+                        result_info = {
+                            'task_id': self.task_id,
+                            'project_id': self.project_id,
+                            'project_directory': self.directory,
+                            'rule_id': rule.id,
+                            'file_path': file_path,
+                            'line_number': line_number,
+                            'code_content': code_content,
+                            'third_party_vulnerabilities_name': vulnerabilities_all[rule.vul_id]['name'],
+                            'third_party_vulnerabilities_type': vulnerabilities_all[rule.vul_id]['third_v_id']
+                        }
+                        ret_status, ret_result = Core(result_info, rule, self.project_name, white_list).analyse()
                         if ret_status is False:
                             logging.info("R: False {0}".format(ret_result))
                             continue
-                        else:
-                            file_path = ret_result['file_path'].replace(self.directory, '')
-                            line_number = ret_result['line_number']
-                            code_content = ret_result['code_content']
-                            status = ret_result['status']
 
-                            logging.debug('File: {0}:{1} {2} {3}'.format(file_path, line_number, status, code_content))
-
-                            # Find (special file)
-                            if line_number == 0:
-                                exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path).first()
-                            else:
-                                exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path, line=line_number).first()
-
-                            if exist_result is not None:
-                                # push queue when status is 0
-                                if exist_result.status == 0:
-                                    try:
-                                        q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, line_number, code_content, exist_result.id)
-                                        q.push()
-                                    except Exception as e:
-                                        print(traceback.print_exc())
-                                        logging.critical(e.message)
-                                logging.warning("Exists Result")
-                            else:
-                                vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, line_number, code_content, status)
-                                db.session.add(vul)
-                                db.session.commit()
-                                try:
-                                    # push queue
-                                    q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, line_number, code_content, vul.id)
-                                    q.push()
-                                except Exception as e:
-                                    print(traceback.print_exc())
-                                    logging.critical(e.message)
                 else:
                     logging.info('Not Found')
 

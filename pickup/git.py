@@ -102,7 +102,7 @@ class Git:
         repo_name = self.repo_address.split('/')[-1].replace('.git', '')
         self.repo_author = repo_user
         self.repo_name = repo_name
-        if '.git' not in repo_name:
+        if '.git' not in self.repo_address:
             self.repo_address += '.git'
         else:
             repo_name = repo_name.split('.')[0]
@@ -152,14 +152,13 @@ class Git:
             # call(['rm', '-rf', self.repo_directory])
 
         # if no username or password provide, it may be a public repo.
-        if not self.repo_username or not self.repo_password:
+        if self.repo_username is None or self.repo_password is None:
             # public repo
             clone_address = self.repo_address
         else:
             # private repo
             clone_address = self.repo_address.split('://')[0] + '://' + quote(self.repo_username) + ':' + \
                             self.repo_password + '@' + self.repo_address.split('://')[1]
-
         # clone repo with username and password
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password

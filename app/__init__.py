@@ -250,13 +250,42 @@ class Repair(Command):
     )
 
     def run(self, pid=None):
-        from app.models import CobraResults, CobraRules
+        from app.models import CobraResults, CobraRules, CobraVuls
+        from engine.core import Core
+        from pickup.git import Git
         if pid is None:
             logging.critical("Please set --pid param")
             sys.exit()
+        # 项目信息
+        project_info = CobraProjects.query.filter_by(id=pid).first()
+        if project_info.repository[0] == '/':
+            project_directory = project_info.repository
+        else:
+            project_directory = Git(project_info.repository).repo_directory
+        # 漏洞第三方ID
+        vuln_all = CobraVuls.query.all()
+        vuln_all_d = {}
+        for vuln in vuln_all:
+            vuln_all_d[vuln.id] = vuln.third_v_id
+        # 漏洞数据
         result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter_by(project_id=pid).all()
-        for index, (result_info, rule_info) in enumerate(result_all):
-            print result_info, rule_info
+        for index, (rule, result) in enumerate(result_all):
+            # 核心规则校验
+            result_info = {
+                'task_id': result.task_id,
+                'project_id': result.project_id,
+                'project_directory': project_directory,
+                'rule_id': result.rule_id,
+                'file_path': result.file,
+                'line_number': result.line,
+                'code_content': result.code,
+                'third_party_vulnerabilities_name': rule.description,
+                'third_party_vulnerabilities_type': vuln_all_d[rule.vul_id]
+            }
+            ret_status, ret_result = Core(result_info, rule, project_info.name, []).analyse(1)
+            if ret_status is False:
+                logging.info("R: False {0}".format(ret_result))
+                continue
 
 
 # 命令行

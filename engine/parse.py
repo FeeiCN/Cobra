@@ -30,7 +30,7 @@ class Parse:
     """
 
     def __init__(self, rule, file_path, line, code):
-        logging.info('---------------------- [1]. Parse code syntax --------------------------------------')
+        logging.info('--------- [1]. Parse code syntax ---------')
         self.rule = rule
         self.file_path = file_path
         logging.info(file_path)
@@ -40,7 +40,7 @@ class Parse:
         self.param_value = None
 
     def functions(self):
-        logging.info('---------------------- [-]. Functions --------------------------------------')
+        logging.info('--------- [-]. Functions ---------')
         # parse functions
         # `grep` (`ggrep` on Mac)
         grep = '/bin/grep'
@@ -97,14 +97,14 @@ class Parse:
 
     def block_code(self, block_position):
         """
-        Get block code
+        获取区块代码
         :param block_position:
-                0:up
-                1:down
-                2:location_line
+                0:up 上
+                1:down 下
+                2:location_line 当前行
         :return:
         """
-        logging.info('---------------------- [-]. Block code B:{0} --------------------------------------'.format(block_position))
+        logging.info('--------- [-]. Block code B:{0} ---------'.format(block_position))
         if block_position == 2:
             if self.line is None or self.line == 0:
                 logging.critical("Line number exception: {0}".format(self.line))
@@ -115,10 +115,10 @@ class Parse:
             logging.info("C: {0}".format(code))
             return code
         else:
+            block_start = 0
+            block_end = 0
             functions = self.functions()
             if functions:
-                block_start = 0
-                block_end = 0
                 for function_name, function_value in functions.items():
                     in_this_function = ''
                     if int(function_value['start']) < int(self.line) < int(function_value['end']):
@@ -130,13 +130,19 @@ class Parse:
                             block_start = int(self.line) + 1
                             block_end = function_value['end']
                     logging.debug("F: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
-                # get param block code
-                logging.info('B: {0} - {1}p'.format(block_start, block_end))
-                line_rule = "{0},{1}p".format(block_start, block_end)
-                return self.get_code(line_rule)
             else:
-                logging.info("Not found functions")
-                return False
+                # 没有functions时,以触发行来分割整个文件
+                if block_position == 0:
+                    block_start = 0
+                    block_end = int(self.line) - 1
+                elif block_position == 1:
+                    block_start = int(self.line) + 1
+                    block_end = sum(1 for l in open(self.file_path))
+                logging.debug("Not found functions, split file.")
+            # get param block code
+            logging.info('B: {0} - {1}p'.format(block_start, block_end))
+            line_rule = "{0},{1}p".format(block_start, block_end)
+            return self.get_code(line_rule)
 
     def get_code(self, line_rule):
         param = ['sed', "-n", line_rule, self.file_path]
@@ -151,7 +157,7 @@ class Parse:
         return param_block_code
 
     def is_controllable_param(self):
-        logging.info('---------------------- [2]. Param is controllable --------------------------------------')
+        logging.info('--------- [2]. Param is controllable ---------')
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
@@ -228,7 +234,7 @@ class Parse:
             logging.warning("Not Found Param")
 
     def is_repair(self, repair_rule, block_repair):
-        logging.info('---------------------- [3]. Is repair B:{0} --------------------------------------'.format(block_repair))
+        logging.info('--------- [3]. Is repair B:{0} ---------'.format(block_repair))
         code = self.block_code(block_repair)
         if code is False:
             logging.debug("R: Un Repair (repair code not match)")
