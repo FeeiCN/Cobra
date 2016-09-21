@@ -16,6 +16,7 @@ import os
 import sys
 import re
 import subprocess
+from pickup.file import File
 from utils import log
 import logging
 
@@ -137,7 +138,7 @@ class Parse:
                 logging.critical("行号异常: {0}".format(self.line))
                 return False
             line_rule = '{0}p'.format(self.line)
-            code = self.get_code(line_rule)
+            code = File(self.file_path).lines(line_rule)
             code = code.strip()
             return code
         else:
@@ -166,26 +167,9 @@ class Parse:
                 logging.debug("没有找到任何方法,将以整个文件分割.")
             # get param block code
             line_rule = "{0},{1}p".format(block_start, block_end)
-            code = self.get_code(line_rule)
+            code = File(self.file_path).lines(line_rule)
             logging.info('取出代码: {0} - {1}p \r{2}'.format(block_start, block_end, code))
             return code
-
-    def get_code(self, line_rule):
-        """
-        获取指定行代码
-        :param line_rule:
-        :return:
-        """
-        param = ['sed', "-n", line_rule, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE)
-        result = p.communicate()
-        if len(result[0]):
-            param_block_code = result[0]
-            if param_block_code == '':
-                param_block_code = False
-        else:
-            param_block_code = False
-        return param_block_code
 
     def is_controllable_param(self):
         """

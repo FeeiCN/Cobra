@@ -16,6 +16,7 @@ import re
 import logging
 import traceback
 from engine import parse
+from pickup.file import File
 from app import db, CobraResults
 from utils.queue import Queue
 
@@ -163,12 +164,13 @@ class Core:
         if method == 1:
             # 拼接绝对路径
             self.file_path = self.project_directory + self.file_path
-            # 取出触发代码
-            trigger_code = re.findall(r'(?!#\sTrigger)\r(.*)', self.code_content)
-            if len(trigger_code) != 1:
-                logging.critical("Trigger code match failed {0}".format(self.code_content))
+            # 取出触发代码(实际文件)
+            trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
+            if trigger_code is False:
+                logging.critical("触发代码获取失败 {0}".format(self.code_content))
                 return False, 4009
-            self.code_content = trigger_code[0].strip()
+            self.code_content = trigger_code
+
         # 定位规则为空时,表示此类型语言(该语言所有后缀)文件都算作漏洞
         if self.rule_location == '':
             logging.info("Find special files: RID{0}".format(self.rule_id))
@@ -184,6 +186,10 @@ class Core:
 
         # 白名单
         if self.is_white_list():
+            if method == 1:
+                # 如果是在修复验证下,将会更新漏洞状态
+                self.status = 2
+                self.process_vulnerabilities()
             logging.info("In white list {0}".format(self.file_path))
             return False, 4000
 
@@ -194,6 +200,10 @@ class Core:
 
         # 注释判断
         if self.is_annotation():
+            if method == 1:
+                # 如果是在修复验证下,将会更新漏洞状态
+                self.status = 2
+                self.process_vulnerabilities()
             logging.info("In Annotation {0}".format(self.code_content))
             return False, 4002
 
