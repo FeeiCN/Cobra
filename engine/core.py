@@ -93,7 +93,7 @@ class Core:
                - Java:
         :return: boolean
         """
-        match_result = re.findall(r"(#|\\\*|\/\/|\*){1}", self.code_content)
+        match_result = re.findall(r"(#|\\\*|\/\/|\*)+", self.code_content)
         # 仅仅匹配时跳过检测
         if self.is_match_only_rule():
             return False

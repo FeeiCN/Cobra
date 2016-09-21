@@ -78,9 +78,38 @@ class Test(unittest.TestCase):
         status = Config('third_party_vulnerabilities', 'status').value
         self.assertTrue(int(status))
 
-    def test_parse(self):
+    def test_parse4java(self):
         """
-        测试解析代码
+        测试解析规则(Java)
+        :return:
+        """
+        import os
+        from engine.parse import Parse
+        regex_location = r'new\sURL\((.*)\)'
+        regex_repair = r'Security.filter\({{PARAM}}\)'
+        file_path = os.path.join(config.Config().project_directory, 'tests/parse/test_functions.java')
+        tests = [
+            {
+                'line': 33,
+                'code': "URL obj = new URL(url);",
+                'result': False,
+            },
+            {
+                'line': 66,
+                'code': "URL obj = new URL(url);",
+                'result': False,
+                'repair': True
+            }
+        ]
+        for test in tests:
+            parse = Parse(regex_location, file_path, test['line'], test['code'])
+            self.assertEqual(test['result'], parse.is_controllable_param())
+            if 'repair' in test:
+                self.assertEqual(test['repair'], parse.is_repair(regex_repair, 0))
+
+    def test_parse4php(self):
+        """
+        测试解析规则(PHP)
         :return:
         """
         import os

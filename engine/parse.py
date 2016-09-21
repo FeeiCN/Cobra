@@ -46,13 +46,16 @@ class Parse:
         # 解析规则配置
         self.regex = {
             'java': {
-                'functions': r'(?:public|protected|private|static|\s) +[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(?:\{?|[^;])'
+                'functions': r'(?:public|protected|private|static|\s) +[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(?:\{?|[^;])',
+                'string': r"(?:[\"])(.*)(?:[\"])",
+                'assign_string': r"String\s{0}\s=\s\"(.*)\";",
+                'annotation': r"(\\\*|\/\/|\*)+"
             },
             'php': {
                 'functions': r'(?:function\s+)(\w+)\s*\(',
                 'string': r"(?:['\"])(.*)(?:[\"'])",
-                'const': r'\$this->([_A-Z]*)',
-                'assign_string': r"(\{0}\s?=\s?[\"'](.*)(?:['\"]))"
+                'assign_string': r"(\{0}\s?=\s?[\"'](.*)(?:['\"]))",
+                'annotation': r"(#|\\\*|\/\/|\*)+"
             }
         }
 
@@ -61,7 +64,6 @@ class Parse:
         获取该文件所有函数方法
         :return:
         """
-        # parse functions
         # `grep` (`ggrep` on Mac)
         grep = '/bin/grep'
         if 'darwin' == sys.platform:
@@ -92,22 +94,27 @@ class Parse:
                     logging.info('Empty')
                     continue
                 function = line.split(':')
-                if len(function) >= 2 and function[1].strip()[:2] not in ['//', '#', '/*']:
-                    function_name = re.findall(regex_functions, function[1].strip())
-                    if len(function_name) == 1:
-                        function_name = function_name[0]
-                        logging.debug('{0}. 函数{1} - 上一个函数: {2}'.format(index, function_name, prev_function_name))
-                        if index > 0 and prev_function_name in functions:
-                            functions[prev_function_name]['end'] = function[0]
-                        prev_function_name = function_name
-                        functions[function_name] = {
-                            'start': function[0],
-                            'end': None  # next function's start
-                        }
-                    else:
-                        logging.info("无法找到函数名: {0}".format(line))
+                if len(function) < 2:
+                    logging.info("没有找到分隔符(:)")
+
+                regex_annotation = self.regex[self.language]['annotation']
+                string = re.findall(regex_annotation, function[1].strip())
+                if len(string) >= 1 and string[0] != '':
+                    logging.info("该函数为注释行")
+
+                function_name = re.findall(regex_functions, function[1].strip())
+                if len(function_name) == 1:
+                    function_name = function_name[0]
+                    logging.debug('{0}. 函数{1} - 上一个函数: {2}'.format(index, function_name, prev_function_name))
+                    if index > 0 and prev_function_name in functions:
+                        functions[prev_function_name]['end'] = function[0]
+                    prev_function_name = function_name
+                    functions[function_name] = {
+                        'start': function[0],
+                        'end': None  # next function's start
+                    }
                 else:
-                    logging.info("没有找到分隔符 (:) 或者这行是注释 {0}".format(function[1]))
+                    logging.info("无法找到函数名: {0}".format(line))
             end = sum(1 for l in open(self.file_path))
             for name, value in functions.items():
                 if value['end'] is None:
@@ -199,15 +206,6 @@ class Parse:
                 return False
             logging.debug("是否字符串: 否")
 
-            # 常量判断
-            regex_const = self.regex[self.language]['const']
-            class_const = re.findall(regex_const, param_name)
-            if len(class_const) >= 1 and class_const[0] != '':
-                logging.debug("参数是否常量: 是")
-                logging.info("返回: 不可控 (常量)")
-                return False
-            logging.debug("参数是否常量: 否")
-
             # 变量判断
             if param_name[:1] == '$':
                 logging.debug("参数是否变量: 是")
@@ -282,6 +280,33 @@ class Parse:
                 logging.info("返回: 可控(默认情况)")
                 return True
             else:
+                if self.language == 'java':
+                    # Java 变量就是没有$
+                    param_block_code = self.block_code(0)
+                    if param_block_code is False:
+                        logging.debug("向上搜索参数区块代码: 未找到")
+                        logging.info("返回: 可控 (代码未找到)")
+                        return True
+                    logging.debug("向上搜索参数区块代码: {0}".format(param_block_code))
+                    regex_assign_string = self.regex[self.language]['assign_string'].format(param_name)
+                    string = re.findall(regex_assign_string, param_block_code)
+                    if len(string) >= 1 and string[0] != '':
+                        logging.debug("是否赋值字符串: 是")
+                        logging.info("返回: 不可控 (字符串)")
+                        return False
+                    logging.debug("是否赋值字符串: 否")
+
+                    # 是否取外部参数
+                    regex_get_param = r'String\s{0}\s=\s\w+\.getParameter(.*)'.format(param_name)
+                    get_param = re.findall(regex_get_param, param_block_code)
+                    if len(get_param) >= 1 and get_param[0] != '':
+                        logging.debug("是否赋值外部取参: 是")
+                        logging.info("返回: 不可控 (外部取参)")
+                        return False
+                    logging.debug("是否赋值外部取参: 否")
+
+                    logging.info("返回: 可控 (变量赋值)")
+                    return True
                 logging.debug("参数是否变量: 否 (没有包含$)")
                 logging.info("返回: 不可控(参数不为变量)")
                 return False
