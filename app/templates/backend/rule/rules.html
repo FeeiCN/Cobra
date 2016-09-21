@@ -1,12 +1,18 @@
+<style>
+    .operation > span {
+        margin: 0 2px;
+    }
+</style>
+
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Language</th>
             <th>Rule type</th>
             <th>Description</th>
+            <th>Update Time</th>
             <th>Status</th>
-            <th>Update time</th>
             <th>Operation</th>
         </tr>
     </thead>
@@ -17,22 +23,23 @@
             <td>{{ rule.language }}</td>
             <td>{{ rule.vul_id }}</td>
             <td>{{ rule.description }}</td>
+            <td>{{ rule.updated_at }}</td>
             <td align="center">
                 <span style="color: {% if rule.status %}green{% else %}red{% endif %}"
                       class="glyphicon glyphicon-{% if rule.status %}ok{% else %}remove{% endif %}">
                 </span>
             </td>
-            <td>{{ rule.updated_at }}</td>
             <td hidden id="rule-regex-{{ rule.id }}">{{ rule.regex }}</td>
             <td hidden id="rule-confirm-regex-{{ rule.id }}">{{ rule.regex_confirm }}</td>
             <td hidden id="rule-repair-{{ rule.id }}">{{ rule.repair }}</td>
             <td hidden id="rule-level-{{ rule.id }}">{{ rule.level }}</td>
-            <td>
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-rule-{{ rule.id }}"></span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-rule-{{ rule.id }}"
+            <td align="center" class="operation">
+                <span style="color: darkblue;" class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-rule-{{ rule.id }}"></span>
+                <span style="color: darkgoldenrod;" class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-rule-{{ rule.id }}"
                       data-toggle="modal" data-target="#view-modal">
-                </span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-remove" aria-hidden="true" id="del-rule-{{ rule.id }}"></span>
+                </span>
+                <span style="color: darkred;" class="glyphicon glyphicon-trash" aria-hidden="true" id="del-rule-{{ rule.id }}"></span>
+                <span style="color: darkgreen;" class="glyphicon glyphicon-off" aria-hidden="true" id="update-rule-{{ rule.id }}"></span>
             </td>
         </tr>
     {% endfor %}
