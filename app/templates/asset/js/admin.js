@@ -249,7 +249,7 @@ $("#main-div").delegate("span", "click", function () {
                 tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
                 tt += '<span aria-hidden="true">&times;</span></button>';
                 tt += '<strong>' + data.msg + '</strong></div>';
-                $("#operate_result").html(tt).fadein(1000);
+                $("#operate_result").html(tt);
                 $("#show_all_rules").click();
             });
         }
