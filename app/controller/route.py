@@ -101,27 +101,42 @@ def report(project_id):
         project_url = project_info.url
 
     if search_task is None:
-        # 获取漏洞总数量
-        scan_results = CobraResults.query.filter_by(project_id=project_id).all()
+        # 获取漏洞总数
+        scan_results = CobraResults.query.filter(CobraResults.project_id == project_id).count()
+        # 待修复漏洞总数
+        unrepair_results = CobraResults.query.filter(CobraResults.project_id == project_id, CobraResults.status < 2).count()
+        # 已修复漏洞总数
+        repaired_results = CobraResults.query.filter(CobraResults.project_id == project_id, CobraResults.status == 2).count()
+
         # 获取出现的漏洞类型
         res = db.session.query(count().label("vul_number"), CobraVuls.name, CobraVuls.id).filter(
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
     else:
-        scan_results = CobraResults.query.filter_by(task_id=search_task).all()
+        # 获取漏洞总数量
+        scan_results = CobraResults.query.filter(CobraResults.task_id == search_task).count()
+        # 待修复漏洞总数
+        unrepair_results = CobraResults.query.filter(CobraResults.task_id == search_task, CobraResults.status < 2).count()
+        # 已修复漏洞总数
+        repaired_results = CobraResults.query.filter(CobraResults.task_id == search_task, CobraResults.status == 2).count()
+
         # 获取出现的漏洞类型
         res = db.session.query(count().label("vul_number"), CobraVuls.name, CobraVuls.id).filter(
             and_(
                 CobraResults.task_id == search_task,
                 CobraResults.rule_id == CobraRules.id,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
-    total_vul_count = len(scan_results)
+    total_vul_count = scan_results
+    total_vul_count_unrepair = unrepair_results
+    total_vul_count_repaired = repaired_results
 
     # 提供给筛选列表
     select_vul_type = list()
@@ -137,6 +152,7 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()
@@ -145,6 +161,7 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task,
                 CobraResults.rule_id == CobraRules.id,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()
@@ -154,18 +171,20 @@ def report(project_id):
 
     # 检索不同等级的漏洞数量
     if search_task is None:
-        res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
+        res = db.session.query(count().label('vuln_number'), CobraRules.level, CobraResults.status).filter(
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
     else:
-        res = db.session.query(count().label('vuln_number'), CobraRules.level).filter(
+        res = db.session.query(count().label('vuln_number'), CobraRules.level, CobraResults.status).filter(
             and_(
                 CobraResults.task_id == search_task,
                 CobraResults.rule_id == CobraRules.id,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -191,12 +210,14 @@ def report(project_id):
         filter_group = (
             CobraResults.project_id == project_id,
             CobraResults.rule_id == CobraRules.id,
+            CobraResults.status < 2,
             CobraVuls.id == CobraRules.vul_id,
         )
     else:
         filter_group = (
             CobraResults.task_id == search_task,
             CobraResults.rule_id == CobraRules.id,
+            CobraResults.status < 2,
             CobraVuls.id == CobraRules.vul_id,
         )
 
@@ -297,6 +318,8 @@ def report(project_id):
         'files': common.convert_number(files),
         'code_number': code_number,
         'vul_count': common.convert_number(total_vul_count),
+        'vul_count_unrepair': common.convert_number(total_vul_count_unrepair),
+        'vul_count_repaired': common.convert_number(total_vul_count_repaired),
         'vulnerabilities': vulnerabilities,
         "select_vul_type": select_vul_type,
         "select_rule_type": select_rule_type,
