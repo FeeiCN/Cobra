@@ -106,7 +106,6 @@ class Parse:
                 function_name = re.findall(regex_functions, function[1].strip())
                 if len(function_name) == 1:
                     function_name = function_name[0]
-                    logging.debug('{0}. 函数{1} - 上一个函数: {2}'.format(index, function_name, prev_function_name))
                     if index > 0 and prev_function_name in functions:
                         functions[prev_function_name]['end'] = function[0]
                     prev_function_name = function_name
@@ -168,7 +167,7 @@ class Parse:
             # get param block code
             line_rule = "{0},{1}p".format(block_start, block_end)
             code = File(self.file_path).lines(line_rule)
-            logging.info('取出代码: {0} - {1}p \r{2}'.format(block_start, block_end, code))
+            logging.info('取出代码: {0} - {1}p'.format(block_start, block_end))
             return code
 
     def is_controllable_param(self):

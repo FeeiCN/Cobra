@@ -136,7 +136,7 @@ class Core:
 
         # 该漏洞已经被扫出来过
         if exist_result is not None:
-            logging.info("Exists Result {0}".format(self.status))
+            logging.info("漏洞已经存在 {0}".format(self.status))
             # 当漏洞状态为初始化时,则推送给第三方漏洞管理平台
             if exist_result.status == 0:
                 self.push_third_party_vulnerabilities(exist_result.id)
@@ -146,9 +146,10 @@ class Core:
                 exist_result.status = 2
                 db.session.add(exist_result)
                 db.session.commit()
-                logging.info('Update vulnerabilities status to fixed')
+                logging.info('更新漏洞状态为已修复')
 
         else:
+            logging.info("写入新漏洞成功")
             vul = CobraResults(self.task_id, self.project_id, self.rule_id, self.file_path, self.line_number, self.code_content, self.status)
             db.session.add(vul)
             db.session.commit()
@@ -231,7 +232,7 @@ class Core:
                                 param_value = parse_instance.param_value
                             found_vul = True
                     else:
-                        logging.info("Static: uncontrollable param")
+                        logging.info("参数不可控")
                         return False, 4004
                 except:
                     print(traceback.print_exc())
