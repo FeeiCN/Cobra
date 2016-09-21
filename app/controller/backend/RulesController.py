@@ -14,7 +14,7 @@
 import time
 import datetime
 
-from flask import redirect, render_template, request, jsonify
+from flask import render_template, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
@@ -38,6 +38,7 @@ def rules(page):
     all_vuls = {}
     all_language = {}
     all_level = {1: 'Low', 2: 'Medium', 3: 'High'}
+    all_location = {0: "UP", 1: "Down", 2: "Current Line"}
     for vul in cobra_vuls:
         all_vuls[vul.id] = vul.name
     for lang in cobra_lang:
@@ -50,6 +51,11 @@ def rules(page):
             rule.vul_id = all_vuls[rule.vul_id]
         except KeyError:
             rule.vul_id = 'Unknown Type'
+
+        try:
+            rule.block_repair = all_location[rule.block_repair]
+        except KeyError:
+            rule.block_repair = 'Unknown Location'
 
         # try:
         #     rule.status = status_desc[rule.status]

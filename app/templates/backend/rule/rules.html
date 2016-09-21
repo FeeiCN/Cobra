@@ -29,8 +29,9 @@
                       class="glyphicon glyphicon-{% if rule.status %}ok{% else %}remove{% endif %}">
                 </span>
             </td>
-            <td hidden id="rule-regex-{{ rule.id }}">{{ rule.regex }}</td>
-            <td hidden id="rule-confirm-regex-{{ rule.id }}">{{ rule.regex_confirm }}</td>
+            <td hidden id="rule-regex-location-{{ rule.id }}">{{ rule.regex_location }}</td>
+            <td hidden id="rule-regex-repair-{{ rule.id }}">{{ rule.regex_repair }}</td>
+            <td hidden id="rule-block-repair-{{ rule.id }}">{{ rule.block_repair }}</td>
             <td hidden id="rule-repair-{{ rule.id }}">{{ rule.repair }}</td>
             <td hidden id="rule-level-{{ rule.id }}">{{ rule.level }}</td>
             <td align="center" class="operation">

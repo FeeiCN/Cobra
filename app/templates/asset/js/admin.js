@@ -230,17 +230,19 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         } else if (type === 'view') {
-            var regex = $("<div/>").text($("#rule-regex-" + cid).text()).html();
-            var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cid).text()).html();
-            var repair = $("<div/>").text($("#rule-repair-" + cid).text()).html();
-            var level = $("<div/>").text($("#rule-level-" + cid).text()).html();
-            console.log(level);
+            var LocationRegex = $("<div/>").text($("#rule-regex-location-" + cid).text()).html();
+            var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + cid).text()).html();
+            var RepairBlock = $("<div/>").text($("#rule-block-repair-" + cid).text()).html();
+            var RepairMethod = $("<div/>").text($("#rule-repair-" + cid).text()).html();
+            var RuleLevel = $("<div/>").text($("#rule-level-" + cid).text()).html();
+
             $("#view-title").html("rule details.");
-            var content = "<b>regex: </b>" + regex + "<br />";
-            content += "<b>confirm regex: </b>" + confirm_regex + "<br />";
-            content += "<b>repair: </b>" + repair + "<br />";
-            content += "<b>level: </b>" + level + "<br />";
-            $("#view-body").html(content);
+            var contents = "<b>Location Regex: </b><code>" + LocationRegex + "</code><br />";
+            contents += "<b>Repair Regex: </b><code>" + RepairRegex + "</code><br />";
+            contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
+            contents += "<b>repair: </b>" + RepairMethod + "<br />";
+            contents += "<b>level: </b>" + RuleLevel + "<br />";
+            $("#view-body").html(contents);
         } else if (type === "del") {
             $.post('del_rule', {'rule_id': cid}, function (data) {
                 var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
