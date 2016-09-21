@@ -93,7 +93,7 @@ class Core:
                - Java:
         :return: boolean
         """
-        match_result = re.findall(r"(#|\\\*|\/\/|\*){1}", self.code_content)
+        match_result = re.findall(r"(#|\\\*|\/\/|\*)+", self.code_content)
         # 仅仅匹配时跳过检测
         if self.is_match_only_rule():
             return False
@@ -206,7 +206,7 @@ class Core:
         else:
             found_vul = False
             # 判断参数是否可控
-            if self.file_path[-3:] == 'php' and self.rule_repair.strip() != '':
+            if self.rule_repair.strip() != '':
                 try:
                     parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                     if parse_instance.is_controllable_param():
