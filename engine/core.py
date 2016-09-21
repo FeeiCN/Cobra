@@ -118,9 +118,20 @@ class Core:
         self.file_path = self.file_path.replace(self.project_directory, '')
         # 行号为0的时候则为搜索特殊文件
         if self.line_number == 0:
-            exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=self.rule_id, file=self.file_path).first()
+            exist_result = CobraResults.query.filter(
+                CobraResults.project_id == self.project_id,
+                CobraResults.rule_id == self.rule_id,
+                CobraResults.file == self.file_path,
+                CobraResults.status < 2
+            ).first()
         else:
-            exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=self.rule_id, file=self.file_path, line=self.line_number).first()
+            exist_result = CobraResults.query.filter(
+                CobraResults.project_id == self.project_id,
+                CobraResults.rule_id == self.rule_id,
+                CobraResults.file == self.file_path,
+                CobraResults.line == self.line_number,
+                CobraResults.status < 2
+            ).first()
 
         # 该漏洞已经被扫出来过
         if exist_result is not None:

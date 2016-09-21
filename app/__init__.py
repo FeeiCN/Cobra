@@ -267,8 +267,11 @@ class Repair(Command):
         vuln_all_d = {}
         for vuln in vuln_all:
             vuln_all_d[vuln.id] = vuln.third_v_id
-        # 漏洞数据
-        result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter_by(project_id=pid).all()
+        # 未修复的漏洞数据
+        result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
+            CobraResults.project_id == pid,
+            CobraResults.status < 2
+        ).all()
         for index, (rule, result) in enumerate(result_all):
             # 核心规则校验
             result_info = {
