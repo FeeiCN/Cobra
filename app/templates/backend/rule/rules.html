@@ -1,6 +1,6 @@
 <style>
     .operation > span {
-        margin: 0 2px;
+        margin: 0 5px;
     }
     pre {
         white-space: pre-wrap;
@@ -68,7 +68,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button class="btn btn-danger" data-dismiss="modal" id="del-rule-by-id">Delete</button>
+            <button class="btn btn-danger" data-dismiss="modal" id="del-rule-by-id">Yes. Delete this rule.</button>
         </div>
     </div>
   </div>
@@ -99,7 +99,7 @@ $(document).ready(function () {
         var RepairMethod = $("<div/>").text($("#rule-repair-" + rid).text()).html();
         var RuleLevel = $("<div/>").text($("#rule-level-" + rid).text()).html();
 
-        $("#view-title").html("rule details.");
+        $("#view-title").html("Rule Details");
         var contents = "<b>Location Regex: </b><pre class=pre-scrollable>" + LocationRegex + "</pre><br />";
         contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
         contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
@@ -117,7 +117,7 @@ $(document).ready(function () {
         var RepairMethod = $("<div/>").text($("#rule-repair-" + rid).text()).html();
         var RuleLevel = $("<div/>").text($("#rule-level-" + rid).text()).html();
 {#        var contents = '<h4>Are you sure DELETE this rule?</h4>'#}
-        $(".del-header").html("<h4>Are you sure <span style='color: red'>DELETE</span> this rule?</h4>");
+        $(".del-header").html("<h4>Are you <span style='color: red'>ABSOLUTELY</span> sure?</h4>");
         var contents = "";
         contents += "<b>Location Regex: </b><pre class=pre-scrollable>" + LocationRegex + "</pre><br />";
         contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
