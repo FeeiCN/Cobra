@@ -79,8 +79,8 @@ def rules(page):
 @login_required
 def add_new_rule():
     if request.method == 'POST':
-        vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'regex_repair', 'repair_block',
-                           'description', 'repair', 'author', 'level')
+        vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'repair_block',
+                           'description', 'repair', 'author', 'level', 'status')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
@@ -90,12 +90,12 @@ def add_new_rule():
             vul_id=vc.vars.vul_type,
             language=vc.vars.language,
             regex_location=vc.vars.regex_location,
-            regex_repair=vc.vars.regex_repair,
+            regex_repair=request.form.get("regex_repair", ""),
             block_repair=vc.vars.repair_block,
             description=vc.vars.description,
             repair=vc.vars.repair,
             author=vc.vars.author,
-            status=1,
+            status=vc.vars.status,
             level=vc.vars.level,
             created_at=current_time,
             updated_at=current_time

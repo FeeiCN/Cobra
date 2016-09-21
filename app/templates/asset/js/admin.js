@@ -579,6 +579,7 @@ $("#show_all_rules").click(function () {
         $("#add_new_rules").click(function () {
             $.get('add_new_rule', function (data) {
                 $("#main-div").html(data);
+                $("#paginate").html("");
 
                 $("#add-new-rule-button").click(function () {
                     var vul_type = $("#vul_type").val();
@@ -590,13 +591,14 @@ $("#show_all_rules").click(function () {
                     var repair = $("#repair").val();
                     var author = $("input[name=author]").val();
                     var level = $("#level:checked").val();
+                    var status = $("#status:checked").val();
 
                     // check data
-                    if (!vul_type || vul_type == "") {
+                    if (!vul_type || vul_type == -1) {
                         showAlert('danger', 'vul type error.', '#add-new-rule-result');
                         return false;
                     }
-                    if (!lang || lang == "") {
+                    if (!lang || lang == -1) {
                         showAlert('danger', 'language error.', '#add-new-rule-result');
                         return false;
                     }
@@ -606,10 +608,6 @@ $("#show_all_rules").click(function () {
                     }
                     if (!regex_location || regex_location == "") {
                         showAlert('danger', 'location regex can not be blank.', '#add-new-rule-result');
-                        return false;
-                    }
-                    if (!regex_repair || regex_repair == "") {
-                        showAlert('danger', 'repair regex confirm can not be blank.', '#add-new-rule-result');
                         return false;
                     }
                     if (!repair_block || repair_block == "") {
@@ -628,6 +626,10 @@ $("#show_all_rules").click(function () {
                         showAlert('danger', 'level can not be blank.', "#add-new-rule-result");
                         return false;
                     }
+                    if (!status || status == "") {
+                        showAlert("danger", "Status can't be blank.", "#add-new-rule-result");
+                        return false;
+                    }
 
                     // post data
                     var data = {
@@ -639,7 +641,8 @@ $("#show_all_rules").click(function () {
                         'description': description,
                         'repair': repair,
                         'author': author,
-                        'level': level
+                        'level': level,
+                        'status': status
                     };
                     $.post('add_new_rule', data, function (res) {
                         showAlert(res.tag, res.msg, '#add-new-rule-result');
