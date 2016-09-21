@@ -206,7 +206,7 @@ class Core:
         else:
             found_vul = False
             # 判断参数是否可控
-            if self.file_path[-3:] == 'php' and self.rule_repair.strip() != '':
+            if self.rule_repair.strip() != '':
                 try:
                     parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                     if parse_instance.is_controllable_param():

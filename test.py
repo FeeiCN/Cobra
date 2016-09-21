@@ -78,6 +78,76 @@ class Test(unittest.TestCase):
         status = Config('third_party_vulnerabilities', 'status').value
         self.assertTrue(int(status))
 
+    def test_parse(self):
+        """
+        测试解析代码
+        :return:
+        """
+        import os
+        from engine.parse import Parse
+        regex_location = r'curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)'
+        regex_repair = r'curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)'
+        file_path = os.path.join(config.Config().project_directory, 'tests/parse/test_functions.php')
+        tests = [
+            {
+                'line': 4,
+                'code': "curl_setopt($curl, CURLOPT_URL, \"http://wufeifei.com/ssrf\");",
+                'result': False,
+            },
+            {
+                'line': 10,
+                'code': 'curl_setopt($curl, CURLOPT_URL, URL);',
+                'result': False
+            },
+            {
+                'line': 16,
+                'code': 'curl_setopt($curl, CURLOPT_URL, $url);',
+                'result': False
+            },
+            {
+                'line': 22,
+                'code': 'curl_setopt($curl, CURLOPT_URL, $url);',
+                'result': True,
+                'repair': False
+            },
+            {
+                'line': 28,
+                'code': 'curl_setopt($curl, CURLOPT_URL, $url);',
+                'result': True,
+                'repair': True
+            }
+        ]
+        for test in tests:
+            parse = Parse(regex_location, file_path, test['line'], test['code'])
+            self.assertEqual(test['result'], parse.is_controllable_param())
+            if 'repair' in test:
+                self.assertEqual(test['repair'], parse.is_repair(regex_repair, 1))
+
+        file_path = os.path.join(config.Config().project_directory, 'tests/parse/test_single_file.php')
+        tests = [
+            {
+                'line': 4,
+                'code': 'curl_setopt($curl, CURLOPT_URL, $url);',
+                'result': False
+            },
+            {
+                'line': 8,
+                'code': 'curl_setopt($curl, CURLOPT_URL, $url);',
+                'result': True
+            },
+            {
+                'line': 12,
+                'code': 'curl_setopt($curl, CURLOPT_URL, $url);',
+                'result': True,
+                'repair': True
+            }
+        ]
+        for test in tests:
+            parse = Parse(regex_location, file_path, test['line'], test['code'])
+            self.assertEqual(test['result'], parse.is_controllable_param())
+            if 'repair' in test:
+                self.assertEqual(test['repair'], parse.is_repair(regex_repair, 1))
+
 
 if __name__ == '__main__':
     unittest.main()
