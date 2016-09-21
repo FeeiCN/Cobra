@@ -230,28 +230,28 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         } else if (type === 'view') {
-            var LocationRegex = $("<div/>").text($("#rule-regex-location-" + cid).text()).html();
-            var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + cid).text()).html();
-            var RepairBlock = $("<div/>").text($("#rule-block-repair-" + cid).text()).html();
-            var RepairMethod = $("<div/>").text($("#rule-repair-" + cid).text()).html();
-            var RuleLevel = $("<div/>").text($("#rule-level-" + cid).text()).html();
-
-            $("#view-title").html("rule details.");
-            var contents = "<b>Location Regex: </b><code>" + LocationRegex + "</code><br />";
-            contents += "<b>Repair Regex: </b><code>" + RepairRegex + "</code><br />";
-            contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
-            contents += "<b>repair: </b>" + RepairMethod + "<br />";
-            contents += "<b>level: </b>" + RuleLevel + "<br />";
-            $("#view-body").html(contents);
+            // var LocationRegex = $("<div/>").text($("#rule-regex-location-" + cid).text()).html();
+            // var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + cid).text()).html();
+            // var RepairBlock = $("<div/>").text($("#rule-block-repair-" + cid).text()).html();
+            // var RepairMethod = $("<div/>").text($("#rule-repair-" + cid).text()).html();
+            // var RuleLevel = $("<div/>").text($("#rule-level-" + cid).text()).html();
+            //
+            // $("#view-title").html("Rule Details");
+            // var contents = "<b>Location Regex: </b><pre>" + LocationRegex + "</pre><br />";
+            // contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
+            // contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
+            // contents += "<b>repair: </b>" + RepairMethod + "<br />";
+            // contents += "<b>level: </b>" + RuleLevel + "<br />";
+            // $("#view-body").html(contents);
         } else if (type === "del") {
-            $.post('del_rule', {'rule_id': cid}, function (data) {
-                var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
-                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
-                tt += '<span aria-hidden="true">&times;</span></button>';
-                tt += '<strong>' + data.msg + '</strong></div>';
-                $("#operate_result").html(tt);
-                $("#show_all_rules").click();
-            });
+            // $.post('del_rule', {'rule_id': cid}, function (data) {
+            //     var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
+            //     tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
+            //     tt += '<span aria-hidden="true">&times;</span></button>';
+            //     tt += '<strong>' + data.msg + '</strong></div>';
+            //     $("#operate_result").html(tt);
+            //     $("#show_all_rules").click();
+            // });
         }
 
     } else if (target === "vul") {

@@ -11,7 +11,6 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
-import time
 import datetime
 
 from flask import render_template, request, jsonify
@@ -134,11 +133,11 @@ def del_rule():
         try:
             db.session.delete(r)
             db.session.commit()
-            return jsonify(tag='success', msg='delete success.')
-        except:
-            return jsonify(tag='danger', msg='delete failed. Try again later?')
+            return jsonify(code=1001, tag='success', msg='delete success.')
+        except SQLAlchemyError:
+            return jsonify(code=1004, tag='danger', msg='delete failed. Try again later?')
     else:
-        return jsonify(tag='danger', msg='wrong id')
+        return jsonify(code=1004, tag='danger', msg='wrong id')
 
 
 # edit special rule
@@ -180,3 +179,22 @@ def edit_rule(rule_id):
             'all_vuls': vul_type,
             'all_lang': languages,
         })
+
+
+@web.route(ADMIN_URL + '/update_status', methods=['POST'])
+@login_required
+def update_status():
+    rid = request.form.get("id", "")
+    if rid == "":
+        return jsonify(message="id can't be blank.")
+
+    rule = CobraRules.query.filter(CobraRules.id == rid).first()
+    print(rule)
+    rule.status = not rule.status
+    try:
+        db.session.add(rule)
+        db.session.commit()
+        return jsonify(message="Update Successful")
+    except SQLAlchemyError as e:
+        return jsonify(message=e.message)
+
