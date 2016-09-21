@@ -186,7 +186,7 @@ class Parse:
                     r'\$path\s?=\s?([A-Z_]*)'.format(param_name)
                 ]
                 for uc_rule in un_controllable_param_rule:
-                    uc_rule_result = re.findall(re.escape(uc_rule), param_block_code)
+                    uc_rule_result = re.findall(uc_rule, param_block_code)
                     if len(uc_rule_result) >= 1:
                         logging.info("R: False ($param = '' : {0} = {1})".format(param_name, uc_rule_result[0]))
                         return False
@@ -214,7 +214,7 @@ class Parse:
                     }
                 ]
                 for c_rule in controllable_param_rule:
-                    c_rule_result = re.findall(re.escape(c_rule['rule']), param_block_code)
+                    c_rule_result = re.findall(c_rule['rule'], param_block_code)
                     if len(c_rule_result) >= 1:
                         self.param_value = c_rule_result[0]
                         logging.info("R: True (New rule: controllable param: {0}, {1})".format(param_name, c_rule['example']))
