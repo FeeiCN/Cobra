@@ -216,27 +216,15 @@ class Parse:
                     logging.info("返回: 可控 (代码未找到)")
                     return True
                 logging.debug("向上搜索参数区块代码: {0}".format(param_block_code))
-                # check = "" or = ''
-                """
-                check string
-                $param_name = ""
-                $param_name = ''
-                """
-                un_controllable_param_rule = [
-                    # ```$param_name = 'http://wufeifei.com'```
-                    r'\{0}\s?=\s?\'((\?(?=\\\\\')..|[^\'])*)\''.format(param_name),
-                    # ```$param_name = "http://wufeifei.com"```
-                    r'\{0}\s?=\s?"((\?(?=\\\\")..|[^"])*)"'.format(param_name),
-                    # ```$param_name = CONST_VARIABLE```
-                    r'\$path\s?=\s?([A-Z_]*)'.format(param_name)
-                ]
-                for uc_rule in un_controllable_param_rule:
-                    uc_rule_result = re.findall(re.escape(uc_rule), param_block_code)
-                    if len(uc_rule_result) >= 1:
-                        logging.debug("参数变量是否直接赋值字符串: 是 `{0} = {1}`".format(param_name, uc_rule_result[0]))
-                        logging.info("返回: 不可控")
-                        return False
-                logging.debug("参数变量是否直接赋值字符串: 否")
+
+                # 常量赋值
+                uc_rule = r'\{0}\s?=\s?([A-Z_]*)'.format(param_name)
+                uc_rule_result = re.findall(uc_rule, param_block_code)
+                if len(uc_rule_result) >= 1:
+                    logging.debug("参数变量是否直接赋值常量: 是 `{0} = {1}`".format(param_name, uc_rule_result[0]))
+                    logging.info("返回: 不可控")
+                    return False
+                logging.debug("参数变量是否直接赋值常量: 否")
 
                 controllable_param_rule = [
                     {
