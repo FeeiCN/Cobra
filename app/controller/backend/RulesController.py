@@ -44,17 +44,17 @@ def rules(page):
         all_language[lang.id] = lang.language
 
     # replace id with real name
-    status_desc = {1: 'ON', 0: 'OFF'}
+    # status_desc = {1: 'ON', 0: 'OFF'}
     for rule in cobra_rules:
         try:
             rule.vul_id = all_vuls[rule.vul_id]
         except KeyError:
             rule.vul_id = 'Unknown Type'
 
-        try:
-            rule.status = status_desc[rule.status]
-        except KeyError:
-            rule.status = 'Unknown'
+        # try:
+        #     rule.status = status_desc[rule.status]
+        # except KeyError:
+        #     rule.status = 'Unknown'
 
         try:
             rule.language = all_language[rule.language]

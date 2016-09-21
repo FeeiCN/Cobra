@@ -17,7 +17,11 @@
             <td>{{ rule.language }}</td>
             <td>{{ rule.vul_id }}</td>
             <td>{{ rule.description }}</td>
-            <td>{{ rule.status }}</td>
+            <td align="center">
+                <span style="color: {% if rule.status %}green{% else %}red{% endif %}"
+                      class="glyphicon glyphicon-{% if rule.status %}ok{% else %}remove{% endif %}">
+                </span>
+            </td>
             <td>{{ rule.updated_at }}</td>
             <td hidden id="rule-regex-{{ rule.id }}">{{ rule.regex }}</td>
             <td hidden id="rule-confirm-regex-{{ rule.id }}">{{ rule.regex_confirm }}</td>
