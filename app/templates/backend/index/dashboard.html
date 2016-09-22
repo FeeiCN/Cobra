@@ -3,42 +3,6 @@
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    Cobra数据统计
-                </h3>
-            </div>
-            <div class="panel-body">
-                <div class="row clearfix">
-                    <div class="col-md-12 column">
-                        <div class="form-inline">
-                            <label for="g-start-time">开始时间: </label>
-                            <input type="text" class="form-control" id="g-start-time">&nbsp;&nbsp;&nbsp;
-                            <label for="g-end-time">结束时间: </label>
-                            <input type="text" class="form-control" id="g-end-time">&nbsp;&nbsp;&nbsp;
-                            <button type="button" class="btn btn-success" id="show-data">查询</button>
-                            &nbsp;&nbsp;&nbsp;
-                            <button type="button" class="btn btn-success" id="show-all-data">查看全部数据</button>
-                        </div>
-
-                    </div>
-                    <div class="col-md-6 column"><br/>
-                        <label for="g-vulns">漏洞类型分布统计</label>
-                        <canvas id="g-vulns" width="10" height="10"></canvas>
-                    </div>
-                    <div class="col-md-6 column"><br/>
-                        <label for="g-languages">漏洞语言分布统计</label>
-                        <canvas id="g-languages" width="10" height="10"></canvas>
-                    </div>
-                    <div>
-                        <label for="g-lines">漏洞趋势</label>
-                        <canvas id="g-lines" width="40" height="11"></canvas>
-                    </div>
-                </div> <!-- .row clearfix -->
-            </div> <!-- .panel-body -->
-        </div>
-
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">
                     漏洞数据
                 </h3>
             </div>
@@ -53,12 +17,12 @@
                                 <td><b>数量</b></td>
                             </tr>
                             <tr>
-                                <td>扫描任务次数:</td>
-                                <td>{{ data.today_task_count }}</td>
-                            </tr>
-                            <tr>
                                 <td>漏洞数:</td>
                                 <td>{{ data.today_vulns_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>扫描任务次数:</td>
+                                <td>{{ data.today_task_count }}</td>
                             </tr>
                             <tr>
                                 <td>项目数:</td>
@@ -83,12 +47,12 @@
                                 <td><b>数量</b></td>
                             </tr>
                             <tr>
-                                <td>扫描次数:</td>
-                                <td>{{ data.total_task_count }}</td>
-                            </tr>
-                            <tr>
                                 <td>漏洞数量:</td>
                                 <td>{{ data.total_vulns_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>扫描次数:</td>
+                                <td>{{ data.total_task_count }}</td>
                             </tr>
                             <tr>
                                 <td>项目数量:</td>
@@ -122,34 +86,6 @@
                 </div>
             </div><!-- .panel body -->
         </div><!-- .panel -->
-
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    Cobra扫描耗时统计
-                </h3>
-            </div>
-            <!-- scan times -->
-            <div class="panel-body"><br/>
-                <table class="table">
-                    <tbody>
-                    <tr>
-                        <td>平均扫描时间(单任务):</td>
-                        <td>{{ data.avg_scan_time }} s</td>
-                    </tr>
-                    <tr>
-                        <td>最长扫描时间(单项目):</td>
-                        <td>{{ data.max_scan_time }} s</td>
-                    </tr>
-                    <tr>
-                        <td>最短扫描时间(单项目):</td>
-                        <td>{{ data.min_scan_time }} s</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div><!-- .panel body -->
-        </div><!-- .panel -->
-
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -190,6 +126,67 @@
                         </tbody>
                     </table>
                 </div>
+            </div><!-- .panel body -->
+        </div><!-- .panel -->
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Cobra数据统计
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <div class="form-inline">
+                            <label for="g-start-time">开始时间: </label>
+                            <input type="text" class="form-control" id="g-start-time">&nbsp;&nbsp;&nbsp;
+                            <label for="g-end-time">结束时间: </label>
+                            <input type="text" class="form-control" id="g-end-time">&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-data">查询</button>
+                            &nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success" id="show-all-data">查看全部数据</button>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6 column"><br/>
+                        <label for="g-vulns">漏洞类型分布统计</label>
+                        <canvas id="g-vulns" width="10" height="10"></canvas>
+                    </div>
+                    <div class="col-md-6 column"><br/>
+                        <label for="g-languages">漏洞语言分布统计</label>
+                        <canvas id="g-languages" width="10" height="10"></canvas>
+                    </div>
+                    <div>
+                        <label for="g-lines">漏洞趋势</label>
+                        <canvas id="g-lines" width="40" height="11"></canvas>
+                    </div>
+                </div> <!-- .row clearfix -->
+            </div> <!-- .panel-body -->
+        </div>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Cobra扫描耗时统计
+                </h3>
+            </div>
+            <!-- scan times -->
+            <div class="panel-body"><br/>
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>平均扫描时间(单任务):</td>
+                        <td>{{ data.avg_scan_time }} s</td>
+                    </tr>
+                    <tr>
+                        <td>最长扫描时间(单项目):</td>
+                        <td>{{ data.max_scan_time }} s</td>
+                    </tr>
+                    <tr>
+                        <td>最短扫描时间(单项目):</td>
+                        <td>{{ data.min_scan_time }} s</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div><!-- .panel body -->
         </div><!-- .panel -->
     </div>
