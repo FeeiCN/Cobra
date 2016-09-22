@@ -49,7 +49,7 @@ class Log:
             'loggers': {
                 '': {
                     'handlers': ['file'],
-                    'level': 'INFO',
+                    'level': 'DEBUG',
                 },
             }
         })

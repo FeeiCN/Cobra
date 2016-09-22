@@ -14,15 +14,13 @@
 """
 import os
 import sys
-import re
 import time
 import subprocess
 import traceback
 import logging
+from engine.core import Core
 from pickup import directory
-from engine import parse
-from utils.queue import Queue
-from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
+from app import db, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
 
 logging = logging.getLogger(__name__)
 
@@ -160,7 +158,7 @@ class Static:
         for rule in rules:
             rule.regex_location = rule.regex_location.strip()
             rule.regex_repair = rule.regex_repair.strip()
-            logging.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
+            logging.info('------------------\r\nScan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
                 if language.id == rule.language:
@@ -199,7 +197,7 @@ class Static:
                     # -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
-                # logging.info(' '.join(param))
+                logging.info(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
@@ -210,114 +208,34 @@ class Static:
                         line = line.strip()
                         if line == '':
                             continue
-                        if rule.regex_location == '':
-                            # Find (special file)
-                            file_path = line.strip().replace(self.directory, '')
-                            logging.debug('File: {0}'.format(file_path))
-                            exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path).first()
-                            if exist_result is not None:
-                                # push queue
-                                if exist_result.status == 0:
-                                    try:
-                                        q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, 0, 0, exist_result.id)
-                                        q.push()
-                                    except Exception as e:
-                                        print(traceback.print_exc())
-                                        logging.critical(e.message)
-                                logging.warning("Exists Result")
-                            else:
-                                vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, 0, '', 0)
-                                db.session.add(vul)
-                                try:
-                                    # push queue
-                                    q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, 0, 0, vul.id)
-                                    q.push()
-                                except Exception as e:
-                                    print(traceback.print_exc())
-                                    logging.critical(e.message)
-                        else:
-                            # Grep
+                        # 处理grep结果
+                        if ':' in line:
                             line_split = line.split(':', 1)
                             file_path = line_split[0].strip()
-                            if len(line_split) < 2:
-                                logging.info("Line len < 2 {0}".format(line))
-                                continue
                             code_content = line_split[1].split(':', 1)[1].strip()
                             line_number = line_split[1].split(':', 1)[0].strip()
+                        else:
+                            # 搜索文件
+                            file_path = line
+                            code_content = ''
+                            line_number = 0
+                        # 核心规则校验
+                        result_info = {
+                            'task_id': self.task_id,
+                            'project_id': self.project_id,
+                            'project_directory': self.directory,
+                            'rule_id': rule.id,
+                            'file_path': file_path,
+                            'line_number': line_number,
+                            'code_content': code_content,
+                            'third_party_vulnerabilities_name': vulnerabilities_all[rule.vul_id]['name'],
+                            'third_party_vulnerabilities_type': vulnerabilities_all[rule.vul_id]['third_v_id']
+                        }
+                        ret_status, ret_result = Core(result_info, rule, self.project_name, white_list).scan()
+                        if ret_status is False:
+                            logging.info("扫描 R: False {0}".format(ret_result))
+                            continue
 
-                            if file_path in white_list or ".min.js" in file_path:
-                                logging.info("In white list or min.js")
-                            else:
-                                only_match = rule.regex_location[:1] == '(' and rule.regex_location[-1] == ')'
-                                """
-                                annotation (注释过滤)
-                                # // /* *
-
-                                Exclude:
-                                - (rule_location) - 当定位规则左右两边为括号时不过滤注释行,比如硬编码密码
-                                """
-                                match_result = re.match("(#)?(//)?(\*)?(/\*)?", code_content)
-                                if match_result.group(0) is not None and match_result.group(0) is not "" and only_match is not True:
-                                    logging.info("In Annotation")
-                                else:
-                                    param_value = None
-                                    # parse file function structure
-                                    if only_match:
-                                        found_vul = True
-                                    else:
-                                        if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
-                                            try:
-                                                parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
-                                                if parse_instance.is_controllable_param():
-                                                    if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
-                                                        logging.info("Static: repaired")
-                                                        continue
-                                                    else:
-                                                        if parse_instance.param_value is not None:
-                                                            param_value = parse_instance.param_value
-                                                        found_vul = True
-                                                else:
-                                                    logging.info("Static: uncontrollable param")
-                                                    continue
-                                            except:
-                                                print(traceback.print_exc())
-                                                found_vul = False
-                                        else:
-                                            found_vul = True
-
-                                    file_path = file_path.replace(self.directory, '')
-
-                                    if found_vul:
-                                        logging.info('In Insert')
-                                        exist_result = CobraResults.query.filter_by(project_id=self.project_id, rule_id=rule.id, file=file_path, line=line_number).first()
-                                        if exist_result is not None:
-                                            logging.info("Exists Result")
-                                            # push queue
-                                            if exist_result.status == 0:
-                                                try:
-                                                    q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, line_number, code_content, exist_result.id)
-                                                    q.push()
-                                                except Exception as e:
-                                                    print(traceback.print_exc())
-                                                    logging.critical(e.message)
-                                        else:
-                                            code_content = code_content.encode('unicode_escape')
-                                            if len(code_content) > 512:
-                                                code_content = code_content[:500] + '...'
-                                            code_content = '# Trigger\r' + code_content
-                                            if param_value is not None:
-                                                code_content = '# Param\r' + param_value + '\r//\r// ------ Continue... ------\r//\r' + code_content
-                                            logging.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
-                                            vul = CobraResults(self.task_id, self.project_id, rule.id, file_path, line_number, code_content, 0)
-                                            db.session.add(vul)
-                                            db.session.commit()
-                                            try:
-                                                q = Queue(self.project_name, vulnerabilities_all[rule.vul_id]['name'], vulnerabilities_all[rule.vul_id]['third_v_id'], file_path, line_number, code_content, vul.id)
-                                                q.push()
-                                            except Exception as e:
-                                                print(traceback.print_exc())
-                                                logging.critical(e.message)
-                                            logging.info('Insert Results Success')
                 else:
                     logging.info('Not Found')
 

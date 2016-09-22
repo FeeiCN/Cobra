@@ -863,8 +863,11 @@ $("#show_all_tasks").click(function () {
 });
 
 
-// add new task click
-
+// show all web frame works
+$("#show_all_frames").click(function () {
+    $("#main-div").load("frame_rules");
+    $("#paginate").html("");
+});
 
 // dashboard click
 $("#show_dashboard").click(function () {

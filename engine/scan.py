@@ -71,10 +71,12 @@ class Scan:
         cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
         if os.path.isfile(cobra_path) is not True:
             return 1004, 'Cobra Not Found'
-        # Start Scanning
+        # 扫描漏洞
         subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", directory])
-        # Statistic Code
+        # 统计代码行数
         subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", directory])
+        # 检测漏洞修复状况
+        subprocess.Popen(['python', cobra_path, "repair", "-p", str(project_id)])
         result = dict()
         result['scan_id'] = task.id
         result['project_id'] = project_id
@@ -90,8 +92,8 @@ class Scan:
                 username = config.Config('git', 'username').value
                 password = config.Config('git', 'password').value
             else:
-                username = False
-                password = False
+                username = None
+                password = None
             gg = git.Git(self.target, branch=branch, username=username, password=password)
             repo_author = gg.repo_author
             repo_name = gg.repo_name
@@ -148,10 +150,12 @@ class Scan:
 
             if os.path.isfile(cobra_path) is not True:
                 return 1004, 'Cobra Not Found'
-            # Start Scanning
+            # 扫描漏洞
             subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
-            # Statistic Code
+            # 统计代码行数
             subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
+            # 检测漏洞修复状况
+            subprocess.Popen(['python', cobra_path, "repair", "-p", str(project_id)])
             result = dict()
             result['scan_id'] = task.id
             result['project_id'] = project_id
