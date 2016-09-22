@@ -200,15 +200,6 @@ class Parse:
                     return True
                 logging.debug("向上搜索参数区块代码: {0}".format(param_block_code))
 
-                # 常量赋值
-                uc_rule = r'\{0}\s?=\s?([A-Z_]*)'.format(param_name)
-                uc_rule_result = re.findall(uc_rule, param_block_code)
-                if len(uc_rule_result) >= 1:
-                    logging.debug("参数变量是否直接赋值常量: 是 `{0} = {1}`".format(param_name, uc_rule_result[0]))
-                    logging.info("返回: 不可控")
-                    return False
-                logging.debug("参数变量是否直接赋值常量: 否")
-
                 controllable_param_rule = [
                     {
                         'rule': r'(\{0}\s?=\s?\$\w+(?:\[(?:[^[\]]|\?R)*\])*)'.format(param_name),
@@ -238,6 +229,15 @@ class Parse:
                         logging.info("返回: 可控(取外部入参)")
                         return True
                 logging.debug("参数是否直接取自外部入参: 否")
+
+                # 常量赋值
+                uc_rule = r'\{0}\s?=\s?([A-Z_]*)'.format(param_name)
+                uc_rule_result = re.findall(uc_rule, param_block_code)
+                if len(uc_rule_result) >= 1:
+                    logging.debug("参数变量是否直接赋值常量: 是 `{0} = {1}`".format(param_name, uc_rule_result[0]))
+                    logging.info("返回: 不可控")
+                    return False
+                logging.debug("参数变量是否直接赋值常量: 否")
 
                 # 固定字符串判断
                 regex_assign_string = self.regex[self.language]['assign_string'].format(param_name)
