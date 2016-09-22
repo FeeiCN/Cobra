@@ -308,8 +308,8 @@ class Core:
         # 拼接绝对路径
         self.file_path = self.project_directory + self.file_path
 
-        # 定位规则为空时,表示此类型语言(该语言所有后缀)文件都算作漏洞
-        if self.rule_location == '':
+        # 定位规则为空时或者行号为0,表示此类型语言(该语言所有后缀)文件都算作漏洞
+        if self.rule_location == '' or self.line_number == 0:
             logging.info("Find special files: RID{0}".format(self.rule_id))
             # 检查文件是否存在
             if os.path.isfile(self.file_path) is False:
