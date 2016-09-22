@@ -285,9 +285,9 @@ class Repair(Command):
                 'third_party_vulnerabilities_name': rule.description,
                 'third_party_vulnerabilities_type': vuln_all_d[rule.vul_id]
             }
-            ret_status, ret_result = Core(result_info, rule, project_info.name, []).analyse(1)
+            ret_status, ret_result = Core(result_info, rule, project_info.name, []).repair()
             if ret_status is False:
-                logging.info("R: False {0}".format(ret_result))
+                logging.info("修复 R: False {0}".format(ret_result))
                 continue
 
 

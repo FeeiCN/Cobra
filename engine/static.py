@@ -231,9 +231,9 @@ class Static:
                             'third_party_vulnerabilities_name': vulnerabilities_all[rule.vul_id]['name'],
                             'third_party_vulnerabilities_type': vulnerabilities_all[rule.vul_id]['third_v_id']
                         }
-                        ret_status, ret_result = Core(result_info, rule, self.project_name, white_list).analyse()
+                        ret_status, ret_result = Core(result_info, rule, self.project_name, white_list).scan()
                         if ret_status is False:
-                            logging.info("R: False {0}".format(ret_result))
+                            logging.info("扫描 R: False {0}".format(ret_result))
                             continue
 
                 else:
