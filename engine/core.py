@@ -165,25 +165,24 @@ class Core:
         if method == 1:
             # 拼接绝对路径
             self.file_path = self.project_directory + self.file_path
+
+            # 定位规则为空时,表示此类型语言(该语言所有后缀)文件都算作漏洞
+            if self.rule_location == '':
+                logging.info("Find special files: RID{0}".format(self.rule_id))
+                # 检查文件是否存在
+                if os.path.isfile(self.file_path) is False:
+                    # 未找到该文件则更新漏洞状态为已修复
+                    logging.info("Already fixed {0}".format(self.file_path))
+                    self.status = 2
+                self.process_vulnerabilities()
+                return True, 1001
+            
             # 取出触发代码(实际文件)
             trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
             if trigger_code is False:
                 logging.critical("触发代码获取失败 {0}".format(self.code_content))
                 return False, 4009
             self.code_content = trigger_code
-
-        # 定位规则为空时,表示此类型语言(该语言所有后缀)文件都算作漏洞
-        if self.rule_location == '':
-            logging.info("Find special files: RID{0}".format(self.rule_id))
-            # 修复分析时
-            if method == 1:
-                # 检查文件是否存在
-                if os.path.isfile(self.file_path) is False:
-                    # 未找到该文件则更新漏洞状态为已修复
-                    logging.info("Already fixed {0}".format(self.file_path))
-                    self.status = 2
-            self.process_vulnerabilities()
-            return True, 1001
 
         # 白名单
         if self.is_white_list():
