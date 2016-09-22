@@ -1,69 +1,45 @@
 <div class="row clearfix">
     <div class="col-md-12 column">
-        <div class="panel panel-success">
+        <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    漏洞数据
+                    Cobra扫描数据
                 </h3>
             </div>
             <!-- Overview -->
             <div class="panel-body">
                 <div class="row clearfix">
-                    <div class="col-md-6 column"><br/>
+                    <div class="col-md-12 column"><br/>
                         <table class="table">
                             <tbody>
                             <tr>
-                                <td><b>今日Cobra扫描数据</b></td>
-                                <td><b>数量</b></td>
+                                <td><b>数据分类</b></td>
+                                <td><b>今日</b></td>
+                                <td><b>总共</b></td>
                             </tr>
                             <tr>
-                                <td>漏洞数:</td>
+                                <td>漏洞数量</td>
                                 <td>{{ data.today_vulns_count }}</td>
-                            </tr>
-                            <tr>
-                                <td>扫描任务次数:</td>
-                                <td>{{ data.today_task_count }}</td>
-                            </tr>
-                            <tr>
-                                <td>项目数:</td>
-                                <td>{{ data.today_projects_count }}</td>
-                            </tr>
-                            <tr>
-                                <td>文件数:</td>
-                                <td>{{ data.today_files_count }}</td>
-                            </tr>
-                            <tr>
-                                <td>代码行数:</td>
-                                <td>{{ data.today_code_number }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-md-6 column"><br/>
-                        <table class="table">
-                            <tbody>
-                            <tr>
-                                <td><b>全部数据</b></td>
-                                <td><b>数量</b></td>
-                            </tr>
-                            <tr>
-                                <td>漏洞数量:</td>
                                 <td>{{ data.total_vulns_count }}</td>
                             </tr>
                             <tr>
-                                <td>扫描次数:</td>
+                                <td>扫描次数</td>
+                                <td>{{ data.today_task_count }}</td>
                                 <td>{{ data.total_task_count }}</td>
                             </tr>
                             <tr>
-                                <td>项目数量:</td>
+                                <td>项目数量</td>
+                                <td>{{ data.today_projects_count }}</td>
                                 <td>{{ data.total_projects_count }}</td>
                             </tr>
                             <tr>
-                                <td>文件数量:</td>
+                                <td>文件数量</td>
+                                <td>{{ data.today_files_count }}</td>
                                 <td>{{ data.total_files_count }}</td>
                             </tr>
                             <tr>
-                                <td>代码数量:</td>
+                                <td>代码行数</td>
+                                <td>{{ data.today_code_number }}</td>
                                 <td>{{ data.total_code_number }}</td>
                             </tr>
                             </tbody>
@@ -77,7 +53,7 @@
                             <label for="end-time">结束时间: </label>
                             <input class="form-control" type="text" id="end-time" data-date-format="yyyy-mm-dd hh:ii">
                             &nbsp;&nbsp;&nbsp;
-                            <button type="button" class="btn btn-success" id="show-info">查看</button>
+                            <button type="button" class="btn btn-success" id="show-info">查询</button>
                             &nbsp;&nbsp;&nbsp;
                             <button type="button" class="btn btn-danger" id="hide-info">隐藏</button>
                         </div>
@@ -86,10 +62,10 @@
                 </div>
             </div><!-- .panel body -->
         </div><!-- .panel -->
-        <div class="panel panel-success">
+        <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    漏洞分类分布统计
+                    漏洞分类分布数据
                 </h3>
             </div>
             <!-- Vulnerabilities -->
@@ -128,10 +104,10 @@
                 </div>
             </div><!-- .panel body -->
         </div><!-- .panel -->
-        <div class="panel panel-success">
+        <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    Cobra数据统计
+                    Cobra数据图表
                 </h3>
             </div>
             <div class="panel-body">
@@ -163,7 +139,7 @@
                 </div> <!-- .row clearfix -->
             </div> <!-- .panel-body -->
         </div>
-        <div class="panel panel-success">
+        <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">
                     Cobra扫描耗时统计
