@@ -197,7 +197,7 @@ class Static:
                     # -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
-                logging.info(' '.join(param))
+                logging.debug(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 

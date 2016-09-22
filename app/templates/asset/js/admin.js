@@ -905,12 +905,12 @@ $("#show_dashboard").click(function () {
                     $("#information").fadeIn(1000);
                 } else if (res.code == 1001) {
                     var content = '<br/><table class="table"><tbody>';
-                    content += '<tr><td><b>Overview</b></td><td><b>Count</b></td></tr>';
-                    content += '<tr><td>Scan Times: </td><td>' + res.task_count + '</td></tr>';
-                    content += '<tr><td>Vulnerabilities: </td><td>' + res.vulns_count + '</td></tr>';
-                    content += '<tr><td>Scanned Projects Count: </td><td>' + res.projects_count + '</td></tr>';
-                    content += '<tr><td>Files Count: </td><td>' + res.files_count + '</td></tr>';
-                    content += '<tr><td>Code Number: </td><td>' + res.code_number + '</td></tr>';
+                    content += '<tr><td><b>数据类型</b></td><td><b>数量</b></td></tr>';
+                    content += '<tr><td>漏洞数量: </td><td>' + res.vulns_count + '</td></tr>';
+                    content += '<tr><td>扫描次数: </td><td>' + res.task_count + '</td></tr>';
+                    content += '<tr><td>项目数量: </td><td>' + res.projects_count + '</td></tr>';
+                    content += '<tr><td>文件数量: </td><td>' + res.files_count + '</td></tr>';
+                    content += '<tr><td>代码行数: </td><td>' + res.code_number + '</td></tr>';
                     content += '</tbody></table>';
                     $("#information").html(content);
                     $("#information").fadeIn(1000);
@@ -1022,7 +1022,7 @@ $("#show_dashboard").click(function () {
                     labels: raw_data.labels,
                     datasets: [
                         {
-                            label: "vulnerabilities everyday",
+                            label: "当日漏洞数量",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,
@@ -1032,7 +1032,7 @@ $("#show_dashboard").click(function () {
                             data: raw_data.vuls
                         },
                         {
-                            label: "scan times everyday",
+                            label: "任务扫描次数",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,
@@ -1106,7 +1106,7 @@ $("#show_dashboard").click(function () {
                     labels: raw_data.labels,
                     datasets: [
                         {
-                            label: "vulnerabilities everyday",
+                            label: "当日漏洞数量",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,
@@ -1116,7 +1116,7 @@ $("#show_dashboard").click(function () {
                             data: raw_data.vuls
                         },
                         {
-                            label: "scan times everyday",
+                            label: "任务扫描次数",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,
