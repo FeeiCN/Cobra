@@ -394,5 +394,5 @@ class Core:
             self.process_vulnerabilities()
             return True, 1002
         else:
-            logging.critical("Exception core")
+            logging.info("Not found")
             return False, 4006
