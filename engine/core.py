@@ -318,6 +318,8 @@ class Core:
                 self.status = self.status_fixed
                 self.process_vulnerabilities()
                 return True, 1001
+            # 文件存在,漏洞还在
+            return False
 
         # 取出触发代码(实际文件)
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
