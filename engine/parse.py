@@ -16,6 +16,7 @@ import os
 import sys
 import re
 import subprocess
+from pickup.file import File
 from utils import log
 import logging
 
@@ -105,7 +106,6 @@ class Parse:
                 function_name = re.findall(regex_functions, function[1].strip())
                 if len(function_name) == 1:
                     function_name = function_name[0]
-                    logging.debug('{0}. 函数{1} - 上一个函数: {2}'.format(index, function_name, prev_function_name))
                     if index > 0 and prev_function_name in functions:
                         functions[prev_function_name]['end'] = function[0]
                     prev_function_name = function_name
@@ -137,7 +137,7 @@ class Parse:
                 logging.critical("行号异常: {0}".format(self.line))
                 return False
             line_rule = '{0}p'.format(self.line)
-            code = self.get_code(line_rule)
+            code = File(self.file_path).lines(line_rule)
             code = code.strip()
             return code
         else:
@@ -166,26 +166,9 @@ class Parse:
                 logging.debug("没有找到任何方法,将以整个文件分割.")
             # get param block code
             line_rule = "{0},{1}p".format(block_start, block_end)
-            code = self.get_code(line_rule)
-            logging.info('取出代码: {0} - {1}p \r{2}'.format(block_start, block_end, code))
+            code = File(self.file_path).lines(line_rule)
+            logging.info('取出代码: {0} - {1}p'.format(block_start, block_end))
             return code
-
-    def get_code(self, line_rule):
-        """
-        获取指定行代码
-        :param line_rule:
-        :return:
-        """
-        param = ['sed', "-n", line_rule, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE)
-        result = p.communicate()
-        if len(result[0]):
-            param_block_code = result[0]
-            if param_block_code == '':
-                param_block_code = False
-        else:
-            param_block_code = False
-        return param_block_code
 
     def is_controllable_param(self):
         """
@@ -195,6 +178,7 @@ class Parse:
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
+            param_name = re.escape(param_name)
             self.param_name = param_name
             logging.debug('参数: `{0}`'.format(param_name))
             # 固定字符串判断
@@ -209,64 +193,53 @@ class Parse:
             # 变量判断
             if param_name[:1] == '$':
                 logging.debug("参数是否变量: 是")
-                # get param block code
+
+                # 获取参数赋值代码块
                 param_block_code = self.block_code(0)
                 if param_block_code is False:
                     logging.debug("向上搜索参数区块代码: 未找到")
                     logging.info("返回: 可控 (代码未找到)")
                     return True
                 logging.debug("向上搜索参数区块代码: {0}".format(param_block_code))
-                # check = "" or = ''
-                """
-                check string
-                $param_name = ""
-                $param_name = ''
-                """
-                un_controllable_param_rule = [
-                    # ```$param_name = 'http://wufeifei.com'```
-                    r'\{0}\s?=\s?\'((\?(?=\\\\\')..|[^\'])*)\''.format(param_name),
-                    # ```$param_name = "http://wufeifei.com"```
-                    r'\{0}\s?=\s?"((\?(?=\\\\")..|[^"])*)"'.format(param_name),
-                    # ```$param_name = CONST_VARIABLE```
-                    r'\$path\s?=\s?([A-Z_]*)'.format(param_name)
-                ]
-                for uc_rule in un_controllable_param_rule:
-                    uc_rule_result = re.findall(re.escape(uc_rule), param_block_code)
-                    if len(uc_rule_result) >= 1:
-                        logging.debug("参数变量是否直接赋值字符串: 是 `{0} = {1}`".format(param_name, uc_rule_result[0]))
-                        logging.info("返回: 不可控")
-                        return False
-                logging.debug("参数变量是否直接赋值字符串: 否")
 
-                controllable_param_rule = [
-                    {
-                        'rule': r'(\{0}\s?=\s?\$\w+(?:\[(?:[^[\]]|\?R)*\])*)'.format(param_name),
-                        'example': '$param_name = $variable',
-                        'test': """
-                            $param_name = $_GET
-                            $param_name = $_POST
-                            $param_name = $_REQUEST
-                            $param_name = $_COOKIE
-                            $param_name = $var
-                            """
-                    },
-                    {
-                        'rule': r'(function\s*\w+\s*\(.*\{0})'.format(param_name),
-                        'example': 'function ($param_name)',
-                        'test': """
-                            function ($param_name)
-                            function ($some, $param_name)
-                            """
-                    }
-                ]
-                for c_rule in controllable_param_rule:
-                    c_rule_result = re.findall(c_rule['rule'], param_block_code)
-                    if len(c_rule_result) >= 1:
-                        self.param_value = c_rule_result[0]
-                        logging.debug("参数是否直接取自外部: 是 `{0}, {1}`".format(param_name, c_rule['example']))
-                        logging.info("返回: 可控(取外部入参)")
-                        return True
+                # 外部取参赋值
+                """
+                # Need match
+                $url = $_GET['test'];
+                $url = $_POST['test'];
+                $url = $_REQUEST['test'];
+                $url = $_SERVER['user_agent'];
+                # Don't match
+                $url = $_SERVER
+                $url = $testsdf;
+                """
+                regex_get_param = r'(\{0}\s*=\s*\$_[GET|POST|REQUEST|SERVER]+(?:\[))'.format(param_name)
+                regex_get_param_result = re.findall(regex_get_param, param_block_code)
+                if len(regex_get_param_result) >= 1:
+                    self.param_value = regex_get_param_result[0]
+                    logging.debug("参数是否直接取自外部: 是")
+                    logging.info("返回: 可控(取外部入参)")
+                    return True
                 logging.debug("参数是否直接取自外部入参: 否")
+
+                # 函数入参
+                regex_function_param = r'(function\s*\w+\s*\(.*\{0})'.format(param_name)
+                regex_function_param_result = re.findall(regex_function_param, param_block_code)
+                if len(regex_function_param_result) >= 1:
+                    self.param_value = regex_function_param_result[0]
+                    logging.debug("参数是否函数入参: 是")
+                    logging.info("返回: 可控(函数入参)")
+                    return True
+                logging.debug("参数是否直接函数入参: 否")
+
+                # 常量赋值
+                uc_rule = r'\{0}\s?=\s?([A-Z_]*)'.format(param_name)
+                uc_rule_result = re.findall(uc_rule, param_block_code)
+                if len(uc_rule_result) >= 1:
+                    logging.debug("参数变量是否直接赋值常量: 是 `{0} = {1}`".format(param_name, uc_rule_result[0]))
+                    logging.info("返回: 不可控")
+                    return False
+                logging.debug("参数变量是否直接赋值常量: 否")
 
                 # 固定字符串判断
                 regex_assign_string = self.regex[self.language]['assign_string'].format(param_name)
