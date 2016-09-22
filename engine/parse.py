@@ -192,7 +192,8 @@ class Parse:
             # 变量判断
             if param_name[:1] == '$':
                 logging.debug("参数是否变量: 是")
-                # get param block code
+
+                # 获取参数赋值代码块
                 param_block_code = self.block_code(0)
                 if param_block_code is False:
                     logging.debug("向上搜索参数区块代码: 未找到")
@@ -200,35 +201,25 @@ class Parse:
                     return True
                 logging.debug("向上搜索参数区块代码: {0}".format(param_block_code))
 
-                controllable_param_rule = [
-                    {
-                        'rule': r'(\{0}\s?=\s?\$\w+(?:\[(?:[^[\]]|\?R)*\])*)'.format(param_name),
-                        'example': '$param_name = $variable',
-                        'test': """
-                            $param_name = $_GET
-                            $param_name = $_POST
-                            $param_name = $_REQUEST
-                            $param_name = $_COOKIE
-                            $param_name = $var
-                            """
-                    },
-                    {
-                        'rule': r'(function\s*\w+\s*\(.*\{0})'.format(param_name),
-                        'example': 'function ($param_name)',
-                        'test': """
-                            function ($param_name)
-                            function ($some, $param_name)
-                            """
-                    }
-                ]
-                for c_rule in controllable_param_rule:
-                    c_rule_result = re.findall(c_rule['rule'], param_block_code)
-                    if len(c_rule_result) >= 1:
-                        self.param_value = c_rule_result[0]
-                        logging.debug("参数是否直接取自外部: 是 `{0}, {1}`".format(param_name, c_rule['example']))
-                        logging.info("返回: 可控(取外部入参)")
-                        return True
+                # 外部取参赋值
+                regex_get_param = r'(\{0}\s?=\s?\$\w+(?:\[(?:[^[\]]|\?R)*\])*)'.format(param_name)
+                regex_get_param_result = re.findall(regex_get_param, param_block_code)
+                if len(regex_get_param_result) >= 1:
+                    self.param_value = regex_get_param_result[0]
+                    logging.debug("参数是否直接取自外部: 是")
+                    logging.info("返回: 可控(取外部入参)")
+                    return True
                 logging.debug("参数是否直接取自外部入参: 否")
+
+                # 函数入参
+                regex_function_param = r'(function\s*\w+\s*\(.*\{0})'.format(param_name)
+                regex_function_param_result = re.findall(regex_function_param, param_block_code)
+                if len(regex_function_param_result) >= 1:
+                    self.param_value = regex_function_param_result[0]
+                    logging.debug("参数是否函数入参: 是")
+                    logging.info("返回: 可控(函数入参)")
+                    return True
+                logging.debug("参数是否直接函数入参: 否")
 
                 # 常量赋值
                 uc_rule = r'\{0}\s?=\s?([A-Z_]*)'.format(param_name)
