@@ -105,7 +105,19 @@ class Core:
         else:
             return len(match_result) > 0
 
+    def is_can_parse(self):
+        """
+        是否可以进行解析参数是否可控的操作
+        :return:
+        """
+        return self.file_path[-3:] == 'php' or self.file_path[-4:] == 'java'
+
     def push_third_party_vulnerabilities(self, vulnerabilities_id):
+        """
+        推送到第三方漏洞管理平台
+        :param vulnerabilities_id:
+        :return:
+        """
         try:
             q = Queue(self.project_name, self.third_party_vulnerabilities_name, self.third_party_vulnerabilities_type, self.file_path, self.line_number, self.code_content, vulnerabilities_id)
             q.push()
@@ -270,7 +282,7 @@ class Core:
         else:
             found_vul = False
             # 判断参数是否可控
-            if self.rule_repair.strip() != '':
+            if self.is_can_parse() and self.rule_repair.strip() != '':
                 try:
                     parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                     if parse_instance.is_controllable_param():
@@ -356,7 +368,7 @@ class Core:
         else:
             found_vul = False
             # 判断参数是否可控
-            if self.rule_repair.strip() != '':
+            if self.is_can_parse() and self.rule_repair.strip() != '':
                 try:
                     parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                     if parse_instance.is_controllable_param():
