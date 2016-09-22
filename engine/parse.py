@@ -178,6 +178,7 @@ class Parse:
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
+            param_name = re.escape(param_name)
             self.param_name = param_name
             logging.debug('参数: `{0}`'.format(param_name))
             # 固定字符串判断
@@ -202,7 +203,17 @@ class Parse:
                 logging.debug("向上搜索参数区块代码: {0}".format(param_block_code))
 
                 # 外部取参赋值
-                regex_get_param = r'(\{0}\s?=\s?\$\w+(?:\[(?:[^[\]]|\?R)*\])*)'.format(param_name)
+                """
+                # Need match
+                $url = $_GET['test'];
+                $url = $_POST['test'];
+                $url = $_REQUEST['test'];
+                $url = $_SERVER['user_agent'];
+                # Don't match
+                $url = $_SERVER
+                $url = $testsdf;
+                """
+                regex_get_param = r'(\{0}\s*=\s*\$_[GET|POST|REQUEST|SERVER]+(?:\[))'.format(param_name)
                 regex_get_param_result = re.findall(regex_get_param, param_block_code)
                 if len(regex_get_param_result) >= 1:
                     self.param_value = regex_get_param_result[0]
