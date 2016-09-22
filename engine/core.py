@@ -242,9 +242,8 @@ class Core:
             self.code_content = self.code_content.encode('unicode_escape')
             if len(self.code_content) > 512:
                 self.code_content = self.code_content[:500] + '...'
-            self.code_content = '# Trigger\r{0}'.format(self.code_content)
-            if param_value is not None:
-                self.code_content = '# Param\r{0}\r//\r// ------ Continue... ------\r//\r{1}'.format(param_value, self.code_content)
+            # if param_value is not None:
+            #     self.code_content = '# Param\r{0}\r//\r// ------ Continue... ------\r//\r{1}'.format(param_value, self.code_content)
             self.process_vulnerabilities()
             return True, 1002
         else:
