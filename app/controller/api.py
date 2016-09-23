@@ -166,7 +166,7 @@ def queue():
     # 未推送的漏洞和规则信息
     result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
         CobraResults.project_id == project_id,
-        CobraResults.status == 1,
+        CobraResults.status == 0,
         CobraResults.rule_id == rule_id
     ).all()
 
