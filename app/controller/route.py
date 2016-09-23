@@ -55,7 +55,10 @@ def report(project_id):
     search_task_id = request.args.get("search_task", "")
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
     # 获取页码， 默认第一页
-    page = int(request.args.get("page", 1))
+    try:
+        page = int(request.args.get("page", 1))
+    except ValueError:
+        page = 1
     # 是否显示修复的漏洞
     # 0 - all, 1 - repaired, 2 - unrepair, 3 - others
     search_status_type = request.args.get("search_status", 2)
