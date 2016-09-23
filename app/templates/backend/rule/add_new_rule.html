@@ -6,6 +6,7 @@
     <div class="form-group col-md-4" style="padding-left: 0;">
         <label for="vul_id">Rule type</label>
         <select id="vul_type" class="form-control">
+            <option value="-1">Please Choose Rule Type</option>
             {% for vul in data.vul_type %}
                 <option value="{{ vul.id }}">
                     {{ vul.name }}
@@ -16,6 +17,7 @@
     <div class="form-group col-md-6" style="padding-right: 0;">
         <label for="add-rule-language">Language</label>
         <select id="add-rule-language" class="form-control">
+            <option value="-1">Please Choose Language Type</option>
             {% for lang in data.languages %}
                 <option value="{{ lang.id }}">
                     {{ lang.language }} ({{ lang.extensions }})
@@ -57,7 +59,7 @@
             <input type="radio" name="level" id="level" value="2"> Medium
         </label>
         <label class="radio" style="padding-left: 20px;">
-            <input type="radio" name="level" id="level" value="3" checked> High
+            <input type="radio" name="level" id="level" value="3"> High
         </label>
     </div>
     <div class="form-group">

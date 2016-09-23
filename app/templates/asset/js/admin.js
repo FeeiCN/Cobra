@@ -230,26 +230,28 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         } else if (type === 'view') {
-            var regex = $("<div/>").text($("#rule-regex-" + cid).text()).html();
-            var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cid).text()).html();
-            var repair = $("<div/>").text($("#rule-repair-" + cid).text()).html();
-            var level = $("<div/>").text($("#rule-level-" + cid).text()).html();
-            console.log(level);
-            $("#view-title").html("rule details.");
-            var content = "<b>regex: </b>" + regex + "<br />";
-            content += "<b>confirm regex: </b>" + confirm_regex + "<br />";
-            content += "<b>repair: </b>" + repair + "<br />";
-            content += "<b>level: </b>" + level + "<br />";
-            $("#view-body").html(content);
+            // var LocationRegex = $("<div/>").text($("#rule-regex-location-" + cid).text()).html();
+            // var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + cid).text()).html();
+            // var RepairBlock = $("<div/>").text($("#rule-block-repair-" + cid).text()).html();
+            // var RepairMethod = $("<div/>").text($("#rule-repair-" + cid).text()).html();
+            // var RuleLevel = $("<div/>").text($("#rule-level-" + cid).text()).html();
+            //
+            // $("#view-title").html("Rule Details");
+            // var contents = "<b>Location Regex: </b><pre>" + LocationRegex + "</pre><br />";
+            // contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
+            // contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
+            // contents += "<b>repair: </b>" + RepairMethod + "<br />";
+            // contents += "<b>level: </b>" + RuleLevel + "<br />";
+            // $("#view-body").html(contents);
         } else if (type === "del") {
-            $.post('del_rule', {'rule_id': cid}, function (data) {
-                var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
-                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
-                tt += '<span aria-hidden="true">&times;</span></button>';
-                tt += '<strong>' + data.msg + '</strong></div>';
-                $("#operate_result").html(tt).fadein(1000);
-                $("#show_all_rules").click();
-            });
+            // $.post('del_rule', {'rule_id': cid}, function (data) {
+            //     var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
+            //     tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
+            //     tt += '<span aria-hidden="true">&times;</span></button>';
+            //     tt += '<strong>' + data.msg + '</strong></div>';
+            //     $("#operate_result").html(tt);
+            //     $("#show_all_rules").click();
+            // });
         }
 
     } else if (target === "vul") {
@@ -579,6 +581,7 @@ $("#show_all_rules").click(function () {
         $("#add_new_rules").click(function () {
             $.get('add_new_rule', function (data) {
                 $("#main-div").html(data);
+                $("#paginate").html("");
 
                 $("#add-new-rule-button").click(function () {
                     var vul_type = $("#vul_type").val();
@@ -590,13 +593,14 @@ $("#show_all_rules").click(function () {
                     var repair = $("#repair").val();
                     var author = $("input[name=author]").val();
                     var level = $("#level:checked").val();
+                    var status = $("#status:checked").val();
 
                     // check data
-                    if (!vul_type || vul_type == "") {
+                    if (!vul_type || vul_type == -1) {
                         showAlert('danger', 'vul type error.', '#add-new-rule-result');
                         return false;
                     }
-                    if (!lang || lang == "") {
+                    if (!lang || lang == -1) {
                         showAlert('danger', 'language error.', '#add-new-rule-result');
                         return false;
                     }
@@ -606,10 +610,6 @@ $("#show_all_rules").click(function () {
                     }
                     if (!regex_location || regex_location == "") {
                         showAlert('danger', 'location regex can not be blank.', '#add-new-rule-result');
-                        return false;
-                    }
-                    if (!regex_repair || regex_repair == "") {
-                        showAlert('danger', 'repair regex confirm can not be blank.', '#add-new-rule-result');
                         return false;
                     }
                     if (!repair_block || repair_block == "") {
@@ -628,6 +628,10 @@ $("#show_all_rules").click(function () {
                         showAlert('danger', 'level can not be blank.', "#add-new-rule-result");
                         return false;
                     }
+                    if (!status || status == "") {
+                        showAlert("danger", "Status can't be blank.", "#add-new-rule-result");
+                        return false;
+                    }
 
                     // post data
                     var data = {
@@ -639,7 +643,8 @@ $("#show_all_rules").click(function () {
                         'description': description,
                         'repair': repair,
                         'author': author,
-                        'level': level
+                        'level': level,
+                        'status': status
                     };
                     $.post('add_new_rule', data, function (res) {
                         showAlert(res.tag, res.msg, '#add-new-rule-result');
