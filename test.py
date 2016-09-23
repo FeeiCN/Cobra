@@ -177,6 +177,42 @@ class Test(unittest.TestCase):
             if 'repair' in test:
                 self.assertEqual(test['repair'], parse.is_repair(regex_repair, 1))
 
+    def test_push(self):
+        """
+        推送到第三方漏洞管理平台
+        先启动队列
+
+        :return:
+        """
+        import traceback
+        from app import db, CobraResults, CobraRules, CobraProjects, CobraVuls
+        from utils.queue import Queue
+
+        # 配置项目ID和漏洞ID
+        project_id = 22
+        rule_id = 104
+
+        # 项目信息
+        project_info = CobraProjects.query.filter_by(id=project_id).first()
+
+        # 漏洞和规则信息
+        result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
+            CobraResults.project_id == project_id,
+            CobraResults.status < 2,
+            CobraResults.rule_id == rule_id
+        ).all()
+
+        # 处理漏洞
+        for index, (rule, result) in enumerate(result_all):
+            try:
+                # 取出漏洞类型信息
+                vul_info = CobraVuls.query.filter(CobraVuls.id == rule.vul_id).first()
+                # 推动到第三方漏洞管理平台
+                q = Queue(project_info.name, vul_info.name, vul_info.third_v_id, result.file, result.line, result.code, result.id)
+                q.push()
+            except Exception as e:
+                print(traceback.print_exc())
+
 
 if __name__ == '__main__':
     unittest.main()

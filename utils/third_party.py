@@ -4,7 +4,7 @@
     utils.third_party
     ~~~~~~~~~~~~~~~~~
 
-    Implements third party (bugs manage)
+    实现第三方漏洞管理平台对接
 
     :author:    Feei <wufeifei#wufeifei.com>
     :homepage:  https://github.com/wufeifei/cobra
@@ -52,23 +52,3 @@ class Vulnerabilities:
         except (requests.ConnectionError, requests.HTTPError) as e:
             logging.warning("API Add failed: {0}".format(e))
             return False
-
-
-if __name__ == '__main__':
-    from utils import log
-
-    log.Log()
-    vuln = Vulnerabilities()
-    data = {
-        "name": "Cobra发现(/path/to/mogujie)项目一处SSRF漏洞",
-        "time": "2016-09-12 17:01:40",
-        "vuln_type": "10000000",
-        "filepath": "/path/to/test.php",
-        "linenum": "123",
-        "code": "\r\n\r\n$str = $_GET['test'];\r\necho $str;",
-        "summitid": vuln.key,
-        "signid": '12',
-        'description': '\r\n\r\n该漏洞由Cobra(代码安全审计系统)自动发现并报告!'
-    }
-    vuln.add(data)
-    vuln.push()
