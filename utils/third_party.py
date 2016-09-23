@@ -4,7 +4,7 @@
     utils.third_party
     ~~~~~~~~~~~~~~~~~
 
-    Implements third party (bugs manage)
+    实现第三方漏洞管理平台对接
 
     :author:    Feei <wufeifei#wufeifei.com>
     :homepage:  https://github.com/wufeifei/cobra
@@ -36,39 +36,25 @@ class Vulnerabilities:
             vulns = {'info': json.dumps(self.vulnerabilities)}
             response = requests.post(self.api, data=vulns)
             if response.text == 'done':
-                logging.info('Push third vulnerabilities success')
-                # update vulnerabilities status
+                logging.info('推送漏洞到第三方漏洞管理平台成功')
+                """
+                更新漏洞状态
+                1. 漏洞状态是初始化(0) -> 更新(1)
+                2. 漏洞状态是已推送(1) -> 不更新
+                3. 漏洞状态是已修复(2) -> 不更新
+                """
                 if self.vuln_id is None:
-                    logging.warning("Vuln ID is none")
+                    logging.warning("漏洞ID不能为空")
                 else:
                     vuln = CobraResults.query.filter_by(id=self.vuln_id).first()
-                    vuln.status = 1
-                    db.session.add(vuln)
-                    db.session.commit()
+                    if vuln.status == 0:
+                        vuln.status = 1
+                        db.session.add(vuln)
+                        db.session.commit()
                 return True
             else:
-                logging.critical('Push third vulnerabilities failed \r\n{0}'.format(response.text))
+                logging.critical('推送第三方漏洞管理平台失败 \r\n{0}'.format(response.text))
                 return False
         except (requests.ConnectionError, requests.HTTPError) as e:
-            logging.warning("API Add failed: {0}".format(e))
+            logging.warning("推送第三方漏洞管理平台出现异常: {0}".format(e))
             return False
-
-
-if __name__ == '__main__':
-    from utils import log
-
-    log.Log()
-    vuln = Vulnerabilities()
-    data = {
-        "name": "Cobra发现(/path/to/mogujie)项目一处SSRF漏洞",
-        "time": "2016-09-12 17:01:40",
-        "vuln_type": "10000000",
-        "filepath": "/path/to/test.php",
-        "linenum": "123",
-        "code": "\r\n\r\n$str = $_GET['test'];\r\necho $str;",
-        "summitid": vuln.key,
-        "signid": '12',
-        'description': '\r\n\r\n该漏洞由Cobra(代码安全审计系统)自动发现并报告!'
-    }
-    vuln.add(data)
-    vuln.push()

@@ -4,7 +4,8 @@
     controller.api
     ~~~~~~~~~~~~~~
 
-    Implements api for app controller
+    对外API接口实现
+    :doc:https://github.com/wufeifei/cobra/wiki/API
 
     :author:    Feei <wufeifei#wufeifei.com>
     :homepage:  https://github.com/wufeifei/cobra
@@ -13,25 +14,24 @@
 """
 import os
 import logging
+import traceback
 from utils import config, common
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
-from app import web, CobraAuth, CobraTaskInfo, CobraProjects
+from app import web, db, CobraResults, CobraRules, CobraProjects, CobraVuls, CobraAuth, CobraTaskInfo
 from engine import scan
+from utils.queue import Queue
 
 logging = logging.getLogger(__name__)
 
-# default api url
+# API路径
 API_URL = '/api'
-
-"""
-https://github.com/wufeifei/cobra/wiki/API
-"""
 
 
 @web.route(API_URL + '/add', methods=['POST'])
 def add_task():
-    """ Add a new task api.
+    """
+    创建扫描任务
     post json to http://url/api/add_new_task
     example:
         {
@@ -89,6 +89,10 @@ def add_task():
 
 @web.route(API_URL + '/status', methods=['POST'])
 def status_task():
+    """
+    查询扫描任务状态
+    :return:
+    """
     scan_id = request.json.get('scan_id')
     key = request.json.get('key')
     auth = CobraAuth.query.filter_by(key=key).first()
@@ -122,7 +126,10 @@ def status_task():
 
 @web.route(API_URL + '/upload', methods=['POST'])
 def upload_file():
-    # check if the post request has the file part
+    """
+    通过上传压缩文件进行扫描
+    :return:
+    """
     if 'file' not in request.files:
         return jsonify(code=1002, result="File can't empty!")
     file_instance = request.files['file']
@@ -131,8 +138,47 @@ def upload_file():
     if file_instance and common.allowed_file(file_instance.filename):
         filename = secure_filename(file_instance.filename)
         file_instance.save(os.path.join(os.path.join(config.Config('upload', 'directory').value, 'uploads'), filename))
-        # scan job
+        # 扫描任务
         code, result = scan.Scan(filename).compress()
         return jsonify(code=code, result=result)
     else:
         return jsonify(code=1002, result="This extension can't support!")
+
+
+@web.route(API_URL + '/queue', methods=['POST'])
+def queue():
+    """
+    推送到第三方漏洞管理平台
+    先启动队列
+        celery -A daemon worker --loglevel=info
+
+    :return:
+    """
+    # 配置项目ID和漏洞ID
+    project_id = request.json.get('project_id')
+    rule_id = request.json.get('rule_id')
+
+    if project_id is None or rule_id is None:
+        return jsonify(code=1002, result='项目ID和规则ID不能为空')
+
+    # 项目信息
+    project_info = CobraProjects.query.filter_by(id=project_id).first()
+
+    # 未推送的漏洞和规则信息
+    result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
+        CobraResults.project_id == project_id,
+        CobraResults.status == 0,
+        CobraResults.rule_id == rule_id
+    ).all()
+
+    # 处理漏洞
+    for index, (rule, result) in enumerate(result_all):
+        try:
+            # 取出漏洞类型信息
+            vul_info = CobraVuls.query.filter(CobraVuls.id == rule.vul_id).first()
+            # 推动到第三方漏洞管理平台
+            q = Queue(project_info.name, vul_info.name, vul_info.third_v_id, result.file, result.line, result.code, result.id)
+            q.push()
+        except:
+            print(traceback.print_exc())
+    return jsonify(code=1002, result="成功推送{0}个漏洞到第三方漏洞管理平台".format(len(result_all)))

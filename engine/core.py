@@ -19,6 +19,7 @@ from engine import parse
 from pickup.file import File
 from app import db, CobraResults
 from utils.queue import Queue
+from utils.config import Config
 
 logging = logging.getLogger(__name__)
 
@@ -119,8 +120,10 @@ class Core:
         :return:
         """
         try:
-            q = Queue(self.project_name, self.third_party_vulnerabilities_name, self.third_party_vulnerabilities_type, self.file_path, self.line_number, self.code_content, vulnerabilities_id)
-            q.push()
+            status = Config('third_party_vulnerabilities', 'status').value
+            if int(status):
+                q = Queue(self.project_name, self.third_party_vulnerabilities_name, self.third_party_vulnerabilities_type, self.file_path, self.line_number, self.code_content, vulnerabilities_id)
+                q.push()
         except Exception as e:
             print(traceback.print_exc())
             logging.critical(e.message)
@@ -331,7 +334,7 @@ class Core:
                 self.process_vulnerabilities()
                 return True, 1001
             # 文件存在,漏洞还在
-            return False
+            return False, 4007
 
         # 取出触发代码(实际文件)
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
