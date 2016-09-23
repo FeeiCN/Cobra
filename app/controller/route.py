@@ -56,6 +56,9 @@ def report(project_id):
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
     # 获取页码， 默认第一页
     page = int(request.args.get("page", 1))
+    # 是否显示修复的漏洞
+    # 0 - all, 1 - repaired, 2 - unrepair, 3 - others
+    search_status_type = request.args.get("search_status", 2)
 
     # 判断project id 和 task id 是否存在
     # 获取 project id 相关的信息
@@ -266,20 +269,26 @@ def report(project_id):
             unrepair_unknown_level_number = every_level[0]
 
     # 检索全部的漏洞信息
+    # status: 0 - all, 1 - repaired, 2 - unrepair, 3 - others
     if search_task_id is None:
         filter_group = (
             CobraResults.project_id == project_id,
             CobraResults.rule_id == CobraRules.id,
-            CobraResults.status < 2,
             CobraVuls.id == CobraRules.vul_id,
         )
     else:
         filter_group = (
             CobraResults.task_id == search_task_id,
             CobraResults.rule_id == CobraRules.id,
-            CobraResults.status < 2,
             CobraVuls.id == CobraRules.vul_id,
         )
+    print search_status_type
+    if search_status_type == "1":
+        filter_group += (CobraResults.status == 2, )
+    elif search_status_type == "2":
+        filter_group += (CobraResults.status < 2, )
+    elif search_status_type == "3":
+        filter_group += (CobraResults.status == 1, )
 
     # 根据传入的筛选条件添加SQL的条件
     if search_vul_id is not None and search_vul_id != "all":
@@ -294,10 +303,12 @@ def report(project_id):
         CobraResults.file, CobraResults.line, CobraResults.code,
         CobraRules.description, CobraRules.level, CobraRules.regex_location,
         CobraRules.regex_repair, CobraRules.repair, CobraVuls.name,
-        CobraResults.rule_id
+        CobraResults.rule_id, CobraResults.status
     ).filter(
         *filter_group
     )
+    print(filter_group)
+    print(all_scan_results)
 
     # 设置分页
     page_size = 5
@@ -324,6 +335,13 @@ def report(project_id):
         data_dict["repair"] = result[7]
         data_dict['verify'] = ''
         data_dict['rule_id'] = result[9]
+        # if result[10] == 2:
+        #     data_dict["status"] = u"已修复"
+        # elif result[10] == 1:
+        #     data_dict["status"] = u"已推送到第三方漏洞平台"
+        # else:
+        #     data_dict["status"] = u"未修复"
+        data_dict["status"] = result[10]
 
         if project_info.framework != '':
             for rule in detection.Detection().rules:
@@ -354,6 +372,13 @@ def report(project_id):
             current_url += "?"
     # 任务信息
     tasks = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.updated_at.desc()).all()
+    # 漏洞状态信息
+    vuls_status = [
+        {"status": "全部", "value": 0},
+        {"status": "已修复", "value": 1},
+        {"status": "未修复", "value": 2},
+        {"status": "其他", "value": 3},
+    ]
 
     data = {
         "project_id": project_id,
@@ -372,6 +397,8 @@ def report(project_id):
         "code_number": code_number,
         "file_count": common.convert_number(task_info.file_count),
         "tasks": tasks,
+        "vuls_status": vuls_status,
+        "search_status_type": search_status_type,
         "task_time": {
             "time_start": time_start,
             "time_end": time_end,

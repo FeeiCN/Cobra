@@ -163,12 +163,23 @@
                         </div>
                         <div class="panel-body">
                             <div class="col-md-12" style="margin-bottom: 40px;">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <label for="search_task" style="color: #aaaaaa;">扫描任务</label>
                                     <select id="search_task" class="form-control" style="height: 30px;">
                                         <option value="all">全部</option>
                                         {% for t in data.tasks %}
                                             <option value="{{ t.id }}">{{ t.id }}. {{ t.updated_at }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="search_status" style="color: #aaaaaa;">漏洞状态</label>
+                                    <select id="search_status" class="form-control" style="height: 30px;">
+                                        {% for s in data.vuls_status %}
+                                            <option value="{{ s.value }}"
+                                                    {% if s.value == data.search_status_type %}selected{% endif %}>
+                                                {{ s.status }}
+                                            </option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -236,6 +247,17 @@
                                                     {% endif %}
                                                 {% else %}
                                                     <span style="background-color: #8A8585;color: white;padding: 3px;border-radius: 3px;">{{ each_vul.file }}:{{ each_vul.line }}</span>
+                                                    <span style="padding-left: 1px; color: {% if each_vul.status == 2 %}#3c763d
+                                                    {% elif each_vul.status == 1 %}#2e6da4
+                                                    {% elif each_vul.status == 0 %}#f44336{% endif %}">
+                                                        {% if each_vul.status == 2 %}
+                                                            已修复
+                                                        {% elif each_vul.status == 1 %}
+                                                            已推送到第三方漏洞平台（未修复）
+                                                        {% elif each_vul.status == 0 %}
+                                                            未修复
+                                                        {% endif %}
+                                                    </span>
                                                     {% if each_vul.verify != '' %}
                                                         <a href="{{ each_vul.verify }}" class="btn_1 green" target="_blank">访问漏洞点</a>
                                                     {% endif %}
@@ -392,6 +414,7 @@
             var search_rule = $("#search_rule").val();
             var search_level = $("#search_level").val();
             var search_task = $("#search_task").val();
+            var search_status = $("#search_status").val();
 
             // 获取当前URL,不包含参数
             var current_url = window.location.href.split("?");
@@ -401,8 +424,8 @@
             var jump_url = current_url + "?search_vul_type=" + search_vul_type + "&";
             jump_url += "search_rule=" + search_rule + "&";
             jump_url += "search_level=" + search_level + '&';
-            jump_url += "search_task=" + search_task;
-
+            jump_url += "search_task=" + search_task + "&";
+            jump_url += "search_status=" + search_status;
 
             // 跳转
             window.location.href = jump_url;
