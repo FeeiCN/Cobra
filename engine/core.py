@@ -331,7 +331,7 @@ class Core:
                 self.process_vulnerabilities()
                 return True, 1001
             # 文件存在,漏洞还在
-            return False
+            return False, 4007
 
         # 取出触发代码(实际文件)
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
