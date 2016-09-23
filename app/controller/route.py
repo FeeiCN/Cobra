@@ -136,7 +136,7 @@ def report(project_id):
         ).group_by(CobraRules.level).all()
         # 获取不同等级的 未修复 漏洞数量
         showed_unrepair_level_number = db.session.query(
-            func.count().label('vuln_number'), CobraRules.level, CobraResults.status
+            func.count().label('vuln_number'), CobraRules.level
         ).filter(
             and_(
                 CobraResults.project_id == project_id,
