@@ -130,7 +130,7 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
+                CobraResults.status == 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -141,7 +141,7 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status == 2,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -196,7 +196,7 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
+                CobraResults.status == 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -207,7 +207,7 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status == 2,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -282,7 +282,7 @@ def report(project_id):
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id,
         )
-    print search_status_type
+
     if search_status_type == "1":
         filter_group += (CobraResults.status == 2, )
     elif search_status_type == "2":
@@ -307,8 +307,6 @@ def report(project_id):
     ).filter(
         *filter_group
     )
-    print(filter_group)
-    print(all_scan_results)
 
     # 设置分页
     page_size = 5
@@ -425,8 +423,8 @@ def report(project_id):
             },
             "result_number": {
                 "scan_result_number": scan_results_number,
-                "repaired_result_number": unrepair_results_number,
-                "unrepair_result_number": repaired_results_number,
+                "repaired_result_number": repaired_results_number,
+                "unrepair_result_number": unrepair_results_number,
             }
         },
     }
