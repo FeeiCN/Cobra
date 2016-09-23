@@ -55,7 +55,10 @@ def report(project_id):
     search_task_id = request.args.get("search_task", "")
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
     # 获取页码， 默认第一页
-    page = int(request.args.get("page", 1))
+    try:
+        page = int(request.args.get("page", 1))
+    except ValueError:
+        page = 1
     # 是否显示修复的漏洞
     # 0 - all, 1 - repaired, 2 - unrepair, 3 - others
     search_status_type = request.args.get("search_status", 2)
@@ -130,18 +133,18 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
+                CobraResults.status == 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
         # 获取不同等级的 未修复 漏洞数量
         showed_unrepair_level_number = db.session.query(
-            func.count().label('vuln_number'), CobraRules.level, CobraResults.status
+            func.count().label('vuln_number'), CobraRules.level
         ).filter(
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status == 2,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -196,7 +199,7 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
+                CobraResults.status == 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -207,7 +210,7 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status == 2,
+                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
@@ -282,7 +285,7 @@ def report(project_id):
             CobraResults.rule_id == CobraRules.id,
             CobraVuls.id == CobraRules.vul_id,
         )
-    print search_status_type
+
     if search_status_type == "1":
         filter_group += (CobraResults.status == 2, )
     elif search_status_type == "2":
@@ -307,8 +310,6 @@ def report(project_id):
     ).filter(
         *filter_group
     )
-    print(filter_group)
-    print(all_scan_results)
 
     # 设置分页
     page_size = 5
@@ -425,8 +426,8 @@ def report(project_id):
             },
             "result_number": {
                 "scan_result_number": scan_results_number,
-                "repaired_result_number": unrepair_results_number,
-                "unrepair_result_number": repaired_results_number,
+                "repaired_result_number": repaired_results_number,
+                "unrepair_result_number": unrepair_results_number,
             }
         },
     }

@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Cobra is a code static scan system">
     <meta name="author" content="Feei <wufeifei@wufeifei.com>">
-    <title>项目({{ data.project_info.project_name | upper }})代码安全审计报告 - {{ data.project_id }}</title>
+    <title>项目({{ data.project_info.name | upper }})代码安全审计报告 - {{ data.project_id }}</title>
 
     <!-- Favicon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
@@ -67,7 +67,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="invoice-title">
-                <h2>项目({{ data.project_info.project_name | upper }})代码安全审计报告</h2>
+                <h2>项目({{ data.project_info.name | upper }})代码安全审计报告</h2>
                 <h3 class="pull-right">Cobra项目编号 # {{ data.project_id }}</h3>
             </div>
             <hr>
@@ -75,8 +75,8 @@
                 <div class="col-xs-6">
                     <address>
                         <h4>项目信息:</h4>
-                        <span class="content"><strong>项目名称: </strong>{{ data.project_info.project_name }} (@{{ data.project_info.author }})</span><br>
-                        <span class="content"><strong>项目域名: </strong>{{ data.project_info.project_url|default('Unknown URL', True) }}</span><br>
+                        <span class="content"><strong>项目名称: </strong>{{ data.project_info.name }} (@{{ data.project_info.author }})</span><br>
+                        <span class="content"><strong>项目域名: </strong>{{ data.project_info.url|default('Unknown URL', True) }}</span><br>
                         <span class="content"><strong>项目框架: </strong>{{ data.project_info.framework|default('Unknown Framework', True) }}</span><br>
                         <span class="content"><strong>项目地址: </strong>{{ data.project_info.repository }}</span>
                     </address>
