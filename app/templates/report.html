@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Cobra is a code static scan system">
     <meta name="author" content="Feei <wufeifei@wufeifei.com>">
-    <title>项目({{ data.project_name | upper }})代码安全审计报告 - {{ data.id }}</title>
+    <title>项目({{ data.project_info.project_name | upper }})代码安全审计报告 - {{ data.project_id }}</title>
 
     <!-- Favicon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
@@ -67,26 +67,26 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="invoice-title">
-                <h2>项目({{ data.project_name | upper }})代码安全审计报告</h2>
-                <h3 class="pull-right">Cobra项目编号 # {{ data.id }}</h3>
+                <h2>项目({{ data.project_info.project_name | upper }})代码安全审计报告</h2>
+                <h3 class="pull-right">Cobra项目编号 # {{ data.project_id }}</h3>
             </div>
             <hr>
             <div class="row">
                 <div class="col-xs-6">
                     <address>
                         <h4>项目信息:</h4>
-                        <span class="content"><strong>项目名称: </strong>{{ data.project_name }} (@{{ data.author }})</span><br>
-                        <span class="content"><strong>项目域名: </strong>{{ data.project_url|default('Unknown URL', True) }}</span><br>
-                        <span class="content"><strong>项目框架: </strong>{{ data.project_framework|default('Unknown Framework', True) }}</span><br>
-                        <span class="content"><strong>项目地址: </strong>{{ data.project_repository }}</span>
+                        <span class="content"><strong>项目名称: </strong>{{ data.project_info.project_name }} (@{{ data.project_info.author }})</span><br>
+                        <span class="content"><strong>项目域名: </strong>{{ data.project_info.project_url|default('Unknown URL', True) }}</span><br>
+                        <span class="content"><strong>项目框架: </strong>{{ data.project_info.framework|default('Unknown Framework', True) }}</span><br>
+                        <span class="content"><strong>项目地址: </strong>{{ data.project_info.repository }}</span>
                     </address>
                 </div>
                 <div class="col-xs-6">
                     <address>
                         <h4>扫描信息:</h4>
-                        <span class="content"><strong>报告时间: </strong>{{ data.task_created_at }}</span><br>
-                        <span class="content"><strong>扫描时间: </strong>{{ data.time_start }} - {{ data.time_end }} ({{ data.time_consume }})</span><br/>
-                        <span class="content"><strong>文件数(个): </strong>{{ data.files }}</span><br/>
+                        <span class="content"><strong>报告时间: </strong>{{ data.task_info.created_at }}</span><br>
+                        <span class="content"><strong>扫描时间: </strong>{{ data.task_time.time_start }} - {{ data.task_time.time_end }} ({{ data.task_time.time_consume }})</span><br/>
+                        <span class="content"><strong>文件数(个): </strong>{{ data.file_count }}</span><br/>
                         <span class="content"><strong>代码数(行): </strong>{{ data.code_number }}</span><br/>
                     </address>
                 </div>
@@ -125,27 +125,27 @@
                                     <tbody>
                                     <tr>
                                         <td>高危</td>
-                                        <td>暂未统计</td>
-                                        <td>暂未统计</td>
-                                        <td>{{ data.amount.h }}</td>
+                                        <td>{{ data.vuls_number.unrepair.high }}</td>
+                                        <td>{{ data.vuls_number.repaired.high }}</td>
+                                        <td>{{ data.vuls_number.total_number.high }}</td>
                                     </tr>
                                     <tr>
                                         <td>中危</td>
-                                        <td>暂未统计</td>
-                                        <td>暂未统计</td>
-                                        <td>{{ data.amount.m }}</td>
+                                        <td>{{ data.vuls_number.unrepair.medium }}</td>
+                                        <td>{{ data.vuls_number.repaired.medium }}</td>
+                                        <td>{{ data.vuls_number.total_number.medium }}</td>
                                     </tr>
                                     <tr>
                                         <td>低危</td>
-                                        <td>暂未统计</td>
-                                        <td>暂未统计</td>
-                                        <td>{{ data.amount.l }}</td>
+                                        <td>{{ data.vuls_number.unrepair.low }}</td>
+                                        <td>{{ data.vuls_number.repaired.low }}</td>
+                                        <td>{{ data.vuls_number.total_number.low }}</td>
                                     </tr>
                                     <tr>
                                         <td>一共</td>
-                                        <td>{{ data.vul_count_unrepair }}</td>
-                                        <td>{{ data.vul_count_repaired }}</td>
-                                        <td>{{ data.vul_count }}</td>
+                                        <td>{{ data.vuls_number.result_number.unrepair_result_number }}</td>
+                                        <td>{{ data.vuls_number.result_number.repaired_result_number }}</td>
+                                        <td>{{ data.vuls_number.result_number.scan_result_number }}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -196,7 +196,7 @@
                                         <option value="all">全部</option>
                                         <option value="3">高危</option>
                                         <option value="2">中危</option>
-                                        <option value="1">低位</option>
+                                        <option value="1">低危</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3" style="padding-top: 30px;padding-left: 40px;">
@@ -328,17 +328,17 @@
                         }
                     },
                     data: [
-                        {%  if data.amount.h != 0 %}
-                            {value: {{ data.amount.h }}, name: '高危', selected: true},
+                        {%  if data.vuls_number.total_number.high != 0 %}
+                            {value: {{ data.vuls_number.total_number.high }}, name: '高危', selected: true},
                         {% endif %}
-                        {%  if data.amount.m != 0 %}
-                            {value: {{ data.amount.m }}, name: '中危'},
+                        {%  if data.vuls_number.total_number.medium != 0 %}
+                            {value: {{ data.vuls_number.total_number.medium }}, name: '中危'},
                         {% endif %}
-                        {%  if data.amount.l != 0 %}
-                            {value: {{ data.amount.l }}, name: '低危'},
+                        {%  if data.vuls_number.total_number.low != 0 %}
+                            {value: {{ data.vuls_number.total_number.low }}, name: '低危'},
                         {% endif %}
-                        {%  if data.amount.u != 0 %}
-                            {value: {{ data.amount.u }}, name: '未定级'}
+                        {%  if data.vuls_number.total_number.unknown != 0 %}
+                            {value: {{ data.vuls_number.total_number.unknown }}, name: '未定级'}
                         {% endif %}
                     ]
                 },

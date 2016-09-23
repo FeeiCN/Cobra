@@ -189,7 +189,7 @@ def update_status():
         return jsonify(message="id can't be blank.")
 
     rule = CobraRules.query.filter(CobraRules.id == rid).first()
-    print(rule)
+    # print(rule)
     rule.status = not rule.status
     try:
         db.session.add(rule)
