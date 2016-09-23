@@ -33,6 +33,11 @@ class Vulnerabilities:
 
     def push(self):
         try:
+            # 为杜绝前面环节问题导致输出重复,所以推送前先检查是否已经推送过
+            exist_vuln = CobraResults.query.filter_by(id=self.vuln_id, status=2).count()
+            if exist_vuln == 0:
+                logging.info("已经推送过")
+                return False
             vulns = {'info': json.dumps(self.vulnerabilities)}
             response = requests.post(self.api, data=vulns)
             if response.text == 'done':
