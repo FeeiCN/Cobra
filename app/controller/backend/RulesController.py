@@ -146,8 +146,11 @@ def del_rule():
 def edit_rule(rule_id):
     if request.method == 'POST':
 
-        vc = ValidateClass(request, "vul_type", "language", "regex_location", "regex_repair", "block_repair", "description", "rule_id", "repair", "author", "status", "level")
+        vc = ValidateClass(request, "vul_type", "language", "regex_location", "block_repair", "description",
+                           "rule_id", "repair", "author", "status", "level")
         ret, msg = vc.check_args()
+
+        regex_repair = request.form.get("regex_repair", "")
 
         if not ret:
             return jsonify(tag="danger", msg=msg)
@@ -157,7 +160,7 @@ def edit_rule(rule_id):
         r.language = vc.vars.language
         r.block_repair = vc.vars.block_repair
         r.regex_location = vc.vars.regex_location
-        r.regex_repair = vc.vars.regex_repair
+        r.regex_repair = regex_repair
         r.description = vc.vars.description
         r.repair = vc.vars.repair
         r.author = vc.vars.author
