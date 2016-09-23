@@ -22,7 +22,6 @@ import json
 class Test(unittest.TestCase):
     domain = '{0}:{1}'.format(config.Config('cobra', 'host').value, config.Config('cobra', 'port').value)
     api = 'http://' + domain + '/api/{0}'
-    api = 'http://cobra.meili-inc.com/api/{0}'
     headers = {"Content-Type": "application/json"}
 
     key = common.md5('CobraAuthKey')

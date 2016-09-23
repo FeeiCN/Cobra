@@ -4,7 +4,7 @@
     utils.queue
     ~~~~~~~~~~~
 
-    Implements queue
+    实现漏洞推送队列
 
     :author:    Feei <wufeifei#wufeifei.com>
     :homepage:  https://github.com/wufeifei/cobra
@@ -14,7 +14,6 @@
 import time
 from daemon import push_vulnerabilities, error_handler
 from utils.third_party import Vulnerabilities
-from utils.config import Config
 
 
 class Queue:
@@ -33,20 +32,16 @@ class Queue:
             self.time = found_time
 
     def push(self):
-        status = Config('third_party_vulnerabilities', 'status').value
-        if int(status):
-            v = Vulnerabilities()
-            data = [{
-                "name": "Cobra发现{0}项目一处{1}漏洞({2})".format(self.project_name, self.vuln_name, self.vuln_id),
-                "time": self.time,
-                "vuln_type": self.vuln_type,
-                "filepath": self.file_path,
-                "linenum": self.line_number,
-                "code": "\r\n\r\n{0}".format(self.code),
-                "summitid": v.key,
-                "signid": self.vuln_id,
-                'description': '\r\n\r\n该漏洞由Cobra(代码安全审计系统)自动发现并报告!'
-            }]
-            push_vulnerabilities.apply_async(data, link_error=error_handler.s(), serializer='json')
-        else:
-            return True
+        v = Vulnerabilities()
+        data = [{
+            "name": "Cobra发现{0}项目一处{1}漏洞(ID:{2})".format(self.project_name, self.vuln_name, self.vuln_id),
+            "time": self.time,
+            "vuln_type": self.vuln_type,
+            "filepath": self.file_path,
+            "linenum": self.line_number,
+            "code": "\r\n\r\n{0}".format(self.code),
+            "summitid": v.key,
+            "signid": self.vuln_id,
+            'description': '\r\n\r\n该漏洞由Cobra(代码安全审计系统)自动发现并报告!'
+        }]
+        push_vulnerabilities.apply_async(data, link_error=error_handler.s(), serializer='json')
