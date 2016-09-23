@@ -7,6 +7,9 @@
     实现异步队列推送系统
     - 第三方漏洞管理平台
 
+    使用需要先启用队列服务
+    celery -A daemon worker --loglevel=info
+
     :author:    Feei <wufeifei#wufeifei.com>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
@@ -20,11 +23,6 @@ from utils import config
 logging = logging.getLogger(__name__)
 
 app = Celery('daemon', broker=config.Config('queue', 'broker').value, backend=config.Config('queue', 'backend').value)
-
-"""
-启动队列推送服务
-celery -A daemon worker --loglevel=info
-"""
 
 
 @app.task
