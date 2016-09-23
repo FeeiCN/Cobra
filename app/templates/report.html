@@ -75,8 +75,8 @@
                 <div class="col-xs-6">
                     <address>
                         <h4>项目信息:</h4>
-                        <span class="content"><strong>项目名称: </strong>{{ data.project_info.project_name }} (@{{ data.project_info.author }})</span><br>
-                        <span class="content"><strong>项目域名: </strong>{{ data.project_info.project_url|default('Unknown URL', True) }}</span><br>
+                        <span class="content"><strong>项目名称: </strong>{{ data.project_info.name }} (@{{ data.project_info.author }})</span><br>
+                        <span class="content"><strong>项目域名: </strong>{{ data.project_info.url|default('Unknown URL', True) }}</span><br>
                         <span class="content"><strong>项目框架: </strong>{{ data.project_info.framework|default('Unknown Framework', True) }}</span><br>
                         <span class="content"><strong>项目地址: </strong>{{ data.project_info.repository }}</span>
                     </address>
