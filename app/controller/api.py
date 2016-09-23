@@ -5,7 +5,7 @@
     ~~~~~~~~~~~~~~
 
     对外API接口实现
-    :doc:https://github.com/wufeifei/cobra/wiki/API
+    :doc:       https://github.com/wufeifei/cobra/wiki/API
 
     :author:    Feei <wufeifei#wufeifei.com>
     :homepage:  https://github.com/wufeifei/cobra
@@ -20,7 +20,6 @@ from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app import web, db, CobraResults, CobraRules, CobraProjects, CobraVuls, CobraAuth, CobraTaskInfo
 from engine import scan
-from utils.queue import Queue
 
 logging = logging.getLogger(__name__)
 
@@ -147,6 +146,7 @@ def upload_file():
 
 @web.route(API_URL + '/queue', methods=['POST'])
 def queue():
+    from utils.queue import Queue
     """
     推送到第三方漏洞管理平台
     先启动队列
@@ -157,7 +157,6 @@ def queue():
     # 配置项目ID和漏洞ID
     project_id = request.json.get('project_id')
     rule_id = request.json.get('rule_id')
-
     if project_id is None or rule_id is None:
         return jsonify(code=1002, result='项目ID和规则ID不能为空')
 
@@ -167,9 +166,12 @@ def queue():
     # 未推送的漏洞和规则信息
     result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
         CobraResults.project_id == project_id,
-        CobraResults.status == 0,
+        CobraResults.status == 1,
         CobraResults.rule_id == rule_id
     ).all()
+
+    if len(result_all) == 0:
+        return jsonify(code=1001, result="没有未推送的漏洞")
 
     # 处理漏洞
     for index, (rule, result) in enumerate(result_all):
@@ -181,4 +183,4 @@ def queue():
             q.push()
         except:
             print(traceback.print_exc())
-    return jsonify(code=1002, result="成功推送{0}个漏洞到第三方漏洞管理平台".format(len(result_all)))
+    return jsonify(code=1001, result="成功推送{0}个漏洞到第三方漏洞管理平台".format(len(result_all)))
