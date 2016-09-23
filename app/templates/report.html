@@ -186,7 +186,7 @@
                         <div class="col-md-12 column">
                             <h4>漏洞分布统计</h4>
                             <div id="vul_distributing" style="height:400px;">
-                                {% if data.vul_count == 0 %}
+                                {% if data.vuls_number.result_number.repaired_result_number == 0 %}
                                     <h3 style="text-align: center;line-height: 400px;font-weight: bold;color: red;">赞, 未检测到漏洞 :)</h3>
                                 {% endif %}
                             </div>
@@ -258,7 +258,7 @@
                                     <button class="btn btn-success" id="search-result-btn" style="">筛选</button>
                                 </div>
                             </div>
-                            {% if data.vul_count == 0 %}
+                            {% if data.vuls_number.result_number.repaired_result_number == 0 %}
                                 <h3>无漏洞</h3>
                             {% endif %}
                             <table class="table table-condensed">
@@ -416,7 +416,7 @@
                 }
             ]
         };
-        {% if data.vul_count != 0 %}
+        {% if data.vuls_number.result_number.repaired_result_number != 0 %}
             var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
             vul_distributing.setOption(option);
         {% endif %}
