@@ -36,19 +36,25 @@ class Vulnerabilities:
             vulns = {'info': json.dumps(self.vulnerabilities)}
             response = requests.post(self.api, data=vulns)
             if response.text == 'done':
-                logging.info('Push third vulnerabilities success')
-                # update vulnerabilities status
+                logging.info('推送漏洞到第三方漏洞管理平台成功')
+                """
+                更新漏洞状态
+                1. 漏洞状态是初始化(0) -> 更新(1)
+                2. 漏洞状态是已推送(1) -> 不更新
+                3. 漏洞状态是已修复(2) -> 不更新
+                """
                 if self.vuln_id is None:
-                    logging.warning("Vuln ID is none")
+                    logging.warning("漏洞ID不能为空")
                 else:
                     vuln = CobraResults.query.filter_by(id=self.vuln_id).first()
-                    vuln.status = 1
-                    db.session.add(vuln)
-                    db.session.commit()
+                    if vuln.status == 0:
+                        vuln.status = 1
+                        db.session.add(vuln)
+                        db.session.commit()
                 return True
             else:
-                logging.critical('Push third vulnerabilities failed \r\n{0}'.format(response.text))
+                logging.critical('推送第三方漏洞管理平台失败 \r\n{0}'.format(response.text))
                 return False
         except (requests.ConnectionError, requests.HTTPError) as e:
-            logging.warning("API Add failed: {0}".format(e))
+            logging.warning("推送第三方漏洞管理平台出现异常: {0}".format(e))
             return False
