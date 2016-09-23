@@ -51,8 +51,8 @@
         }
 
         #ext_distributing {
-            height: 500px;
-            margin-bottom: 30px;
+            height: 400px;
+            width: 1000px;
         }
     </style>
 
@@ -177,8 +177,9 @@
                 </div>
             </div>
             <ul class="nav nav-tabs">
-                <li class="active"><a data-id="vul_d" data-toggle="tab">扫描结果</a></li>
+                <li class="active"><a data-id="vul_d" data-toggle="tab">漏洞分部</a></li>
                 <li><a data-id="vul_l" data-toggle="tab">漏洞列表</a></li>
+                <li><a data-id="ext_d" data-toggle="tab">后缀分布</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="vul_d">
@@ -186,17 +187,14 @@
                         <div class="col-md-12 column">
                             <h4>漏洞分布统计</h4>
                             <div id="vul_distributing" style="height:400px;">
-                                {% if data.vul_count == 0 %}
+                                {% if data.vuls_number.result_number.repaired_result_number == 0 %}
                                     <h3 style="text-align: center;line-height: 400px;font-weight: bold;color: red;">赞, 未检测到漏洞 :)</h3>
                                 {% endif %}
                             </div>
-                            {#                            <h4>后缀分布统计</h4>#}
-                            {#                            <div id="ext_distributing">#}
-                            {##}
-                            {#                            </div>#}
                         </div>
                     </div><!-- End row -->
                 </div><!-- End rab -->
+
                 <div class="tab-pane" id="vul_l">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -258,7 +256,7 @@
                                     <button class="btn btn-success" id="search-result-btn" style="">筛选</button>
                                 </div>
                             </div>
-                            {% if data.vul_count == 0 %}
+                            {% if data.vuls_number.result_number.repaired_result_number == 0 %}
                                 <h3>无漏洞</h3>
                             {% endif %}
                             <table class="table table-condensed">
@@ -326,6 +324,16 @@
                         {{ data.pagination.links | safe }}
                     </nav>
                 </div>
+                <div class="tab-pane" id="ext_d">
+                    <div class="row">
+                        <div class="col-md-12 column">
+                            <h4>后缀分布统计</h4>
+                            <div id="ext_distributing">
+
+                            </div>
+                        </div>
+                    </div><!-- End row -->
+                </div><!-- End rab -->
             </div>
         </div>
     </div>
@@ -416,7 +424,7 @@
                 }
             ]
         };
-        {% if data.vul_count != 0 %}
+        {% if data.vuls_number.result_number.repaired_result_number != 0 %}
             var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
             vul_distributing.setOption(option);
         {% endif %}
@@ -475,99 +483,99 @@
             window.location.href = jump_url;
         });
 
-        {#        $(function () {#}
-        /* Ext Chart */
-        {#            var ext_distributing = echarts.init(document.getElementById('ext_distributing'));#}
-        {#            ext_distributing.showLoading();#}
-        {##}
-        {#            $.get('/ext/{{ data.id }}', function (result) {#}
-        {#                if (result.code == 1001) {#}
-        {#                    var diskData = result.result;#}
-        {#                    ext_distributing.hideLoading();#}
-        {##}
-        {#                    function colorMappingChange(value) {#}
-        {#                        var levelOption = getLevelOption(value);#}
-        {#                        chart.setOption({#}
-        {#                            series: [{#}
-        {#                                levels: levelOption#}
-        {#                            }]#}
-        {#                        });#}
-        {#                    }#}
-        {##}
-        {#                    var formatUtil = echarts.format;#}
-        {##}
-        {#                    function getLevelOption() {#}
-        {#                        return [#}
-        {#                            {#}
-        {#                                itemStyle: {#}
-        {#                                    normal: {#}
-        {#                                        borderWidth: 0,#}
-        {#                                        gapWidth: 5#}
-        {#                                    }#}
-        {#                                }#}
-        {#                            },#}
-        {#                            {#}
-        {#                                itemStyle: {#}
-        {#                                    normal: {#}
-        {#                                        gapWidth: 1#}
-        {#                                    }#}
-        {#                                }#}
-        {#                            },#}
-        {#                            {#}
-        {#                                colorSaturation: [0.35, 0.5],#}
-        {#                                itemStyle: {#}
-        {#                                    normal: {#}
-        {#                                        gapWidth: 1,#}
-        {#                                        borderColorSaturation: 0.6#}
-        {#                                    }#}
-        {#                                }#}
-        {#                            }#}
-        {#                        ];#}
-        {#                    }#}
-        {##}
-        {#                    ext_distributing.setOption(option = {#}
-        {#                        tooltip: {#}
-        {#                            formatter: function (info) {#}
-        {#                                var value = info.value;#}
-        {#                                var treePathInfo = info.treePathInfo;#}
-        {#                                var treePath = [];#}
-        {##}
-        {#                                for (var i = 1; i < treePathInfo.length; i++) {#}
-        {#                                    treePath.push(treePathInfo[i].name);#}
-        {#                                }#}
-        {##}
-        {#                                return [#}
-        {#                                    '<div class="tooltip-title">' + formatUtil.encodeHTML(treePath.join('/')) + '</div>',#}
-        {#                                    'Amount: ' + formatUtil.addCommas(value),#}
-        {#                                ].join('');#}
-        {#                            }#}
-        {#                        },#}
-        {##}
-        {#                        series: [#}
-        {#                            {#}
-        {#                                name: 'Ext',#}
-        {#                                type: 'treemap',#}
-        {#                                roam: false,#}
-        {#                                visibleMin: 300,#}
-        {#                                label: {#}
-        {#                                    show: true,#}
-        {#                                    formatter: '{b}'#}
-        {#                                },#}
-        {#                                itemStyle: {#}
-        {#                                    normal: {#}
-        {#                                        borderColor: '#fff'#}
-        {#                                    }#}
-        {#                                },#}
-        {#                                levels: getLevelOption(),#}
-        {#                                data: diskData#}
-        {#                            }#}
-        {#                        ]#}
-        {#                    });#}
-        {#                } else {#}
-        {#                    alert(result.result);#}
-        {#                }#}
-        {#            }, 'JSON');#}
-        {#        });#}
+        $(function () {
+            /* Ext Chart */
+            var ext_distributing = echarts.init(document.getElementById('ext_distributing'));
+            ext_distributing.showLoading();
+
+            $.get('/ext/{{ data.task_info.id }}', function (result) {
+                if (result.code == 1001) {
+                    var diskData = result.result;
+                    ext_distributing.hideLoading();
+
+                    function colorMappingChange(value) {
+                        var levelOption = getLevelOption(value);
+                        chart.setOption({
+                            series: [{
+                                levels: levelOption
+                            }]
+                        });
+                    }
+
+                    var formatUtil = echarts.format;
+
+                    function getLevelOption() {
+                        return [
+                            {
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 0,
+                                        gapWidth: 5
+                                    }
+                                }
+                            },
+                            {
+                                itemStyle: {
+                                    normal: {
+                                        gapWidth: 1
+                                    }
+                                }
+                            },
+                            {
+                                colorSaturation: [0.35, 0.5],
+                                itemStyle: {
+                                    normal: {
+                                        gapWidth: 1,
+                                        borderColorSaturation: 0.6
+                                    }
+                                }
+                            }
+                        ];
+                    }
+
+                    ext_distributing.setOption(option = {
+                        tooltip: {
+                            formatter: function (info) {
+                                var value = info.value;
+                                var treePathInfo = info.treePathInfo;
+                                var treePath = [];
+
+                                for (var i = 1; i < treePathInfo.length; i++) {
+                                    treePath.push(treePathInfo[i].name);
+                                }
+
+                                return [
+                                    '<div class="tooltip-title">' + formatUtil.encodeHTML(treePath.join('/')) + '</div>',
+                                    'Amount: ' + formatUtil.addCommas(value),
+                                ].join('');
+                            }
+                        },
+
+                        series: [
+                            {
+                                name: 'Ext',
+                                type: 'treemap',
+                                roam: false,
+                                visibleMin: 300,
+                                label: {
+                                    show: true,
+                                    formatter: '{b}'
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        borderColor: '#fff'
+                                    }
+                                },
+                                levels: getLevelOption(),
+                                data: diskData
+                            }
+                        ]
+                    });
+                } else {
+                    alert(result.result);
+                }
+            }, 'JSON');
+        });
         $(function () {
             $('.icon_set_1_icon-74').click(function () {
                 var myself = $(this);
