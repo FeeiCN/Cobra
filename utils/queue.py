@@ -34,7 +34,7 @@ class Queue:
     def push(self):
         v = Vulnerabilities()
         data = [{
-            "name": "Cobra发现{0}项目一处{1}漏洞(ID:{2})".format(self.project_name, self.vuln_name, self.vuln_id),
+            "name": "{0}项目{1}漏洞({2})".format(self.project_name, self.vuln_name, self.vuln_id),
             "time": self.time,
             "vuln_type": self.vuln_type,
             "filepath": self.file_path,
