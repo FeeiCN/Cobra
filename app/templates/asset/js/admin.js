@@ -154,10 +154,6 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert("danger", "regex location cannot be blank.", "#edit-rule-result");
                         return false;
                     }
-                    if (!regex_repair || regex_repair == "") {
-                        showAlert("danger", "regex repair cannot be blank.", "#edit-rule-result");
-                        return false;
-                    }
                     if (!block_reapir || block_reapir == "") {
                         showAlert("danger", "block repair cannot be blank.", "#edit-rule-result");
                         return false;
