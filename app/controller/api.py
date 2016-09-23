@@ -164,10 +164,10 @@ def queue():
     # 项目信息
     project_info = CobraProjects.query.filter_by(id=project_id).first()
 
-    # 漏洞和规则信息
+    # 未推送的漏洞和规则信息
     result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
         CobraResults.project_id == project_id,
-        CobraResults.status < 2,
+        CobraResults.status == 0,
         CobraResults.rule_id == rule_id
     ).all()
 
