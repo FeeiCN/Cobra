@@ -26,6 +26,8 @@ var g_rule_back_lang = null;
 var g_rule_back_vul = null;
 var g_rule_back_method = null;
 
+var gTaskBackPage = 1;
+
 function showAlert(tag, msg, div) {
     var tt = '<div class="alert alert-' + tag + ' alert-dismissible" role="alert">';
     tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
@@ -37,6 +39,7 @@ function showAlert(tag, msg, div) {
 function make_pagination(cp, t) {
     // make pagination
     g_rule_back_page = cp;
+    gTaskBackPage = cp;
     g_rule_back_method = "page";
     // get all rules count first
     var all_count = 0;
@@ -226,28 +229,9 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         } else if (type === 'view') {
-            // var LocationRegex = $("<div/>").text($("#rule-regex-location-" + cid).text()).html();
-            // var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + cid).text()).html();
-            // var RepairBlock = $("<div/>").text($("#rule-block-repair-" + cid).text()).html();
-            // var RepairMethod = $("<div/>").text($("#rule-repair-" + cid).text()).html();
-            // var RuleLevel = $("<div/>").text($("#rule-level-" + cid).text()).html();
-            //
-            // $("#view-title").html("Rule Details");
-            // var contents = "<b>Location Regex: </b><pre>" + LocationRegex + "</pre><br />";
-            // contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
-            // contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
-            // contents += "<b>repair: </b>" + RepairMethod + "<br />";
-            // contents += "<b>level: </b>" + RuleLevel + "<br />";
-            // $("#view-body").html(contents);
+            // delete code
         } else if (type === "del") {
-            // $.post('del_rule', {'rule_id': cid}, function (data) {
-            //     var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
-            //     tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
-            //     tt += '<span aria-hidden="true">&times;</span></button>';
-            //     tt += '<strong>' + data.msg + '</strong></div>';
-            //     $("#operate_result").html(tt);
-            //     $("#show_all_rules").click();
-            // });
+            // delete code
         }
 
     } else if (target === "vul") {
@@ -533,28 +517,28 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         } else if (type === "del") {
-            $.post("del_task", {id: cid}, function (data) {
-                showAlert(data.tag, data.msg, "#operate_result");
-                $("#show_all_tasks").click();
-            });
+            // $.post("del_task", {id: cid}, function (data) {
+            //     showAlert(data.tag, data.msg, "#operate_result");
+            //     $("#show_all_tasks").click();
+            // });
         } else if (type === "view") {
-            var old_version = $("<div/>").text($("#task-oldversion-" + cid).text()).html();
-            var new_version = $("<div/>").text($("#task-newversion-" + cid).text()).html();
-            var time_start = $("<div/>").text($("#task-timestart-" + cid).text()).html();
-            var time_end = $("<div/>").text($("#task-timeend-" + cid).text()).html();
-            var time_consume = $("<div/>").text($("#task-timeconsume-" + cid).text()).html();
-            var status = $("<div/>").text($("#task-status-" + cid).text()).html();
-            var code_number = $("<div/>").text($("#task-codenumber-" + cid).text()).html();
-            $("#view-title").html("Task Details.");
-            var content = "<b>Old Version: </b>" + old_version + "<br />";
-            content += "<b>New Version: </b>" + new_version + "<br />";
-            content += "<b>Time Start: </b>" + time_start + "<br />";
-            content += "<b>Time End: </b>" + time_end + "<br />";
-            content += "<b>Time Consume: </b>" + time_consume + "<br />";
-            content += "<b>Status: </b>" + status + "<br />";
-            content += "<b>Code Number: </b>" + code_number + "<br />";
-
-            $("#view-body").html(content);
+            // var old_version = $("<div/>").text($("#task-oldversion-" + cid).text()).html();
+            // var new_version = $("<div/>").text($("#task-newversion-" + cid).text()).html();
+            // var time_start = $("<div/>").text($("#task-timestart-" + cid).text()).html();
+            // var time_end = $("<div/>").text($("#task-timeend-" + cid).text()).html();
+            // var time_consume = $("<div/>").text($("#task-timeconsume-" + cid).text()).html();
+            // var status = $("<div/>").text($("#task-status-" + cid).text()).html();
+            // var code_number = $("<div/>").text($("#task-codenumber-" + cid).text()).html();
+            // $("#view-title").html("Task Details.");
+            // var content = "<b>Old Version: </b>" + old_version + "<br />";
+            // content += "<b>New Version: </b>" + new_version + "<br />";
+            // content += "<b>Time Start: </b>" + time_start + "<br />";
+            // content += "<b>Time End: </b>" + time_end + "<br />";
+            // content += "<b>Time Consume: </b>" + time_consume + "<br />";
+            // content += "<b>Status: </b>" + status + "<br />";
+            // content += "<b>Code Number: </b>" + code_number + "<br />";
+            //
+            // $("#view-body").html(content);
         }
     }
 });
