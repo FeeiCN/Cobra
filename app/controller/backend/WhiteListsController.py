@@ -12,6 +12,7 @@
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
 import time
+import datetime
 
 from flask import jsonify, render_template, request
 
@@ -110,6 +111,7 @@ def edit_whitelist(whitelist_id):
         whitelist.path = vc.vars.path
         whitelist.reason = vc.vars.reason
         whitelist.status = vc.vars.status
+        whitelist.updated_at = datetime.datetime.now()
 
         try:
             db.session.add(whitelist)
