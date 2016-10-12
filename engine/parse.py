@@ -178,7 +178,6 @@ class Parse:
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
-            param_name = re.escape(param_name)
             self.param_name = param_name
             logging.debug('参数: `{0}`'.format(param_name))
             # 固定字符串判断
