@@ -809,7 +809,8 @@ $("#show_all_whitelists").click(function () {
 });
 
 $("#show_all_languages").click(function () {
-    $("#main-div").load("languages", function () {
+    $.get('languages/1', function (data) {
+        $("#main-div").html(data);
         // add new languages
         $("#add_new_language").click(function () {
             $.get("add_new_language", function (data) {
