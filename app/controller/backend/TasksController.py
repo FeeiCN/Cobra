@@ -20,7 +20,7 @@ from . import ADMIN_URL
 from app import web, db
 from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraTaskInfo
-from utils import config
+from utils.common import convert_number, convert_time
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -31,13 +31,20 @@ __email__ = "root@lightless.me"
 @login_required
 def tasks(page):
     per_page = 10
-    tasks = CobraTaskInfo.query.order_by(CobraTaskInfo.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    all_tasks = CobraTaskInfo.query.order_by(
+        CobraTaskInfo.id.desc()
+    ).limit(per_page).offset((page - 1) * per_page).all()
 
-    # replace data
-    for task in tasks:
-        task.scan_way = "Full Scan" if task.scan_way == 1 else "Diff Scan"
+    # 转换一些数据
+    for task in all_tasks:
+        task.file_count = convert_number(task.file_count)
+        task.code_number = convert_number(task.code_number) if task.code_number != 0 else u"统计中..."
+        task.time_start = datetime.datetime.fromtimestamp(task.time_start)
+        task.time_end = datetime.datetime.fromtimestamp(task.time_end)
+        task.time_consume = convert_time(task.time_consume)
+
     data = {
-        'tasks': tasks,
+        'tasks': all_tasks,
     }
     return render_template('backend/task/tasks.html', data=data)
 
@@ -107,3 +114,25 @@ def edit_task(task_id):
         return render_template('backend/task/edit_task.html', data={
             'task': task,
         })
+
+
+@web.route(ADMIN_URL + "/search_task", methods=['POST'])
+@login_required
+def search_task():
+    keyword = request.form.get("keyword", "")
+    if keyword == "":
+        return render_template("backend/task/tasks.html", data=None)
+    else:
+        all_tasks = CobraTaskInfo.query.filter(CobraTaskInfo.target.like("%{}%".format(keyword))).all()
+        # 转换一些数据
+        for task in all_tasks:
+            task.file_count = convert_number(task.file_count)
+            task.code_number = convert_number(task.code_number) if task.code_number != 0 else u"统计中..."
+            task.time_start = datetime.datetime.fromtimestamp(task.time_start)
+            task.time_end = datetime.datetime.fromtimestamp(task.time_end)
+            task.time_consume = convert_time(task.time_consume)
+
+        data = {
+            'tasks': all_tasks,
+        }
+        return render_template('backend/task/tasks.html', data=data)
