@@ -1,4 +1,9 @@
 site_name: Cobra
+repo_url: https://github.com/wufeifei/cobra
+site_description: Cobra is a static code security analyzed system
+site_author: Feei
+site_favicon: favicon.ico
+copyright: Copyright (C) 2016 Feei. All rights reserved
 pages:
 - Getting Started:
   - Introduction: 'introduction.md'
