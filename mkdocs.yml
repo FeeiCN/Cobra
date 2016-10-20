@@ -4,7 +4,9 @@ site_description: Cobra is a static code security analyzed system
 site_author: Feei
 site_favicon: favicon.ico
 copyright: Copyright (C) 2016 Feei. All rights reserved
+theme: readthedocs
 pages:
+- Home: 'index.md'
 - Getting Started:
   - Introduction: 'introduction.md'
   - Installation: 'installation.md'
@@ -25,5 +27,3 @@ pages:
 - FAQ: 'FAQ.md'
 - Reference:
   - Rule Source: 'rule_source.md'
-
-theme: readthedocs
