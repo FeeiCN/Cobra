@@ -1,4 +1,6 @@
-### 定位
+# Orientation
+Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
+
 Cobra是一款定位于白盒静态代码安全分析的工具，目的是为了找出源代码中存在的**有影响**安全隐患或者漏洞。
 
 如果从漏洞影响的角度讲，可以大致分为：
@@ -23,36 +25,36 @@ Cobra是一款定位于白盒静态代码安全分析的工具，目的是为了
 
 目前业内已经有很多款代码审计工具了
 
-| 名称                                       | 是否开源 |缺点|
+| Name                                       | Open Source |Estimate|
 | ---------------------------------------- | ---- |---|
-| [droopescan](https://github.com/droope/droopescan)  | 是    |仅覆盖CMS框架|
-| [GrepBugs](https://grepbugs.com/) | 是    |简单的正则匹配，误报较高|
-| [Pixy](https://github.com/oliverklee/pixy) | 是    |未商用，不成熟|
-| [RIPS](http://rips-scanner.sourceforge.net/) | 是    |仅覆盖PHP|
-| [SWAAT](https://www.owasp.org/index.php/Category:OWASP_SWAAT_Project) |是|.NET写的、无法快速扩展新型漏洞|
-| [PHP-SAT](http://www.program-transformation.org/PHP/PhpSat) | 是    |仅覆盖PHP、长期不维护、无法快速扩展新型漏洞|
-| [Yasca](http://scovetta.github.io/yasca/) | 是    |偏向于代码安全规范的扫描、无法快速扩展新型漏洞|
-|[SonarQube](https://sonarqube.com/)|是|偏向于代码安全规范的扫描、规则使用Java代码开发、无法快速增加新型漏洞扫描规则|
-|[PreFast](http://msdn.microsoft.com/en-us/library/ms933794.aspx)|是|仅针对C/C++|
-|[PMD](http://pmd.sourceforge.net/)|是|仅针对Java|
-|[Google CodeSearchDiggity](https://www.bishopfox.com/resources/tools/google-hacking-diggity/attack-tools/)|是|工具类|
-|[FxCop](http://msdn.microsoft.com/en-us/library/bb429476(VS.80).aspx)|是|针对.NET|
-|[Flawfinder](http://www.dwheeler.com/flawfinder/)|是|针对C/C++|
-|[Ruby on Rails](http://brakemanscanner.org/)|是|仅针对Ruby on Rails|
-|[VCG](http://sourceforge.net/projects/visualcodegrepp/)|是|GUI程序、简单规则匹配|
-|[bugScout](https://buguroo.com/products/bugblast-next-gen-appsec-platform/bugscout-sca)|否|无法灵活扩展|
-|[Contrast from Contrast Security](http://www.contrastsecurity.com/)|否|无法灵活扩展|
-|[IBM Security AppScan Source Edition](http://www-01.ibm.com/software/rational/products/appscan/source/)|否|无法灵活扩展|
-|[Insight](http://www.klocwork.com/products/insight.asp)|否|无法灵活扩展|
-|[Parasoft Test](http://www.parasoft.com/jsp/capabilities/static_analysis.jsp?itemId=547)|否|无法灵活扩展|
-|[Pitbull SCC](http://www.pitbullsoftware.net/pitbull-scc-en/)|否|无法灵活扩展|
-|[Seeker](http://www.quotium.com/prod/security.php)|否|无法灵活扩展|
-|[Pentest](http://www.sourcepatrol.co.uk/)|否|无法灵活扩展|
-| [CodeSecure Verifier](www.armorize.com) | 否    |无法灵活扩展|
-|[Coverity](http://www.coverity.com/products/security-advisor.html)|否|无法灵活扩展|
-|[PVS-Studio](http://www.viva64.com/en/)|否|无法灵活扩展|
-|[HP/Fortify](https://www.fortify.com/products/hpfssc/source-code-analyzer.html)|否|无法灵活扩展|
-|[Veracode](http://www.veracode.com/)|否|无法灵活扩展|
+| [droopescan](https://github.com/droope/droopescan)  | Yes    |仅覆盖CMS框架|
+| [GrepBugs](https://grepbugs.com/) | Yes    |简单的正则匹配，误报较高|
+| [Pixy](https://github.com/oliverklee/pixy) | Yes    |未商用，不成熟|
+| [RIPS](http://rips-scanner.sourceforge.net/) | Yes    |仅覆盖PHP|
+| [SWAAT](https://www.owasp.org/index.php/Category:OWASP_SWAAT_Project) |Yes|.NET写的、无法快速扩展新型漏洞|
+| [PHP-SAT](http://www.program-transformation.org/PHP/PhpSat) | Yes    |仅覆盖PHP、长期不维护、无法快速扩展新型漏洞|
+| [Yasca](http://scovetta.github.io/yasca/) | Yes    |偏向于代码安全规范的扫描、无法快速扩展新型漏洞|
+|[SonarQube](https://sonarqube.com/)|Yes|偏向于代码安全规范的扫描、规则使用Java代码开发、无法快速增加新型漏洞扫描规则|
+|[PreFast](http://msdn.microsoft.com/en-us/library/ms933794.aspx)|Yes|仅针对C/C++|
+|[PMD](http://pmd.sourceforge.net/)|Yes|仅针对Java|
+|[Google CodeSearchDiggity](https://www.bishopfox.com/resources/tools/google-hacking-diggity/attack-tools/)|Yes|工具类|
+|[FxCop](http://msdn.microsoft.com/en-us/library/bb429476(VS.80).aspx)|Yes|针对.NET|
+|[Flawfinder](http://www.dwheeler.com/flawfinder/)|Yes|针对C/C++|
+|[Ruby on Rails](http://brakemanscanner.org/)|Yes|仅针对Ruby on Rails|
+|[VCG](http://sourceforge.net/projects/visualcodegrepp/)|Yes|GUI程序、简单规则匹配|
+|[bugScout](https://buguroo.com/products/bugblast-next-gen-appsec-platform/bugscout-sca)|No|无法灵活扩展|
+|[Contrast from Contrast Security](http://www.contrastsecurity.com/)|No|无法灵活扩展|
+|[IBM Security AppScan Source Edition](http://www-01.ibm.com/software/rational/products/appscan/source/)|No|无法灵活扩展|
+|[Insight](http://www.klocwork.com/products/insight.asp)|No|无法灵活扩展|
+|[Parasoft Test](http://www.parasoft.com/jsp/capabilities/static_analysis.jsp?itemId=547)|No|无法灵活扩展|
+|[Pitbull SCC](http://www.pitbullsoftware.net/pitbull-scc-en/)|No|无法灵活扩展|
+|[Seeker](http://www.quotium.com/prod/security.php)|No|无法灵活扩展|
+|[Pentest](http://www.sourcepatrol.co.uk/)|No|无法灵活扩展|
+| [CodeSecure Verifier](www.armorize.com) | No    |无法灵活扩展|
+|[Coverity](http://www.coverity.com/products/security-advisor.html)|No|无法灵活扩展|
+|[PVS-Studio](http://www.viva64.com/en/)|No|无法灵活扩展|
+|[HP/Fortify](https://www.fortify.com/products/hpfssc/source-code-analyzer.html)|No|无法灵活扩展|
+|[Veracode](http://www.veracode.com/)|No|无法灵活扩展|
 
 这些项目专注的点都不一样，极少数商用的是定位于企业内代码审计的，但都是闭源的。
 还没有一款开源的，并且定位于企业级使用的。
@@ -199,6 +201,3 @@ Cobra是一款定位于白盒静态代码安全分析的工具，目的是为了
 规则验证的结果还是会存在误报，我们可以通过两个方式解决误报问题。
 1. 优化规则 - 通过对误报的分析去优化规则的检测逻辑
 2. 白名单 - 某些状态下我们需要某个规则对某个文件的某行放行（比如某些框架层的eval($cmd)），则可以使用白名单
-
-### 下一步
-- [安装Cobra](https://github.com/wufeifei/cobra/wiki/Installation)

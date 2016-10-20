@@ -1,10 +1,10 @@
-## 下载代码
+## Download source code
 ```
 git clone https://github.com/wufeifei/cobra.git
 cd cobra/
 ```
 
-## 安装系统依赖
+## Install system dependencies
 ```
 # Python
 [sudo] yum install Python-devel
@@ -20,7 +20,7 @@ cd cobra/
 # gcc-c++
 [sudo] yum install gcc-c++
 
-# Cloc (任选其一)
+# Cloc
 npm install -g cloc                    # https://www.npmjs.com/package/cloc
 sudo apt-get install cloc              # Debian, Ubuntu
 sudo yum install cloc                  # Red Hat, Fedora
@@ -29,7 +29,7 @@ sudo pkg install cloc                  # FreeBSD
 sudo port install cloc                 # Mac OS X with MacPorts
 ```
 
-## 额外安装（如果在Mac OS X下）
+## extra install on macOS
 ```
 # grep(gnu)
 brew install homebrew/dupes/grep
@@ -38,35 +38,32 @@ brew install homebrew/dupes/grep
 brew install findutils
 ```
 
-## 安装Cobra的Python依赖
+## Install python dependencies
 ```
-# Cobra根目录下
+# on Cobra root
 [sudo] pip install -r requirements.txt
 ```
 
-## 配置Cobra（[Cobra配置方法](https://github.com/wufeifei/cobra/wiki/Config)）
+## [Cobra configuration](https://github.com/wufeifei/cobra/wiki/Config)
 ```
 cp config.example config
 vim config
 ```
 
-## 初始化数据库表结构和数据
+## Initialization database structure and base data
 ```
 python cobra.py install
 ```
 
-## 启动Cobra
+## Start Cobra
 ```
 python cobra.py start
 ```
 
-## 日志信息
+## Log
 ```bash
 tail -f logs/cobra.log
 ```
 
-## 常见错误问题
+## FAQ
 - https://github.com/wufeifei/cobra/wiki/Error
-
-## 下一步
-- [使用Cobra](https://github.com/wufeifei/cobra/wiki/Usage)

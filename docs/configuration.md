@@ -1,4 +1,4 @@
-> 请先更新最新的代码，将cobra根目录下的config.sample改名为config，并按照以下描述进行配置。
+rename Cobra root's **config.sample** to **config**.
 
 ```
 [cobra]
@@ -40,20 +40,20 @@ extensions: tar.bz2|tar|gz|tgz|tar.gz|rar|zip
 max_size: 200
 
 #
-# 数据库配置
+# Database account
 #
 [database]
 mysql: mysql+mysqldb://root:yourpassword@127.0.0.1:3306/cobra
 
 #
-# SVN账号配置
+# SVN account
 #
 [svn]
 username:
 password:
 
 #
-# Git账号配置
+# Inner git(gitlab or deploy git server) account
 #
 [git]
 username:

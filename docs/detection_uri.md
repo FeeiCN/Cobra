@@ -1,7 +1,7 @@
-## 分析漏洞访问地址
+## Introduction
 先分析出项目所使用的框架，针对每个框架协商对应的规则来分析Model/View/Controller中的漏洞地址，并根据路由配置找出访问的URI。
 
-### 框架检测
+# Detection CMS
 针对每个框架的特征（文件或目录），来判断项目所使用的框架类型。
 ```
 https://raw.githubusercontent.com/wufeifei/cobra/master/engine/detection.py
@@ -43,6 +43,6 @@ https://raw.githubusercontent.com/wufeifei/cobra/master/engine/detection.py
         ]
 ```
 
-### 路由分析
+# Analyse CMS's route
 
 TODO

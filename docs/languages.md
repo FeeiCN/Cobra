@@ -1,8 +1,7 @@
-> 如果你发现有新的语言和后缀，请通过[建议](https://github.com/wufeifei/cobra/issues/new)提供给我们。
 
 _本章节正在补充完善，请持续关注!_
 
-语言|后缀
+Language|Extensions
 --- | ---
 php|```.php|.php3|.php4|.php5```
 jsp|```.jsp```
