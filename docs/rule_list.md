@@ -7,19 +7,19 @@ _本章节正在补充完善，请持续关注!_
 
 你可以通过这篇来学习如何写一个扫描规则：[Cobra扫描规则编写](http://wufeifei.com/scan-engine/)
 
-## 扫描规则列表 ([整理中]())
+## 扫描规则列表 (整理中)
 
 |支持语言|类型|规则|贡献者|准确率|规则|
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
 |PHP||||||
 ||XSS|||||
 |||Ouput|[@Feei](http://wufeifei.com)|100%|[Output Param](https://github.com/wufeifei/cobra/wiki/rule_xss_output_param)|
-||SSRF|||||
+||SSRF||||||
 |||CURL|[@Feei](http://wufeifei.com)|100%|[CURL SSRF](https://github.com/wufeifei/cobra/wiki/rule_ssrf_curl)|
-||Logic Bug|||||
-||Stack Trace|||||
-||Deprecated Function|||||
-||Information Disclosure|||||
+||Logic Bug||||||
+||Stack Trace||||||
+||Deprecated Function||||||
+||Information Disclosure||||||
 |Java||||||
 |Backup||||||
 |PSD||||||

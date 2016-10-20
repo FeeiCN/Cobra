@@ -1,23 +1,22 @@
-## 手动扫描
-打开Cobra手动扫描界面
+## Manual scan
 ```
-http://127.0.0.1:5000 （此处域名和端口根据你的config文件而定）
-然后填入你的项目git地址，你可以用这个地址做演示https://github.com/ethicalhack3r/DVWA.git
+http://127.0.0.1:5000 （this domain in your Cobra root's config file）
+Put your want to scan git repository url(you can use https://github.com/ethicalhack3r/DVWA.git for test)
 ```
 
-![Cobra手动扫描界面](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
+![Cobra manual scan](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
 
-## 扫描报告
+## Scan report page
 ```
 http://127.0.0.1:5000/report/1
 ```
-![Cobra扫描报告](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
+![Cobra scan report page](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
 
-## Cobra管理后台
+## Cobra manage
 ```
 http://127.0.0.1:5000/admin/index
 ```
-账号密码默认为
+Default username and password
 ```
 admin / admin123456!@#
 ```
