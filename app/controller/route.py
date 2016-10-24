@@ -43,24 +43,9 @@ def homepage():
 
 @web.route('/report/<int:project_id>', methods=['GET'])
 def report(project_id):
-    # 待搜索的漏洞类型ID
-    search_vul_id = request.args.get("search_vul_type", None)
-    # 待搜索的规则类型ID
-    search_rule_id = request.args.get("search_rule", None)
-    # 待搜索的漏洞等级
-    search_level = request.args.get("search_level", None)
     # 待搜索的task id
     search_task_id = request.args.get("search_task", "")
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
-    # 获取页码， 默认第一页
-    try:
-        page = int(request.args.get("page", 1))
-    except ValueError:
-        page = 1
-    # 是否显示修复的漏洞
-    # 0 - all, 1 - repaired, 2 - unrepair, 3 - others
-    search_status_type = request.args.get("search_status", 2)
-
     # 判断project id 和 task id 是否存在
     # 获取 project id 相关的信息
     project_info = CobraProjects.query.filter(CobraProjects.id == project_id).first()
@@ -269,6 +254,82 @@ def report(project_id):
         else:
             unrepair_unknown_level_number = every_level[0]
 
+    # 任务信息
+    tasks = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.updated_at.desc()).all()
+    # 漏洞状态信息
+    vuls_status = [
+        {"status": "全部", "value": 0},
+        {"status": "已修复", "value": 1},
+        {"status": "未修复", "value": 2},
+        {"status": "其他", "value": 3},
+    ]
+
+    data = {
+        "project_id": project_id,
+        "task_id": search_task_id,
+        "select_vul_type": select_vul_type,
+        "select_rule_type": select_rule_type,
+        "chart_vuls_number": chart_vuls_number,
+        "task_info": task_info,
+        "project_info": project_info,
+        "code_number": code_number,
+        "file_count": common.convert_number(task_info.file_count),
+        "tasks": tasks,
+        "vuls_status": vuls_status,
+        "task_time": {
+            "time_start": time_start,
+            "time_end": time_end,
+            "time_consume": common.convert_time(task_info.time_consume)
+        },
+        "vuls_number": {
+            "unrepair": {
+                "low": unrepair_low_level_number,
+                "medium": unrepair_medium_level_number,
+                "high": unrepair_high_level_number,
+                "unknown": unrepair_unknown_level_number,
+            },
+            "repaired": {
+                "low": repaired_low_level_number,
+                "medium": repaired_medium_level_number,
+                "high": repaired_high_level_number,
+                "unknown": repaired_unknown_level_number,
+            },
+            "total_number": {
+                "low": low_level_number,
+                "medium": medium_level_number,
+                "high": high_level_number,
+                "unknown": unknown_level_number
+            },
+            "result_number": {
+                "scan_result_number": scan_results_number,
+                "repaired_result_number": repaired_results_number,
+                "unrepair_result_number": unrepair_results_number,
+            }
+        },
+    }
+    return render_template('report.html', data=data)
+
+
+@web.route('/list', methods=['POST'])
+def vulnerabilities_list():
+    project_id = request.form.get("project_id", None)
+    # 待搜索的漏洞类型ID
+    search_vul_id = request.form.get("search_vul_type", None)
+    # 待搜索的规则类型ID
+    search_rule_id = request.form.get("search_rule", None)
+    # 待搜索的漏洞等级
+    search_level = request.form.get("search_level", None)
+    # 待搜索的task id
+    search_task_id = request.args.get("search_task", "")
+    search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
+    # 获取页码， 默认第一页
+    try:
+        page = int(request.args.get("page", 1))
+    except ValueError:
+        page = 1
+    # 是否显示修复的漏洞
+    # 0 - all, 1 - repaired, 2 - unrepair, 3 - others
+    search_status_type = request.args.get("search_status", 2)
     # 检索全部的漏洞信息
     # status: 0 - all, 1 - repaired, 2 - unrepair, 3 - others
     if search_task_id is None:
@@ -343,13 +404,6 @@ def report(project_id):
         #     data_dict["status"] = u"未修复"
         data_dict["status"] = result[11]
 
-        if project_info.framework != '':
-            for rule in detection.Detection().rules:
-                if rule['name'] == project_info.framework:
-                    if 'public' in rule:
-                        if result.file[:len(rule['public'])] == rule['public']:
-                            data_dict['verify'] = project_info.url + result.file.replace(rule['public'], '')
-
         # 检索vulnerabilities中是否存在vul_type的类别
         # 如果存在就添加到对应的data字典中
         # 否则就新建一下
@@ -370,67 +424,16 @@ def report(project_id):
         current_url = request.url.replace("&page={}".format(page), "").replace("page={}".format(page), "")
         if "?" not in current_url:
             current_url += "?"
-    # 任务信息
-    tasks = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.updated_at.desc()).all()
-    # 漏洞状态信息
-    vuls_status = [
-        {"status": "全部", "value": 0},
-        {"status": "已修复", "value": 1},
-        {"status": "未修复", "value": 2},
-        {"status": "其他", "value": 3},
-    ]
-
-    data = {
-        "project_id": project_id,
-        "task_id": search_task_id,
-        'vulnerabilities': vulnerabilities,
-        "select_vul_type": select_vul_type,
-        "select_rule_type": select_rule_type,
-        "chart_vuls_number": chart_vuls_number,
+    return_data = {
         "current_page": page,
         "total_pages": total_pages,
+        "search_status_type": search_status_type,
         "filter_vul_number": len(total_number),
         "current_url": current_url,
         "pagination": pagination,
-        "task_info": task_info,
-        "project_info": project_info,
-        "code_number": code_number,
-        "file_count": common.convert_number(task_info.file_count),
-        "tasks": tasks,
-        "vuls_status": vuls_status,
-        "search_status_type": search_status_type,
-        "task_time": {
-            "time_start": time_start,
-            "time_end": time_end,
-            "time_consume": common.convert_time(task_info.time_consume)
-        },
-        "vuls_number": {
-            "unrepair": {
-                "low": unrepair_low_level_number,
-                "medium": unrepair_medium_level_number,
-                "high": unrepair_high_level_number,
-                "unknown": unrepair_unknown_level_number,
-            },
-            "repaired": {
-                "low": repaired_low_level_number,
-                "medium": repaired_medium_level_number,
-                "high": repaired_high_level_number,
-                "unknown": repaired_unknown_level_number,
-            },
-            "total_number": {
-                "low": low_level_number,
-                "medium": medium_level_number,
-                "high": high_level_number,
-                "unknown": unknown_level_number
-            },
-            "result_number": {
-                "scan_result_number": scan_results_number,
-                "repaired_result_number": repaired_results_number,
-                "unrepair_result_number": unrepair_results_number,
-            }
-        },
+        'vulnerabilities': vulnerabilities,
     }
-    return render_template('report.html', data=data)
+    return jsonify(code=1001, ret={'msg': 'success', 'data': return_data})
 
 
 @web.route('/detail', methods=['POST'])

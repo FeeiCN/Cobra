@@ -327,7 +327,7 @@
                                     {% endfor %}
                                 </ul>
                                 <nav style="text-align: center">
-                                    {{ data.pagination.links | safe }}
+
                                 </nav>
                             </div> <!-- .panel-body -->
                         </div>
@@ -539,6 +539,20 @@
         });
 
         $(function () {
+            // load vulnerabilities list
+            $.post('/list',
+                    {
+                        project_id: {{ data.project_id }},
+                        search_vul_type: $("#search_vul_type").val(),
+                        search_rule: $("#search_rule").val(),
+                        search_level: $("#search_level").val(),
+                        search_task: $("#search_task").val(),
+                        search_status: $("#search_status").val()
+                    }, function (result) {
+
+                    }, 'JSON'
+            );
+
             // nav
             $(".nav-tabs li a").on('click', function () {
                 var id = $(this).attr('data-id');
@@ -560,6 +574,7 @@
                         $('pre').attr('data-start', result.ret.data.detail.line_start);
                         $('pre').attr('data-line', result.ret.data.detail.line_trigger);
                         Prism.highlightAll();
+                        $("pre").scrollTop(result.ret.data.detail.line_trigger * 13);
                     } else {
                         alert(result.ret.msg);
                     }
