@@ -138,11 +138,11 @@ p {
 }
 
 hr, nav {
-    margin-top: 20px
+    margin-top: 10px
 }
 
 hr {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     border: 0;
     border-top: 1px solid #ddd
 }
@@ -3359,7 +3359,7 @@ ul.list_order li span {
 
 .panel-default > .panel-heading {
     background-color: #fff;
-    padding: 20px
+    padding: 10px 0
 }
 
 .panel-heading {
@@ -3368,7 +3368,6 @@ ul.list_order li span {
 }
 
 .panel-body {
-    padding: 30px;
     line-height: 1.6 !important
 }
 
@@ -3482,7 +3481,6 @@ blockquote.styled {
 
 .tab-pane h3 {
     color: #999;
-    margin: 0 0 20px
 }
 
 .dd-select {

@@ -12,12 +12,11 @@
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
 import time
-
+import os
 from utils import common, config
 from flask import jsonify, render_template, request, abort
 from flask_paginate import Pagination
 from sqlalchemy import and_, func
-
 from engine import detection
 from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
@@ -44,7 +43,6 @@ def homepage():
 
 @web.route('/report/<int:project_id>', methods=['GET'])
 def report(project_id):
-
     # 待搜索的漏洞类型ID
     search_vul_id = request.args.get("search_vul_type", None)
     # 待搜索的规则类型ID
@@ -287,11 +285,11 @@ def report(project_id):
         )
 
     if search_status_type == "1":
-        filter_group += (CobraResults.status == 2, )
+        filter_group += (CobraResults.status == 2,)
     elif search_status_type == "2":
-        filter_group += (CobraResults.status < 2, )
+        filter_group += (CobraResults.status < 2,)
     elif search_status_type == "3":
-        filter_group += (CobraResults.status == 1, )
+        filter_group += (CobraResults.status == 1,)
 
     # 根据传入的筛选条件添加SQL的条件
     if search_vul_id is not None and search_vul_id != "all":
@@ -303,7 +301,7 @@ def report(project_id):
 
     # 构建SQL语句
     all_scan_results = db.session.query(
-        CobraResults.file, CobraResults.line, CobraResults.code,
+        CobraResults.id, CobraResults.file, CobraResults.line, CobraResults.code,
         CobraRules.description, CobraRules.level, CobraRules.regex_location,
         CobraRules.regex_repair, CobraRules.repair, CobraVuls.name,
         CobraResults.rule_id, CobraResults.status
@@ -327,22 +325,23 @@ def report(project_id):
 
         # 生成data数据
         data_dict = dict()
-        data_dict["file"] = result[0]
-        data_dict["line"] = result[1]
-        data_dict["code"] = result[2]
-        data_dict["rule"] = result[3]
-        data_dict["level"] = map_level[result[4]]
-        data_dict["color"] = map_color[result[4]]
-        data_dict["repair"] = result[7]
+        data_dict['id'] = result[0]
+        data_dict["file"] = result[1]
+        data_dict["line"] = result[2]
+        data_dict["code"] = result[3]
+        data_dict["rule"] = result[4]
+        data_dict["level"] = map_level[result[5]]
+        data_dict["color"] = map_color[result[5]]
+        data_dict["repair"] = result[8]
         data_dict['verify'] = ''
-        data_dict['rule_id'] = result[9]
+        data_dict['rule_id'] = result[10]
         # if result[10] == 2:
         #     data_dict["status"] = u"已修复"
         # elif result[10] == 1:
         #     data_dict["status"] = u"已推送到第三方漏洞平台"
         # else:
         #     data_dict["status"] = u"未修复"
-        data_dict["status"] = result[10]
+        data_dict["status"] = result[11]
 
         if project_info.framework != '':
             for rule in detection.Detection().rules:
@@ -432,6 +431,76 @@ def report(project_id):
         },
     }
     return render_template('report.html', data=data)
+
+
+@web.route('/detail', methods=['POST'])
+def vulnerabilities_detail():
+    id = request.form.get("id", None)
+    # query result/rules/vulnerabilities
+    vulnerabilities_detail = CobraResults.query.filter_by(id=id).first()
+    rule_info = CobraRules.query.filter_by(id=vulnerabilities_detail.rule_id).first()
+    vulnerabilities_description = CobraVuls.query.filter_by(id=rule_info.vul_id).first()
+
+    # get code content
+    project = CobraProjects.query.filter_by(id=vulnerabilities_detail.project_id).first()
+    if project.repository[0] == '/':
+        # upload directory
+        project_code_path = project.repository
+    else:
+        # git
+        project_path_split = project.repository.replace('.git', '').split('/')
+        project_path = os.path.join(project_path_split[3], project_path_split[4])
+        upload = os.path.join(config.Config('upload', 'directory').value, 'versions')
+        project_code_path = os.path.join(project_path, upload)
+    if vulnerabilities_detail.file[0] == '/':
+        vulnerabilities_detail.file = vulnerabilities_detail.file[1:]
+    file_path = os.path.join(project_code_path, vulnerabilities_detail.file)
+
+    code_content = ''
+    fp = open(file_path, 'r')
+    block_lines = 50
+    if vulnerabilities_detail.line < block_lines:
+        block_start = 0
+        block_end = vulnerabilities_detail.line + block_lines
+    else:
+        block_start = vulnerabilities_detail.line - block_lines
+        block_end = vulnerabilities_detail.line + block_lines
+    for i, line in enumerate(fp):
+        if block_start <= i <= block_end:
+            code_content = code_content + line
+    fp.close()
+
+    return_data = {
+        'detail': {
+            'id': vulnerabilities_detail.id,
+            'file': vulnerabilities_detail.file,
+            'line_trigger': vulnerabilities_detail.line - block_start,
+            'line_start': block_start + 1,
+            'code': code_content,
+            'status': vulnerabilities_detail.status,
+            'created': vulnerabilities_detail.created_at,
+            'updated': vulnerabilities_detail.updated_at
+        },
+        'rule': {
+            'id': rule_info.id,
+            'language': rule_info.language,
+            'description': rule_info.description,
+            'repair': rule_info.repair,
+            'author': rule_info.author,
+            'level': rule_info.level,
+            'status': rule_info.status,
+            'created': rule_info.created_at,
+            'updated': rule_info.updated_at
+        },
+        'description': {
+            'id': vulnerabilities_description.id,
+            'name': vulnerabilities_description.name,
+            'description': vulnerabilities_description.description,
+            'repair': vulnerabilities_description.repair,
+            'third_v_id': vulnerabilities_description.third_v_id
+        }
+    }
+    return jsonify(code=1001, ret={'msg': 'success', 'data': return_data})
 
 
 @web.route('/ext/<int:task_id>', methods=['GET'])
