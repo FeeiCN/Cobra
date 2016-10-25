@@ -371,7 +371,7 @@ def vulnerabilities_list():
     )
 
     # 设置分页
-    page_size = 5
+    page_size = 15
     total_number = all_scan_results.all()
     pagination = {
         'page': page,

@@ -208,6 +208,7 @@
                             list-style-type: none;
                             -webkit-padding-start: 0;
                             border: 1px solid #d6d6d6;
+                            overflow-y: scroll;
                         }
 
                         .vulnerabilities_list > li {
@@ -316,7 +317,7 @@
                                         <button class="btn btn-success filter_btn" style="">筛选</button>
                                     </div>
                                 </div>
-                                <ul class="vulnerabilities_list">
+                                <ul class="vulnerabilities_list scroll">
                                     {% for vulnerability in data.vulnerabilities %}
                                         {% for each_vul in vulnerability.data %}
                                             <li data-id="{{ each_vul.id }}">
@@ -337,9 +338,6 @@
                                         {% endfor %}
                                     {% endfor %}
                                 </ul>
-                                <nav style="text-align: center">
-
-                                </nav>
                             </div> <!-- .panel-body -->
                         </div>
                         <div class="col-md-9">
@@ -495,6 +493,7 @@
 
         $(function () {
             var vulnerabilities_list = {
+                page: 1,
                 init: function () {
                     this.get();
                     this.listen();
@@ -510,11 +509,23 @@
                     $('.filter_setting').on('click', function () {
                         vulnerabilities_list.trigger_filter();
                     });
+
+                    // scroll load
+                    $(".vulnerabilities_list").scroll(function () {
+                        if ($(".vulnerabilities_list").scrollTop() > 350 * vulnerabilities_list.page) {
+                            vulnerabilities_list.next_page();
+                        }
+                    });
                 },
-                get: function () {
+                next_page: function () {
+                    this.page = this.page + 1;
+                    this.get(true);
+                },
+                get: function (next_page) {
                     // load vulnerabilities list
                     $.post('/list', {
                         project_id: {{ data.project_id }},
+                        page: this.page,
                         search_vul_type: $("#search_vul_type").val(),
                         search_rule: $("#search_rule").val(),
                         search_level: $("#search_level").val(),
@@ -535,7 +546,11 @@
                                         '</span>' +
                                         '</li>';
                             }
-                            $('.vulnerabilities_list').html(list_html);
+                            if (next_page) {
+                                $('.vulnerabilities_list').append(list_html);
+                            } else {
+                                $('.vulnerabilities_list').html(list_html);
+                            }
 
                             // vulnerabilities list detail
                             $('.vulnerabilities_list li').on('click', function () {
