@@ -373,7 +373,11 @@ def vulnerabilities_list():
     # 设置分页
     page_size = 5
     total_number = all_scan_results.all()
-    pagination = Pagination(page=page, total=len(total_number), per_page=page_size, bs_version=3)
+    pagination = {
+        'page': page,
+        'total': len(total_number),
+        'per_page': page_size
+    }
     total_pages = len(total_number) / page_size + 1
     all_scan_results = all_scan_results.limit(page_size).offset((page - 1) * page_size).all()
 
@@ -383,7 +387,6 @@ def vulnerabilities_list():
     map_color = ["#555", "black", "orange", "red"]
     current_url = ''
     for result in all_scan_results:
-
         # 生成data数据
         data_dict = dict()
         data_dict['id'] = result[0]
@@ -396,34 +399,18 @@ def vulnerabilities_list():
         data_dict["repair"] = result[8]
         data_dict['verify'] = ''
         data_dict['rule_id'] = result[10]
-        # if result[10] == 2:
-        #     data_dict["status"] = u"已修复"
-        # elif result[10] == 1:
-        #     data_dict["status"] = u"已推送到第三方漏洞平台"
-        # else:
-        #     data_dict["status"] = u"未修复"
+        if result[11] == 2:
+            status = u"已修复"
+        elif result[11] == 1:
+            status = u"已推送到第三方漏洞平台"
+        else:
+            status = u"未修复"
         data_dict["status"] = result[11]
-
-        # 检索vulnerabilities中是否存在vul_type的类别
-        # 如果存在就添加到对应的data字典中
-        # 否则就新建一下
-        found = False
-        for v in vulnerabilities:
-            if v["vul_type"] == result[-1]:
-                # 直接添加
-                v["data"].append(data_dict)
-                # 修改标志
-                found = True
-                break
-        # 没有找到
-        if not found:
-            temp_dict = dict(vul_type=result[-1], data=list())
-            temp_dict["data"].append(data_dict)
-            vulnerabilities.append(temp_dict)
-
-        current_url = request.url.replace("&page={}".format(page), "").replace("page={}".format(page), "")
-        if "?" not in current_url:
-            current_url += "?"
+        data_dict["status_description"] = status
+        vulnerabilities.append(data_dict)
+    current_url = request.url.replace("&page={}".format(page), "").replace("page={}".format(page), "")
+    if "?" not in current_url:
+        current_url += "?"
     return_data = {
         "current_page": page,
         "total_pages": total_pages,
@@ -433,7 +420,7 @@ def vulnerabilities_list():
         "pagination": pagination,
         'vulnerabilities': vulnerabilities,
     }
-    return jsonify(code=1001, ret={'msg': 'success', 'data': return_data})
+    return jsonify(status_code=1001, message='success', data=return_data)
 
 
 @web.route('/detail', methods=['POST'])
@@ -503,7 +490,7 @@ def vulnerabilities_detail():
             'third_v_id': vulnerabilities_description.third_v_id
         }
     }
-    return jsonify(code=1001, ret={'msg': 'success', 'data': return_data})
+    return jsonify(status_code=1001, message='success', data=return_data)
 
 
 @web.route('/ext/<int:task_id>', methods=['GET'])

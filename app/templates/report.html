@@ -422,8 +422,6 @@
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
     <script>
-
-
         var types = [];
         var vuls = [];
         {% for chart_vuls in data.chart_vuls_number %}
@@ -549,7 +547,43 @@
                         search_task: $("#search_task").val(),
                         search_status: $("#search_status").val()
                     }, function (result) {
+                        if (result.status_code == 1001) {
+                            var list = result.data.vulnerabilities;
+                            var list_html = '';
+                            for (var i = 0; i < list.length; i++) {
+                                list_html = list_html + '<li data-id="' + list[i].id + '">' +
+                                        '<strong>' + list[i].file + ':' + list[i].line + '</strong><br>' +
+                                        '<span class="issue-information">' +
+                                        '<small>' +
+                                        list[i].rule + ' ' + list[i].level +
+                                        list[i].status_description +
+                                        '</small>' +
+                                        '</span>' +
+                                        '</li>';
+                            }
+                            $('.vulnerabilities_list').html(list_html);
 
+                            // vulnerabilities list detail
+                            $('.vulnerabilities_list li').on('click', function () {
+                                $('.vulnerabilities_list li').removeClass('active');
+                                $(this).addClass('active');
+                                var id = $(this).attr('data-id');
+                                $.post('/detail', {id: id}, function (result) {
+                                    if (result.status_code == 1001) {
+                                        var code_content = Prism.highlight(result.data.detail.code, Prism.languages.php);
+                                        $('.code_content').html(code_content);
+                                        $('pre').attr('data-start', result.data.detail.line_start);
+                                        $('pre').attr('data-line', result.data.detail.line_trigger);
+                                        Prism.highlightAll();
+                                        $("pre").scrollTop(result.data.detail.line_trigger * 13);
+                                    } else {
+                                        alert(result.message);
+                                    }
+                                }, 'JSON');
+                            });
+                        } else {
+                            alert(result.message);
+                        }
                     }, 'JSON'
             );
 
@@ -560,25 +594,6 @@
                 $(this).parent('li').addClass('active');
                 $(".tab-pane").removeClass('active');
                 $('#' + id).addClass('active');
-            });
-
-            // vulnerabilities list detail
-            $('.vulnerabilities_list li').on('click', function () {
-                $('.vulnerabilities_list li').removeClass('active');
-                $(this).addClass('active');
-                var id = $(this).attr('data-id');
-                $.post('/detail', {id: id}, function (result) {
-                    if (result.code == 1001) {
-                        var code_content = Prism.highlight(result.ret.data.detail.code, Prism.languages.php);
-                        $('.code_content').html(code_content);
-                        $('pre').attr('data-start', result.ret.data.detail.line_start);
-                        $('pre').attr('data-line', result.ret.data.detail.line_trigger);
-                        Prism.highlightAll();
-                        $("pre").scrollTop(result.ret.data.detail.line_trigger * 13);
-                    } else {
-                        alert(result.ret.msg);
-                    }
-                }, 'JSON');
             });
 
             // filter setting
