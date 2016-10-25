@@ -210,13 +210,24 @@
                             border: 1px solid #d6d6d6;
                         }
 
-                        .vulnerabilities_list li {
+                        .vulnerabilities_list > li {
                             border-top: 1px solid #efefef;
-                            border-bottom: 3px solid #FF0000;
                             padding: 5px;
                         }
 
-                        .vulnerabilities_list li.active {
+                        .vulnerabilities_list > li.high {
+                            border-bottom: 3px solid #FF0000;
+                        }
+
+                        .vulnerabilities_list > li.medium {
+                            border-bottom: 3px solid #c1ff69;
+                        }
+
+                        .vulnerabilities_list > li.low {
+                            border-bottom: 3px solid forestgreen;
+                        }
+
+                        .vulnerabilities_list > li.active {
                             background: #dedede;
                         }
 
@@ -302,7 +313,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-12" style="padding-top: 30px;padding-left: 40px;">
-                                        <button class="btn btn-success" id="search-result-btn" style="">筛选</button>
+                                        <button class="btn btn-success filter_btn" style="">筛选</button>
                                     </div>
                                 </div>
                                 <ul class="vulnerabilities_list">
@@ -482,64 +493,27 @@
             vul_distributing.setOption(option);
         {% endif %}
 
-        $('.vul-detail').click(function (event) {
-            $(".modal").modal({
-                escapeClose: true,
-                clickClose: true,
-                showClose: true,
-                fadeDuration: 100
-            });
-        });
-
-        // 如果URL中有筛选参数,修改select控件的值,并且自动跳转到漏洞页
-        function checkSearch() {
-            var params = window.location.search;
-            if (params == "") {
-                // 没有筛选参数,返回
-                return;
-            }
-            // 点击漏洞列表
-            $("a[data-id='vul_l']").click();
-
-            // 设置select控件的值
-            params = params.substring(1);
-            params = params.split("&");
-            for (var i = 0; i < params.length; i++) {
-                console.log(params[i]);
-                var temp_data = params[i].split("=");
-                $("#" + temp_data[0]).val(unescape(temp_data[1]));
-            }
-        }
-        checkSearch();
-
-        // 点击search按钮
-        $("#search-result-btn").click(function () {
-            // 获取筛选条件
-            var search_vul_type = $("#search_vul_type").val();
-            var search_rule = $("#search_rule").val();
-            var search_level = $("#search_level").val();
-            var search_task = $("#search_task").val();
-            var search_status = $("#search_status").val();
-
-            // 获取当前URL,不包含参数
-            var current_url = window.location.href.split("?");
-            current_url = current_url[0];
-
-            // 拼接跳转URL
-            var jump_url = current_url + "?search_vul_type=" + search_vul_type + "&";
-            jump_url += "search_rule=" + search_rule + "&";
-            jump_url += "search_level=" + search_level + '&';
-            jump_url += "search_task=" + search_task + "&";
-            jump_url += "search_status=" + search_status;
-
-            // 跳转
-            window.location.href = jump_url;
-        });
-
         $(function () {
-            // load vulnerabilities list
-            $.post('/list',
-                    {
+            var vulnerabilities_list = {
+                init: function () {
+                    this.get();
+                    this.listen();
+                },
+                listen: function () {
+                    // filter submit button
+                    $('.filter_btn').on('click', function () {
+                        vulnerabilities_list.get();
+                        vulnerabilities_list.trigger_filter();
+                    });
+
+                    // filter setting
+                    $('.filter_setting').on('click', function () {
+                        vulnerabilities_list.trigger_filter();
+                    });
+                },
+                get: function () {
+                    // load vulnerabilities list
+                    $.post('/list', {
                         project_id: {{ data.project_id }},
                         search_vul_type: $("#search_vul_type").val(),
                         search_rule: $("#search_rule").val(),
@@ -551,8 +525,8 @@
                             var list = result.data.vulnerabilities;
                             var list_html = '';
                             for (var i = 0; i < list.length; i++) {
-                                list_html = list_html + '<li data-id="' + list[i].id + '">' +
-                                        '<strong>' + list[i].file + ':' + list[i].line + '</strong><br>' +
+                                list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + '" data-start="1" data-line="1">' +
+                                        '<strong>' + list[i].id + '. ' + list[i].file + ':' + list[i].line + '</strong><br>' +
                                         '<span class="issue-information">' +
                                         '<small>' +
                                         list[i].rule + ' ' + list[i].level +
@@ -572,10 +546,11 @@
                                     if (result.status_code == 1001) {
                                         var code_content = Prism.highlight(result.data.detail.code, Prism.languages.php);
                                         $('.code_content').html(code_content);
-                                        $('pre').attr('data-start', result.data.detail.line_start);
-                                        $('pre').attr('data-line', result.data.detail.line_trigger);
+                                        var pre = $('pre');
+                                        pre.attr('data-start', result.data.detail.line_start);
+                                        pre.attr('data-line', result.data.detail.line_trigger);
                                         Prism.highlightAll();
-                                        $("pre").scrollTop(result.data.detail.line_trigger * 13);
+                                        pre.scrollTop(result.data.detail.line_trigger * 13);
                                     } else {
                                         alert(result.message);
                                     }
@@ -584,8 +559,22 @@
                         } else {
                             alert(result.message);
                         }
-                    }, 'JSON'
-            );
+                    }, 'JSON');
+                },
+                trigger_filter: function () {
+                    if ($(".filter").is(":visible") == true) {
+                        $('.filter').hide();
+                        $('.vulnerabilities_list').show();
+                    } else {
+                        $('.vulnerabilities_list').hide();
+                        $('.filter').show();
+                    }
+
+                }
+            };
+
+            vulnerabilities_list.init();
+
 
             // nav
             $(".nav-tabs li a").on('click', function () {
@@ -594,17 +583,6 @@
                 $(this).parent('li').addClass('active');
                 $(".tab-pane").removeClass('active');
                 $('#' + id).addClass('active');
-            });
-
-            // filter setting
-            $('.filter_setting').on('click', function () {
-                if ($(".filter").is(":visible") == true) {
-                    $('.filter').hide();
-                    $('.vulnerabilities_list').show();
-                } else {
-                    $('.vulnerabilities_list').hide();
-                    $('.filter').show();
-                }
             });
 
             $('.icon_set_1_icon-74').click(function () {

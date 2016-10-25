@@ -320,16 +320,16 @@ def vulnerabilities_list():
     # 待搜索的漏洞等级
     search_level = request.form.get("search_level", None)
     # 待搜索的task id
-    search_task_id = request.args.get("search_task", "")
+    search_task_id = request.form.get("search_task", "")
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
     # 获取页码， 默认第一页
     try:
-        page = int(request.args.get("page", 1))
+        page = int(request.form.get("page", 1))
     except ValueError:
         page = 1
     # 是否显示修复的漏洞
     # 0 - all, 1 - repaired, 2 - unrepair, 3 - others
-    search_status_type = request.args.get("search_status", 2)
+    search_status_type = request.form.get("search_status", 2)
     # 检索全部的漏洞信息
     # status: 0 - all, 1 - repaired, 2 - unrepair, 3 - others
     if search_task_id is None:
@@ -384,7 +384,7 @@ def vulnerabilities_list():
     # 处理漏洞信息
     vulnerabilities = list()
     map_level = ["未定义", "低危", "中危", "高危"]
-    map_color = ["#555", "black", "orange", "red"]
+    map_color = ["low", "low", "medium", "high"]
     current_url = ''
     for result in all_scan_results:
         # 生成data数据
