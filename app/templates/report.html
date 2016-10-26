@@ -54,6 +54,60 @@
             height: 400px;
             width: 1000px;
         }
+
+        .vulnerabilities_list {
+            height: 500px;
+            list-style-type: none;
+            -webkit-padding-start: 0;
+            border: 1px solid #d6d6d6;
+            overflow-y: scroll;
+        }
+
+        .vulnerabilities_list > li {
+            border-top: 1px solid #efefef;
+            padding: 5px;
+        }
+
+        .vulnerabilities_list > li.high {
+            border-bottom: 3px solid #FF0000;
+        }
+
+        .vulnerabilities_list > li.medium {
+            border-bottom: 3px solid #c1ff69;
+        }
+
+        .vulnerabilities_list > li.low {
+            border-bottom: 3px solid forestgreen;
+        }
+
+        .vulnerabilities_list > li.active {
+            background: #dedede;
+        }
+
+        pre {
+            max-height: 600px;
+        }
+
+        pre > code.highlight {
+            outline: .4em solid #f00;
+            outline-offset: .4em;
+        }
+
+        .filter {
+            display: none;
+        }
+
+        ul.v_detail {
+            padding: 0;
+        }
+
+        ul.v_detail li {
+            list-style-type: none;
+        }
+
+        .filter_setting {
+            float: right;
+        }
     </style>
 
     <!--[if lt IE 9]>
@@ -202,66 +256,11 @@
                     {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
                         <h3>无漏洞</h3>
                     {% endif %}
-                    <style>
-                        .vulnerabilities_list {
-                            height: 500px;
-                            list-style-type: none;
-                            -webkit-padding-start: 0;
-                            border: 1px solid #d6d6d6;
-                            overflow-y: scroll;
-                        }
-
-                        .vulnerabilities_list > li {
-                            border-top: 1px solid #efefef;
-                            padding: 5px;
-                        }
-
-                        .vulnerabilities_list > li.high {
-                            border-bottom: 3px solid #FF0000;
-                        }
-
-                        .vulnerabilities_list > li.medium {
-                            border-bottom: 3px solid #c1ff69;
-                        }
-
-                        .vulnerabilities_list > li.low {
-                            border-bottom: 3px solid forestgreen;
-                        }
-
-                        .vulnerabilities_list > li.active {
-                            background: #dedede;
-                        }
-
-                        pre {
-                            max-height: 600px;
-                        }
-
-                        pre > code.highlight {
-                            outline: .4em solid #f00;
-                            outline-offset: .4em;
-                        }
-
-                        .filter {
-                            display: none;
-                        }
-
-                        ul.v_detail {
-                            padding: 0;
-                        }
-
-                        ul.v_detail li {
-                            list-style-type: none;
-                        }
-
-                        .filter_setting {
-                            float: right;
-                        }
-                    </style>
                     <div class="row">
                         <div class="panel panel-default col-md-3">
                             <div class="panel-heading">
                                 <h3 class="panel-title">漏洞列表
-                                    <div class="filter_setting">过滤</div>
+                                    <span class="filter_setting">过滤</span>
                                 </h3>
                             </div>
                             <div class="panel-body" style="padding: 15px 0;">
@@ -360,14 +359,26 @@
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>漏洞点: test.php</li>
-                                                    <li>行数: 45</li>
-                                                    <li>触发规则: CURL SSRF</li>
-                                                    <li>提交人: @xifeng</li>
-                                                    <li>提交时间: 2015-11-12 12:12:32</li>
-                                                    <li>发现时间: 2016-10-23 08:11:21</li>
-                                                    <li>修复状态: 未修复</li>
-                                                    <li>漏洞管理: 已推送给漏洞管理平台</li>
+                                                    <li>漏洞点: <span class="file_line"></span></li>
+                                                    <li>发现时间: <span class="found_time"></span></li>
+                                                    <li>修复状态: <span class="status_description"></span></li>
+                                                    <li>漏洞管理: <span class="third_v_status"></span></li>
+                                                </ul>
+                                            </div> <!-- .panel-body -->
+                                        </div>
+                                        <div class="panel panel-default col-md-12">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">扫描规则</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <ul class="v_detail">
+                                                    <li>规则名称: <span class="r_name"></span></li>
+                                                    <li>规则作者: <span class="r_author"></span></li>
+                                                    <li>扫描语言: <span class="r_language"></span></li>
+                                                    <li>危害等级: <span class="r_level"></span></li>
+                                                    <li>
+                                                        <p class="r_repair"></p>
+                                                    </li>
                                                 </ul>
                                             </div> <!-- .panel-body -->
                                         </div>
@@ -377,14 +388,14 @@
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>漏洞名称: SSRF(服务端请求伪造)</li>
-                                                    <li>危害分值: 80</li>
-                                                    <li>CWE: 95</li>
-                                                    <li>OWASP Top 10: A1</li>
-                                                    <li>SANA 25 Rank: 18</li>
-                                                    <li>价值奖励: $5,000</li>
+                                                    <li>漏洞名称: <span class="v_name"></span></li>
+                                                    <li>危害分值: <span class="v_score"></span></li>
+                                                    <li>CWE: <span class="v_cwe"></span></li>
+                                                    <li>OWASP Top 10: <span class="v_owasp"></span></li>
+                                                    <li>SANA 25 Rank: <span class="v_sana"></span></li>
+                                                    <li>价值奖励: <span class="v_bounty"></span></li>
                                                     <li>
-                                                        SSRF(服务端请求伪造)一般用作探测内网服务,但因为支持Dict/Gopher等协议能进一步导致探测内网服务的漏洞.
+                                                        <p class="v_description"></p>
                                                     </li>
                                                 </ul>
                                             </div> <!-- .panel-body -->
@@ -427,9 +438,11 @@
             </div>
         </div>
     </div>
+    <input type="hidden" name="project_id" value="{{ data.project_id }}">
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/report.js') }}" charset="utf-8"></script>
     <script>
         var types = [];
         var vuls = [];
@@ -490,227 +503,6 @@
             var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
             vul_distributing.setOption(option);
         {% endif %}
-
-        $(function () {
-            var vulnerabilities_list = {
-                page: 1,
-                init: function () {
-                    this.get();
-                    this.listen();
-                },
-                listen: function () {
-                    // filter submit button
-                    $('.filter_btn').on('click', function () {
-                        vulnerabilities_list.get();
-                        vulnerabilities_list.trigger_filter();
-                    });
-
-                    // filter setting
-                    $('.filter_setting').on('click', function () {
-                        vulnerabilities_list.trigger_filter();
-                    });
-
-                    // scroll load
-                    $(".vulnerabilities_list").scroll(function () {
-                        if ($(".vulnerabilities_list").scrollTop() > 350 * vulnerabilities_list.page) {
-                            vulnerabilities_list.next_page();
-                        }
-                    });
-                },
-                next_page: function () {
-                    this.page = this.page + 1;
-                    this.get(true);
-                },
-                get: function (next_page) {
-                    // load vulnerabilities list
-                    $.post('/list', {
-                        project_id: {{ data.project_id }},
-                        page: this.page,
-                        search_vul_type: $("#search_vul_type").val(),
-                        search_rule: $("#search_rule").val(),
-                        search_level: $("#search_level").val(),
-                        search_task: $("#search_task").val(),
-                        search_status: $("#search_status").val()
-                    }, function (result) {
-                        if (result.status_code == 1001) {
-                            var list = result.data.vulnerabilities;
-                            var list_html = '';
-                            for (var i = 0; i < list.length; i++) {
-                                list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + '" data-start="1" data-line="1">' +
-                                        '<strong>' + list[i].id + '. ' + list[i].file + ':' + list[i].line + '</strong><br>' +
-                                        '<span class="issue-information">' +
-                                        '<small>' +
-                                        list[i].rule + ' ' + list[i].level +
-                                        list[i].status_description +
-                                        '</small>' +
-                                        '</span>' +
-                                        '</li>';
-                            }
-                            if (next_page) {
-                                $('.vulnerabilities_list').append(list_html);
-                            } else {
-                                $('.vulnerabilities_list').html(list_html);
-                            }
-
-                            // vulnerabilities list detail
-                            $('.vulnerabilities_list li').on('click', function () {
-                                $('.vulnerabilities_list li').removeClass('active');
-                                $(this).addClass('active');
-                                var id = $(this).attr('data-id');
-                                $.post('/detail', {id: id}, function (result) {
-                                    if (result.status_code == 1001) {
-                                        var code_content = Prism.highlight(result.data.detail.code, Prism.languages.php);
-                                        $('.code_content').html(code_content);
-                                        var pre = $('pre');
-                                        pre.attr('data-start', result.data.detail.line_start);
-                                        pre.attr('data-line', result.data.detail.line_trigger);
-                                        Prism.highlightAll();
-                                        pre.scrollTop(result.data.detail.line_trigger * 13);
-                                    } else {
-                                        alert(result.message);
-                                    }
-                                }, 'JSON');
-                            });
-                        } else {
-                            alert(result.message);
-                        }
-                    }, 'JSON');
-                },
-                trigger_filter: function () {
-                    if ($(".filter").is(":visible") == true) {
-                        $('.filter').hide();
-                        $('.vulnerabilities_list').show();
-                    } else {
-                        $('.vulnerabilities_list').hide();
-                        $('.filter').show();
-                    }
-
-                }
-            };
-
-            vulnerabilities_list.init();
-
-
-            // nav
-            $(".nav-tabs li a").on('click', function () {
-                var id = $(this).attr('data-id');
-                $(".nav-tabs li").removeClass('active');
-                $(this).parent('li').addClass('active');
-                $(".tab-pane").removeClass('active');
-                $('#' + id).addClass('active');
-            });
-
-            $('.icon_set_1_icon-74').click(function () {
-                var myself = $(this);
-                var rule_id = $(this).attr('rule_id');
-                var project_path = $(this).attr('file_path');
-                var data = {'project_id': '{{ data.project_id }}', 'rule_id': rule_id, 'path': project_path, 'reason': 'Remark'};
-                $.ajax({
-                    'url': '/admin/add_whitelist',
-                    'type': 'POST',
-                    'data': data,
-                    //'contentType':'application/json; charset=utf-8',
-                    'async': false,
-                    'success': function (result) {
-                        if (result.tag == 'success') {
-                            alert('Add whitelist success!');
-                        }
-                    }
-                });
-            });
-
-            /* Ext Chart */
-            var ext_distributing = echarts.init(document.getElementById('ext_distributing'));
-            ext_distributing.showLoading();
-
-            $.get('/ext/{{ data.task_info.id }}', function (result) {
-                if (result.code == 1001) {
-                    var diskData = result.result;
-                    ext_distributing.hideLoading();
-
-                    function colorMappingChange(value) {
-                        var levelOption = getLevelOption(value);
-                        chart.setOption({
-                            series: [{
-                                levels: levelOption
-                            }]
-                        });
-                    }
-
-                    var formatUtil = echarts.format;
-
-                    function getLevelOption() {
-                        return [
-                            {
-                                itemStyle: {
-                                    normal: {
-                                        borderWidth: 0,
-                                        gapWidth: 5
-                                    }
-                                }
-                            },
-                            {
-                                itemStyle: {
-                                    normal: {
-                                        gapWidth: 1
-                                    }
-                                }
-                            },
-                            {
-                                colorSaturation: [0.35, 0.5],
-                                itemStyle: {
-                                    normal: {
-                                        gapWidth: 1,
-                                        borderColorSaturation: 0.6
-                                    }
-                                }
-                            }
-                        ];
-                    }
-
-                    ext_distributing.setOption(option = {
-                        tooltip: {
-                            formatter: function (info) {
-                                var value = info.value;
-                                var treePathInfo = info.treePathInfo;
-                                var treePath = [];
-
-                                for (var i = 1; i < treePathInfo.length; i++) {
-                                    treePath.push(treePathInfo[i].name);
-                                }
-
-                                return [
-                                    '<div class="tooltip-title">' + formatUtil.encodeHTML(treePath.join('/')) + '</div>',
-                                    'Amount: ' + formatUtil.addCommas(value),
-                                ].join('');
-                            }
-                        },
-
-                        series: [
-                            {
-                                name: 'Ext',
-                                type: 'treemap',
-                                roam: false,
-                                visibleMin: 300,
-                                label: {
-                                    show: true,
-                                    formatter: '{b}'
-                                },
-                                itemStyle: {
-                                    normal: {
-                                        borderColor: '#fff'
-                                    }
-                                },
-                                levels: getLevelOption(),
-                                data: diskData
-                            }
-                        ]
-                    });
-                } else {
-                    alert(result.result);
-                }
-            }, 'JSON');
-        });
     </script>
 </div>
 </body>
