@@ -10,34 +10,34 @@
 
 ---
 
-## Introduction
-Cobra is a static code security issues analysis and scan vulnerabilities scan system.
+## 介绍
+Cobra是一款定位于静态代码安全分析系统。通过收集互联网常规漏洞的检测方法并输出成Cobra扫描规则，即可以自动化分析出源代码中存在的漏洞并生成完整的漏洞审计报告和详细的修复方案。
 
-## Target Audience
-**1. IT/Network Company**
+## 受众
+**1. 互联网相关企业**
 
-Internet companies can deploy Cobra within the enterprise for developers to use to scan for project risks.
-It can also be integrated into an internal code distribution system that allows Cobra to become a part of the distribution system by scanning developers for security of code submitted to the line, thereby limiting unsafe code to go online and reducing online risk.
+互联网公司可以将Cobra部署在企业内,供开发人员使用,用来扫描项目风险.
+也可以集成到内部的代码发布系统,让Cobra成为发布系统中的一环,扫描开发人员提交到线上的代码的安全性,从而限制不安全的代码上线,减少线上风险.
 
-**2. Security Company**
+**2. 安全公司**
 
-Security companies for Internet companies for security testing, you can Cobra's global project scanning capabilities of all items of Party A automatic code security audit.
+安全公司为互联网公司进行安全测试时,可以通过Cobra的全局项目扫描功能对甲方的所有项目进行自动代码安全审计.
 
-**3. White Hat**
+**3. 白帽**
 
-White Hat can be customized private Cobra scanning rules, open source project code audit, found the vulnerability.
+白帽们可以通过定制私有Cobra扫描规则, 对开源项目进行代码审计,发现其中漏洞.
 
 
-## Screenshot
-##### Cobra Manual Scan
+## 截图
+##### 自助扫描
 ![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
-##### Cobra Report
+##### 审计报告
 ![Cobra Report](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
-##### Cobra Manage
+##### 管理后台
 ![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
 
-## References
-- Documents - [http://cobra-docs.readthedocs.io](http://cobra-docs.readthedocs.io)
-- Website - Coming soon!
-- Online Demo - Coming soon!
+## 其它
+- Cobra文档 - [http://cobra-docs.readthedocs.io](http://cobra-docs.readthedocs.io)
+- 官方网站 - 敬请期待!
+- 在线演示 - 敬请期待!
 
