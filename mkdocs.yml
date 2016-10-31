@@ -1,0 +1,29 @@
+site_name: Cobra
+repo_url: https://github.com/wufeifei/cobra
+site_description: Cobra is a static code security analyzed system
+site_author: Feei
+site_favicon: favicon.ico
+copyright: Copyright (C) 2016 Feei. All rights reserved
+theme: readthedocs
+pages:
+- Home: 'index.md'
+- Getting Started:
+  - Introduction: 'introduction.md'
+  - Installation: 'installation.md'
+  - Configuration: 'configuration.md'
+- Usage:
+  - GUI: 'GUI.md'
+  - CLI: 'CLI.md'
+  - API: 'API.md'
+- Structure:
+  - Framework: 'framework.md'
+  - Tables: 'tables.md'
+- Resources:
+  - Rule List: 'rule_list.md'
+  - Vulnerabilities: 'vulnerabilities.md'
+  - Languages: 'languages.md'
+- Modules:
+  - Detection URI: 'detection_uri.md'
+- FAQ: 'FAQ.md'
+- Reference:
+  - Rule Source: 'rule_source.md'

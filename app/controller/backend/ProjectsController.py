@@ -16,6 +16,7 @@ import time
 from flask import render_template, request, jsonify, redirect
 
 from . import ADMIN_URL
+from utils import config
 from app import web, db
 from app.CommonClass.ValidateClass import ValidateClass, login_required
 from app.models import CobraProjects
@@ -29,9 +30,11 @@ __email__ = "root@lightless.me"
 @login_required
 def projects(page):
     per_page = 10
-    project = CobraProjects.query.order_by(CobraProjects.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    projects = CobraProjects.query.order_by(CobraProjects.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    for project in projects:
+        project.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
     data = {
-        'projects': project,
+        'projects': projects,
     }
     return render_template("backend/project/projects.html", data=data)
 
@@ -64,13 +67,13 @@ def add_project():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
     if request.method == "POST":
-        vc = ValidateClass(request, "name", "repository", "author", "remark")
+        vc = ValidateClass(request, "name", "repository", "url", "author", "pe", "remark")
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        project = CobraProjects(vc.vars.repository, ' ', vc.vars.name, vc.vars.author, '', '1', vc.vars.remark, current_time)
+        project = CobraProjects(vc.vars.repository, vc.vars.url, vc.vars.name, vc.vars.author, '', vc.vars.pe, vc.vars.remark, current_time)
         try:
             db.session.add(project)
             db.session.commit()
@@ -87,7 +90,7 @@ def add_project():
 def edit_project(project_id):
     if request.method == "POST":
 
-        vc = ValidateClass(request, "project_id", "name", "repository", "author", "remark")
+        vc = ValidateClass(request, "project_id", "name", "repository", "url", "author", "pe", "remark")
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
@@ -100,7 +103,9 @@ def edit_project(project_id):
         # update project data
         project.name = vc.vars.name
         project.author = vc.vars.author
+        project.pe = vc.vars.pe
         project.remark = vc.vars.remark
+        project.url = vc.vars.url
         project.repository = vc.vars.repository
         project.updated_at = current_time
         try:

@@ -13,12 +13,13 @@
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
 from app import web, manager
-from utils import config
+from utils import log, config
 
 
 def main():
+    log.Log()
     debug = config.Config('cobra', 'debug').value
-    web.debug = bool(debug)
+    web.debug = int(debug)
     manager.run()
 
 

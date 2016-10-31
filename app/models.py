@@ -13,9 +13,12 @@
 """
 
 import time
+import datetime
+
 from sqlalchemy.schema import UniqueConstraint, Index
 from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT
 from werkzeug.security import check_password_hash, generate_password_hash
+
 from app import db
 
 
@@ -84,12 +87,13 @@ class CobraRules(db.Model):
     block_repair = db.Column(TINYINT(2), nullable=False, default=None)
     description = db.Column(db.String(256), nullable=False, default=None)
     repair = db.Column(db.String(512), nullable=False, default=None)
+    author = db.Column(db.String(56), nullable=False, default=None)
     status = db.Column(TINYINT(2), nullable=False, default=None)
     level = db.Column(TINYINT(2), nullable=False, default=None)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
-    def __init__(self, vul_id, language, regex_location, regex_repair, block_repair, description, repair, status, level, created_at=None, updated_at=None):
+    def __init__(self, vul_id, language, regex_location, regex_repair, block_repair, description, repair, status, author, level, created_at=None, updated_at=None):
         self.vul_id = vul_id
         self.language = language
         self.regex_location = regex_location
@@ -98,6 +102,7 @@ class CobraRules(db.Model):
         self.description = description
         self.repair = repair
         self.status = status
+        self.author = author
         self.level = level
         self.created_at = created_at
         self.updated_at = updated_at
@@ -112,7 +117,7 @@ class CobraRules(db.Model):
             self.updated_at = updated_at
 
     def __repr__(self):
-        return "<CobraRules %r - %r: %r>" % (self.id, self.language, self.regex)
+        return "<CobraRules %r - %r: %r>" % (self.id, self.language, self.regex_location)
 
 
 class CobraVuls(db.Model):
@@ -126,13 +131,15 @@ class CobraVuls(db.Model):
     name = db.Column(db.String(56), nullable=False, default=None)
     description = db.Column(db.String(512), nullable=False, default=None)
     repair = db.Column(db.String(512), nullable=False, default=None)
+    third_v_id = db.Column(INTEGER, nullable=False, default=None)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
-    def __init__(self, name, description, repair, created_at=None, updated_at=None):
+    def __init__(self, name, description, repair, third_v_id, created_at=None, updated_at=None):
         self.name = name
         self.description = description
         self.repair = repair
+        self.third_v_id = third_v_id
         self.created_at = created_at
         self.updated_at = updated_at
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
@@ -175,22 +182,31 @@ class CobraResults(db.Model):
     __tablename__ = 'results'
 
     id = db.Column(INTEGER(unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    task_id = db.Column(INTEGER(11), nullable=False, default=None)
-    rule_id = db.Column(INTEGER(11), nullable=False, default=None)
+    task_id = db.Column(INTEGER, nullable=False, default=None)
+    project_id = db.Column(INTEGER, nullable=False, default=None)
+    rule_id = db.Column(INTEGER, nullable=False, default=None)
     file = db.Column(db.String(512), nullable=False, default=None)
     line = db.Column(INTEGER(11), nullable=False, default=None)
     code = db.Column(db.String(512), nullable=False, default=None)
+    """
+    0: 漏洞扫完后初始化状态
+    1: 已推送给第三方漏洞管理平台
+    2: 已经修复
+    """
+    status = db.Column(TINYINT, default=None, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
     __table_args__ = (Index('ix_task_id_rule_id', task_id, rule_id), {"mysql_charset": "utf8mb4"})
 
-    def __init__(self, task_id, rule_id, file_path, line, code, created_at=None, updated_at=None):
+    def __init__(self, task_id, project_id, rule_id, file_path, line, code, status, created_at=None, updated_at=None):
         self.task_id = task_id
+        self.project_id = project_id
         self.rule_id = rule_id
         self.file = file_path
         self.line = line
         self.code = code
+        self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
@@ -407,3 +423,49 @@ class CobraAdminUser(db.Model):
 
     def generate_password(self, password):
         self.password = generate_password_hash(password)
+
+
+class CobraWebFrameRules(db.Model):
+    """
+    Save web framework rules information.
+    """
+    __tablename__ = "web_frames_rules"
+    __table_args__ = ({"mysql_charset": "utf8mb4"})
+
+    id = db.Column(INTEGER(10, unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    frame_id = db.Column(INTEGER(10, unsigned=True), nullable=False, default=None)     # 框架ID
+    path_rule = db.Column(db.String(512), nullable=False, default=None)    # 路径规则
+    content_rule = db.Column(db.String(512), nullable=False, default=None)    # 文件内容规则
+    status = db.Column(TINYINT(1, unsigned=True), nullable=False, default=None)     # 状态1-开启，2-关闭
+    created_time = db.Column(db.DATETIME, nullable=False, default=None)
+    updated_time = db.Column(db.DATETIME, nullable=False, default=None)
+
+    def __init__(self, frame_id, path_rule, content_rule, status=0, created_time=datetime.datetime.now(), updated_time=datetime.datetime.now()):
+        self.frame_id = frame_id
+        self.path_rule = path_rule
+        self.content_rule = content_rule
+        self.status = status
+        self.created_time = created_time
+        self.updated_time = updated_time
+
+    def __repr__(self):
+        return "<CobraWebFrameRules {id}-{path}>".format(id=self.id, path=self.path_rule)
+
+
+class CobraWebFrame(db.Model):
+    """
+    Save web frame type.
+    """
+    __tablename__ = "web_frames"
+    __table_args__ = ({"mysql_charset": "utf8mb4"})
+
+    id = db.Column(INTEGER(10, unsigned=True), primary_key=True, autoincrement=True, nullable=False)
+    frame_name = db.Column(db.String(64), nullable=False, default=None)     # 框架名称
+    description = db.Column(db.String(256), nullable=False, default=None)   # 框架描述
+
+    def __init__(self, frame_name, description):
+        self.frame_name = frame_name
+        self.description = description
+
+    def __repr__(self):
+        return "<CobraWebFrame {id}-{frame_name}>".format(id=self.id, frame_name=self.frame_name)

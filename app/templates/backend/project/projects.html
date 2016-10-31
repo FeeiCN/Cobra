@@ -14,7 +14,7 @@
     <tbody id="main-table">
     {% for project in data.projects %}
         <tr>
-            <td>{{ project.id }}</td>
+            <td><a href="{{ project.report }}" target="_blank">{{ project.id }}</a></td>
             <td>{{ project.name }}</td>
             <td>{{ project.author }}</td>
             <td>{{ project.repository }}</td>

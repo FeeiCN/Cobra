@@ -16,10 +16,14 @@ import os
 import time
 import subprocess
 import getpass
+import logging
 from app import db, CobraProjects, CobraTaskInfo
 from utils import config, decompress, log
 from pickup import git
 from engine import detection
+
+log.Log()
+logging = logging.getLogger(__name__)
 
 
 class Scan:
@@ -37,34 +41,59 @@ class Scan:
             return 1002, result_d
         else:
             directory = result_d
-        log.info("Scan directory: {0}".format(directory))
+        logging.info("Scan directory: {0}".format(directory))
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        task = CobraTaskInfo(self.target, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
+
+        p = CobraProjects.query.filter_by(repository=directory).first()
+
+        # detection framework for project
+        framework, language = detection.Detection(directory).framework()
+        if framework != '' or language != '':
+            project_framework = '{0} ({1})'.format(framework, language)
+        else:
+            project_framework = ''
+        if not p:
+            # insert into project table.
+            repo_name = directory.split('/')[-1]
+            project = CobraProjects(directory, '', repo_name, 'Upload', project_framework, '', '', current_time)
+            db.session.add(project)
+            db.session.commit()
+            project_id = project.id
+        else:
+            project_id = p.id
+            # update project's framework
+            p.framework = project_framework
+            db.session.add(p)
+
+        task = CobraTaskInfo(directory, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
         db.session.add(task)
         db.session.commit()
         cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
         if os.path.isfile(cobra_path) is not True:
             return 1004, 'Cobra Not Found'
-        # Start Scanning
-        subprocess.Popen(['python', cobra_path, "scan", "-p", str(0), "-i", str(task.id), "-t", directory])
-        # Statistic Code
+        # 扫描漏洞
+        subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", directory])
+        # 统计代码行数
         subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", directory])
+        # 检测漏洞修复状况
+        subprocess.Popen(['python', cobra_path, "repair", "-p", str(project_id)])
         result = dict()
         result['scan_id'] = task.id
-        result['project_id'] = 0
+        result['project_id'] = project_id
         result['msg'] = u'success'
         return 1001, result
 
     def version(self, branch=None, new_version=None, old_version=None):
         # Gitlab
         if '.git' in self.target:
+            logging.info('Gitlab project')
             # Git
             if 'gitlab' in self.target:
                 username = config.Config('git', 'username').value
                 password = config.Config('git', 'password').value
             else:
-                username = False
-                password = False
+                username = None
+                password = None
             gg = git.Git(self.target, branch=branch, username=username, password=password)
             repo_author = gg.repo_author
             repo_name = gg.repo_name
@@ -97,32 +126,36 @@ class Scan:
 
         # detection framework for project
         framework, language = detection.Detection(repo_directory).framework()
-        project_framework = '{0} ({1})'.format(framework, language)
+        if framework != '' or language != '':
+            project_framework = '{0} ({1})'.format(framework, language)
+        else:
+            project_framework = ''
+        project_id = 0
         if not p:
             # insert into project table.
             project = CobraProjects(self.target, '', repo_name, repo_author, project_framework, '', '', current_time)
-            project_id = project.id
         else:
             project_id = p.id
-
             # update project's framework
             p.framework = project_framework
             db.session.add(p)
-            db.session.commit()
         try:
             db.session.add(task)
             if not p:
                 db.session.add(project)
             db.session.commit()
-
+            if not p:
+                project_id = project.id
             cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
 
             if os.path.isfile(cobra_path) is not True:
                 return 1004, 'Cobra Not Found'
-            # Start Scanning
+            # 扫描漏洞
             subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
-            # Statistic Code
+            # 统计代码行数
             subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
+            # 检测漏洞修复状况
+            subprocess.Popen(['python', cobra_path, "repair", "-p", str(project_id)])
             result = dict()
             result['scan_id'] = task.id
             result['project_id'] = project_id

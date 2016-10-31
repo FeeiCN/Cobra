@@ -21,6 +21,20 @@ directory: /tmp/cobra
 extensions: tar.bz2|tar|gz|tgz|tar.gz|rar|zip
 max_size: 200
 
+[third_party_vulnerabilities]
+# Push vulnerabilities to third vulnerabilities ?
+status: 0
+
+# Third vulnerabilities api url
+api:
+
+# Key
+key:
+
+[queue]
+broker:redis://:password@127.0.0.1:7890/4
+backend:redis://:password@127.0.0.1:7890/4
+
 [database]
 mysql: mysql+mysqldb://root:@127.0.0.1:3306/cobra
 

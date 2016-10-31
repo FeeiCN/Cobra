@@ -1,36 +1,142 @@
+<style>
+    .operation > span {
+        margin: 0 5px;
+    }
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+</style>
+
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Language</th>
-            <th>Vul type</th>
+            <th>Rule type</th>
             <th>Description</th>
+            <th>Update Time</th>
             <th>Status</th>
-            <th>Update time</th>
             <th>Operation</th>
         </tr>
     </thead>
     <tbody id="main-table">
     {% for rule in data.rules %}
         <tr>
-            <td>{{ rule.id }}</td>
-            <td>{{ rule.language }}</td>
-            <td>{{ rule.vul_id }}</td>
-            <td>{{ rule.description }}</td>
-            <td>{{ rule.status }}</td>
-            <td>{{ rule.updated_at }}</td>
-            <td hidden id="rule-regex-{{ rule.id }}">{{ rule.regex }}</td>
-            <td hidden id="rule-confirm-regex-{{ rule.id }}">{{ rule.regex_confirm }}</td>
+            <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.id }}</td>
+            <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.language }}</td>
+            <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.vul_id }}</td>
+            <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.description }}</td>
+            <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.updated_at }}</td>
+            <td align="center" data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">
+                <span style="color: {% if rule.status %}green{% else %}red{% endif %}"
+                      class="glyphicon glyphicon-{% if rule.status %}ok{% else %}remove{% endif %}">
+                </span>
+            </td>
+            <td hidden id="rule-regex-location-{{ rule.id }}">{{ rule.regex_location }}</td>
+            <td hidden id="rule-regex-repair-{{ rule.id }}">{{ rule.regex_repair }}</td>
+            <td hidden id="rule-block-repair-{{ rule.id }}">{{ rule.block_repair }}</td>
             <td hidden id="rule-repair-{{ rule.id }}">{{ rule.repair }}</td>
             <td hidden id="rule-level-{{ rule.id }}">{{ rule.level }}</td>
-            <td>
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-rule-{{ rule.id }}"></span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-rule-{{ rule.id }}"
-                      data-toggle="modal" data-target="#view-modal">
-                </span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-remove" aria-hidden="true" id="del-rule-{{ rule.id }}"></span>
+            <td align="center" class="operation">
+                <span style="color: darkblue;" class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-rule-{{ rule.id }}"></span>
+{#                <span style="color: darkgoldenrod;" class="glyphicon glyphicon-eye-open" aria-hidden="true" id="view-rule-{{ rule.id }}"#}
+{#                      data-toggle="modal" data-target="#view-modal">#}
+{#                </span>#}
+                <span style="color: darkred;" class="glyphicon glyphicon-trash" aria-hidden="true" id="del-rule-{{ rule.id }}"></span>
+                <span style="color: darkgreen;" class="glyphicon glyphicon-off" aria-hidden="true" id="update-rule-{{ rule.id }}"></span>
             </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
+
+<div class="modal fade bs-example-modal-sm" id="update-rule-tip" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body update-rule-status">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" id="delete-tip" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header del-header">
+        </div>
+        <div class="modal-body" id="delete-tip-body">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button class="btn btn-danger" data-dismiss="modal" id="del-rule-by-id">Yes. Delete this rule.</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+
+    // 点击更新状态按钮
+    $("span[id^=update-rule-]").click(function () {
+        var rid = $(this).attr("id").split("-")[2];
+        $.post("update_status", {"id": rid}, function (retValue) {
+            $(".update-rule-status").html(retValue.message);
+            $("#update-rule-tip").modal();
+            $("#update-rule-tip").on("hidden.bs.modal", function () {
+                $("#main-div").load("rules/"+g_rule_back_page);
+            });
+        });
+        return false;
+    });
+
+    // 点击该行弹出详情
+    $("td[id^=tr-rule-]").click(function () {
+        var rid = $(this).attr("id").split('-')[2];
+        var LocationRegex = $("<div/>").text($("#rule-regex-location-" + rid).text()).html();
+        var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + rid).text()).html();
+        var RepairBlock = $("<div/>").text($("#rule-block-repair-" + rid).text()).html();
+        var RepairMethod = $("<div/>").text($("#rule-repair-" + rid).text()).html();
+        var RuleLevel = $("<div/>").text($("#rule-level-" + rid).text()).html();
+
+        $("#view-title").html("Rule Details");
+        var contents = "<b>Location Regex: </b><pre class=pre-scrollable>" + LocationRegex + "</pre><br />";
+        contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
+        contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
+        contents += "<b>Repair Method: </b>" + RepairMethod + "<br />";
+        contents += "<b>Level: </b>" + RuleLevel + "<br />";
+        $("#view-body").html(contents);
+    });
+
+    // 点击删除按钮
+    $("span[id^=del-rule-]").click(function () {
+        var rid = $(this).attr("id").split('-')[2];
+        var LocationRegex = $("<div/>").text($("#rule-regex-location-" + rid).text()).html();
+        var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + rid).text()).html();
+        var RepairBlock = $("<div/>").text($("#rule-block-repair-" + rid).text()).html();
+        var RepairMethod = $("<div/>").text($("#rule-repair-" + rid).text()).html();
+        var RuleLevel = $("<div/>").text($("#rule-level-" + rid).text()).html();
+{#        var contents = '<h4>Are you sure DELETE this rule?</h4>'#}
+        $(".del-header").html("<h4>Are you <span style='color: red'>ABSOLUTELY</span> sure?</h4>");
+        var contents = "";
+        contents += "<b>Location Regex: </b><pre class=pre-scrollable>" + LocationRegex + "</pre><br />";
+        contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
+        contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
+        contents += "<b>Repair Method: </b>" + RepairMethod + "<br />";
+        contents += "<b>Level: </b>" + RuleLevel + "<br />";
+        $("#delete-tip-body").html(contents);
+        $("#delete-tip").modal();
+
+        $("#del-rule-by-id").click(function () {
+            $.post('del_rule', {'rule_id': rid}, function (data) {
+                $(".update-rule-status").html(data.msg);
+                $("#update-rule-tip").modal();
+                $("#update-rule-tip").on("hidden.bs.modal", function () {
+                    $("#main-div").load("rules/"+g_rule_back_page);
+                });
+            });
+        });
+    });
+
+});
+</script>

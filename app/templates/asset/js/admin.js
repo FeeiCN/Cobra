@@ -133,6 +133,7 @@ $("#main-div").delegate("span", "click", function () {
                     var regex_repair = $("#regex-repair").val();
                     var block_reapir = $("#repair-block:checked").val();
                     var repair = $("#repair").val();
+                    var author = $("input[name=author]").val();
                     var status = $("#status:checked").val();
                     var level = $("#level:checked").val();
 
@@ -153,16 +154,16 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert("danger", "regex location cannot be blank.", "#edit-rule-result");
                         return false;
                     }
-                    if (!regex_repair || regex_repair == "") {
-                        showAlert("danger", "regex repair cannot be blank.", "#edit-rule-result");
-                        return false;
-                    }
                     if (!block_reapir || block_reapir == "") {
                         showAlert("danger", "block repair cannot be blank.", "#edit-rule-result");
                         return false;
                     }
                     if (!repair || repair == "") {
                         showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
+                        return false;
+                    }
+                    if (!author || author == "") {
+                        showAlert('danger', 'author can not be blank.', '#edit-rule-result');
                         return false;
                     }
                     if (!status || status == "") {
@@ -184,6 +185,7 @@ $("#main-div").delegate("span", "click", function () {
                         'description': description,
                         'rule_id': cid,
                         'repair': repair,
+                        'author': author,
                         'status': status,
                         'level': level
                     };
@@ -224,26 +226,28 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         } else if (type === 'view') {
-            var regex = $("<div/>").text($("#rule-regex-" + cid).text()).html();
-            var confirm_regex = $("<div/>").text($("#rule-confirm-regex-" + cid).text()).html();
-            var repair = $("<div/>").text($("#rule-repair-" + cid).text()).html();
-            var level = $("<div/>").text($("#rule-level-" + cid).text()).html();
-            console.log(level);
-            $("#view-title").html("rule details.");
-            var content = "<b>regex: </b>" + regex + "<br />";
-            content += "<b>confirm regex: </b>" + confirm_regex + "<br />";
-            content += "<b>repair: </b>" + repair + "<br />";
-            content += "<b>level: </b>" + level + "<br />";
-            $("#view-body").html(content);
+            // var LocationRegex = $("<div/>").text($("#rule-regex-location-" + cid).text()).html();
+            // var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + cid).text()).html();
+            // var RepairBlock = $("<div/>").text($("#rule-block-repair-" + cid).text()).html();
+            // var RepairMethod = $("<div/>").text($("#rule-repair-" + cid).text()).html();
+            // var RuleLevel = $("<div/>").text($("#rule-level-" + cid).text()).html();
+            //
+            // $("#view-title").html("Rule Details");
+            // var contents = "<b>Location Regex: </b><pre>" + LocationRegex + "</pre><br />";
+            // contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
+            // contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
+            // contents += "<b>repair: </b>" + RepairMethod + "<br />";
+            // contents += "<b>level: </b>" + RuleLevel + "<br />";
+            // $("#view-body").html(contents);
         } else if (type === "del") {
-            $.post('del_rule', {'rule_id': cid}, function (data) {
-                var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
-                tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
-                tt += '<span aria-hidden="true">&times;</span></button>';
-                tt += '<strong>' + data.msg + '</strong></div>';
-                $("#operate_result").html(tt).fadein(1000);
-                $("#show_all_rules").click();
-            });
+            // $.post('del_rule', {'rule_id': cid}, function (data) {
+            //     var tt = '<div class="alert alert-' + data.tag + ' alert-dismissible" role="alert">';
+            //     tt += '<button type="button" class="close" data-dismiss="alert" aria-label="close">';
+            //     tt += '<span aria-hidden="true">&times;</span></button>';
+            //     tt += '<strong>' + data.msg + '</strong></div>';
+            //     $("#operate_result").html(tt);
+            //     $("#show_all_rules").click();
+            // });
         }
 
     } else if (target === "vul") {
@@ -264,6 +268,7 @@ $("#main-div").delegate("span", "click", function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
+                    var third_v_id = $('input[name=third_v_id]').val();
 
                     if (!name || name == "") {
                         showAlert('danger', 'name can not be blank.', '#edit-vul-result');
@@ -282,7 +287,8 @@ $("#main-div").delegate("span", "click", function () {
                         'vul_id': cid,
                         'name': name,
                         'description': description,
-                        'repair': repair
+                        'repair': repair,
+                        'third_v_id': third_v_id
                     };
                     $.post('edit_vul/' + cid, data, function (res) {
                         showAlert(res.tag, res.msg, '#edit-vul-result');
@@ -323,7 +329,7 @@ $("#main-div").delegate("span", "click", function () {
                                         window.open(result.result['report'], '_blank');
                                     }
                                     else {
-                                        setTimeout(get_status, 300);
+                                        setTimeout(get_status, 2000);
                                     }
                                 }
                             });
@@ -383,7 +389,9 @@ $("#main-div").delegate("span", "click", function () {
                 $("#edit-project-button").click(function () {
                     var name = $("#name").val();
                     var repository = $("#repository").val();
+                    var url = $("#url").val();
                     var author = $("#author").val();
+                    var pe = $("#pe").val();
                     var remark = $("#remark").val();
 
                     if (!name || name == "") {
@@ -394,6 +402,10 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert('danger', 'repository can not be empty!', '#edit-project-result');
                         return false;
                     }
+                    if (!url || url == "") {
+                        showAlert('danger', 'url can not be empty!', '#edit-project-result');
+                        return false;
+                    }
                     if (!remark || remark == "") {
                         showAlert('danger', 'remark can not be empty!', '#edit-project-result');
                         return false;
@@ -402,13 +414,19 @@ $("#main-div").delegate("span", "click", function () {
                         showAlert('danger', 'author cannot be empty!', '#edit-project-result');
                         return false;
                     }
+                    if (!pe || pe == "") {
+                        showAlert('danger', 'pe cannot be empty!', '#edit-project-result');
+                        return false;
+                    }
 
                     data = {
                         'project_id': cid,
                         'name': name,
                         'repository': repository,
+                        'url': url,
                         'author': author,
-                        'remark': remark
+                        'remark': remark,
+                        'pe': pe
                     };
                     $.post('edit_project/' + cid, data, function (res) {
                         showAlert(res.tag, res.msg, '#edit-project-result');
@@ -559,6 +577,7 @@ $("#show_all_rules").click(function () {
         $("#add_new_rules").click(function () {
             $.get('add_new_rule', function (data) {
                 $("#main-div").html(data);
+                $("#paginate").html("");
 
                 $("#add-new-rule-button").click(function () {
                     var vul_type = $("#vul_type").val();
@@ -568,14 +587,16 @@ $("#show_all_rules").click(function () {
                     var repair_block = $("#repair-block:checked").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
+                    var author = $("input[name=author]").val();
                     var level = $("#level:checked").val();
+                    var status = $("#status:checked").val();
 
                     // check data
-                    if (!vul_type || vul_type == "") {
+                    if (!vul_type || vul_type == -1) {
                         showAlert('danger', 'vul type error.', '#add-new-rule-result');
                         return false;
                     }
-                    if (!lang || lang == "") {
+                    if (!lang || lang == -1) {
                         showAlert('danger', 'language error.', '#add-new-rule-result');
                         return false;
                     }
@@ -587,10 +608,6 @@ $("#show_all_rules").click(function () {
                         showAlert('danger', 'location regex can not be blank.', '#add-new-rule-result');
                         return false;
                     }
-                    if (!regex_repair || regex_repair == "") {
-                        showAlert('danger', 'repair regex confirm can not be blank.', '#add-new-rule-result');
-                        return false;
-                    }
                     if (!repair_block || repair_block == "") {
                         showAlert('danger', 'repair block confirm can not be blank.', '#add-new-rule-result');
                         return false;
@@ -599,8 +616,16 @@ $("#show_all_rules").click(function () {
                         showAlert('danger', 'repair can not be blank.', '#add-new-rule-result');
                         return false;
                     }
+                    if (!author || author == "") {
+                        showAlert('danger', 'author can not be blank.', '#add-new-rule-result');
+                        return false;
+                    }
                     if (!level || level == "") {
                         showAlert('danger', 'level can not be blank.', "#add-new-rule-result");
+                        return false;
+                    }
+                    if (!status || status == "") {
+                        showAlert("danger", "Status can't be blank.", "#add-new-rule-result");
                         return false;
                     }
 
@@ -613,7 +638,9 @@ $("#show_all_rules").click(function () {
                         'repair_block': repair_block,
                         'description': description,
                         'repair': repair,
-                        'level': level
+                        'author': author,
+                        'level': level,
+                        'status': status
                     };
                     $.post('add_new_rule', data, function (res) {
                         showAlert(res.tag, res.msg, '#add-new-rule-result');
@@ -632,7 +659,7 @@ $("#show_all_vuls").click(function () {
     $.get('vuls/1', function (data) {
         $("#main-div").html(data);
 
-// Add new vuls.
+        // Add new vuls.
         $("#add_new_vuls").click(function () {
             $.get('add_new_vul', function (data) {
                 $("#main-div").html(data);
@@ -648,6 +675,7 @@ $("#show_all_vuls").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
+                    var third_v_id = $('input[name=third_v_id]').val();
 
                     if (name == "" || !name) {
                         showAlert('danger', 'name can not be blank.', '#add-new-vul-result');
@@ -664,7 +692,8 @@ $("#show_all_vuls").click(function () {
                     var data = {
                         'name': name,
                         'description': description,
-                        'repair': repair
+                        'repair': repair,
+                        'third_v_id': third_v_id
                     };
                     $.post('add_new_vul', data, function (res) {
                         showAlert(res.tag, res.msg, "#add-new-vul-result");
@@ -690,7 +719,9 @@ $("#show_all_projects").click(function () {
                 $("#add-project-button").click(function () {
                     var name = $("#name").val();
                     var repository = $("#repository").val();
+                    var url = $("#url").val();
                     var author = $("#author").val();
+                    var pe = $("#pe").val();
                     var remark = $("#remark").val();
 
                     if (!name || name == "") {
@@ -701,6 +732,10 @@ $("#show_all_projects").click(function () {
                         showAlert('danger', 'repository can not be empty!', '#add-project-result');
                         return false;
                     }
+                    if (!url || url == "") {
+                        showAlert('danger', 'url can not be empty!', '#add-project-result');
+                        return false;
+                    }
                     if (!remark || remark == "") {
                         showAlert('danger', 'remark can not be empty!', '#add-project-result');
                         return false;
@@ -709,12 +744,18 @@ $("#show_all_projects").click(function () {
                         showAlert('danger', 'author cannot be empty!', '#add-project-result');
                         return false;
                     }
+                    if (!pe || pe == "") {
+                        showAlert('danger', 'pe cannot be empty!', '#add-project-result');
+                        return false;
+                    }
 
                     data = {
                         'name': name,
                         'repository': repository,
+                        'url': url,
                         'author': author,
-                        'remark': remark
+                        'remark': remark,
+                        'pe': pe
                     };
                     $.post('add_new_project/', data, function (res) {
                         showAlert(res.tag, res.msg, '#add-project-result');
@@ -823,8 +864,11 @@ $("#show_all_tasks").click(function () {
 });
 
 
-// add new task click
-
+// show all web frame works
+$("#show_all_frames").click(function () {
+    $("#main-div").load("frame_rules");
+    $("#paginate").html("");
+});
 
 // dashboard click
 $("#show_dashboard").click(function () {
@@ -862,12 +906,12 @@ $("#show_dashboard").click(function () {
                     $("#information").fadeIn(1000);
                 } else if (res.code == 1001) {
                     var content = '<br/><table class="table"><tbody>';
-                    content += '<tr><td><b>Overview</b></td><td><b>Count</b></td></tr>';
-                    content += '<tr><td>Scan Times: </td><td>' + res.task_count + '</td></tr>';
-                    content += '<tr><td>Vulnerabilities: </td><td>' + res.vulns_count + '</td></tr>';
-                    content += '<tr><td>Scanned Projects Count: </td><td>' + res.projects_count + '</td></tr>';
-                    content += '<tr><td>Files Count: </td><td>' + res.files_count + '</td></tr>';
-                    content += '<tr><td>Code Number: </td><td>' + res.code_number + '</td></tr>';
+                    content += '<tr><td><b>数据类型</b></td><td><b>数量</b></td></tr>';
+                    content += '<tr><td>漏洞数量: </td><td>' + res.vulns_count + '</td></tr>';
+                    content += '<tr><td>扫描次数: </td><td>' + res.task_count + '</td></tr>';
+                    content += '<tr><td>项目数量: </td><td>' + res.projects_count + '</td></tr>';
+                    content += '<tr><td>文件数量: </td><td>' + res.files_count + '</td></tr>';
+                    content += '<tr><td>代码行数: </td><td>' + res.code_number + '</td></tr>';
                     content += '</tbody></table>';
                     $("#information").html(content);
                     $("#information").fadeIn(1000);
@@ -979,7 +1023,7 @@ $("#show_dashboard").click(function () {
                     labels: raw_data.labels,
                     datasets: [
                         {
-                            label: "vulnerabilities everyday",
+                            label: "当日漏洞数量",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,
@@ -989,7 +1033,7 @@ $("#show_dashboard").click(function () {
                             data: raw_data.vuls
                         },
                         {
-                            label: "scan times everyday",
+                            label: "任务扫描次数",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,
@@ -1063,7 +1107,7 @@ $("#show_dashboard").click(function () {
                     labels: raw_data.labels,
                     datasets: [
                         {
-                            label: "vulnerabilities everyday",
+                            label: "当日漏洞数量",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,
@@ -1073,7 +1117,7 @@ $("#show_dashboard").click(function () {
                             data: raw_data.vuls
                         },
                         {
-                            label: "scan times everyday",
+                            label: "任务扫描次数",
                             fill: false,
                             pointRadius: 5,
                             lineTension: 0,

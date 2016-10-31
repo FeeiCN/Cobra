@@ -14,14 +14,15 @@
 """
 import os
 import sys
-import re
 import time
 import subprocess
 import traceback
+import logging
+from engine.core import Core
 from pickup import directory
-from utils import log
-from engine import parse
-from app import db, CobraResults, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList
+from app import db, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
+
+logging = logging.getLogger(__name__)
 
 
 class Static:
@@ -29,16 +30,22 @@ class Static:
         self.directory = directory_path
         self.task_id = task_id
         self.project_id = project_id
+        # project info
+        project_info = CobraProjects.query.filter_by(id=project_id).first()
+        if project_info:
+            self.project_name = project_info.name
+        else:
+            self.project_name = 'Undefined Project'
 
     def analyse(self):
         if self.directory is None:
-            log.critical("Please set directory")
+            logging.critical("Please set directory")
             sys.exit()
-        log.info('Start code static analyse...')
+        logging.info('Start code static analyse...')
 
         d = directory.Directory(self.directory)
         files = d.collect_files(self.task_id)
-        log.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
+        logging.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
 
         ext_language = {
             # Image
@@ -101,10 +108,10 @@ class Static:
         }
         for ext in files:
             if ext in ext_language:
-                log.info('{0} - {1}'.format(ext, files[ext]))
+                logging.info('{0} - {1}'.format(ext, files[ext]))
                 continue
             else:
-                log.info(ext)
+                logging.info(ext)
 
         languages = CobraLanguages.query.all()
 
@@ -126,24 +133,38 @@ class Static:
                     if 'gfind' == filename:
                         gfind = os.path.join(root, filename)
             if ggrep == '':
-                log.critical("brew install ggrep pleases!")
+                logging.critical("brew install ggrep pleases!")
                 sys.exit(0)
             else:
                 grep = ggrep
             if gfind == '':
-                log.critical("brew install findutils pleases!")
+                logging.critical("brew install findutils pleases!")
                 sys.exit(0)
             else:
                 find = gfind
 
+        """
+        all vulnerabilities
+        vulnerabilities_all[vuln_id] = {'name': 'vuln_name', 'third_v_id': 'third_v_id'}
+        """
+        vulnerabilities_all = {}
+        vulnerabilities = CobraVuls.query.all()
+        for v in vulnerabilities:
+            vulnerabilities_all[v.id] = {
+                'name': v.name,
+                'third_v_id': v.third_v_id
+            }
+
         for rule in rules:
-            log.info('Scan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
+            rule.regex_location = rule.regex_location.strip()
+            rule.regex_repair = rule.regex_repair.strip()
+            logging.info('------------------\r\nScan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
                 if language.id == rule.language:
                     extensions = language.extensions.split('|')
             if extensions is None:
-                log.critical("Rule Language Error")
+                logging.critical("Rule Language Error")
                 sys.exit(0)
 
             # White list
@@ -154,7 +175,7 @@ class Static:
                     white_list.append(w.path)
 
             try:
-                if rule.regex_location.strip() == "":
+                if rule.regex_location == "":
                     filters = []
                     for index, e in enumerate(extensions):
                         if index > 1:
@@ -168,17 +189,15 @@ class Static:
                     for e in extensions:
                         filters.append('--include=*' + e)
 
-                    # Explode SVN Dir
-                    filters.append('--exclude-dir=.svn')
-                    filters.append('--exclude-dir=.cvs')
-                    filters.append('--exclude-dir=.hg')
-                    filters.append('--exclude-dir=.git')
-                    filters.append('--exclude-dir=.bzr')
-                    filters.append('--exclude=*.svn-base')
+                    # explode dirs
+                    explode_dirs = ['.svn', '.cvs', '.hg', '.git', '.bzr']
+                    for explode_dir in explode_dirs:
+                        filters.append('--exclude-dir={0}'.format(explode_dir))
+
                     # -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
-                # log.info(' '.join(param))
+                logging.debug(' '.join(param))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
@@ -189,66 +208,40 @@ class Static:
                         line = line.strip()
                         if line == '':
                             continue
-                        if rule.regex_location.strip() == '':
-                            # Find
-                            file_path = line.strip().replace(self.directory, '')
-                            log.debug('File: {0}'.format(file_path))
-                            vul = CobraResults(self.task_id, rule.id, file_path, 0, '')
-                            db.session.add(vul)
-                        else:
-                            # Grep
+                        # 处理grep结果
+                        if ':' in line:
                             line_split = line.split(':', 1)
                             file_path = line_split[0].strip()
                             code_content = line_split[1].split(':', 1)[1].strip()
                             line_number = line_split[1].split(':', 1)[0].strip()
+                        else:
+                            # 搜索文件
+                            file_path = line
+                            code_content = ''
+                            line_number = 0
+                        # 核心规则校验
+                        result_info = {
+                            'task_id': self.task_id,
+                            'project_id': self.project_id,
+                            'project_directory': self.directory,
+                            'rule_id': rule.id,
+                            'file_path': file_path,
+                            'line_number': line_number,
+                            'code_content': code_content,
+                            'third_party_vulnerabilities_name': vulnerabilities_all[rule.vul_id]['name'],
+                            'third_party_vulnerabilities_type': vulnerabilities_all[rule.vul_id]['third_v_id']
+                        }
+                        ret_status, ret_result = Core(result_info, rule, self.project_name, white_list).scan()
+                        if ret_status is False:
+                            logging.info("扫描 R: False {0}".format(ret_result))
+                            continue
 
-                            if file_path in white_list or ".min.js" in file_path:
-                                log.info("In white list or min.js")
-                            else:
-                                # annotation
-                                # # // /* *
-                                match_result = re.match("(#)?(//)?(\*)?(/\*)?", code_content)
-                                if match_result.group(0) is not None and match_result.group(0) is not "":
-                                    log.info("In Annotation")
-                                else:
-                                    # parse file function structure
-                                    if file_path[-3:] == 'php' and rule.regex_repair.strip() != '':
-                                        try:
-                                            parse_instance = parse.Parse(rule.regex_location, file_path, line_number, code_content)
-                                            if parse_instance.is_controllable_param():
-                                                if parse_instance.is_repair(rule.regex_repair, rule.block_repair):
-                                                    log.info("Static: repaired")
-                                                    continue
-                                                else:
-                                                    found_vul = True
-                                            else:
-                                                log.info("Static: uncontrollable param")
-                                                continue
-                                        except:
-                                            print(traceback.print_exc())
-                                            found_vul = False
-                                    else:
-                                        found_vul = True
-
-                                    file_path = file_path.replace(self.directory, '')
-
-                                    if found_vul:
-                                        log.info('In Insert')
-                                        exist_result = CobraResults.query.filter_by(task_id=self.task_id, rule_id=rule.id, file=file_path, line=line_number).first()
-                                        if exist_result is not None:
-                                            log.warning("Exists Result")
-                                        else:
-                                            log.debug('File: {0}:{1} {2}'.format(file_path, line_number, code_content))
-                                            vul = CobraResults(self.task_id, rule.id, file_path, line_number, code_content)
-                                            db.session.add(vul)
-                                            log.info('Insert Results Success')
-                    db.session.commit()
                 else:
-                    log.info('Not Found')
+                    logging.info('Not Found')
 
             except Exception as e:
                 print(traceback.print_exc())
-                log.critical('Error calling grep: ' + str(e))
+                logging.critical('Error calling grep: ' + str(e))
 
         # Set End Time For Task
         t = CobraTaskInfo.query.filter_by(id=self.task_id).first()
@@ -261,6 +254,5 @@ class Static:
             db.session.add(t)
             db.session.commit()
         except Exception as e:
-            log.critical("Set start time failed:" + e.message)
-
-        log.info("Scan Done")
+            logging.critical("Set start time failed:" + e.message)
+        logging.info("Scan Done")

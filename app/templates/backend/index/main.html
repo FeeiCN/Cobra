@@ -25,20 +25,21 @@
         <div class="row clearfix">
             <div class="col-md-2 column" id="left-div">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Overview </div>
+                    <div class="panel-heading">管理</div>
                     <div class="panel-body">
-                        <button type="button" class="btn btn-primary btn-block" id="show_dashboard">Dashboard</button>
-                        <button type="button" class="btn btn-primary btn-block" id="show_all_tasks">Tasks</button>
-                        <button type="button" class="btn btn-primary btn-block" id="show_all_projects">Projects</button>
-                        <button type="button" class="btn btn-primary btn-block" id="show_all_whitelists">WhiteLists</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_dashboard">全局</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_tasks">任务</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_projects">项目</button>
                     </div>
                 </div>
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Settings </div>
+                    <div class="panel-heading">配置</div>
                     <div class="panel-body">
-                        <button type="button" class="btn btn-primary btn-block" id="show_all_rules">Rules</button>
-                        <button type="button" class="btn btn-primary btn-block" id="show_all_vuls">Vuls</button>
-                        <button type="button" class="btn btn-primary btn-block" id="show_all_languages">Languages</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_whitelists">白名单</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_rules">扫描规则</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_vuls">漏洞类型</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_languages">语言后缀</button>
+                        <button type="button" class="btn btn-primary btn-block" id="show_all_frames">项目框架</button>
                     </div>
                 </div>
             </div>
@@ -48,11 +49,11 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
+{#                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#                                <span aria-hidden="true">&times;</span></button>#}
                             <h4 class="modal-title" id="view-title"></h4>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body" style="font-size: 1.2em">
                             <p id="view-body">One fine body&hellip;</p>
                         </div>
                         <div class="modal-footer">
