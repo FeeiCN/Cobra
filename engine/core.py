@@ -69,7 +69,7 @@ class Core:
         是否是白名单文件
         :return: boolean
         """
-        return self.file_path in self.white_list
+        return self.file_path.split(self.project_directory, 1)[1] in self.white_list
 
     def is_special_file(self):
         """

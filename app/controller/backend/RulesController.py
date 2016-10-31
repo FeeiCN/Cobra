@@ -18,7 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
 from app import web, db
-from app.models import CobraRules, CobraVuls, CobraLanguages
+from app.models import CobraRules, CobraVuls, CobraLanguages, CobraResults
 from app.CommonClass.ValidateClass import ValidateClass
 from app.CommonClass.ValidateClass import login_required
 
@@ -127,9 +127,25 @@ def add_new_rule():
 def del_rule():
     vc = ValidateClass(request, "rule_id")
     vc.check_args()
-    vul_id = vc.vars.rule_id
-    if vul_id:
-        r = CobraRules.query.filter_by(id=vul_id).first()
+    rule_id = vc.vars.rule_id
+    if rule_id:
+
+        # 检查该条rule是否存在result和task的依赖
+        result = db.session.query(
+            CobraResults.task_id
+        ).filter(CobraResults.rule_id == rule_id).group_by(CobraResults.task_id).all()
+        if len(result):
+            # 存在依赖
+            task_rely = ""
+            for res in result:
+                task_rely += str(res.task_id) + ","
+            task_rely = task_rely.strip(",")
+            message = "Delete failed. Please check and delete the task rely on this rule first.<br />"
+            message += "<strong>Rely Tasks: </strong>" + task_rely
+
+            return jsonify(code=1004, tag="danger", msg=message)
+
+        r = CobraRules.query.filter_by(id=rule_id).first()
         try:
             db.session.delete(r)
             db.session.commit()
