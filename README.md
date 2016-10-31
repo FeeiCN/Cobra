@@ -5,6 +5,7 @@
  [![Cobra Close Issue](https://img.shields.io/github/issues-closed-raw/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/issues?q=is%3Aissue+is%3Aclosed)
  [![GitHub stars](https://img.shields.io/github/stars/wufeifei/cobra.svg?style=social&label=Star)](https://github.com/wufeifei/cobra/stargazers)
  [![GitHub followers](https://img.shields.io/github/followers/wufeifei.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/wufeifei)
+
 ---
 [English](https://github.com/wufeifei/cobra) | [中文](https://github.com/wufeifei/cobra/blob/master/README_zh-CN.md)
 
