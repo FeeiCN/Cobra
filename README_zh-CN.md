@@ -7,12 +7,19 @@
  [![GitHub followers](https://img.shields.io/github/followers/wufeifei.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/wufeifei)
 
 ---
-[English](https://github.com/wufeifei/cobra) | [中文](https://github.com/wufeifei/cobra/blob/master/README_zh-CN.md)
+[English](https://github.com/wufeifei/cobra) | [简体中文](https://github.com/wufeifei/cobra/blob/master/README_zh-CN.md)
 
 ---
 
 ## 介绍
 Cobra是一款定位于静态代码安全分析系统。通过收集互联网常规漏洞的检测方法并输出成Cobra扫描规则，即可以自动化分析出源代码中存在的漏洞并生成完整的漏洞审计报告和详细的修复方案。
+
+## 特点
+- 多语言支持
+- 多种代码支持
+- 兼容性
+- API
+- 自动化
 
 ## 受众
 **1. 互联网相关企业**

@@ -7,12 +7,19 @@
  [![GitHub followers](https://img.shields.io/github/followers/wufeifei.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/wufeifei)
 
 ---
-[English](https://github.com/wufeifei/cobra) | [中文](https://github.com/wufeifei/cobra/blob/master/README_zh-CN.md)
+[English](https://github.com/wufeifei/cobra) | [简体中文](https://github.com/wufeifei/cobra/blob/master/README_zh-CN.md)
 
 ---
 
 ## Introduction
 Cobra is a static code security issues analysis and scan vulnerabilities scan system.
+
+## Features
+- Multi-language support
+- Multiple code support
+- Compatibility
+- API
+- Automation
 
 ## Target Audience
 **1. IT/Network Company**
