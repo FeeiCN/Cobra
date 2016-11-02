@@ -79,16 +79,22 @@ $(function () {
 
                                 // vulnerabilities detail
                                 $('.file_line').text(data.detail.file + ':' + data.detail.line_trigger);
-                                $('.rule_name').text(data.rule.description);
-                                $('.status_description').text(data.detail.status);
+                                $('.found_time').text(data.detail.created);
+                                $('.updated_time').text(data.detail.updated);
+
+
+                                $('.r_name').text(data.rule.description);
+                                $('.r_author').text(data.rule.author);
+                                $('.r_level').text(data.rule.level);
+                                $('.r_repair').text(data.rule.repair);
 
                                 // vulnerabilities description
-                                $('.v_name').text(data.vulnerabilities.name);
-                                $('.v_score').text(data.vulnerabilities.score);
-                                $('.v_cwe').text(data.vulnerabilities.cwe);
-                                $('.v_owasp').text(data.vulnerabilities.owasp);
-                                $('.v_sana').text(data.vulnerabilities.sana);
-                                $('.v_bounty').text(data.vulnerabilities.bounty);
+                                // $('.v_name').text(data.vulnerabilities.name);
+                                // $('.v_score').text(data.vulnerabilities.score);
+                                // $('.v_cwe').text(data.vulnerabilities.cwe);
+                                // $('.v_owasp').text(data.vulnerabilities.owasp);
+                                // $('.v_sana').text(data.vulnerabilities.sana);
+                                // $('.v_bounty').text(data.vulnerabilities.bounty);
                             } else {
                                 alert(result.message);
                             }

@@ -446,6 +446,9 @@ def vulnerabilities_detail():
         vulnerabilities_detail.file = vulnerabilities_detail.file[1:]
     file_path = os.path.join(project_code_path, vulnerabilities_detail.file)
 
+    if os.path.isfile(file_path) is not True:
+        return jsonify(status_code=4004, message='Failed get code: {0}'.format(file_path))
+
     code_content = ''
     fp = open(file_path, 'r')
     block_lines = 50
