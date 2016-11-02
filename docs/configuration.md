@@ -27,6 +27,7 @@ Debug: 0
 Logs_directory: logs
 
 # Encryption Key (set to 32-bit md5 value)
+# Secret_key used to encrypt session and cookie, you can set any random number. For example `os.urandom(32)` or `hashlib.sha1('your_password').hexdigest()`
 Secret_key: your_secret_key
 
 
