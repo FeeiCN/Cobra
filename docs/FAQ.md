@@ -21,8 +21,10 @@ perl -MCPAN -e "shell"
 * Q: 输入SVN地址无法扫描
 * A: 目前SVN Checkout还存在问题，请手动SVN Checkout到本地，然后使用绝对路径扫描。
 
+---
 * Q: 提示扫描完成，但是没有扫到任何漏洞
 * A: Cobra是一套扫描框架，你需要在后台为各种漏洞增加扫描规则。
 
+---
 * Q: Key verify failed
 * A: config文件中的secret_key未配置
