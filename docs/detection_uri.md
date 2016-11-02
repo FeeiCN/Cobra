@@ -1,8 +1,8 @@
 ## Introduction
-先分析出项目所使用的框架，针对每个框架协商对应的规则来分析Model/View/Controller中的漏洞地址，并根据路由配置找出访问的URI。
+First analyze the framework used by the project, analyze the vulnerability address in Model / View / Controller according to the corresponding rules of each frame negotiation, and find out the accessed URI according to the routing configuration.
 
 # Detection CMS
-针对每个框架的特征（文件或目录），来判断项目所使用的框架类型。
+For each frame's characteristics (files or directories), determine the frame type used by the project.
 ```
 https://raw.githubusercontent.com/wufeifei/cobra/master/engine/detection.py
 [

@@ -1,25 +1,25 @@
-> Cobra本身是一款白盒扫描框架，和其它黑白盒扫描器一样，能扫到多少漏洞取决于你的扫描规则的质量和数量。Cobra开源版本目前只会提供几条测试的扫描规则供大家使用，Cobra核心贡献者将可共享所有私有的扫描规则，Cobra线上版本也会开启所有扫描规则。
+> Cobra itself is a white box scanning framework, and other black-and-white box scanner, the number of loopholes can be swept depends on the quality and quantity of your scanning rules. The Cobra open source version currently provides only a few test scans for everyone to use. Cobra core contributors will share all private scanning rules, and Cobra Online will also open all scanning rules.
 
 
-> 如果您有好的扫描规则，请通过创建[Rule Issue](https://github.com/wufeifei/cobra/issues/new)，我们测试审核后会更新到此处。
+> If you have a good scan rule, please update to here after creating a [Rule Issue] (https://github.com/wufeifei/cobra/issues/new).
 
-_本章节正在补充完善，请持续关注!_
+_ This chapter is perfect, please continue to pay attention! _
 
-你可以通过这篇来学习如何写一个扫描规则：[Cobra扫描规则编写](http://wufeifei.com/scan-engine/)
+You can use this to learn how to write a scan rule: [Cobra scan rule writing] (http://wufeifei.com/scan-engine/)
 
-## 扫描规则列表 (整理中)
+## Sweep Rule List (sorted)
 
-|支持语言|类型|规则|贡献者|准确率|规则|
+| Supported Languages ​​| Types | Rules | Contributors | Accuracy ||
 |---|---|---|---|---|---|
 |PHP||||||
 ||XSS|||||
-|||Ouput|[@Feei](http://wufeifei.com)|100%|Output Param|
-||SSRF||||||
-|||CURL|[@Feei](http://wufeifei.com)|100%|CURL SSRF|
-||Logic Bug||||||
-||Stack Trace||||||
-||Deprecated Function||||||
-||Information Disclosure||||||
+| | |Ouput|[@Feei](http://wufeifei.com)|100%|Output Param|
+| |SSRF||||||
+| | |CURL|[@Feei](http://wufeifei.com)|100%|CURL SSRF|
+| |Logic Bug||||||
+| |Stack Trace||||||
+| |Deprecated Function||||||
+| |Information Disclosure||||||
 |Java||||||
 |Backup||||||
 |PSD||||||

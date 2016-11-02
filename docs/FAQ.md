@@ -11,20 +11,20 @@ perl -MCPAN -e "shell"
 
 |Code|Reason|
 |---|---|
-|1146|数据表不存在，请走完[安装流程](http://cobra-docs.readthedocs.io/en/latest/installation/)|
-|1048|字段不能为NULL|
-|1045|账号密码错误|
-|1044|账号密码正确，但没有权限访问该DB|
-|1129|该IP请求连接过多，使用```mysqladmin flush-hosts -p```刷新|
+| 1146 | Datasheet does not exist, please go through the installation process (http://cobra-docs.readthedocs.io/en/latest/installation/) |
+| 1048 | The field can not be NULL |
+Account password is wrong
+| 1044 | The account password is correct, but there is no access to the DB |
+| 1129 | The IP request to connect too much, use the `` `mysqladmin flush-hosts-p`` |
 
 ## Scan
-* Q: 输入SVN地址无法扫描
-* A: 目前SVN Checkout还存在问题，请手动SVN Checkout到本地，然后使用绝对路径扫描。
+* Q: The input SVN address can not be scanned
+* A: There is a problem with SVN Checkout at this time. Please manually check SVN to local, and then use absolute path scan.
 
 ---
-* Q: 提示扫描完成，但是没有扫到任何漏洞
-* A: Cobra是一套扫描框架，你需要在后台为各种漏洞增加扫描规则。
+* Q: prompts the scan to complete, but did not sweep to any vulnerability
+* A: Cobra is a set of scanning framework, you need to increase in the background for a variety of vulnerability scanning rules.
 
 ---
 * Q: Key verify failed
-* A: config文件中的secret_key未配置
+* A: The secret_key in the config file is not configured
