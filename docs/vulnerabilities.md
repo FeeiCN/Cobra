@@ -1,6 +1,7 @@
-> 如果你有新的漏洞类型，请通过[Issue](https://github.com/wufeifei/cobra/issues/new)反馈给我们。
+> If you have a new vulnerability type, please send us feedback via [Issue] (https://github.com/wufeifei/cobra/issues/new).
 
-_本章节正在补充完善，请持续关注!_
+_ This chapter is perfect, please continue to pay attention! _
+
 - SQL Injection
 - LFI/RFI
 - Header Injection

@@ -1,6 +1,6 @@
 ## Cobra数据流转流程
 
-Auth - API-KEY表
+Auth - API-KEY
 ```
 CREATE TABLE `auth` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -13,7 +13,7 @@ CREATE TABLE `auth` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
-Ext - 后缀分布统计表
+Ext - Extensions distribution statistics
 ```
 CREATE TABLE `ext` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -28,7 +28,7 @@ CREATE TABLE `ext` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-Languages - 语言与后缀表
+Languages - Language and extensions table
 ```
 CREATE TABLE `languages` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -39,7 +39,7 @@ CREATE TABLE `languages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-Projects - 项目信息表
+Projects - Project Information Sheet
 ```
 CREATE TABLE `projects` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -57,7 +57,7 @@ CREATE TABLE `projects` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 ```
 
-Results - 扫描结果表
+Results - Scan Result Table
 ```
 CREATE TABLE `results` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -73,7 +73,7 @@ CREATE TABLE `results` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-Rules - 扫描规则表
+Rules - Scan Rule Table
 ```
 CREATE TABLE `rules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -95,7 +95,7 @@ CREATE TABLE `rules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
-Tasks - 扫描任务表
+Tasks - Scan the task table
 ```
 CREATE TABLE `tasks` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -117,7 +117,7 @@ CREATE TABLE `tasks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
-User - 管理员账号密码表
+User - Administrator account password table
 ```
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -133,7 +133,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-Vuls - 漏洞类型表
+Vuls - Vulnerability Type Table
 ```
 CREATE TABLE `vuls` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -146,7 +146,7 @@ CREATE TABLE `vuls` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
-Whitelist - 白名单表
+Whitelist - White list
 ```
 CREATE TABLE `whitelist` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

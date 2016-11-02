@@ -1,203 +1,201 @@
 # Orientation
 Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
 
-Cobra是一款定位于白盒静态代码安全分析的工具，目的是为了找出源代码中存在的**有影响**安全隐患或者漏洞。
+If the vulnerability from the perspective of speaking, can be broadly divided into:
 
-如果从漏洞影响的角度讲，可以大致分为：
+Type | Impact Level | Impact Description | Typical Example | Typical Software
+| --- | --- | --- | --- | --- |
+| Black Box | 100 | Available directly | SQL Injection, XXE, SSRF, etc. | [SQLMap] (http://sqlmap.org/) |
+| White Box 1 | 80 | May be used directly or indirectly or temporarily unavailable | A function that exists in SSRF, but may not be invoked when discovered | [RIPS] (https://github.com/ripsscanner/ Rips)
+| Whitebox 2 | 20 | Can not be used directly but is not compliant | Using functions that are deprecated due to security issues | [SonarQube] (https://sonarqube.com/) |
 
-|类型|影响等级|影响描述|典型例子|典型软件|
-|---|---|---|---|---|
-|黑盒|100|可直接利用|SQL Injection、XXE、SSRF等|[SQLMap](http://sqlmap.org/)|
-|白盒1|80|可能能直接利用或可间接利用或暂时不能利用|某个存在SSRF的函数，但发现时不一定被调用了|[RIPS](https://github.com/ripsscanner/rips)|
-|白盒2|20|不能直接利用，但不符合规范|使用了因安全问题弃用的函数|[SonarQube](https://sonarqube.com/)|
+The Cobra is positioned to cover white box 1 and white box 2 two levels:
+1. Can find all the vulnerabilities in the code points (these vulnerabilities can not be directly used as a risk, because the existence of these risks, sooner or later there may be security incidents).
+2. Can quickly respond to the scanning of new vulnerabilities.
 
-而Cobra的定位就是覆盖白盒1和白盒2两个等级：
-1. 能找到代码中所有的漏洞点（这些漏洞能不能直接利用都算作风险，因为这些风险的存在，迟早有可能出现安全事故）。
-2. 能够快速应对新型漏洞的扫描。
+### Why do we need a code audit system?
 
-### 为什么我们需要一款代码审计系统？
+Companies are growing, more and more developers. Each R & D personnel are not the same quality of security, although the company's core projects can take ** framework layer security **, but too many new types of projects, each project can not be done using the same framework, Security component.
 
-公司越来越大，开发人员也越来越多。每个研发人员的安全素质都不一样，虽然在公司核心项目上可以采取**框架层安全防护**，但各类新项目太多，无法做到每个项目都使用相同框架，都去集成安全组件。
+So all the projects for the company must have a protection to protect the basic security, code security audit can be used as a means of security.
 
-所以对于公司所有的项目必须有一道防护来保障基本安全，代码安全审计即可作为这一道安全手段。
+### Industry research
 
-### 业内调研
+At present the industry has a lot of code audit tools
 
-目前业内已经有很多款代码审计工具了
+| Name | Open Source | Estimate |
+| ---------------------------------------- | ---- | --- |
+| [Droopescan] (https://github.com/droope/droopescan) | Yes | Override CMS framework only |
+| [GrepBugs] (https://grepbugs.com/) | Yes | Simple regular match, false positive |
+| [Pixy] (https://github.com/oliverklee/pixy) | Yes | Not Commercial, Immature |
+| [RIPS] (http://rips-scanner.sourceforge.net/) | Yes | Only PHP | is covered
+| [SWAAT] (https://www.owasp.org/index.php/Category:OWASP_SWAAT_Project) | Yes | .NET write, can not quickly expand new vulnerabilities |
+| [PHP-SAT] (http://www.program-transformation.org/PHP/PhpSat) | Yes | Overwrite PHP only, do not maintain for a long time, can not quickly expand new vulnerabilities |
+| [Yasca] (http://scovetta.github.io/yasca/) | Yes | Scanning for code security specs that can not quickly scale new vulnerabilities |
+| [SonarQube] (https://sonarqube.com/) | Yes | Scanning for code security specifications, rules exploiting Java code to quickly add new vulnerability scanning rules |
+| [PreFast] (http://msdn.microsoft.com/en-us/library/ms933794.aspx) | Yes | Only for C / C ++ |
+| [PMD] (http://pmd.sourceforge.net/) | Yes | Only for Java |
+| [Google CodeSearchDiggity] (https://www.bishopfox.com/resources/tools/google-hacking-diggity/attack-tools/) | Yes | Tools |
+| [FxCop] (http://msdn.microsoft.com/en-us/library/bb429476 (VS.80) .aspx) | Yes | For .NET |
+| [Flawfinder] (http://www.dwheeler.com/flawfinder/) | Yes | For C / C ++ |
+| [Ruby on Rails] (http://brakemanscanner.org/) | Yes | Only for Ruby on Rails |
+| [VCG] (http://sourceforge.net/projects/visualcodegrepp/) | Yes | GUI programs, simple rule matching |
+| [BugScout] (https://buguroo.com/products/bugblast-next-gen-appsec-platform/bugscout-sca) | No | Unable to extend flexibly |
+| [Contrast from Contrast Security] (http://www.contrastsecurity.com/) | No | Can not expand flexibly
+| [IBM Security AppScan Source Edition] (http://www-01.ibm.com/software/rational/products/appscan/source/) | No |
+| [Insight] (http://www.klocwork.com/products/insight.asp) | No | Can not be flexibly extended
+| [Parasoft Test] (http://www.parasoft.com/jsp/capabilities/static_analysis.jsp?itemId=547) | No | Can not flexibly extend |
+| [Pitbull SCC] (http://www.pitbullsoftware.net/pitbull-scc-en/) | No | Can not flexibly expand |
+| [Seeker] (http://www.quotium.com/prod/security.php) | No | Can not be flexibly expanded
+| [Pentest] (http://www.sourcepatrol.co.uk/) | No | Can not be flexibly extended
+| [CodeSecure Verifier] (www.armorize.com) | No | Can not be flexibly extended
+| [Coverity] (http://www.coverity.com/products/security-advisor.html) | No | Can not expand flexibly |
+| [PVS-Studio] (http://www.viva64.com/en/) | No | Can not be flexibly expanded
+| [HP / Fortify] (https://www.fortify.com/products/hpfssc/source-code-analyzer.html) | No | Can not flexibly expand |
+| [Veracode] (http://www.veracode.com/) | No | Can not be flexibly expanded
 
-| Name                                       | Open Source |Estimate|
-| ---------------------------------------- | ---- |---|
-| [droopescan](https://github.com/droope/droopescan)  | Yes    |仅覆盖CMS框架|
-| [GrepBugs](https://grepbugs.com/) | Yes    |简单的正则匹配，误报较高|
-| [Pixy](https://github.com/oliverklee/pixy) | Yes    |未商用，不成熟|
-| [RIPS](http://rips-scanner.sourceforge.net/) | Yes    |仅覆盖PHP|
-| [SWAAT](https://www.owasp.org/index.php/Category:OWASP_SWAAT_Project) |Yes|.NET写的、无法快速扩展新型漏洞|
-| [PHP-SAT](http://www.program-transformation.org/PHP/PhpSat) | Yes    |仅覆盖PHP、长期不维护、无法快速扩展新型漏洞|
-| [Yasca](http://scovetta.github.io/yasca/) | Yes    |偏向于代码安全规范的扫描、无法快速扩展新型漏洞|
-|[SonarQube](https://sonarqube.com/)|Yes|偏向于代码安全规范的扫描、规则使用Java代码开发、无法快速增加新型漏洞扫描规则|
-|[PreFast](http://msdn.microsoft.com/en-us/library/ms933794.aspx)|Yes|仅针对C/C++|
-|[PMD](http://pmd.sourceforge.net/)|Yes|仅针对Java|
-|[Google CodeSearchDiggity](https://www.bishopfox.com/resources/tools/google-hacking-diggity/attack-tools/)|Yes|工具类|
-|[FxCop](http://msdn.microsoft.com/en-us/library/bb429476(VS.80).aspx)|Yes|针对.NET|
-|[Flawfinder](http://www.dwheeler.com/flawfinder/)|Yes|针对C/C++|
-|[Ruby on Rails](http://brakemanscanner.org/)|Yes|仅针对Ruby on Rails|
-|[VCG](http://sourceforge.net/projects/visualcodegrepp/)|Yes|GUI程序、简单规则匹配|
-|[bugScout](https://buguroo.com/products/bugblast-next-gen-appsec-platform/bugscout-sca)|No|无法灵活扩展|
-|[Contrast from Contrast Security](http://www.contrastsecurity.com/)|No|无法灵活扩展|
-|[IBM Security AppScan Source Edition](http://www-01.ibm.com/software/rational/products/appscan/source/)|No|无法灵活扩展|
-|[Insight](http://www.klocwork.com/products/insight.asp)|No|无法灵活扩展|
-|[Parasoft Test](http://www.parasoft.com/jsp/capabilities/static_analysis.jsp?itemId=547)|No|无法灵活扩展|
-|[Pitbull SCC](http://www.pitbullsoftware.net/pitbull-scc-en/)|No|无法灵活扩展|
-|[Seeker](http://www.quotium.com/prod/security.php)|No|无法灵活扩展|
-|[Pentest](http://www.sourcepatrol.co.uk/)|No|无法灵活扩展|
-| [CodeSecure Verifier](www.armorize.com) | No    |无法灵活扩展|
-|[Coverity](http://www.coverity.com/products/security-advisor.html)|No|无法灵活扩展|
-|[PVS-Studio](http://www.viva64.com/en/)|No|无法灵活扩展|
-|[HP/Fortify](https://www.fortify.com/products/hpfssc/source-code-analyzer.html)|No|无法灵活扩展|
-|[Veracode](http://www.veracode.com/)|No|无法灵活扩展|
-
-这些项目专注的点都不一样，极少数商用的是定位于企业内代码审计的，但都是闭源的。
-还没有一款开源的，并且定位于企业级使用的。
+The focus of these projects are not the same, a very small number of commercial positioning in the enterprise code audit, but are closed-source.
+Not an open source, and targeted at enterprise-level use.
 
 
-作为甲方企业，我们所需要的：
-- 能快速扫描新型漏洞（Web应用每天都会有新的漏洞/攻击手法出现，要能快速响应新型漏洞的扫描）
-- 能够扫描多种开发语言（公司大了开发语言也会多种多样，需要支持多种开发语言的扫描）
-- 能够自动扫描、自动报告（人工参与到每个项目成本太大）
+As a business enterprise, we need:
+- Can quickly scan for new vulnerabilities (Web applications every day there are new vulnerabilities / attack techniques appear to be able to quickly respond to the new vulnerability scanning)
+- Ability to scan a variety of development languages (the company will develop a variety of languages, the need to support a variety of development language scanning)
+- Ability to automatically scan, auto-report (manual participation to each project cost too much)
 
-根据我们的目的调研比较后发现，没有一款开源扫描器符合我们的需求。
-于是我们选择了做一套符合企业级的白盒代码审计系统。
+According to our comparison of research and found that no open-source scanner to meet our needs.
+So we chose to do a set of enterprise-class white-box code audit system.
 
-### 如何做一套代码审计系统？
+### How to do a code audit system?
 
-代码审计大体方式可以分为两种：静态和动态，
+Code audit in general can be divided into two types: static and dynamic,
 
-#### 1. 静态审计
+#### 1. Static auditing
 
-通过静态分析源码，发现源码中的逻辑、数据处理、函数使用不当来确认源码中可能存在的漏洞。
+Through static analysis of source code, found in the source code of the logic, data processing, function used to identify the source code may be loopholes.
 
-同时静态分析技术目前也分为几种。
+At the same time static analysis technology is also divided into several.
 
-##### 1.1 规则匹配
+##### 1.1 Rule Matching
 
-说白了就是根据指定的规则扫描代码中的问题。
+To put it bluntly is to scan the code in accordance with the specified rules of the problem.
 
-比如在PHP Kohana框架内，是有封装好统一的取参数的方法，并且经过安全过滤的。而可能出现的情况是新来的研发人员不熟悉导致使用了PHP内置的```$_GET``` / ```$_POST```，从而导致XSS，这时就可以使用```$_GET``` / ```$_POST```作为规则，找出源码中所有出现这些函数的地方。
+For example, in the PHP Kohana framework, there is a uniform method to take a uniform parameter, and after security filtering. The possible situation is that the new R & D personnel are not familiar with the use of the PHP built-in `$ _GET` $ _POST```, resulting in XSS, then you can use` `` $ _GET`` / `` `$ _POST``` as a rule to find all the source code where these functions.
 
-这种方式也是很多白帽审计代码时用到的，虽然很直接了当，但是误报会比较多。
+This approach is also a lot of white hat audit code used, although very straightforward, but the false positives will be more.
 
-##### 1.2 代码解析法
+##### 1.2 Code Analysis
 
-通过解析代码的语法，分析出代码执行流程。
+By analyzing the syntax of the code, the code execution flow is analyzed.
 
-##### 1.3 数据流转分析
+##### 1.3 Data flow analysis
 
-通过Fuzz输入数据，跟踪数据流转，来判断是否存在风险。
+By Fuzz input data, tracking data flow, to determine whether there is a risk.
 
-#### 2. 动态审计
+#### 2. Dynamic auditing
 
-通过运行需要审计的代码，跟踪数据的流转来判断系统中是否存在漏洞。
+By running the need to audit the code, tracking the flow of data to determine whether the system vulnerabilities.
 
-我们一开始只打算扫我们关心的漏洞类型：高危文件、高危函数以及常规Web漏洞。
-所以我们第一个版本只做静态审计中的**规则匹配法**，关于误报问题我们在实际扫描中采用了多种方式进行改进，确保误报率在5%以下。
+We started out with only the types of vulnerabilities we were concerned about: high-risk files, high-risk functions, and regular Web vulnerabilities.
+So our first version only static audit ** rule matching method **, on the issue of false positives in the actual scan we used a variety of ways to improve, to ensure that the false alarm rate of 5% or less.
 
-### 企业应该在什么环节加入代码审计？
+### What should the company join the code audit?
 
-#### 1. 代码提交时
+#### 1. When the code is submitted
 
-代码提交时检测问题是最忌时机，具体可以通过hook svn或git的commit来扫描提交的代码。
+Code submitted to detect the problem is the most sensitive time, specifically through the hook svn or git commit to scan the submitted code.
 
-优点：及时
+Advantages: Timely
 
-缺点：影响提交效率
+Disadvantages: affect the efficiency of submission
 
-#### 2. 代码提交后
+#### 2. After the code is submitted
 
-通过设置定时任务在凌晨进行有规律的代码审计，结果通过邮件或BUG系统同步给提交人。
+By setting a regular task in the early hours of the regular code audit, the results through the mail or BUG system synchronization to the author.
 
-优点：不影响代码提交
+Pros: Does not affect code submission
 
-缺点：可能代码已经上线才扫到问题
+Disadvantages: the code may have been swept on the line before the problem
 
-#### 3. 代码发布时
+#### 3. When the code is released
 
-代码发布前的测试环境进行扫描，上线前必须已经扫描完毕并且没有高危漏洞。
+Code before the release of the test environment to scan, on-line must have been scanned before and there is no high-risk vulnerabilities.
 
-优点：不会出现代码已经上线才扫到问题，确保所有上线代码都经过扫描
+Advantages: no code has been swept on the line before the problem, to ensure that all on-line code has been scanned
 
-缺点：发现的不及时
+Disadvantages: not found in time
 
 
 
-企业可以先接入在**代码发布时**，通过设置**定时任务扫描**来保证及时性和线上代码的覆盖率。
+Enterprises can access the ** code **, by setting the ** regular task scan ** to ensure timeliness and online code coverage.
 
-通过我们实际使用感受，发现还有更多用法：
+Through our actual use of feelings, found that there are more usage:
 
-#### 1. 用来判断新漏洞的影响
+#### 1. Used to determine the impact of new vulnerabilities
 
-比如用来判断ImageMagick在公司所有项目中的影响，我们就可以通过设置扫描规则来扫描公司所有项目，看哪些项目有调用ImageMagick并且没有可以利用的。
+For example, to determine the impact of ImageMagick on all projects in the company, we can scan all company projects by setting scan rules to see which projects have invoked ImageMagick and are not available.
 
-#### 2. 用来检测明显代码逻辑问题
+#### 2. Used to detect obvious code logic problems
 
-开发人员不小心将==写成=，造成逻辑问题，甚至可能引发安全问题。
+Developers do not care to write == =, causing logic problems, and may even lead to security issues.
 
-或者是少些了结束的分号，但测试没有覆盖到，导致线上5xx。
+Or is a little less than the end of the semicolon, but the test did not cover it, resulting in an online 5xx.
 
-这些问题也可以通过代码审计发掘出来。
+These issues can also be discovered through code auditing.
 
 
-还有其它更多的使用技巧，后续再慢慢补充...
+There are other more use of skills, follow-up and then slowly add ...
 
 ---
-### 应用场景
+### Application scenario
 
-##### 1.漏洞出现前（检测）
-我们将互联网上常见的漏洞梳理为Cobra的检测规则，能够在漏洞被白帽子发现前就扫描出风险点并解决，防范于未然。
+##### 1. Before the vulnerability (detection)
+We will be common on the Internet vulnerabilities as a Cobra detection rules, can be found in the vulnerability before the white hat to scan out the risk point and resolve, preventive measures.
 
-**例：**
-提前检测代码中是否存在高危文件(.tar.gz/.rar/.bak/.swp)，可以避免高危文件被下载。
+**example:**
+Detecting high-risk files (.tar.gz / .rar / .bak / .swp) early in the code can prevent high-risk files from being downloaded.
 
-##### 2.漏洞出现中（扫描）
-当企业收到白帽子提交的漏洞后，企业会在第一时间修复漏洞，并可以通过Cobra来添加扫描规则检测企业的所有项目是否存在类似漏洞。
+##### 2. Vulnerability in the (scanning)
+When the enterprise receives the white hat to submit the loophole, the enterprise will repair the loophole in the first time, and may through Cobra to add the scanning rule examination enterprise each item whether existence similar loophole.
 
-**例：**
-出现了ImageMagick漏洞后，可以通过Cobra设置扫描规则对历史所有项目进行快速扫描，几分钟内就能知道企业数十个项目中哪些有用到ImageMagick组件，哪些存在漏洞，哪些可以免疫。
+**example:**
+After the ImageMagick vulnerability, you can scan the history of all items through the Cobra scan rules to quickly scan, within minutes you will know dozens of projects which are useful to ImageMagick components, which there are loopholes, which can be immune.
 
-##### 3.漏洞出现后（限制）
-当企业修复漏洞后，可以通过设置修复/验证规则来限制以后所有提交的代码都需要过修复/验证规则，否则不予上线，减少相同漏洞再次出现的可能性。
+##### 3. After the loopholes (restrictions)
+When the enterprise fixes the vulnerability, you can set the repair / validation rules to restrict all future submission of the code need to repair / validation rules, or not on-line, reducing the possibility of the same loopholes reoccur.
 
-### 扫描方式
+### scanning method
 
-提供自助操作界面供扫描，同时也提供标准全功能[API](http://cobra-docs.readthedocs.io/en/latest/API/)接口供第三方系统调用（比如发布系统）
-![Cobra Framework](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/FRAMEWORK.png)
-![Cobra Manual](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
+Provides a self-service interface for scanning, and also provides a standard full-featured [API] (http://cobra-docs.readthedocs.io/en/latest/API/) interface for third-party system calls (such as publishing systems)
+! [Cobra Framework] (https://raw.githubusercontent.com/wufeifei/cobra/master/docs/FRAMEWORK.png)
+! [Cobra Manual] (https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
 
-### 漏洞类型
+### Vulnerability type
 
-除了常见的应用程序漏洞，还包括一些代码逻辑漏洞以及文件权限、敏感文件等
-具体参见[Cobra Vulnerabilities](http://cobra-docs.readthedocs.io/en/latest/vulnerabilities/)
+In addition to common application vulnerabilities, including some code logic vulnerabilities and file permissions, sensitive files, etc.
+See [Cobra Vulnerabilities] (http://cobra-docs.readthedocs.io/en/latest/vulnerabilities/)
 
-扫描文件涵盖所有常见文件类型，注册检测规则支持Java、PHP两种语言。
-具体参见[Cobra Support Language](http://cobra-docs.readthedocs.io/en/latest/languages/)
+Scan file covers all common file types, registration detection rules support Java, PHP two languages.
+See [Cobra Support Language] (http://cobra-docs.readthedocs.io/en/latest/languages/)
 
-另外扫描的准确度、范围都是受各自开启的规则数影响的。
+In addition the accuracy of scanning, the scope of the rules are affected by the number of their impact.
 
-### 扫描过程
+### The scanning process
 
-扫描器采用多进程设计，可以做到多任务并发扫描，每个扫描进程间互相不会受影响。并发数大小受机器硬件因素决定，可快速增加机器以扩展并发扫描效率。
-扫描器对一般项目扫描能做到每秒n万个文件（1 < n < 10），扫描时间主要受触发的规则数所影响。
+Scanner with multi-process design, multi-task can be done concurrent scanning, each scanning process will not be affected each other. Concurrent number of factors determined by the machine hardware can be quickly increased to expand concurrent scanning machine efficiency.
+Scanner can scan the general items per second n million files (1 <n <10), scanning time is mainly affected by the number of rules triggered.
 
-### 扫描结果
+### Scan results
 
-每次扫描完成后，会通知对应的责任人，并生成一张扫描报告。报告内会分析出现漏洞的代码并给修该漏洞的修复方式。
-同时可以通过Cobra API获取扫描结果，发布系统可以根据扫描结果里面的建议决定此次是否允许发布上线。
+After each scan, the corresponding responsible person is informed and a scan report is generated. The report analyzes the code that presents the vulnerability and gives you a way to fix the vulnerability.
+At the same time can be obtained through the Cobra API scan results, the release system can scan the results of the recommendations which decide whether to allow the release of this line.
 
-### 规则的有效性
+### Validity of the rule
 
-新规则的录入时，可以先对历史项目进行测试验证，待误报率降低后再讲该规则状态改为线上开启。
-也可以针对自己的业务，手动的关闭一些特殊规则。
+When the new rules are entered, you can test and verify the historical items first, and then when the false alarm rate decreases, the state of the rule is changed to online.
+You can also for their own business, manually close some special rules.
 
-### 误报
-规则验证的结果还是会存在误报，我们可以通过两个方式解决误报问题。
-1. 优化规则 - 通过对误报的分析去优化规则的检测逻辑
-2. 白名单 - 某些状态下我们需要某个规则对某个文件的某行放行（比如某些框架层的eval($cmd)），则可以使用白名单
+### False positives
+Rule validation results or there will be false positives, we can solve the problem of false positives in two ways.
+1. Optimization rules - through the analysis of false positives to optimize the rules of detection logic
+2. Whitelist - In some cases, we need a rule to release a line for a file (for example, eval ($ cmd) for some framework layers), you can use a whitelist

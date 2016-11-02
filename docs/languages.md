@@ -1,5 +1,5 @@
 
-_本章节正在补充完善，请持续关注!_
+_ This chapter is perfect, please continue to pay attention! _
 
 Language|Extensions
 --- | ---

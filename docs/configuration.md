@@ -1,61 +1,61 @@
-rename Cobra root's **config.sample** to **config**.
+Rename Cobra root's ** config.sample ** to ** config **.
 
 ```
-[cobra]
+[Cobra]
 #
-# 配置Cobra运行的域名，没有则无需配置
+# Configure Cobra to run the domain name, but do not need to configure it
 #
-domain: cobra.wufeifei.com
-
-#
-# 配置Host
-# 配置为0.0.0.0， 则可以外网访问
-# 配置为127.0.0.1 则只有本机能访问
-#
-host: 127.0.0.1
+Domain: cobra.wufeifei.com
 
 #
-# 配置访问默认
-# 默认为80
+# Configure the host
+# Configure 0.0.0.0 to allow external network access
+# Only 127.0.0.1 can be configured
 #
-port: 5000
+Host: 127.0.0.1
 
-# 是否开启Debug模式
-debug: 0
+#
+# Configure the access default
+# The default is 80
+#
+Port: 5000
 
-# 日志目录
-logs_directory: logs
+# Enable Debug mode
+Debug: 0
 
-# 加密Key（设置为32位md5值）
-secret_key: your_secret_key
+# The log directory
+Logs_directory: logs
+
+# Encryption Key (set to 32-bit md5 value)
+Secret_key: your_secret_key
 
 
-[upload]
-# 被扫描代码的存放位置
-# 不需要 \ /符号
-directory: /tmp/cobra
-# 支持上传的后缀
-extensions: tar.bz2|tar|gz|tgz|tar.gz|rar|zip
-# 最大上传大小(单位M)
-max_size: 200
+[Upload]
+# The location where the scanned code is stored
+# The \ / symbol is not required
+Directory: / tmp / cobra
+# Support upload suffix
+Extensions: tar.bz2 | tar | gz | tgz | tar.gz | rar | zip
+# Maximum upload size (in M)
+Max_size: 200
 
 #
 # Database account
 #
-[database]
-mysql: mysql+mysqldb://root:yourpassword@127.0.0.1:3306/cobra
+[Database]
+Mysql: mysql + mysqldb: // root: yourpassword@127.0.0.1: 3306 / cobra
 
 #
 # SVN account
 #
-[svn]
-username:
-password:
+[Svn]
+Username:
+Password:
 
 #
-# Inner git(gitlab or deploy git server) account
+# Inner git (gitlab or deploy git server) account
 #
-[git]
-username:
-password:
+[Git]
+Username:
+Password:
 ```

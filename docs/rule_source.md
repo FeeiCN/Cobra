@@ -1,4 +1,4 @@
-> 扫描规则大部分来源于研究者针对漏洞手动编写的，也有部分来源于下面这些开源系统的。Cobra扫描规则与大部分开源系统相兼容。
+> Most of the scanning rules from the researchers manually written for the vulnerability, but also some of the following from the open source system. Cobra scanning rules are compatible with most open source systems.
 
 ### [SonarQube](https://github.com/SonarSource/sonarqube)
 - [SonarQube Rule List](http://dist.sonarsource.com/reports/coverage/cwe/squid_cwe_coverage.html)
