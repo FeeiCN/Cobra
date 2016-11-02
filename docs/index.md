@@ -3,7 +3,7 @@ Welcome to Cobra's documentation!
 
 Discover what **Cobra** is all about and the core-concepts behind it.
 
-> The Cobra Documentation is also available in raw (computer friendly) format in the [Cobra Github repository](https://github.com/wufeifei/cobra/docs). The Cobra Documentation is released under the Creative Commons Attribution-ShareAlike 4.0 International license.
+> The Cobra Documentation is also available in raw (computer friendly) format in the [Cobra Github repository](https://github.com/wufeifei/cobra/tree/master/docs). The Cobra Documentation is released under the Creative Commons Attribution-ShareAlike 4.0 International license.
 
 - Author: [Feei](http://wufeifei.com) (wufeifei#wufeifei.com)
 - Code: [https://github.com/wufeifei/cobra](https://github.com/wufeifei/cobra)
