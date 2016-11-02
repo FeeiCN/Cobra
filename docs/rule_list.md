@@ -13,9 +13,9 @@ _本章节正在补充完善，请持续关注!_
 |---|---|---|---|---|---|
 |PHP||||||
 ||XSS|||||
-|||Ouput|[@Feei](http://wufeifei.com)|100%|[Output Param](https://github.com/wufeifei/cobra/wiki/rule_xss_output_param)|
+|||Ouput|[@Feei](http://wufeifei.com)|100%|Output Param|
 ||SSRF||||||
-|||CURL|[@Feei](http://wufeifei.com)|100%|[CURL SSRF](https://github.com/wufeifei/cobra/wiki/rule_ssrf_curl)|
+|||CURL|[@Feei](http://wufeifei.com)|100%|CURL SSRF|
 ||Logic Bug||||||
 ||Stack Trace||||||
 ||Deprecated Function||||||

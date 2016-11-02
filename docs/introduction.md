@@ -168,17 +168,17 @@ Cobra是一款定位于白盒静态代码安全分析的工具，目的是为了
 
 ### 扫描方式
 
-提供自助操作界面供扫描，同时也提供标准全功能[API](https://github.com/wufeifei/cobra/wiki/API)接口供第三方系统调用（比如发布系统）
+提供自助操作界面供扫描，同时也提供标准全功能[API](http://cobra-docs.readthedocs.io/en/latest/API/)接口供第三方系统调用（比如发布系统）
 ![Cobra Framework](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/FRAMEWORK.png)
 ![Cobra Manual](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
 
 ### 漏洞类型
 
 除了常见的应用程序漏洞，还包括一些代码逻辑漏洞以及文件权限、敏感文件等
-具体参见[Cobra Vulnerabilities](https://github.com/wufeifei/cobra/wiki/Vulnerabilities)
+具体参见[Cobra Vulnerabilities](http://cobra-docs.readthedocs.io/en/latest/vulnerabilities/)
 
 扫描文件涵盖所有常见文件类型，注册检测规则支持Java、PHP两种语言。
-具体参见[Cobra Support Language](https://github.com/wufeifei/cobra/wiki/Support-Language)
+具体参见[Cobra Support Language](http://cobra-docs.readthedocs.io/en/latest/languages/)
 
 另外扫描的准确度、范围都是受各自开启的规则数影响的。
 

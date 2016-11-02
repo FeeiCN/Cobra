@@ -5,7 +5,7 @@
     ~~~~~~~~~~~~~~
 
     对外API接口实现
-    :doc:       https://github.com/wufeifei/cobra/wiki/API
+    :doc:       http://cobra-docs.readthedocs.io/en/latest/API
 
     :author:    Feei <wufeifei#wufeifei.com>
     :homepage:  https://github.com/wufeifei/cobra

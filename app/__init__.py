@@ -152,7 +152,7 @@ class Install(Command):
         try:
             db.create_all()
         except exc.SQLAlchemyError as e:
-            logging.critical("MySQL database error: {0}\nFAQ: {1}".format(e, 'https://github.com/wufeifei/cobra/wiki/Error#mysql'))
+            logging.critical("MySQL database error: {0}\nFAQ: {1}".format(e, 'http://cobra-docs.readthedocs.io/en/latest/FAQ/'))
             sys.exit(0)
         logging.debug("Create Structure Success.")
         # insert base data

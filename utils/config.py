@@ -27,6 +27,6 @@ class Config:
         try:
             value = config.get(level1, level2)
         except Exception as e:
-            print("./config file configure failed.\nError: {0}\nSee Help: https://github.com/wufeifei/cobra/wiki/Config".format(e.message))
+            print("./config file configure failed.\nError: {0}\nSee Help: http://cobra-docs.readthedocs.io/en/latest/configuration/".format(e.message))
             exit()
         self.value = value
