@@ -44,7 +44,7 @@ brew install findutils
 [sudo] pip install -r requirements.txt
 ```
 
-## [Cobra configuration](https://github.com/wufeifei/cobra/wiki/Config)
+## [Cobra configuration](http://cobra-docs.readthedocs.io/en/latest/configuration/)
 ```
 cp config.example config
 vim config
@@ -66,4 +66,4 @@ tail -f logs/cobra.log
 ```
 
 ## FAQ
-- https://github.com/wufeifei/cobra/wiki/Error
+- http://cobra-docs.readthedocs.io/en/latest/FAQ/
