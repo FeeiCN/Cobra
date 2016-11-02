@@ -5,9 +5,9 @@ If the vulnerability from the perspective of speaking, can be broadly divided in
 
 | Type | Impact Level | Impact Description | Typical Example | Typical Software|
 | --- | --- | --- | --- | --- |
-| Black Box | 100 | Available directly | SQL Injection, XXE, SSRF, etc. | [SQLMap] (http://sqlmap.org/) |
-| White Box 1 | 80 | May be used directly or indirectly or temporarily unavailable | A function that exists in SSRF, but may not be invoked when discovered | [RIPS] (https://github.com/ripsscanner/ Rips)
-| Whitebox 2 | 20 | Can not be used directly but is not compliant | Using functions that are deprecated due to security issues | [SonarQube] (https://sonarqube.com/) |
+| Black Box | 100 | Available directly | SQL Injection, XXE, SSRF, etc. | [SQLMap](http://sqlmap.org/) |
+| White Box 1 | 80 | May be used directly or indirectly or temporarily unavailable | A function that exists in SSRF, but may not be invoked when discovered | [RIPS](https://github.com/ripsscanner/rips)
+| Whitebox 2 | 20 | Can not be used directly but is not compliant | Using functions that are deprecated due to security issues | [SonarQube](https://sonarqube.com/) |
 
 The Cobra is positioned to cover white box 1 and white box 2 two levels:
 1. Can find all the vulnerabilities in the code points (these vulnerabilities can not be directly used as a risk, because the existence of these risks, sooner or later there may be security incidents).
@@ -25,40 +25,41 @@ At present the industry has a lot of code audit tools
 
 | Name | Open Source | Estimate |
 | ---------------------------------------- | ---- | --- |
-| [Droopescan] (https://github.com/droope/droopescan) | Yes | Override CMS framework only |
-| [GrepBugs] (https://grepbugs.com/) | Yes | Simple regular match, false positive |
-| [Pixy] (https://github.com/oliverklee/pixy) | Yes | Not Commercial, Immature |
-| [RIPS] (http://rips-scanner.sourceforge.net/) | Yes | Only PHP | is covered
-| [SWAAT] (https://www.owasp.org/index.php/Category:OWASP_SWAAT_Project) | Yes | .NET write, can not quickly expand new vulnerabilities |
-| [PHP-SAT] (http://www.program-transformation.org/PHP/PhpSat) | Yes | Overwrite PHP only, do not maintain for a long time, can not quickly expand new vulnerabilities |
-| [Yasca] (http://scovetta.github.io/yasca/) | Yes | Scanning for code security specs that can not quickly scale new vulnerabilities |
-| [SonarQube] (https://sonarqube.com/) | Yes | Scanning for code security specifications, rules exploiting Java code to quickly add new vulnerability scanning rules |
-| [PreFast] (http://msdn.microsoft.com/en-us/library/ms933794.aspx) | Yes | Only for C / C ++ |
-| [PMD] (http://pmd.sourceforge.net/) | Yes | Only for Java |
-| [Google CodeSearchDiggity] (https://www.bishopfox.com/resources/tools/google-hacking-diggity/attack-tools/) | Yes | Tools |
-| [FxCop] (http://msdn.microsoft.com/en-us/library/bb429476 (VS.80) .aspx) | Yes | For .NET |
-| [Flawfinder] (http://www.dwheeler.com/flawfinder/) | Yes | For C / C ++ |
-| [Ruby on Rails] (http://brakemanscanner.org/) | Yes | Only for Ruby on Rails |
-| [VCG] (http://sourceforge.net/projects/visualcodegrepp/) | Yes | GUI programs, simple rule matching |
-| [BugScout] (https://buguroo.com/products/bugblast-next-gen-appsec-platform/bugscout-sca) | No | Unable to extend flexibly |
-| [Contrast from Contrast Security] (http://www.contrastsecurity.com/) | No | Can not expand flexibly
-| [IBM Security AppScan Source Edition] (http://www-01.ibm.com/software/rational/products/appscan/source/) | No |
-| [Insight] (http://www.klocwork.com/products/insight.asp) | No | Can not be flexibly extended
-| [Parasoft Test] (http://www.parasoft.com/jsp/capabilities/static_analysis.jsp?itemId=547) | No | Can not flexibly extend |
-| [Pitbull SCC] (http://www.pitbullsoftware.net/pitbull-scc-en/) | No | Can not flexibly expand |
-| [Seeker] (http://www.quotium.com/prod/security.php) | No | Can not be flexibly expanded
-| [Pentest] (http://www.sourcepatrol.co.uk/) | No | Can not be flexibly extended
-| [CodeSecure Verifier] (www.armorize.com) | No | Can not be flexibly extended
-| [Coverity] (http://www.coverity.com/products/security-advisor.html) | No | Can not expand flexibly |
-| [PVS-Studio] (http://www.viva64.com/en/) | No | Can not be flexibly expanded
-| [HP / Fortify] (https://www.fortify.com/products/hpfssc/source-code-analyzer.html) | No | Can not flexibly expand |
-| [Veracode] (http://www.veracode.com/) | No | Can not be flexibly expanded
+| [Droopescan](https://github.com/droope/droopescan) | Yes | Override CMS framework only |
+| [GrepBugs](https://grepbugs.com/) | Yes | Simple regular match, false positive |
+| [Pixy](https://github.com/oliverklee/pixy) | Yes | Not Commercial, Immature |
+| [RIPS](http://rips-scanner.sourceforge.net/) | Yes | Only PHP is covered|
+| [SWAAT](https://www.owasp.org/index.php/Category:OWASP_SWAAT_Project) | Yes | .NET write, can not quickly expand new vulnerabilities |
+| [PHP-SAT](http://www.program-transformation.org/PHP/PhpSat) | Yes | Overwrite PHP only, do not maintain for a long time, can not quickly expand new vulnerabilities |
+| [Yasca](http://scovetta.github.io/yasca/) | Yes | Scanning for code security specs that can not quickly scale new vulnerabilities |
+| [SonarQube](https://sonarqube.com/) | Yes | Scanning for code security specifications, rules exploiting Java code to quickly add new vulnerability scanning rules |
+| [PreFast](http://msdn.microsoft.com/en-us/library/ms933794.aspx) | Yes | Only for C / C ++ |
+| [PMD](http://pmd.sourceforge.net/) | Yes | Only for Java |
+| [Google CodeSearchDiggity](https://www.bishopfox.com/resources/tools/google-hacking-diggity/attack-tools/) | Yes | Tools |
+| [FxCop](http://msdn.microsoft.com/en-us/library/bb429476(VS.80).aspx) | Yes | For .NET |
+| [Flawfinder](http://www.dwheeler.com/flawfinder/) | Yes | For C / C ++ |
+| [Ruby on Rails](http://brakemanscanner.org/) | Yes | Only for Ruby on Rails |
+| [VCG](http://sourceforge.net/projects/visualcodegrepp/) | Yes | GUI programs, simple rule matching |
+| [BugScout](https://buguroo.com/products/bugblast-next-gen-appsec-platform/bugscout-sca) | No | Can not be flexibly expanded |
+| [Contrast from Contrast Security](http://www.contrastsecurity.com/) | No | Can not be flexibly expanded|
+| [IBM Security AppScan Source Edition](http://www-01.ibm.com/software/rational/products/appscan/source/) | No |Can not be flexibly expanded |
+| [Insight](http://www.klocwork.com/products/insight.asp) | No | Can not be flexibly expanded|
+| [Parasoft Test](http://www.parasoft.com/jsp/capabilities/static_analysis.jsp?itemId=547) | No | Can not be flexibly expanded |
+| [Pitbull SCC](http://www.pitbullsoftware.net/pitbull-scc-en/) | No | Can not be flexibly expanded |
+| [Seeker](http://www.quotium.com/prod/security.php) | No | Can not be flexibly expanded|
+| [Pentest](http://www.sourcepatrol.co.uk/) | No | Can not be flexibly expanded|
+| [CodeSecure Verifier](www.armorize.com) | No | Can not be flexibly expanded|
+| [Coverity](http://www.coverity.com/products/security-advisor.html) | No | Can not be flexibly expanded |
+| [PVS-Studio](http://www.viva64.com/en/) | No |Can not be flexibly expanded|
+| [HP / Fortify](https://www.fortify.com/products/hpfssc/source-code-analyzer.html) | No | Can not be flexibly expanded |
+| [Veracode](http://www.veracode.com/) | No | Can not be flexibly expanded
 
 The focus of these projects are not the same, a very small number of commercial positioning in the enterprise code audit, but are closed-source.
 Not an open source, and targeted at enterprise-level use.
 
 
 As a business enterprise, we need:
+
 - Can quickly scan for new vulnerabilities (Web applications every day there are new vulnerabilities / attack techniques appear to be able to quickly respond to the new vulnerability scanning)
 - Ability to scan a variety of development languages (the company will develop a variety of languages, the need to support a variety of development language scanning)
 - Ability to automatically scan, auto-report (manual participation to each project cost too much)
@@ -80,7 +81,7 @@ At the same time static analysis technology is also divided into several.
 
 To put it bluntly is to scan the code in accordance with the specified rules of the problem.
 
-For example, in the PHP Kohana framework, there is a uniform method to take a uniform parameter, and after security filtering. The possible situation is that the new R & D personnel are not familiar with the use of the PHP built-in `$ _GET` $ _POST```, resulting in XSS, then you can use` `` $ _GET`` / `` `$ _POST``` as a rule to find all the source code where these functions.
+For example, in the PHP Kohana framework, there is a uniform method to take a uniform parameter, and after security filtering. The possible situation is that the new R & D personnel are not familiar with the use of the PHP built-in ```$ _GET``` / ```$ _POST```, resulting in XSS, then you can use```$ _GET``` / ```$ _POST``` as a rule to find all the source code where these functions.
 
 This approach is also a lot of white hat audit code used, although very straightforward, but the false positives will be more.
 
@@ -166,17 +167,17 @@ When the enterprise fixes the vulnerability, you can set the repair / validation
 
 ### scanning method
 
-Provides a self-service interface for scanning, and also provides a standard full-featured [API] (http://cobra-docs.readthedocs.io/en/latest/API/) interface for third-party system calls (such as publishing systems)
-! [Cobra Framework] (https://raw.githubusercontent.com/wufeifei/cobra/master/docs/FRAMEWORK.png)
-! [Cobra Manual] (https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
+Provides a self-service interface for scanning, and also provides a standard full-featured [API](http://cobra-docs.readthedocs.io/en/latest/API/) interface for third-party system calls (such as publishing systems)
+![Cobra Framework](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/FRAMEWORK.png)
+![Cobra Manual](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
 
 ### Vulnerability type
 
 In addition to common application vulnerabilities, including some code logic vulnerabilities and file permissions, sensitive files, etc.
-See [Cobra Vulnerabilities] (http://cobra-docs.readthedocs.io/en/latest/vulnerabilities/)
+See [Cobra Vulnerabilities](http://cobra-docs.readthedocs.io/en/latest/vulnerabilities/)
 
 Scan file covers all common file types, registration detection rules support Java, PHP two languages.
-See [Cobra Support Language] (http://cobra-docs.readthedocs.io/en/latest/languages/)
+See [Cobra Support Language](http://cobra-docs.readthedocs.io/en/latest/languages/)
 
 In addition the accuracy of scanning, the scope of the rules are affected by the number of their impact.
 

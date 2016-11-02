@@ -13,7 +13,7 @@ perl -MCPAN -e "shell"
 |---|---|
 | 1146 | Datasheet does not exist, please go through the installation process (http://cobra-docs.readthedocs.io/en/latest/installation/) |
 | 1048 | The field can not be NULL |
-Account password is wrong
+| 1045 | Account password is wrong|
 | 1044 | The account password is correct, but there is no access to the DB |
 | 1129 | The IP request to connect too much, use the `` `mysqladmin flush-hosts-p`` |
 

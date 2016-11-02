@@ -66,4 +66,4 @@ tail -f logs/cobra.log
 ```
 
 ## FAQ
-- http://cobra-docs.readthedocs.io/en/latest/FAQ/
+- [http://cobra-docs.readthedocs.io/en/latest/FAQ/](http://cobra-docs.readthedocs.io/en/latest/FAQ/)

@@ -1,6 +1,6 @@
-> If you have a new vulnerability type, please send us feedback via [Issue] (https://github.com/wufeifei/cobra/issues/new).
+> If you have a new vulnerability type, please send us feedback via [Issue](https://github.com/wufeifei/cobra/issues/new).
 
-_ This chapter is perfect, please continue to pay attention! _
+_This chapter is perfect, please continue to pay attention!_
 
 - SQL Injection
 - LFI/RFI

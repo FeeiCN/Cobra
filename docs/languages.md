@@ -1,5 +1,5 @@
 
-_ This chapter is perfect, please continue to pay attention! _
+_This chapter is perfect, please continue to pay attention!_
 
 Language|Extensions
 --- | ---
