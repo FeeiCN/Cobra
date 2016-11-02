@@ -75,9 +75,15 @@ def report(project_id):
     time_start = time.strftime("%H:%M:%S", time.localtime(task_info.time_start))
     time_end = time.strftime("%H:%M:%S", time.localtime(task_info.time_end))
 
+    # 任务信息
+    tasks = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.updated_at.desc()).all()
+
     # 没有指定task id，获取该project的所有扫描结果
     # 指定了task id，选取该task的结果
     if search_task_id is None:
+        # Default task id
+        search_task_id = tasks[0].id
+
         # 获取漏洞总数
         scan_results_number = CobraResults.query.filter(CobraResults.project_id == project_id).count()
         # scan_results_number = db.session.query(func.count()).filter(CobraResults.project_id == project_id)
@@ -254,8 +260,6 @@ def report(project_id):
         else:
             unrepair_unknown_level_number = every_level[0]
 
-    # 任务信息
-    tasks = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.updated_at.desc()).all()
     # 漏洞状态信息
     vuls_status = [
         {"status": "全部", "value": 0},
@@ -441,7 +445,7 @@ def vulnerabilities_detail():
         project_path_split = project.repository.replace('.git', '').split('/')
         project_path = os.path.join(project_path_split[3], project_path_split[4])
         upload = os.path.join(config.Config('upload', 'directory').value, 'versions')
-        project_code_path = os.path.join(project_path, upload)
+        project_code_path = os.path.join(upload, project_path)
     if vulnerabilities_detail.file[0] == '/':
         vulnerabilities_detail.file = vulnerabilities_detail.file[1:]
     file_path = os.path.join(project_code_path, vulnerabilities_detail.file)

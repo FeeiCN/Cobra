@@ -60,7 +60,7 @@ $(function () {
                     }
 
                     // vulnerabilities list detail
-                    $('.vulnerabilities_list li').on('click', function () {
+                    $('.vulnerabilities_list li').off('click').on('click', function () {
                         $('.vulnerabilities_list li').removeClass('active');
                         $(this).addClass('active');
                         var id = $(this).attr('data-id');
@@ -151,7 +151,8 @@ $(function () {
     var ext_distributing = echarts.init(document.getElementById('ext_distributing'));
     ext_distributing.showLoading();
 
-    $.get('/ext/{{ data.task_info.id }}', function (result) {
+    var task_id = $('input[name=task_id]').val();
+    $.get('/ext/' + task_id, function (result) {
         if (result.code == 1001) {
             var diskData = result.result;
             ext_distributing.hideLoading();
