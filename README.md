@@ -12,7 +12,7 @@
 ---
 
 ## Introduction
-Cobra is a static code security issues analysis and scan vulnerabilities scan system.
+Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
 
 ## Features
 - Multi-language support

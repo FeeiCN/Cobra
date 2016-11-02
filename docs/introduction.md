@@ -3,7 +3,7 @@ Cobra is a static code analysis system that automates the detecting vulnerabilit
 
 If the vulnerability from the perspective of speaking, can be broadly divided into:
 
-Type | Impact Level | Impact Description | Typical Example | Typical Software
+| Type | Impact Level | Impact Description | Typical Example | Typical Software|
 | --- | --- | --- | --- | --- |
 | Black Box | 100 | Available directly | SQL Injection, XXE, SSRF, etc. | [SQLMap] (http://sqlmap.org/) |
 | White Box 1 | 80 | May be used directly or indirectly or temporarily unavailable | A function that exists in SSRF, but may not be invoked when discovered | [RIPS] (https://github.com/ripsscanner/ Rips)
