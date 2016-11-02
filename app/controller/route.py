@@ -262,10 +262,10 @@ def report(project_id):
 
     # 漏洞状态信息
     vuls_status = [
-        {"status": "全部", "value": 0},
-        {"status": "已修复", "value": 1},
-        {"status": "未修复", "value": 2},
-        {"status": "其他", "value": 3},
+        {"status": "All", "value": 0},
+        {"status": "Repaired", "value": 1},
+        {"status": "UnRepaired", "value": 2},
+        {"status": "Other", "value": 3},
     ]
 
     data = {
@@ -387,7 +387,7 @@ def vulnerabilities_list():
 
     # 处理漏洞信息
     vulnerabilities = list()
-    map_level = ["未定义", "低危", "中危", "高危"]
+    map_level = ["Undefined", "Low", "Medium", "High"]
     map_color = ["low", "low", "medium", "high"]
     current_url = ''
     for result in all_scan_results:
@@ -404,11 +404,11 @@ def vulnerabilities_list():
         data_dict['verify'] = ''
         data_dict['rule_id'] = result[10]
         if result[11] == 2:
-            status = u"已修复"
+            status = u"Repaired"
         elif result[11] == 1:
-            status = u"已推送到第三方漏洞平台"
+            status = u"Push third-party platform"
         else:
-            status = u"未修复"
+            status = u"Unrepair"
         data_dict["status"] = result[11]
         data_dict["status_description"] = status
         vulnerabilities.append(data_dict)
