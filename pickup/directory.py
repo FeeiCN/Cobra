@@ -34,15 +34,15 @@ class Directory:
         for filename in os.listdir(directory):
             path = os.path.join(directory, filename)
 
-            # Statistic File Type Count
-            file_name, file_extension = os.path.splitext(path)
-            self.type_nums.setdefault(file_extension.lower(), []).append(filename)
-
             # Directory Structure
             # logging.debug('|  ' * (level - 1) + '|--' + filename)
             if os.path.isdir(path):
                 self.files(path, level + 1)
             if os.path.isfile(path):
+                # Statistic File Type Count
+                file_name, file_extension = os.path.splitext(path)
+                self.type_nums.setdefault(file_extension.lower(), []).append(filename)
+
                 path = path.replace(self.path, '')
                 self.file.append(path)
                 self.file_id += 1
