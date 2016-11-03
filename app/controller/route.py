@@ -15,9 +15,7 @@ import time
 import os
 from utils import common, config
 from flask import jsonify, render_template, request, abort
-from flask_paginate import Pagination
 from sqlalchemy import and_, func
-from engine import detection
 from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
 
@@ -263,8 +261,8 @@ def report(project_id):
     # 漏洞状态信息
     vuls_status = [
         {"status": "All", "value": 0},
-        {"status": "Repaired", "value": 1},
-        {"status": "UnRepaired", "value": 2},
+        {"status": "Fixed", "value": 1},
+        {"status": "Not fixed", "value": 2},
         {"status": "Other", "value": 3},
     ]
 
@@ -389,7 +387,6 @@ def vulnerabilities_list():
     vulnerabilities = list()
     map_level = ["Undefined", "Low", "Medium", "High"]
     map_color = ["low", "low", "medium", "high"]
-    current_url = ''
     for result in all_scan_results:
         # 生成data数据
         data_dict = dict()
@@ -404,11 +401,11 @@ def vulnerabilities_list():
         data_dict['verify'] = ''
         data_dict['rule_id'] = result[10]
         if result[11] == 2:
-            status = u"Repaired"
+            status = u"Fixed"
         elif result[11] == 1:
             status = u"Push third-party platform"
         else:
-            status = u"Unrepair"
+            status = u"Not fixed"
         data_dict["status"] = result[11]
         data_dict["status_description"] = status
         vulnerabilities.append(data_dict)
@@ -429,14 +426,14 @@ def vulnerabilities_list():
 
 @web.route('/detail', methods=['POST'])
 def vulnerabilities_detail():
-    id = request.form.get("id", None)
+    v_id = request.form.get("id", None)
     # query result/rules/vulnerabilities
-    vulnerabilities_detail = CobraResults.query.filter_by(id=id).first()
-    rule_info = CobraRules.query.filter_by(id=vulnerabilities_detail.rule_id).first()
+    v_detail = CobraResults.query.filter_by(id=v_id).first()
+    rule_info = CobraRules.query.filter_by(id=v_detail.rule_id).first()
     vulnerabilities_description = CobraVuls.query.filter_by(id=rule_info.vul_id).first()
 
     # get code content
-    project = CobraProjects.query.filter_by(id=vulnerabilities_detail.project_id).first()
+    project = CobraProjects.query.filter_by(id=v_detail.project_id).first()
     if project.repository[0] == '/':
         # upload directory
         project_code_path = project.repository
@@ -446,9 +443,9 @@ def vulnerabilities_detail():
         project_path = os.path.join(project_path_split[3], project_path_split[4])
         upload = os.path.join(config.Config('upload', 'directory').value, 'versions')
         project_code_path = os.path.join(upload, project_path)
-    if vulnerabilities_detail.file[0] == '/':
-        vulnerabilities_detail.file = vulnerabilities_detail.file[1:]
-    file_path = os.path.join(project_code_path, vulnerabilities_detail.file)
+    if v_detail.file[0] == '/':
+        v_detail.file = v_detail.file[1:]
+    file_path = os.path.join(project_code_path, v_detail.file)
 
     if os.path.isfile(file_path) is not True:
         return jsonify(status_code=4004, message='Failed get code: {0}'.format(file_path))
@@ -456,12 +453,12 @@ def vulnerabilities_detail():
     code_content = ''
     fp = open(file_path, 'r')
     block_lines = 50
-    if vulnerabilities_detail.line < block_lines:
+    if v_detail.line < block_lines:
         block_start = 0
-        block_end = vulnerabilities_detail.line + block_lines
+        block_end = v_detail.line + block_lines
     else:
-        block_start = vulnerabilities_detail.line - block_lines
-        block_end = vulnerabilities_detail.line + block_lines
+        block_start = v_detail.line - block_lines
+        block_end = v_detail.line + block_lines
     for i, line in enumerate(fp):
         if block_start <= i <= block_end:
             code_content = code_content + line
@@ -469,14 +466,14 @@ def vulnerabilities_detail():
 
     return_data = {
         'detail': {
-            'id': vulnerabilities_detail.id,
-            'file': vulnerabilities_detail.file,
-            'line_trigger': vulnerabilities_detail.line - block_start,
+            'id': v_detail.id,
+            'file': v_detail.file,
+            'line_trigger': v_detail.line - block_start,
             'line_start': block_start + 1,
             'code': code_content,
-            'status': vulnerabilities_detail.status,
-            'created': vulnerabilities_detail.created_at,
-            'updated': vulnerabilities_detail.updated_at
+            'status': v_detail.status,
+            'created': v_detail.created_at,
+            'updated': v_detail.updated_at
         },
         'rule': {
             'id': rule_info.id,

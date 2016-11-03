@@ -205,8 +205,8 @@
                                             <thead>
                                             <tr>
                                                 <th>Level</th>
-                                                <th>Un Repair</th>
-                                                <th>Repaired</th>
+                                                <th>Not fixed</th>
+                                                <th>Fixed</th>
                                                 <th>Total</th>
                                             </tr>
                                             </thead>
@@ -325,11 +325,11 @@
                                                     <small>
                                                         {{ each_vul.level }} {{ each_vul.rule }}
                                                         {% if each_vul.status == 2 %}
-                                                            Repaired
+                                                            Fixed
                                                         {% elif each_vul.status == 1 %}
-                                                            Pushed third-party platform（Un Repair）
+                                                            Pushed third-party platform（Not fixed）
                                                         {% elif each_vul.status == 0 %}
-                                                            Un Repair
+                                                            Not fixed
                                                         {% endif %}
                                                     </small>
                                                 </span>
