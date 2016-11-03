@@ -47,7 +47,7 @@ $(function () {
                             '<strong>' + list[i].id + '. ' + list[i].file + ':' + list[i].line + '</strong><br>' +
                             '<span class="issue-information">' +
                             '<small>' +
-                            list[i].rule + ' ' + list[i].level +
+                            list[i].rule + ' ' + list[i].level + ' ' +
                             list[i].status_description +
                             '</small>' +
                             '</span>' +
@@ -78,9 +78,10 @@ $(function () {
                                 pre.scrollTop(data.detail.line_trigger * 13);
 
                                 // vulnerabilities detail
-                                $('.file_line').text(data.detail.file + ':' + data.detail.line_trigger);
+                                $('.file_line').text(data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1));
                                 $('.found_time').text(data.detail.created);
                                 $('.updated_time').text(data.detail.updated);
+                                $('.status_description').text(data.detail.status);
 
 
                                 $('.r_name').text(data.rule.description);
@@ -132,7 +133,8 @@ $(function () {
     $('.icon_set_1_icon-74').click(function () {
         var rule_id = $(this).attr('rule_id');
         var project_path = $(this).attr('file_path');
-        var data = {'project_id': '{{ data.project_id }}', 'rule_id': rule_id, 'path': project_path, 'reason': 'Remark'};
+        var project_id = $('input[name=project_id]').val();
+        var data = {'project_id': project_id, 'rule_id': rule_id, 'path': project_path, 'reason': 'Remark'};
         $.ajax({
             'url': '/admin/add_whitelist',
             'type': 'POST',

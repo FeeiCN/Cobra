@@ -104,6 +104,15 @@
         .filter_setting {
             float: right;
         }
+
+        .file_line {
+            margin: 20px 0 10px 0;
+            border: 1px solid #a58181;
+            padding: 3px;
+            background-color: #908787;
+            color: #efefef;
+            border-radius: 8px;
+        }
     </style>
 
     <!--[if lt IE 9]>
@@ -342,6 +351,7 @@
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-md-8">
+                                        <strong class="file_line"></strong>
                                     <pre data-line="1" data-start="1" class="line-numbers">
 <code class="language-php code_content">function test(){
     print('Hello, Cobra!');
@@ -355,7 +365,6 @@
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>Trigger: <span class="file_line"></span></li>
                                                     <li>Found time: <span class="found_time"></span></li>
                                                     <li>Status: <span class="status_description"></span></li>
                                                     <li>Processed time: <span class="updated_time"></span></li>
