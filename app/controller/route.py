@@ -432,6 +432,9 @@ def vulnerabilities_detail():
     rule_info = CobraRules.query.filter_by(id=v_detail.rule_id).first()
     vulnerabilities_description = CobraVuls.query.filter_by(id=rule_info.vul_id).first()
 
+    if rule_info.author.strip() == '':
+        rule_info.author = 'Undefined'
+
     # get code content
     project = CobraProjects.query.filter_by(id=v_detail.project_id).first()
     if project.repository[0] == '/':
