@@ -13,6 +13,7 @@
 """
 import time
 import os
+from pickup.git import Git
 from utils import common, config
 from flask import jsonify, render_template, request, abort
 from sqlalchemy import and_, func
@@ -453,6 +454,12 @@ def vulnerabilities_detail():
     if os.path.isfile(file_path) is not True:
         return jsonify(status_code=4004, message='Failed get code: {0}'.format(file_path))
 
+    # get committer
+    c_ret, c_author, c_time = Git.committer(v_detail.file, project_code_path, v_detail.line)
+    if c_ret is not True:
+        c_author = 'Not support'
+        c_time = 'Not support'
+
     code_content = ''
     fp = open(file_path, 'r')
     block_lines = 50
@@ -474,6 +481,9 @@ def vulnerabilities_detail():
             'line_trigger': v_detail.line - block_start,
             'line_start': block_start + 1,
             'code': code_content,
+            'c_ret': c_ret,
+            'c_author': c_author,
+            'c_time': c_time,
             'status': v_detail.status,
             'created': v_detail.created_at,
             'updated': v_detail.updated_at

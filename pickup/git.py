@@ -13,6 +13,7 @@
 """
 
 import os
+import re
 import subprocess
 import logging
 from urllib import quote
@@ -294,5 +295,36 @@ class Git:
         else:
             return self.clone()
 
+    @staticmethod
+    def committer(file, path, line_number, length=1):
+        """
+        git blame -L21,+1 -- git.py
+        362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logging.getLogger(__name__)
+        (?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})
+        group #1: wufeifei
+        group #2: 2016-09-10 12:19:44
+        :param file:
+        :param path:
+        :param line_number:
+        :param length:
+        :return: group#1, group#2
+        """
+        os.chdir(path)
+        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file)
+        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        (checkout_out, checkout_err) = p.communicate()
+        logging.info(checkout_err)
+        if len(checkout_out) != 0:
+            group = re.findall(r'(?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})', checkout_out)
+            return True, group[0][0], group[0][1]
+        else:
+            return False, None, None
+
     def __repr__(self):
         return "<Git - %r@%r>" % (self.repo_username, self.repo_address)
+
+
+if __name__ == '__main__':
+    # test committer
+    c_ret, c_author, c_time = Git.committer('cobra.py', '/Volumes/Statics/Project/Company/cobra/', 11)
+    print(c_ret, c_author, c_time)
