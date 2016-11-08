@@ -11,6 +11,9 @@
 
 ---
 
+## Beta version
+Cobra is currently a beta version, there are some imperfections and bugs, so we need your contribution, whether it is testing, development, vulnerability scanning rules or advice.
+
 ## Introduction
 Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
 
