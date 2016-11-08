@@ -44,7 +44,10 @@ Cobra是一款定位于静态代码安全分析系统。通过收集互联网常
 ##### 管理后台
 ![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
 
-## 其它
+## Beta版本
+Cobra目前一个Beta版本，还有些不完善的地方，因此我们需要您的贡献，不管是测试、开发、漏洞扫描规则还是建议意见。
+
+## 引用
 - Cobra文档 - [http://cobra-docs.readthedocs.io](http://cobra-docs.readthedocs.io)
 - 官方网站 - 敬请期待!
 - 在线演示 - 敬请期待!
