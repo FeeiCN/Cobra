@@ -8,6 +8,7 @@ $(function () {
         listen: function () {
             // filter submit button
             $('.filter_btn').on('click', function () {
+                vulnerabilities_list.page = 1;
                 vulnerabilities_list.get();
                 vulnerabilities_list.trigger_filter();
             });
