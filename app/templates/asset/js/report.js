@@ -83,6 +83,8 @@ $(function () {
                                 $('.found_time').text(data.detail.created);
                                 $('.updated_time').text(data.detail.updated);
                                 $('.status_description').text(data.detail.status);
+                                $('.c_author').text(data.detail.c_author);
+                                $('.c_time').text(data.detail.c_time);
 
 
                                 $('.r_name').text(data.rule.description);
