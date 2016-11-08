@@ -28,65 +28,7 @@ var g_rule_back_method = null;
 
 var gTaskBackPage = 1;
 
-function showAlert(tag, msg, div) {
-    var tt = '<div class="alert alert-' + tag + ' alert-dismissible" role="alert">';
-    tt += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-    tt += '<span aria-hidden="true">&times;</span></button>';
-    tt += '<strong>' + msg + '</strong></div>';
-    $(div).html(tt).fadeIn(1000);
-}
 
-function make_pagination(cp, t) {
-    // make pagination
-    g_rule_back_page = cp;
-    gTaskBackPage = cp;
-    g_rule_back_method = "page";
-    // get all rules count first
-    var all_count = 0;
-    var promise = $.ajax('all_' + t + '_count');
-    promise.always(function (data) {
-        all_count = data;
-        var per_page_count = 10;
-        var total_pages = Math.ceil(all_count / per_page_count);
-        var current_page = cp;
-
-        var pp = "<ul class='pagination'>";
-        pp += "<li><a href='#' id='prev' role='button' class='btn' style='outline: none;' " +
-            "onclick=prev(" + current_page + ",\"" + t + "\")>Prev</a></li>";
-        pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
-        pp += "<li><a href='#' id='next' role='button' class='btn' style='outline: none;' " +
-            "onclick=next(" + current_page + "," + total_pages + ",\"" + t + "\")>Next</a></li>";
-        pp += "</ul>";
-
-        $("#paginate").html(pp);
-
-        if (current_page == 1) {
-            $("#prev").addClass('disabled')
-        }
-        if (current_page == total_pages) {
-            $("#next").addClass('disabled')
-        }
-
-    });
-}
-
-function prev(cp, t) {
-    if (cp <= 1) {
-        $("#main-div").load(t + '/1');
-    } else {
-        $("#main-div").load(t + '/' + (cp - 1));
-    }
-    make_pagination(cp - 1, t);
-}
-
-function next(cp, tp, t) {
-    if (cp >= tp) {
-        $("#main-div").load(t + '/1');
-    } else {
-        $("#main-div").load(t + '/' + (cp + 1));
-    }
-    make_pagination(cp + 1, t);
-}
 
 // delegate search bar
 $("#search_rules_bar").delegate("button#search_rules_button", "click", function (event) {
@@ -284,49 +226,7 @@ $("#main-div").delegate("span", "click", function () {
 
     } else if (target === "project") {
         if (type === "run") {
-            var project_id = cid;
-            //$(".containter").plainoverlay('show');
-            var data = {'project_id': project_id, 'key': '0dcbe720a3c93b2ab0070b0d5294a97a'}
-            $.ajax({
-                'url': '/api/add',
-                'type': 'post',
-                'data': JSON.stringify(data),
-                'datatype': 'json',
-                'async': true,
-                'contentType': 'application/json;charset=utf-8',
-                'success': function (result) {
-                    if (result.code == 1001) {
-                        var scan_id = result.result['scan_id'];
-                        var data = {'scan_id': scan_id, 'key': '0dcbe720a3c93b2ab0070b0d5294a97a'};
 
-                        function get_status() {
-                            $.ajax({
-                                'url': '/api/status',
-                                'type': 'POST',
-                                'data': JSON.stringify(data),
-                                'dataType': 'json',
-                                'async': false,
-                                'contentType': 'application/json;charset=utf-8',
-                                'success': function (result) {
-                                    if (result.result['status'] == 'done') {
-                                        alert('Scanning project ' + project_id + ' done.');
-                                        window.open(result.result['report'], '_blank');
-                                    }
-                                    else {
-                                        setTimeout(get_status, 2000);
-                                    }
-                                }
-                            });
-                        }
-
-                        get_status();
-
-                    }
-                    else {
-                        alert(result.result);
-                    }
-                }
-            });
         }
         if (type === "add") {
             $.get("add_project/", function (data) {
@@ -418,10 +318,7 @@ $("#main-div").delegate("span", "click", function () {
                 });
             });
         } else if (type === "del") {
-            $.post("del_project", {"id": cid}, function (result) {
-                showAlert(result.tag, result.msg, "#operate_result");
-                $("#show_all_projects").click();
-            });
+
         }
 
     } else if (target === "whitelist") {
@@ -496,25 +393,7 @@ $("#main-div").delegate("span", "click", function () {
             $.get('edit_task/' + cid, function (data) {
                 $("#main-div").html(data);
 
-                $("#edit-task-button").click(function () {
-                    var branch = $("#branch").val();
-                    var scan_way = $("#scanway:checked").val();
-                    var old_version = $("#oldversion").val();
-                    var new_version = $("#newversion").val();
-                    var target = $("#target").val();
 
-                    data = {
-                        'branch': branch,
-                        'scan_way': scan_way,
-                        'old_version': old_version,
-                        'new_version': new_version,
-                        'target': target
-                    };
-
-                    $.post("edit_task/" + cid, data, function (result) {
-                        showAlert(result.tag, result.msg, '#edit-task-result');
-                    });
-                });
             });
         } else if (type === "del") {
             // $.post("del_task", {id: cid}, function (data) {
@@ -696,59 +575,7 @@ $("#show_all_projects").click(function () {
 
     $.get('projects/1', function (data) {
         $("#main-div").html(data);
-        $("#add_new_project").click(function () {
-            $.get('add_new_project', function (data) {
-                $("#main-div").html(data);
 
-                $("#add-project-button").click(function () {
-                    var name = $("#name").val();
-                    var repository = $("#repository").val();
-                    var url = $("#url").val();
-                    var author = $("#author").val();
-                    var pe = $("#pe").val();
-                    var remark = $("#remark").val();
-
-                    if (!name || name == "") {
-                        showAlert('danger', 'name can not be empty!', 'add-project-result');
-                        return false;
-                    }
-                    if (!repository || repository == "") {
-                        showAlert('danger', 'repository can not be empty!', '#add-project-result');
-                        return false;
-                    }
-                    if (!url || url == "") {
-                        showAlert('danger', 'url can not be empty!', '#add-project-result');
-                        return false;
-                    }
-                    if (!remark || remark == "") {
-                        showAlert('danger', 'remark can not be empty!', '#add-project-result');
-                        return false;
-                    }
-                    if (!author || author == "") {
-                        showAlert('danger', 'author cannot be empty!', '#add-project-result');
-                        return false;
-                    }
-                    if (!pe || pe == "") {
-                        showAlert('danger', 'pe cannot be empty!', '#add-project-result');
-                        return false;
-                    }
-
-                    data = {
-                        'name': name,
-                        'repository': repository,
-                        'url': url,
-                        'author': author,
-                        'remark': remark,
-                        'pe': pe
-                    };
-                    $.post('add_new_project/', data, function (res) {
-                        showAlert(res.tag, res.msg, '#add-project-result');
-                    });
-
-                });
-
-            });
-        });
     });
 
     make_pagination(1, 'projects');

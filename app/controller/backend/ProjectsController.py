@@ -26,6 +26,7 @@ __email__ = "root@lightless.me"
 
 
 # show all projects
+@web.route(ADMIN_URL + '/projects/', methods=['GET'], defaults={'page': 1})
 @web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
 @login_required
 def projects(page):
@@ -35,12 +36,13 @@ def projects(page):
         project.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
     data = {
         'projects': projects,
+        'page': page
     }
     return render_template("backend/project/projects.html", data=data)
 
 
 # del the special projects
-@web.route(ADMIN_URL + '/del_project', methods=['POST'])
+@web.route(ADMIN_URL + '/projects/del/', methods=['POST'])
 @login_required
 def del_project():
     if request.method == 'POST':
@@ -55,14 +57,14 @@ def del_project():
         try:
             db.session.delete(project)
             db.session.commit()
-            return jsonify(tag='success', msg='delete success.')
+            return jsonify(code=1001, message='delete success.')
         except:
-            return jsonify(tag='danger', msg='unknown error. please try later?')
+            return jsonify(code=4004, message='unknown error. please try later?')
     else:
         return 'Method error!'
 
 
-@web.route(ADMIN_URL + '/add_new_project/', methods=['GET', 'POST'])
+@web.route(ADMIN_URL + '/projects/add/', methods=['GET', 'POST'])
 def add_project():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
@@ -81,24 +83,29 @@ def add_project():
         except:
             return jsonify(tag='danger', msg='Unknown error.')
     else:
-        return render_template('backend/project/add_project.html', data={})
+        data = {
+            'title': 'Create project',
+            'type': 'add',
+            'project': dict()
+        }
+        return render_template('backend/project/edit.html', data=data)
 
 
 # edit the special projects
-@web.route(ADMIN_URL + '/edit_project/<int:project_id>', methods=['GET', 'POST'])
+@web.route(ADMIN_URL + '/projects/edit/<int:project_id>', methods=['GET', 'POST'])
 @login_required
 def edit_project(project_id):
     if request.method == "POST":
 
-        vc = ValidateClass(request, "project_id", "name", "repository", "url", "author", "pe", "remark")
+        vc = ValidateClass(request, "id", "name", "repository", "url", "author", "pe", "remark")
         ret, msg = vc.check_args()
         if not ret:
-            return jsonify(tag="danger", msg=msg)
+            return jsonify(code=4004, message=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         project = CobraProjects.query.filter_by(id=project_id).first()
         if not project:
-            return jsonify(tag='danger', msg='wrong project id.')
+            return jsonify(code=4004, message='wrong project id.')
 
         # update project data
         project.name = vc.vars.name
@@ -111,11 +118,14 @@ def edit_project(project_id):
         try:
             db.session.add(project)
             db.session.commit()
-            return jsonify(tag='success', msg='save success.')
+            return jsonify(code=1001, message='save success.')
         except:
-            return jsonify(tag='danger', msg='Unknown error.')
+            return jsonify(code=4004, message='Unknown error.')
     else:
         project = CobraProjects.query.filter_by(id=project_id).first()
-        return render_template('backend/project/edit_project.html', data={
-            'project': project
+        return render_template('backend/project/edit.html', data={
+            'title': 'Edit project',
+            'type': 'edit',
+            'project': project,
+            'id': project_id
         })

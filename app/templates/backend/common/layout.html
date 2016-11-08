@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Feei <wufeifei#wufeifei.com>">
+    <title>Cobra</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/toolkit-inverse.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/application.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="bw">
+    <div class="fu">
+        <div class="ge aom">
+            <nav class="aot">
+                <div class="aon">
+                    <button class="amy amz aoo" type="button" data-toggle="collapse" data-target="#nav-toggleable-sm">
+                        <span class="ct">Toggle nav</span>
+                    </button>
+                    <a class="aop cn" href="index.html">
+                        <span class="bv act aoq">Cobra</span>
+                    </a>
+                </div>
+                <div class="collapse and" id="nav-toggleable-sm">
+                    <form class="aor">
+                        <input class="form-control" type="text" placeholder="Search...">
+                        <button type="submit" class="fm">
+                            <span class="bv adn"></span>
+                        </button>
+                    </form>
+                    <ul class="nav of nav-stacked">
+                        <li class="tq">Dashboards</li>
+                        <li class="{% block overview_active %}{% endblock %}">
+                            <a href="/admin/overview">Overview</a>
+                        </li>
+                        <li class="{% block tasks_active %}{% endblock %}">
+                            <a href="/admin/tasks">Tasks</a>
+                        </li>
+                        <li class="{% block projects_active %}{% endblock %}">
+                            <a href="/admin/projects">Projects</a>
+                        </li>
+                        <li class="tq">Settings</li>
+                        <li>
+                            <a href="/admin/whitelists">Whitelists</a>
+                        </li>
+                        <li>
+                            <a href="/admin/rules">Rules</a>
+                        </li>
+                        <li>
+                            <a href="/admin/vulnerabilities">Vulnerabilities</a>
+                        </li>
+                        <li>
+                            <a href="/admin/languages">Languages</a>
+                        </li>
+                        <li>
+                            <a href="/admin/frameworks" href="#docsModal" data-toggle="modal">Frameworks</a>
+                        </li>
+                    </ul>
+                    <hr class="rw aky">
+                </div>
+            </nav>
+        </div>
+        <div class="hc aps">
+            <div class="apa">
+                <div class="apb">
+                    <h6 class="apd">{% block nav_first %}{% endblock %}</h6>
+                    <h2 class="apc">{% block nav_second %}{% endblock %}</h2>
+                </div>
+
+                <div class="ob ape">
+                    <div class="tn aol">
+                        <input type="text" value="11/01/16 - 11/08/16" class="form-control" data-provide="datepicker">
+                        <span class="bv wt"></span>
+                    </div>
+                </div>
+            </div>
+
+            {% block body %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<div id="docsModal" class="cb fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="ri">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Example modal</h4>
+            </div>
+            <div class="modal-body">
+                <p>You're looking at an example modal in the dashboard theme.</p>
+            </div>
+            <div class="rj">
+                <button type="button" class="ce fh" data-dismiss="modal">Cool, got it!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tablesorter.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toolkit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/application.js') }}"></script>
+<script>
+    // execute/clear BS loaders for docs
+    $(function () {
+        while (window.BS && window.BS.loader && window.BS.loader.length) {
+            (window.BS.loader.pop())()
+        }
+    })
+
+    function make_pagination(cp, t) {
+        if (cp == '') {
+            return;
+        }
+        // make pagination
+        g_rule_back_page = cp;
+        gTaskBackPage = cp;
+        g_rule_back_method = "page";
+        // get all rules count first
+        var all_count = 0;
+        var promise = $.ajax('/admin/all_' + t + '_count');
+        promise.always(function (data) {
+            all_count = data;
+            var per_page_count = 10;
+            var total_pages = Math.ceil(all_count / per_page_count);
+            var current_page = cp;
+
+            var pp = "<ul class='ow'>";
+            pp += "<li><a href='#' id='prev' aria-label='Previous' role='button' class='btn' style='outline: none;' " +
+                    "onclick=prev(" + current_page + ",\"" + t + "\")>Prev</a></li>";
+            pp += "<li><a href='#' class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
+            pp += "<li><a href='#' id='next' aria-label='Next' role='button' class='btn' style='outline: none;' " +
+                    "onclick=next(" + current_page + "," + total_pages + ",\"" + t + "\")>Next</a></li>";
+            pp += "</ul>";
+
+            $("#paginate").html(pp);
+
+            if (current_page == 1) {
+                $("#prev").addClass('disabled')
+            }
+            if (current_page == total_pages) {
+                $("#next").addClass('disabled')
+            }
+
+        });
+    }
+
+    function prev(cp, t) {
+        if (cp <= 1) {
+            window.location.href = '/admin/' + t + '/1';
+        } else {
+            window.location.href = '/admin/' + t + '/' + (cp - 1);
+        }
+        make_pagination(cp - 1, t);
+    }
+
+    function next(cp, tp, t) {
+        if (cp >= tp) {
+            window.location.href = '/admin/' + t + '/1';
+        } else {
+            window.location.href = '/admin/' + t + '/' + (cp + 1);
+        }
+        make_pagination(cp + 1, t);
+    }
+
+    function notification(message) {
+        alert(message);
+    }
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

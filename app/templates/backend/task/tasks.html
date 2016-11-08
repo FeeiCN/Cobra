@@ -1,146 +1,99 @@
-{#    status = {#}
-{#        0: 'init',#}
-{#        1: 'scanning',#}
-{#        2: 'done',#}
-{#        3: 'error'#}
-{#    }#}
-<style>
-    .table > thead > tr > th {
-        text-align: center;
-    }
-    .operation > span {
-        margin: 0 5px;
-    }
-    #delete-tip-body {
-        font-size: 1.2em;
-    }
-    .search-task {
-        margin-bottom: 20px;
-    }
-</style>
-
-<div class="modal fade" tabindex="-1" id="delete-tip" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header del-header"></div>
-        <div class="modal-body" id="delete-tip-body"></div>
-        <div class="modal-footer">
-            <button class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button class="btn btn-danger" data-dismiss="modal" id="del-task-by-id">Yes. Delete this task.</button>
+{% extends "backend/common/layout.html" %}
+{% block tasks_active %}active{% endblock %}
+{% block nav_first %}Dashboards{% endblock %}
+{% block nav_second %}Tasks{% endblock %}
+{% block body %}
+    <div class="akg ue">
+        <div class="akh aki">
+            <div class="tn aol">
+                <input type="text" class="form-control aqr btn-search-tasks" placeholder="Search tasks" value="{{ data.keyword }}">
+                <span class="bv adn"></span>
+            </div>
         </div>
     </div>
-  </div>
-</div><!-- delete tip -->
+    <div class="ud">
+        <div class="eg">
+            <table class="cl" data-sort="table">
+                <thead>
+                <tr>
+                    <th class="header headerSortUp">TID</th>
+                    <th class="header">Target</th>
+                    <th class="header">Time Consume</th>
+                    <th class="header">Status</th>
+                    <th class="header">Last Update Time</th>
+                    <th class="header">Operation</th>
+                </tr>
+                </thead>
+                <tbody>
 
-<div class="modal fade bs-example-modal-sm" id="task-tip" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-body task-tip-body"></div>
+                {% for task in data.tasks %}
+                    <tr>
+                        <td>#{{ task.id }}</td>
+                        <td id="task-target-{{ task.id }}">{{ task.target }}</td>
+                        <td align="center" id="task-time-consume-{{ task.time_consume }}">{{ task.time_consume }}</td>
+                        <td align="center">
+                            {% if task.status == 0 %}
+                                <span class="glyphicon glyphicon-refresh" style="margin-right: 5px;color: darkcyan;">Init</span>
+                            {% elif task.status == 1 %}
+                                <span class="glyphicon glyphicon-screenshot" style="margin-right: 5px;color: darkgoldenrod;">Scanning</span>
+                            {% elif task.status == 2 %}
+                                <span class="glyphicon glyphicon-ok" style="margin-right: 5px;color: darkgreen;">Done</span>
+                            {% elif task.status == 3 %}
+                                <span class="glyphicon glyphicon-remove" style="margin-right: 5px;color: darkred;">Error</span>
+                            {% endif %}
+                        </td>
+                        <td align="center">{{ task.updated_at }}</td>
+                        <td align="center" class="operation">
+                            <div class="nz">
+                                <button type="button" id="del-task-{{ task.id }}" class="ce apn">
+                                    <span class="bv zz"></span>
+                                </button>
+                            </div>
+                        </td>
+                        <td hidden id="task-time-start-{{ task.id }}">{{ task.time_start }}</td>
+                        <td hidden id="task-time-end-{{ task.id }}">{{ task.time_end }}</td>
+                        <td hidden id="task-file-count-{{ task.id }}">{{ task.file_count }}</td>
+                        <td hidden id="task-code-number-{{ task.id }}">{{ task.code_number }}</td>
+                        <td hidden id="task-branch-{{ task.id }}">{{ task.branch }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-</div><!-- tips -->
+    <div class="db" id="paginate"></div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            // pagination
+            make_pagination('{{ data.page }}', 'tasks');
 
-<div class="row clearfix search-task">
-    <div class="col-md-12">
-        <div class="col-md-10" style="padding-left: 0">
-            <input id="task-search-keyword" class="form-control" type="text" placeholder="search task...">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-success btn-search-task">Search Task</button>
-        </div>
-    </div>
-</div>
+            $(".btn-search-tasks").keyup(function (event) {
+                if (event.keyCode == 13) {
+                    var keyword = $(this).val();
+                    if (keyword == "") {
+                        alert("keywords can't empty!")
+                    } else {
+                        window.location.href = "/admin/tasks/search/" + keyword;
+                    }
+                }
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Target</th>
-            <th>Time Consume</th>
-            <th>Status</th>
-            <th>Last Update Time</th>
-            <th>Operation</th>
-        </tr>
-    </thead>
-    <tbody id="main-table">
-    {% for task in data.tasks %}
-        <tr>
-            <td>{{ task.id }}</td>
-            <td id="task-target-{{ task.id }}">{{ task.target }}</td>
-            <td align="center" id="task-time-consume-{{ task.time_consume }}">{{ task.time_consume }}</td>
-            <td align="center">
-                {% if task.status == 0 %}
-                    <span class="glyphicon glyphicon-refresh" style="margin-right: 5px;color: darkcyan;">Init</span>
-                {% elif task.status == 1 %}
-                    <span class="glyphicon glyphicon-screenshot" style="margin-right: 5px;color: darkgoldenrod;">Scanning</span>
-                {% elif task.status == 2 %}
-                    <span class="glyphicon glyphicon-ok" style="margin-right: 5px;color: darkgreen;">Done</span>
-                {% elif task.status == 3 %}
-                    <span class="glyphicon glyphicon-remove" style="margin-right: 5px;color: darkred;">Error</span>
-                {% endif %}
-            </td>
-            <td align="center">{{ task.updated_at }}</td>
-            <td align="center" class="operation">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit-task-{{ task.id }}" style="color: darkblue;"></span>
-                <span class="glyphicon glyphicon-trash" aria-hidden="true" id="del-task-{{ task.id }}" style="color: darkred;"></span>
-            </td>
-            <td hidden id="task-time-start-{{ task.id }}">{{ task.time_start }}</td>
-            <td hidden id="task-time-end-{{ task.id }}">{{ task.time_end }}</td>
-            <td hidden id="task-file-count-{{ task.id }}">{{ task.file_count }}</td>
-            <td hidden id="task-code-number-{{ task.id }}">{{ task.code_number }}</td>
-            <td hidden id="task-branch-{{ task.id }}">{{ task.branch }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
-<script>
-    $(document).ready(function () {
-
-        // search button click
-        $(".btn-search-task").click(function () {
-            var keyword = $("#task-search-keyword").val();
-            if (keyword == "") {
-                $(".task-tip-body").html("关键词不能为空");
-                $("#task-tip").modal();
-            } else {
-                 $.post("search_task", {"keyword": keyword}, function (data) {
-                    $("#main-div").html(data);
-                    $("#paginate").html("");
-                });
-            }
-        });
-
-        $("[id^=del-task-]").click(function () {
-            var tid = $(this).attr("id").split("-")[2];
-
-            // set tip header
-            $(".del-header").html("<h4>Are you <span style='color: red'>ABSOLUTELY</span> sure?</h4>");
-
-            // set tip body
-            var tipBody = "<strong>ID: </strong>" + tid + "<br />";
-            tipBody += "<strong>Target: </strong>" + $("<div/>").text($("#task-target-" + tid).text()).html() + "<br />";
-            tipBody += "<strong>Branch: </strong>" + $("<div/>").text($("#task-branch-" + tid).text()).html() + "<br />";
-            tipBody += "<strong>Start Time: </strong>" + $("<div/>").text($("#task-time-start-" + tid).text()).html() + "<br />";
-            tipBody += "<strong>File Count: </strong>" + $("<div/>").text($("#task-file-count-" + tid).text()).html() + "<br />";
-            tipBody += "<strong>Code Number: </strong>" + $("<div/>").text($("#task-code-number-" + tid).text()).html() + "<br />";
-            $("#delete-tip-body").html(tipBody);
-
-            // setup modal
-            $("#delete-tip").modal();
-            
-            // confirm delete this task
-            $("#del-task-by-id").click(function () {
-                // send delete request
-                $.post("del_task", {id: tid}, function (data) {
-                    $(".task-tip-body").html(data.msg);
-                    $("#task-tip").modal();
-                    $("#task-tip").on("hidden.bs.modal", function () {
-                        $("#main-div").load("tasks/" + gTaskBackPage);
-                    });
-                });
             });
 
+            $("[id^=del-task-]").click(function () {
+                var tid = $(this).attr("id").split("-")[2];
+                if (window.confirm("Delete this task? " + tid)) {
+                    // send delete request
+                    $.post("del", {id: tid}, function (data) {
+                        if (data.code == 1001) {
+                            $('#task-target-' + tid).parent('tr').hide();
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                }
+            });
         });
-    });
-</script>
+    </script>
+{% endblock %}
