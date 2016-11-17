@@ -77,7 +77,25 @@
         }
 
         .vulnerabilities_list > li.active {
-            background: #dedede;
+            background-color: #dedede;
+        }
+
+        .vulnerabilities_list > li.fixed {
+            background-image: url("/asset/img/fixed.png");
+            background-position: right top;
+            background-repeat: no-repeat;
+        }
+
+        .vulnerabilities_list > li.not_fixed {
+            background-image: url("/asset/img/not_fixed.png");
+            background-position: right top;
+            background-repeat: no-repeat;
+        }
+
+        .congratulations {
+            display: block;
+            max-width: 100%;
+            margin: 80px auto;
         }
 
         pre {
@@ -103,6 +121,7 @@
 
         .filter_setting {
             float: right;
+            padding: 3px;
         }
 
         .file_line {
@@ -250,7 +269,8 @@
                             <h4>Vulnerability distribution statistics</h4>
                             <div id="vul_distributing" style="height:400px;">
                                 {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
-                                    <h3 style="text-align: center;line-height: 400px;font-weight: bold;color: red;">wow, didn't detect vulnerabilities :)</h3>
+                                    <img src="/asset/img/congratulations.jpg" class="congratulations" alt="">
+                                    <h3 style="text-align: center;font-weight: bold;color: red;">wow, didn't detect vulnerabilities :)</h3>
                                 {% endif %}
                             </div>
                         </div>
@@ -258,14 +278,11 @@
                 </div><!-- End rab -->
 
                 <div class="tab-pane" id="vul_l">
-                    {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
-                        <h3>No vulnerabilities</h3>
-                    {% endif %}
                     <div class="row">
                         <div class="panel panel-default col-md-3">
-                            <div class="panel-heading">
+                            <div class="panel-heading" style="padding-bottom: 15px;">
                                 <h3 class="panel-title">Vulnerabilities
-                                    <span class="filter_setting">Filters</span>
+                                    <button class="filter_setting btn btn-danger">Filters</button>
                                 </h3>
                             </div>
                             <div class="panel-body" style="padding: 15px 0;">
@@ -322,25 +339,7 @@
                                     </div>
                                 </div>
                                 <ul class="vulnerabilities_list scroll">
-                                    {% for vulnerability in data.vulnerabilities %}
-                                        {% for each_vul in vulnerability.data %}
-                                            <li data-id="{{ each_vul.id }}">
-                                                <strong>{{ each_vul.file }}:{{ each_vul.line }}</strong><br>
-                                                <span class="issue-information">
-                                                    <small>
-                                                        {{ each_vul.level }} {{ each_vul.rule }}
-                                                        {% if each_vul.status == 2 %}
-                                                            Fixed
-                                                        {% elif each_vul.status == 1 %}
-                                                            Pushed third-party platform（Not fixed）
-                                                        {% elif each_vul.status == 0 %}
-                                                            Not fixed
-                                                        {% endif %}
-                                                    </small>
-                                                </span>
-                                            </li>
-                                        {% endfor %}
-                                    {% endfor %}
+
                                 </ul>
                             </div> <!-- .panel-body -->
                         </div>

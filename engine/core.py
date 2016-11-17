@@ -79,6 +79,14 @@ class Core:
         """
         return ".min.js" in self.file_path
 
+    def is_test_file(self):
+        """
+        is test case file
+        :method: file name
+        :return: boolean
+        """
+        return "/test/" in self.file_path
+
     def is_match_only_rule(self):
         """
         是否仅仅匹配规则,不做参数可控处理
@@ -136,6 +144,7 @@ class Core:
         vul = CobraResults(self.task_id, self.project_id, self.rule_id, self.file_path, self.line_number, self.code_content, self.status)
         db.session.add(vul)
         db.session.commit()
+        logging.info("insert new vulnerabilities Method: {0} VID: {1}".format(self.method, vul.id))
         self.push_third_party_vulnerabilities(vul.id)
 
     def process_vulnerabilities(self):
@@ -152,6 +161,11 @@ class Core:
         self.file_path = self.file_path.replace(self.project_directory, '')
 
         # 扫描状态下
+        """
+        Scan method
+        0 -> scan
+        1 -> repair
+        """
         if self.method == 0:
             """
              1. 没有记录 (NotRecord)
@@ -230,7 +244,6 @@ class Core:
                     CobraResults.project_id == self.project_id,
                     CobraResults.rule_id == self.rule_id,
                     CobraResults.file == self.file_path,
-                    CobraResults.status < 2
                 ).first()
             else:
                 exist_result = CobraResults.query.filter(
@@ -238,15 +251,19 @@ class Core:
                     CobraResults.rule_id == self.rule_id,
                     CobraResults.file == self.file_path,
                     CobraResults.line == self.line_number,
-                    CobraResults.status < 2
                 ).first()
             # 1. 待修复状态
             if exist_result is not None:
                 # 1.2 已修复
                 if self.status == 2:
-                    exist_result.status = 2
-                    db.session.add(exist_result)
-                    db.session.commit()
+                    if exist_result.status == 2:
+                        # already fixed
+                        pass
+                    else:
+                        # status to fixed
+                        exist_result.status = 2
+                        db.session.add(exist_result)
+                        db.session.commit()
                 # 1.1 待修复,跳过
                 else:
                     pass
@@ -259,26 +276,37 @@ class Core:
 
     def scan(self):
         """
-        扫描漏洞
+        Scan vulnerabilities
+        :flow:
+        - whitelist file
+        - special file
+        - test file
+        - annotation
+        - rule
         :return:
         """
         self.method = 0
-        # 白名单
+        # Whitelist file
         if self.is_white_list():
-            logging.info("存在白名单列表中 {0}".format(self.file_path))
+            logging.info("Whitelist file {0}".format(self.file_path))
             return False, 4000
 
-        # 特殊文件判断
+        # Special file
         if self.is_special_file():
-            logging.info("特殊文件 {0}".format(self.file_path))
+            logging.info("Special file: {0}".format(self.file_path))
             return False, 4001
 
-        # 注释判断
+        # Test file
+        if self.is_test_file():
+            logging.info("Test file: {0}".format(self.file_path))
+            return False, 4007
+
+        # Annotation
         if self.is_annotation():
-            logging.info("注释 {0}".format(self.code_content))
+            logging.info("Annotation {0}".format(self.code_content))
             return False, 4002
 
-        # 仅匹配规则
+        # Only location rule
         if self.is_match_only_rule():
             logging.info("仅匹配规则 {0}".format(self.rule_location))
             found_vul = True
@@ -316,11 +344,19 @@ class Core:
 
     def repair(self):
         """
-        验证扫描到的漏洞是否修复
+        Scan vulnerabilities is repair
+        :flow:
+        - exist file [add]
+        - test file
+        - whitelist file
+        - special file
+        - annotation
+        - rule
         :return: (Status, Result)
         """
         self.method = 1
-        # 拼接绝对路径
+
+        # Full path
         self.file_path = self.project_directory + self.file_path
 
         # 定位规则为空时或者行号为0,表示此类型语言(该语言所有后缀)文件都算作漏洞
@@ -336,6 +372,11 @@ class Core:
             # 文件存在,漏洞还在
             return False, 4007
 
+        if self.is_test_file():
+            self.status = self.status_fixed
+            self.process_vulnerabilities()
+            return True, 1003
+
         # 取出触发代码(实际文件)
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
         if trigger_code is False:
@@ -343,28 +384,28 @@ class Core:
             return False, 4009
         self.code_content = trigger_code
 
-        # 白名单
+        # Whitelist
         if self.is_white_list():
             self.status = self.status_fixed
             self.process_vulnerabilities()
             logging.info("In white list {0}".format(self.file_path))
             return False, 4000
 
-        # 特殊文件判断
+        # Special file
         if self.is_special_file():
             self.status = self.status_fixed
             self.process_vulnerabilities()
             logging.info("Special File: {0}".format(self.file_path))
             return False, 4001
 
-        # 注释判断
+        # Annotation
         if self.is_annotation():
             self.status = self.status_fixed
             self.process_vulnerabilities()
             logging.info("In Annotation {0}".format(self.code_content))
             return False, 4002
 
-        # 仅匹配规则
+        # Only location rule
         if self.is_match_only_rule():
             logging.info("Only match {0}".format(self.rule_location))
             found_vul = True

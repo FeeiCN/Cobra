@@ -20,7 +20,7 @@ $(function () {
 
             // scroll load
             $(".vulnerabilities_list").scroll(function () {
-                if ($(".vulnerabilities_list").scrollTop() > 350 * vulnerabilities_list.page) {
+                if ($(".vulnerabilities_list").scrollTop() > 300 * vulnerabilities_list.page) {
                     vulnerabilities_list.next_page();
                 }
             });
@@ -44,12 +44,11 @@ $(function () {
                     var list = result.data.vulnerabilities;
                     var list_html = '';
                     for (var i = 0; i < list.length; i++) {
-                        list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + '" data-start="1" data-line="1">' +
+                        list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + ' ' + list[i].status_class + '" data-start="1" data-line="1">' +
                             '<strong>' + list[i].id + '. ' + list[i].file + ':' + list[i].line + '</strong><br>' +
                             '<span class="issue-information">' +
                             '<small>' +
                             list[i].rule + ' ' + list[i].level + ' ' +
-                            list[i].status_description +
                             '</small>' +
                             '</span>' +
                             '</li>';
@@ -90,7 +89,7 @@ $(function () {
                                 $('.r_name').text(data.rule.description);
                                 $('.r_author').text(data.rule.author);
                                 $('.r_level').text(data.rule.level);
-                                $('.r_repair').text(data.rule.repair);
+                                $('.r_repair').html(data.rule.repair);
 
                                 // vulnerabilities description
                                 // $('.v_name').text(data.vulnerabilities.name);

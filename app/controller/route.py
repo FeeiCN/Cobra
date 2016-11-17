@@ -402,13 +402,13 @@ def vulnerabilities_list():
         data_dict['verify'] = ''
         data_dict['rule_id'] = result[10]
         if result[11] == 2:
-            status = u"Fixed"
+            status_class = u'fixed'
         elif result[11] == 1:
-            status = u"Push third-party platform"
+            status_class = u'fixed'
         else:
-            status = u"Not fixed"
+            status_class = u'not_fixed'
         data_dict["status"] = result[11]
-        data_dict["status_description"] = status
+        data_dict["status_class"] = status_class
         vulnerabilities.append(data_dict)
     current_url = request.url.replace("&page={}".format(page), "").replace("page={}".format(page), "")
     if "?" not in current_url:
