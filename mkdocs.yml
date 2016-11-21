@@ -24,6 +24,8 @@ pages:
   - Languages: 'languages.md'
 - Modules:
   - Detection URI: 'detection_uri.md'
-- FAQ: 'FAQ.md'
+- FAQ:
+  - FAQ: 'FAQ.md'
+  - Exception: 'exception.md'
 - Reference:
   - Rule Source: 'rule_source.md'

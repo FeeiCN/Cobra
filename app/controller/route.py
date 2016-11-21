@@ -101,7 +101,6 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
@@ -110,7 +109,6 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()
@@ -167,7 +165,6 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
@@ -176,7 +173,6 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()

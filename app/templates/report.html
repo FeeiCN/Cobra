@@ -147,7 +147,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="invoice-title">
-                <h2>Cobra - code security report</h2>
+                <h2>Cobra - Code security audit report</h2>
                 <h3 class="pull-right">{{ data.project_info.name | upper }} # {{ data.project_id }}</h3>
             </div>
             <hr>
@@ -272,7 +272,7 @@
                             <div id="vul_distributing" style="height:400px;">
                                 {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
                                     <img src="/asset/img/congratulations.jpg" class="congratulations" alt="">
-                                    <h3 style="text-align: center;font-weight: bold;color: red;">wow, didn't detect vulnerabilities :)</h3>
+                                    <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no vulnerability was detected :)</h3>
                                 {% endif %}
                             </div>
                         </div>
@@ -336,7 +336,7 @@
                                             <option value="1">Low</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-12" style="padding-top: 30px;padding-left: 40px;">
+                                    <div class="col-md-12" style="padding:20px 30%">
                                         <button class="btn btn-success filter_btn" style="">Summit filter</button>
                                     </div>
                                 </div>
