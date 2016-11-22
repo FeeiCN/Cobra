@@ -225,6 +225,7 @@ class Static:
                             'project_id': self.project_id,
                             'project_directory': self.directory,
                             'rule_id': rule.id,
+                            'result_id': None,
                             'file_path': file_path,
                             'line_number': line_number,
                             'code_content': code_content,

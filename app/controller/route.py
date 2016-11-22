@@ -14,7 +14,7 @@
 import time
 import os
 from pickup.git import Git
-from utils import common, config
+from utils import common, config, const
 from flask import jsonify, render_template, request, abort
 from sqlalchemy import and_, func
 from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
@@ -507,7 +507,8 @@ def vulnerabilities_detail():
             'c_ret': c_ret,
             'c_author': c_author,
             'c_time': c_time,
-            'status': v_detail.status,
+            'repair': const.Vulnerabilities(v_detail.repair).repair_description(),
+            'status': const.Vulnerabilities(v_detail.status).status_description(),
             'created': v_detail.created_at,
             'updated': v_detail.updated_at
         },

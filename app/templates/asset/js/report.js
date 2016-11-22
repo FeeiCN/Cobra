@@ -86,6 +86,7 @@ $(function () {
                                         $('.found_time').text(data.detail.created);
                                         $('.updated_time').text(data.detail.updated);
                                         $('.status_description').text(data.detail.status);
+                                        $('.repair_description').text(data.detail.repair);
                                         $('.c_author').text(data.detail.c_author);
                                         $('.c_time').text(data.detail.c_time);
 
