@@ -269,12 +269,16 @@
                         </div>
                         <div class="col-md-8 column">
                             <h4>Vulnerability distribution statistics</h4>
-                            <div id="vul_distributing" style="height:400px;">
-                                {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
-                                    <img src="/asset/img/congratulations.jpg" class="congratulations" alt="">
-                                    <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no vulnerability was detected :)</h3>
-                                {% endif %}
-                            </div>
+                            {% if data.need_scan == False %}
+                                <h3 style="margin: 200px;">The project is deprecated :(</h3>
+                            {% else %}
+                                <div id="vul_distributing" style="height:400px;">
+                                    {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
+                                        <img src="/asset/img/congratulations.jpg" class="congratulations" alt="">
+                                        <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no vulnerability was detected :)</h3>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div><!-- End row -->
                 </div><!-- End rab -->
@@ -450,6 +454,7 @@
     </div>
     <input type="hidden" name="project_id" value="{{ data.project_id }}">
     <input type="hidden" name="task_id" value="{{ data.task_id }}">
+    <input type="hidden" name="need_scan" value="{{ data.need_scan }}">
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>

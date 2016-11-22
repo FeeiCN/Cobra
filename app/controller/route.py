@@ -51,6 +51,7 @@ def report(project_id):
     if project_info is None:
         # 没有该project id
         abort(404)
+
     # 获取task信息
     if search_task_id is None:
         # 没有传入task id，获取该project的最新task，用于获取task的基础信息
@@ -263,6 +264,16 @@ def report(project_id):
         {"status": "Other", "value": 3},
     ]
 
+    # detect project Cobra configuration file
+    if project_info.repository[0] == '/':
+        project_directory = project_info.repository
+    else:
+        project_directory = Git(project_info.repository).repo_directory
+    cobra_properties = config.properties(os.path.join(project_directory, 'cobra'))
+    need_scan = True
+    if 'scan' in cobra_properties:
+        need_scan = common.to_bool(cobra_properties['scan'])
+
     data = {
         "project_id": project_id,
         "task_id": search_task_id,
@@ -275,6 +286,7 @@ def report(project_id):
         "file_count": common.convert_number(task_info.file_count),
         "tasks": tasks,
         "vuls_status": vuls_status,
+        'need_scan': need_scan,
         "task_time": {
             "time_start": time_start,
             "time_end": time_end,
