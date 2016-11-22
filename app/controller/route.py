@@ -412,7 +412,7 @@ def vulnerabilities_list():
         if result[11] == 2:
             status_class = u'fixed'
         elif result[11] == 1:
-            status_class = u'fixed'
+            status_class = u'not_fixed'
         else:
             status_class = u'not_fixed'
         data_dict["status"] = result[11]
