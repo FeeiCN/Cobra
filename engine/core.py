@@ -382,6 +382,13 @@ class Core:
         if trigger_code is False:
             logging.critical("触发代码获取失败 {0}".format(self.code_content))
             return False, 4009
+
+        # 比对代码是否变更了
+        if trigger_code.strip().encode('unicode_escape') != self.code_content.strip():
+            self.status = self.status_fixed
+            self.process_vulnerabilities()
+            return True, 1009
+
         self.code_content = trigger_code
 
         # Whitelist

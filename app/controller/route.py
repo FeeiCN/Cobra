@@ -51,6 +51,7 @@ def report(project_id):
     if project_info is None:
         # 没有该project id
         abort(404)
+
     # 获取task信息
     if search_task_id is None:
         # 没有传入task id，获取该project的最新task，用于获取task的基础信息
@@ -263,6 +264,16 @@ def report(project_id):
         {"status": "Other", "value": 3},
     ]
 
+    # detect project Cobra configuration file
+    if project_info.repository[0] == '/':
+        project_directory = project_info.repository
+    else:
+        project_directory = Git(project_info.repository).repo_directory
+    cobra_properties = config.properties(os.path.join(project_directory, 'cobra'))
+    need_scan = True
+    if 'scan' in cobra_properties:
+        need_scan = common.to_bool(cobra_properties['scan'])
+
     data = {
         "project_id": project_id,
         "task_id": search_task_id,
@@ -275,6 +286,7 @@ def report(project_id):
         "file_count": common.convert_number(task_info.file_count),
         "tasks": tasks,
         "vuls_status": vuls_status,
+        'need_scan': need_scan,
         "task_time": {
             "time_start": time_start,
             "time_end": time_end,
@@ -448,34 +460,49 @@ def vulnerabilities_detail():
     file_path = os.path.join(project_code_path, v_detail.file)
 
     if os.path.isfile(file_path) is not True:
-        return jsonify(status_code=4004, message='Failed get code: {0}'.format(file_path))
-
-    # get committer
-    c_ret, c_author, c_time = Git.committer(v_detail.file, project_code_path, v_detail.line)
-    if c_ret is not True:
+        code_content = '// There is no code snippet for this type of file'
+        line_trigger = 1
+        line_start = 1
         c_author = 'Not support'
         c_time = 'Not support'
-
-    code_content = ''
-    fp = open(file_path, 'r')
-    block_lines = 50
-    if v_detail.line < block_lines:
-        block_start = 0
-        block_end = v_detail.line + block_lines
+        c_ret = False
     else:
-        block_start = v_detail.line - block_lines
-        block_end = v_detail.line + block_lines
-    for i, line in enumerate(fp):
-        if block_start <= i <= block_end:
-            code_content = code_content + line
-    fp.close()
+        # get committer
+        c_ret, c_author, c_time = Git.committer(v_detail.file, project_code_path, v_detail.line)
+        if c_ret is not True:
+            c_author = 'Not support'
+            c_time = 'Not support'
+
+        code_content = ''
+        fp = open(file_path, 'r')
+        block_lines = 50
+        if v_detail.line < block_lines:
+            block_start = 0
+            block_end = v_detail.line + block_lines
+        else:
+            block_start = v_detail.line - block_lines
+            block_end = v_detail.line + block_lines
+        for i, line in enumerate(fp):
+            if block_start <= i <= block_end:
+                code_content = code_content + line
+        fp.close()
+
+        line_trigger = v_detail.line - block_start
+        line_start = block_start + 1
+
+        try:
+            jsonify(data=code_content)
+        except Exception as e:
+            code_content = '// The encoding type code is not supported'
+            line_trigger = 1
+            line_start = 1
 
     return_data = {
         'detail': {
             'id': v_detail.id,
             'file': v_detail.file,
-            'line_trigger': v_detail.line - block_start,
-            'line_start': block_start + 1,
+            'line_trigger': line_trigger,
+            'line_start': line_start,
             'code': code_content,
             'c_ret': c_ret,
             'c_author': c_author,

@@ -30,83 +30,91 @@ $(function () {
             this.get(true);
         },
         get: function (next_page) {
-            // load vulnerabilities list
-            $.post('/list', {
-                project_id: $('input[name=project_id]').val(),
-                page: this.page,
-                search_vul_type: $("#search_vul_type").val(),
-                search_rule: $("#search_rule").val(),
-                search_level: $("#search_level").val(),
-                search_task: $("#search_task").val(),
-                search_status: $("#search_status").val()
-            }, function (result) {
-                if (result.status_code == 1001) {
-                    var list = result.data.vulnerabilities;
-                    var list_html = '';
-                    for (var i = 0; i < list.length; i++) {
-                        list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + ' ' + list[i].status_class + '" data-start="1" data-line="1">' +
-                            '<strong>' + list[i].id + '. ' + list[i].file + ':' + list[i].line + '</strong><br>' +
-                            '<span class="issue-information">' +
-                            '<small>' +
-                            list[i].rule + ' ' + list[i].level + ' ' +
-                            '</small>' +
-                            '</span>' +
-                            '</li>';
-                    }
-                    if (next_page) {
-                        $('.vulnerabilities_list').append(list_html);
-                    } else {
-                        $('.vulnerabilities_list').html(list_html);
-                    }
-
-                    // vulnerabilities list detail
-                    $('.vulnerabilities_list li').off('click').on('click', function () {
-                        $('.vulnerabilities_list li').removeClass('active');
-                        $(this).addClass('active');
-                        var id = $(this).attr('data-id');
-                        $.post('/detail', {id: id}, function (result) {
-                            if (result.status_code == 1001) {
-                                var data = result.data;
-
-                                // vulnerabilities code
-                                var code_content = Prism.highlight(data.detail.code, Prism.languages.php);
-                                $('.code_content').html(code_content);
-                                var pre = $('pre');
-                                pre.attr('data-start', data.detail.line_start);
-                                pre.attr('data-line', data.detail.line_trigger);
-                                Prism.highlightAll();
-                                pre.scrollTop(data.detail.line_trigger * 13);
-
-                                // vulnerabilities detail
-                                $('.file_line').text(data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1));
-                                $('.found_time').text(data.detail.created);
-                                $('.updated_time').text(data.detail.updated);
-                                $('.status_description').text(data.detail.status);
-                                $('.c_author').text(data.detail.c_author);
-                                $('.c_time').text(data.detail.c_time);
-
-
-                                $('.r_name').text(data.rule.description);
-                                $('.r_author').text(data.rule.author);
-                                $('.r_level').text(data.rule.level);
-                                $('.r_repair').html(data.rule.repair);
-
-                                // vulnerabilities description
-                                // $('.v_name').text(data.vulnerabilities.name);
-                                // $('.v_score').text(data.vulnerabilities.score);
-                                // $('.v_cwe').text(data.vulnerabilities.cwe);
-                                // $('.v_owasp').text(data.vulnerabilities.owasp);
-                                // $('.v_sana').text(data.vulnerabilities.sana);
-                                // $('.v_bounty').text(data.vulnerabilities.bounty);
-                            } else {
-                                alert(result.message);
+            if ($("input[name=need_scan]").val() != "False") {
+                // load vulnerabilities list
+                $.post('/list', {
+                    project_id: $('input[name=project_id]').val(),
+                    page: this.page,
+                    search_vul_type: $("#search_vul_type").val(),
+                    search_rule: $("#search_rule").val(),
+                    search_level: $("#search_level").val(),
+                    search_task: $("#search_task").val(),
+                    search_status: $("#search_status").val()
+                }, function (result) {
+                    if (result.status_code == 1001) {
+                        var list = result.data.vulnerabilities;
+                        if (result.data.current_page == 1 && list.length == 0) {
+                            $(".vulnerabilities_list").html('<li><h3 style="text-align: center;margin: 200px auto;">Wow, no vulnerability was detected :)</h3></li>');
+                        } else {
+                            var list_html = '';
+                            for (var i = 0; i < list.length; i++) {
+                                list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + ' ' + list[i].status_class + '" data-start="1" data-line="1">' +
+                                    '<strong>' + list[i].id + '. ' + list[i].file + ':' + list[i].line + '</strong><br>' +
+                                    '<span class="issue-information">' +
+                                    '<small>' +
+                                    list[i].rule + ' ' + list[i].level + ' ' +
+                                    '</small>' +
+                                    '</span>' +
+                                    '</li>';
                             }
-                        }, 'JSON');
-                    });
-                } else {
-                    alert(result.message);
-                }
-            }, 'JSON');
+                            if (next_page) {
+                                $('.vulnerabilities_list').append(list_html);
+                            } else {
+                                $('.vulnerabilities_list').html(list_html);
+                            }
+
+                            // vulnerabilities list detail
+                            $('.vulnerabilities_list li').off('click').on('click', function () {
+                                $('.vulnerabilities_list li').removeClass('active');
+                                $(this).addClass('active');
+                                var id = $(this).attr('data-id');
+                                $.post('/detail', {id: id}, function (result) {
+                                    if (result.status_code == 1001) {
+                                        var data = result.data;
+
+                                        // vulnerabilities code
+                                        var code_content = Prism.highlight(data.detail.code, Prism.languages.php);
+                                        $('.code_content').html(code_content);
+                                        var pre = $('pre');
+                                        pre.attr('data-start', data.detail.line_start);
+                                        pre.attr('data-line', data.detail.line_trigger);
+                                        Prism.highlightAll();
+                                        pre.scrollTop(data.detail.line_trigger * 13);
+
+                                        // vulnerabilities detail
+                                        $('.file_line').text(data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1));
+                                        $('.found_time').text(data.detail.created);
+                                        $('.updated_time').text(data.detail.updated);
+                                        $('.status_description').text(data.detail.status);
+                                        $('.c_author').text(data.detail.c_author);
+                                        $('.c_time').text(data.detail.c_time);
+
+
+                                        $('.r_name').text(data.rule.description);
+                                        $('.r_author').text(data.rule.author);
+                                        $('.r_level').text(data.rule.level);
+                                        $('.r_repair').html(data.rule.repair);
+
+                                        // vulnerabilities description
+                                        // $('.v_name').text(data.vulnerabilities.name);
+                                        // $('.v_score').text(data.vulnerabilities.score);
+                                        // $('.v_cwe').text(data.vulnerabilities.cwe);
+                                        // $('.v_owasp').text(data.vulnerabilities.owasp);
+                                        // $('.v_sana').text(data.vulnerabilities.sana);
+                                        // $('.v_bounty').text(data.vulnerabilities.bounty);
+                                    } else {
+                                        alert(result.message);
+                                    }
+                                }, 'JSON');
+                            });
+                        }
+                    } else {
+                        alert(result.message);
+                    }
+                }, 'JSON');
+            } else {
+                $(".vulnerabilities_list").html('<li><h3 style="text-align: center;margin: 200px auto;">The project is deprecated :(</h3></li>');
+            }
         },
         trigger_filter: function () {
             if ($(".filter").is(":visible") == true) {
