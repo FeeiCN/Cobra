@@ -125,7 +125,7 @@ class Git:
         logging.debug('cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
-        cmd = 'git pull'
+        cmd = 'git pull origin master'
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
         logging.info(pull_out)
