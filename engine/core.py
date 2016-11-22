@@ -186,14 +186,14 @@ class Core:
                     CobraResults.project_id == self.project_id,
                     CobraResults.rule_id == self.rule_id,
                     CobraResults.file == self.file_path,
-                ).first()
+                ).order_by(CobraResults.id.desc()).first()
             else:
                 exist_result = CobraResults.query.filter(
                     CobraResults.project_id == self.project_id,
                     CobraResults.rule_id == self.rule_id,
                     CobraResults.file == self.file_path,
                     CobraResults.line == self.line_number,
-                ).first()
+                ).order_by(CobraResults.id.desc()).first()
             # 1. 没有记录
             if exist_result is None:
                 # 1.1 扫描结果是已修复
