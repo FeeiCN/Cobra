@@ -292,7 +292,7 @@ class Repair(Command):
 
 
 # 命令行
-manager.add_command('start', Server(host=host, port=port))
+manager.add_command('start', Server(host=host, port=port, threaded=True))
 manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
 manager.add_command('install', Install())
