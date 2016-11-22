@@ -460,34 +460,49 @@ def vulnerabilities_detail():
     file_path = os.path.join(project_code_path, v_detail.file)
 
     if os.path.isfile(file_path) is not True:
-        return jsonify(status_code=4004, message='Failed get code: {0}'.format(file_path))
-
-    # get committer
-    c_ret, c_author, c_time = Git.committer(v_detail.file, project_code_path, v_detail.line)
-    if c_ret is not True:
+        code_content = '// There is no code snippet for this type of file'
+        line_trigger = 1
+        line_start = 1
         c_author = 'Not support'
         c_time = 'Not support'
-
-    code_content = ''
-    fp = open(file_path, 'r')
-    block_lines = 50
-    if v_detail.line < block_lines:
-        block_start = 0
-        block_end = v_detail.line + block_lines
+        c_ret = False
     else:
-        block_start = v_detail.line - block_lines
-        block_end = v_detail.line + block_lines
-    for i, line in enumerate(fp):
-        if block_start <= i <= block_end:
-            code_content = code_content + line
-    fp.close()
+        # get committer
+        c_ret, c_author, c_time = Git.committer(v_detail.file, project_code_path, v_detail.line)
+        if c_ret is not True:
+            c_author = 'Not support'
+            c_time = 'Not support'
+
+        code_content = ''
+        fp = open(file_path, 'r')
+        block_lines = 50
+        if v_detail.line < block_lines:
+            block_start = 0
+            block_end = v_detail.line + block_lines
+        else:
+            block_start = v_detail.line - block_lines
+            block_end = v_detail.line + block_lines
+        for i, line in enumerate(fp):
+            if block_start <= i <= block_end:
+                code_content = code_content + line
+        fp.close()
+
+        line_trigger = v_detail.line - block_start
+        line_start = block_start + 1
+
+        try:
+            jsonify(data=code_content)
+        except Exception as e:
+            code_content = '// The encoding type code is not supported'
+            line_trigger = 1
+            line_start = 1
 
     return_data = {
         'detail': {
             'id': v_detail.id,
             'file': v_detail.file,
-            'line_trigger': v_detail.line - block_start,
-            'line_start': block_start + 1,
+            'line_trigger': line_trigger,
+            'line_start': line_start,
             'code': code_content,
             'c_ret': c_ret,
             'c_author': c_author,
