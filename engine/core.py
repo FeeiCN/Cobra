@@ -336,11 +336,11 @@ class Core:
             return
 
         # 比对代码是否变更了
-        if trigger_code.strip().encode('unicode_escape') != self.code_content.strip():
-            self.status = self.status_fixed
-            self.repair_code = self.repair_code_modify
-            self.process_vulnerabilities()
-            return
+        # if trigger_code.strip().encode('unicode_escape') != self.code_content.strip():
+        #     self.status = self.status_fixed
+        #     self.repair_code = self.repair_code_modify
+        #     self.process_vulnerabilities()
+        #     return
 
         self.code_content = trigger_code
 
