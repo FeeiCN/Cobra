@@ -387,9 +387,7 @@ class Core:
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
         if trigger_code is False:
             logging.critical("触发代码获取失败 {0}".format(self.code_content))
-            self.status = self.status_fixed
-            self.process_vulnerabilities()
-            return True, 1009
+            return False, 4009
 
         # 比对代码是否变更了
         if trigger_code.strip().encode('unicode_escape') != self.code_content.strip():
