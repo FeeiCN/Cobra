@@ -279,16 +279,14 @@ class Repair(Command):
                 'project_id': result.project_id,
                 'project_directory': project_directory,
                 'rule_id': result.rule_id,
+                'result_id': result.id,
                 'file_path': result.file,
                 'line_number': result.line,
                 'code_content': result.code,
                 'third_party_vulnerabilities_name': rule.description,
                 'third_party_vulnerabilities_type': vuln_all_d[rule.vul_id]
             }
-            ret_status, ret_result = Core(result_info, rule, project_info.name, []).repair()
-            if ret_status is False:
-                logging.info("修复 R: False {0}".format(ret_result))
-                continue
+            Core(result_info, rule, project_info.name, []).repair()
 
 
 # 命令行
