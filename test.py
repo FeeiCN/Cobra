@@ -42,18 +42,21 @@ class Test(unittest.TestCase):
         try:
             response = requests.post(self.api.format('add'), data=payload, headers=self.headers)
             response_json = response.json()
-            code = response_json.get('code')
-            print(code)
-            # self.assertEqual(code, 1001)
+            if 'result' in response_json:
+                if 'project_id' in response_json['result']:
+                    return response_json['result']['project_id']
+            print(response_json)
+            return 0
         except (requests.ConnectionError, requests.HTTPError) as e:
             self.fail("API Add failed: {0}".format(e))
+            return 0
 
     def test_all_projects(self):
-        with open('/Volumes/Statics/Downloads/all-projects.txt') as f:
+        with open('/tmp/search.cobra') as f:
             for index, line in enumerate(f):
                 self.target = line.strip()
-                print(index, self.target)
-                self.test_api()
+                project_id = self.test_api()
+                print(index, self.target, project_id)
 
     def test_push(self):
         from daemon import push_vulnerabilities, error_handler
