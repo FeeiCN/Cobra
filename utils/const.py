@@ -37,7 +37,8 @@ class Vulnerabilities:
             4002: 'Whitelist',
             4003: 'Test file',
             4004: 'Annotation',
-            4005: 'Modify code'
+            4005: 'Modify code',
+            4006: 'Empty code'
         }
         if self.key in repair:
             return repair[self.key]
