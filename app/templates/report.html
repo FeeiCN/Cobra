@@ -357,10 +357,20 @@
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-md-8">
-                                        <strong class="file_line"></strong>
-                                        <pre data-line="1" data-start="1" class="line-numbers">
-<code class="language-php code_content">function test(){
-    print('Hello, Cobra!');
+                                        <strong class="file_line">demo/case/code_execute.php:11</strong>
+                                        <pre data-line="12" data-start="1" class="line-numbers">
+<code class="language-php code_content">/**
+ * This is a demo code to help you understand Cobra
+ * The code here demonstrates the #Code Execute# vulnerability
+ * You can click on the list of vulnerabilities on the left
+ *
+ * @author Feei < wufeifei#wufeifei.com >
+ * @link   https://github.com/wufeifei/cobra
+ */
+function demo_vulnerabilities(){
+    $code = $_GET['code'];
+    // Red highlighted where the vulnerability triggered
+    return system($code);
 }</code>
                                     </pre>
                                     </div>
@@ -371,12 +381,12 @@
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>Status: <span class="status_description"></span></li>
-                                                    <li>Fix Status: <span class="repair_description"></span></li>
-                                                    <li>Committer: <span class="c_author"></span></li>
-                                                    <li>Commit time: <span class="c_time"></span></li>
-                                                    <li>Found time: <span class="found_time"></span></li>
-                                                    <li>Processed time: <span class="updated_time"></span></li>
+                                                    <li>Status: <span class="status_description">Not fixed</span></li>
+                                                    <li>Fix Status: <span class="repair_description">Initialize</span></li>
+                                                    <li>Committer: <span class="c_author">@demo</span></li>
+                                                    <li>Commit time: <span class="c_time">demo case</span></li>
+                                                    <li>Found time: <span class="found_time">demo case</span></li>
+                                                    <li>Processed time: <span class="updated_time">demo case</span></li>
                                                 </ul>
                                             </div> <!-- .panel-body -->
                                         </div>
@@ -386,12 +396,12 @@
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>Name: <span class="r_name"></span></li>
-                                                    <li>Author: <span class="r_author"></span></li>
-                                                    <li>Level: <span class="r_level"></span></li>
+                                                    <li>Name: <span class="r_name">Scan rule name</span></li>
+                                                    <li>Author: <span class="r_author">Scan rule author</span></li>
+                                                    <li>Level: <span class="r_level">Scan rule level</span></li>
                                                     <li>Repair:</li>
                                                     <li>
-                                                        <p class="r_repair"></p>
+                                                        <p class="r_repair">Vulnerability fix method</p>
                                                     </li>
                                                 </ul>
                                             </div> <!-- .panel-body -->
