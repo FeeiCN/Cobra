@@ -73,6 +73,7 @@ class Core:
         self.repair_code_test_file = 4003
         self.repair_code_annotation = 4004
         self.repair_code_modify = 4005
+        self.repair_code_empty_code = 4006
 
         self.method = None
 
@@ -333,14 +334,9 @@ class Core:
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
         if trigger_code is False:
             logging.critical("触发代码获取失败 {0}".format(self.code_content))
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_empty_code
             return
-
-        # 比对代码是否变更了
-        # if trigger_code.strip().encode('unicode_escape') != self.code_content.strip():
-        #     self.status = self.status_fixed
-        #     self.repair_code = self.repair_code_modify
-        #     self.process_vulnerabilities()
-        #     return
 
         self.code_content = trigger_code
 
@@ -366,6 +362,14 @@ class Core:
             self.repair_code = self.repair_code_annotation
             self.process_vulnerabilities()
             logging.info("In Annotation {0}".format(self.code_content))
+            return
+
+        # Modify
+        ret_regex = re.findall(self.rule_location, trigger_code.strip())
+        if len(ret_regex) == 0:
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_modify
+            self.process_vulnerabilities()
             return
 
         # Fixed
