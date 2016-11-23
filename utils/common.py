@@ -92,3 +92,21 @@ def to_bool(value):
     if str(value).lower() in ("yes", "y", "true", "t", "1"): return True
     if str(value).lower() in ("no", "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"): return False
     raise Exception('Invalid value for boolean conversion: ' + str(value))
+
+
+def path_to_short(path, max_length=36):
+    """
+    /impl/src/main/java/com/mogujie/service/mgs/digitalcert/utils/CertUtil.java
+    impl/.../CertUtil.java
+    :param path:
+    :return:
+    """
+    if len(path) < max_length:
+        return path
+    paths = path.split('/')
+    tmp_path = ''
+    for i in range(0, len(paths)):
+        tmp_path = str(paths[i]) + str(paths[paths-i])
+        if len(tmp_path) > max_length:
+            return tmp_path
+
