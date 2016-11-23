@@ -518,7 +518,7 @@ def vulnerabilities_detail():
             'description': rule_info.description,
             'repair': rule_info.repair,
             'author': rule_info.author,
-            'level': rule_info.level,
+            'level': const.Vulnerabilities(rule_info.level).level_description(),
             'status': rule_info.status,
             'created': rule_info.created_at,
             'updated': rule_info.updated_at

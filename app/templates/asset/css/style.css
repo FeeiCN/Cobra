@@ -3398,7 +3398,8 @@ blockquote.styled {
     -moz-border-radius-bottomright: 3px;
     -moz-border-radius-bottomleft: 3px;
     border-bottom-right-radius: 3px;
-    border-bottom-left-radius: 3px
+    border-bottom-left-radius: 3px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
 }
 
 .img-responsive.styled {
