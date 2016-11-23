@@ -336,6 +336,7 @@ class Core:
             logging.critical("触发代码获取失败 {0}".format(self.code_content))
             self.status = self.status_fixed
             self.repair_code = self.repair_code_empty_code
+            self.process_vulnerabilities()
             return
 
         self.code_content = trigger_code
