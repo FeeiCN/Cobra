@@ -63,34 +63,35 @@
             border-top: 1px solid #efefef;
             padding: 5px;
             height: 75px;
+            word-break: break-all;
         }
 
         .vulnerabilities_list > li.high {
-            border-bottom: 3px solid #FF0000;
+            border-bottom: 8px solid #ee9336;
         }
 
         .vulnerabilities_list > li.medium {
-            border-bottom: 3px solid #c1ff69;
+            border-bottom: 8px solid #fdc431;
         }
 
         .vulnerabilities_list > li.low {
-            border-bottom: 3px solid forestgreen;
+            border-bottom: 8px solid #357abd;
         }
 
         .vulnerabilities_list > li.active {
-            background-color: #dedede;
+            border-right: 8px solid red;
         }
 
         .vulnerabilities_list > li.fixed {
             background-image: url("/asset/img/fixed.png");
-            background-position: right top;
+            background-position: right center;
             background-repeat: no-repeat;
             background-size: 50px 50px;
         }
 
         .vulnerabilities_list > li.not_fixed {
             background-image: url("/asset/img/not_fixed.png");
-            background-position: right top;
+            background-position: right center;
             background-repeat: no-repeat;
             background-size: 50px 50px;
         }
@@ -288,7 +289,7 @@
                     <div class="row">
                         <div class="panel panel-default col-md-3">
                             <div class="panel-heading" style="padding-bottom: 15px;">
-                                <h3 class="panel-title">Vulnerabilities
+                                <h3 class="panel-title">Vulnerability List
                                     <button class="filter_setting btn btn-danger">Filters</button>
                                 </h3>
                             </div>
@@ -381,25 +382,24 @@ function demo_vulnerabilities(){
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>Status: <span class="status_description">Not fixed</span></li>
-                                                    <li>Fix Status: <span class="repair_description">Initialize</span></li>
-                                                    <li>Committer: <span class="c_author">@demo</span></li>
-                                                    <li>Commit time: <span class="c_time">demo case</span></li>
-                                                    <li>Found time: <span class="found_time">demo case</span></li>
-                                                    <li>Processed time: <span class="updated_time">demo case</span></li>
+                                                    <li><strong>Status: </strong><span class="status_description">Not fixed</span>(<span class="repair_description">Initialize</span>)</li>
+                                                    <li><strong>Committer:</strong><span class="c_author">@demo</span></li>
+                                                    <li><strong>Commit time: </strong><span class="c_time">demo case</span></li>
+                                                    <li><strong>Found time: </strong><span class="found_time">demo case</span></li>
+                                                    <li><strong>Processed time: </strong><span class="updated_time">demo case</span></li>
                                                 </ul>
                                             </div> <!-- .panel-body -->
                                         </div>
                                         <div class="panel panel-default col-md-12">
                                             <div class="panel-heading">
-                                                <h3 class="panel-title">Rule</h3>
+                                                <h3 class="panel-title">Scan rule</h3>
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>Name: <span class="r_name">Scan rule name</span></li>
-                                                    <li>Author: <span class="r_author">Scan rule author</span></li>
-                                                    <li>Level: <span class="r_level">Scan rule level</span></li>
-                                                    <li>Repair:</li>
+                                                    <li><strong>Name: </strong><span class="r_name">Scan rule name</span></li>
+                                                    <li><strong>Author: </strong><span class="r_author">Scan rule author</span></li>
+                                                    <li><strong>Level: </strong><span class="r_level">Scan rule level</span></li>
+                                                    <li><strong>Repair:</strong></li>
                                                     <li>
                                                         <p class="r_repair">Vulnerability fix method</p>
                                                     </li>

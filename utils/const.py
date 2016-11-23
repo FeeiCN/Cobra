@@ -44,3 +44,15 @@ class Vulnerabilities:
             return repair[self.key]
         else:
             return False
+
+    def level_description(self):
+        level = {
+            0: 'Undefined',
+            1: 'Low',
+            2: 'Medium',
+            3: 'High',
+        }
+        if self.key in level:
+            return level[self.key]
+        else:
+            return False
