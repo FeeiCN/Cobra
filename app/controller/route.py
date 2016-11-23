@@ -379,7 +379,7 @@ def vulnerabilities_list():
         CobraResults.rule_id, CobraResults.status
     ).filter(
         *filter_group
-    ).group_by(CobraResults.file)
+    )
 
     # 设置分页
     page_size = 15
