@@ -40,6 +40,7 @@ class Vulnerabilities:
             4005: 'Modify code',
             4006: 'Empty code',
             4007: 'Const file',
+            4008: 'Third-party'
         }
         if self.key in repair:
             return repair[self.key]
