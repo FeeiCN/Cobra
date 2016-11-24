@@ -49,7 +49,7 @@ $(function () {
                             var list_html = '';
                             for (var i = 0; i < list.length; i++) {
                                 list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + ' ' + list[i].status_class + '" data-start="1" data-line="1">' +
-                                    '<strong>' + list[i].id + '. ' + '</strong><br><span>' + list[i].file_short + ':' + list[i].line + '</span><br>' +
+                                    '<strong>MVE-' + list[i].id + '</strong><br><span>' + list[i].file_short + ':' + list[i].line + '</span><br>' +
                                     '<span class="issue-information">' +
                                     '<small>' +
                                     list[i].v_name + ' => ' + list[i].rule +
@@ -82,6 +82,7 @@ $(function () {
                                         pre.scrollTop(data.detail.line_trigger * 13);
 
                                         // vulnerabilities detail
+                                        $('.v_id').text('MVE-' + data.detail.id);
                                         $('.file_line').text(data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1));
                                         $('.found_time').text(data.detail.created);
                                         $('.updated_time').text(data.detail.updated);
