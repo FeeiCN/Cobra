@@ -47,9 +47,14 @@ $(function () {
                             $(".vulnerabilities_list").html('<li><h3 style="text-align: center;margin: 200px auto;">Wow, no vulnerability was detected :)</h3></li>');
                         } else {
                             var list_html = '';
+
                             for (var i = 0; i < list.length; i++) {
+                                var line = '';
+                                if (list[i].line != 0) {
+                                    line = ':' + list[i].line;
+                                }
                                 list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + ' ' + list[i].status_class + '" data-start="1" data-line="1">' +
-                                    '<strong>MVE-' + list[i].id + '</strong><br><span>' + list[i].file_short + ':' + list[i].line + '</span><br>' +
+                                    '<strong>MVE-' + list[i].id + '</strong><br><span>' + list[i].file_short + line + '</span><br>' +
                                     '<span class="issue-information">' +
                                     '<small>' +
                                     list[i].v_name + ' => ' + list[i].rule +

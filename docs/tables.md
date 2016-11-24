@@ -81,7 +81,6 @@ CREATE TABLE `rules` (
   `language` tinyint(4) DEFAULT NULL,
   `regex_location` varchar(512) NOT NULL DEFAULT '',
   `regex_repair` varchar(512) NOT NULL DEFAULT '',
-  `block_repairs` tinyint(2) NOT NULL,
   `block_repair` tinyint(2) NOT NULL,
   `description` varchar(256) NOT NULL,
   `repair` varchar(512) NOT NULL,
