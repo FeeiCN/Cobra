@@ -401,12 +401,14 @@ def vulnerabilities_list():
         data_dict = dict()
         data_dict['id'] = result[0]
         data_dict["file"] = result[1]
+        data_dict["file_short"] = common.path_to_file(result[1])
         data_dict["line"] = result[2]
         data_dict["code"] = result[3]
         data_dict["rule"] = result[4]
         data_dict["level"] = map_level[result[5]]
         data_dict["color"] = map_color[result[5]]
         data_dict["repair"] = result[8]
+        data_dict["v_name"] = result[9]
         data_dict['verify'] = ''
         data_dict['rule_id'] = result[10]
         if result[11] == 2:

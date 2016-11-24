@@ -49,10 +49,10 @@ $(function () {
                             var list_html = '';
                             for (var i = 0; i < list.length; i++) {
                                 list_html = list_html + '<li data-id="' + list[i].id + '" class="' + list[i].color + ' ' + list[i].status_class + '" data-start="1" data-line="1">' +
-                                    '<strong>' + list[i].id + '. ' + list[i].file + ':' + list[i].line + '</strong><br>' +
+                                    '<strong>' + list[i].id + '. ' + '</strong><br><span>' + list[i].file_short + ':' + list[i].line + '</span><br>' +
                                     '<span class="issue-information">' +
                                     '<small>' +
-                                    list[i].rule + ' ' + list[i].level + ' ' +
+                                    list[i].v_name + ' => ' + list[i].rule +
                                     '</small>' +
                                     '</span>' +
                                     '</li>';
