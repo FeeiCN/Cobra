@@ -55,7 +55,7 @@ class Parse:
             'php': {
                 'functions': r'(?:function\s+)(\w+)\s*\(',
                 'string': r"(?:['\"])(.*)(?:[\"'])",
-                'assign_string': r"(\{0}\s?=\s?[\"'](.*)(?:['\"]))",
+                'assign_string': r"({0}\s?=\s?[\"'](.*)(?:['\"]))",
                 'annotation': r"(#|\\\*|\/\/|\*)+"
             }
         }
@@ -212,7 +212,7 @@ class Parse:
                 $url = $_SERVER
                 $url = $testsdf;
                 """
-                regex_get_param = r'(\{0}\s*=\s*\$_[GET|POST|REQUEST|SERVER]+(?:\[))'.format(re.escape(param_name))
+                regex_get_param = r'({0}\s*=\s*\$_[GET|POST|REQUEST|SERVER]+(?:\[))'.format(re.escape(param_name))
                 regex_get_param_result = re.findall(regex_get_param, param_block_code)
                 if len(regex_get_param_result) >= 1:
                     self.param_value = regex_get_param_result[0]
@@ -222,7 +222,7 @@ class Parse:
                 logging.debug("参数是否直接取自外部入参: 否")
 
                 # 函数入参
-                regex_function_param = r'(function\s*\w+\s*\(.*\{0})'.format(re.escape(param_name))
+                regex_function_param = r'(function\s*\w+\s*\(.*{0})'.format(re.escape(param_name))
                 regex_function_param_result = re.findall(regex_function_param, param_block_code)
                 if len(regex_function_param_result) >= 1:
                     self.param_value = regex_function_param_result[0]
