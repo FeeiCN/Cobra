@@ -98,7 +98,15 @@ class Core:
         :method: file name
         :return: boolean
         """
-        return "/test/" in self.file_path
+        test_paths = [
+            '/test/',
+            '/tests/',
+            '/unitTests/'
+        ]
+        for path in test_paths:
+            if path in self.file_path:
+                return True
+        return False
 
     def is_match_only_rule(self):
         """
