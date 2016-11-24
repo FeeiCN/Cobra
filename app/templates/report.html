@@ -135,6 +135,23 @@
             color: #efefef;
             border-radius: 6px;
         }
+
+        .n-o-v tr td:nth-child(2) {
+            color: red;
+        }
+
+        .n-o-v tr td:nth-child(3) {
+            color: green;
+        }
+
+        .n-o-v tr td:nth-child(4) {
+            color: #357abd;
+        }
+
+        .n-o-v tr:nth-child(4) {
+            background: #efefef;
+            font-weight: bold;
+        }
     </style>
 
     <!--[if lt IE 9]>
@@ -237,7 +254,7 @@
                                                 <th>Total</th>
                                             </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody class="n-o-v">
                                             <tr>
                                                 <td>High</td>
                                                 <td>{{ data.vuls_number.unrepair.high }}</td>
