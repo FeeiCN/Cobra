@@ -64,6 +64,7 @@ class Core:
         self.status_init = 0
         self.status_fixed = 2
 
+        # const.py
         self.repair_code = None
         self.repair_code_init = 0
         self.repair_code_fixed = 1
@@ -74,6 +75,7 @@ class Core:
         self.repair_code_annotation = 4004
         self.repair_code_modify = 4005
         self.repair_code_empty_code = 4006
+        self.repair_code_const_file = 4007
 
         self.method = None
 
@@ -313,7 +315,10 @@ class Core:
         # Full path
         self.file_path = self.project_directory + self.file_path
 
-        # 定位规则为空时或者行号为0,表示此类型语言(该语言所有后缀)文件都算作漏洞
+        """
+        定位规则为空时或者行号为0,表示此类型语言(该语言所有后缀)文件都算作漏洞
+        他们的修复方法只有一个:删除文件
+        """
         if self.rule_location == '' or self.line_number == 0:
             logging.info("Find special files: RID{0}".format(self.rule_id))
             # 检查文件是否存在
@@ -324,17 +329,34 @@ class Core:
                 self.repair_code = self.repair_code_not_exist_file
                 self.process_vulnerabilities()
                 return
+            else:
+                return
 
-        # 检查文件是否存在
+        # Not exist file
         if os.path.isfile(self.file_path) is False:
             self.status = self.status_fixed
             self.repair_code = self.repair_code_not_exist_file
             self.process_vulnerabilities()
             return
 
+        # Test file
         if self.is_test_file():
             self.status = self.status_fixed
             self.repair_code = self.repair_code_test_file
+            self.process_vulnerabilities()
+            return
+
+        """
+        Cobra Skip
+
+        @cobra const
+        `@[cC][oO][bB][rR][aA]\s*[cC][oO][nN][sS][tT]`
+        """
+        file_content = File(self.file_path).read_file()
+        ret_regex_const = re.findall(r'@[cC][oO][bB][rR][aA]\s*[cC][oO][nN][sS][tT]', file_content)
+        if len(ret_regex_const) > 0:
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_const_file
             self.process_vulnerabilities()
             return
 
