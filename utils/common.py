@@ -97,16 +97,42 @@ def to_bool(value):
 def path_to_short(path, max_length=36):
     """
     /impl/src/main/java/com/mogujie/service/mgs/digitalcert/utils/CertUtil.java
-    impl/.../CertUtil.java
+    /impl/src/.../utils/CertUtil.java
     :param path:
+    :param max_length:
     :return:
     """
     if len(path) < max_length:
         return path
     paths = path.split('/')
+    paths = filter(None, paths)
     tmp_path = ''
     for i in range(0, len(paths)):
-        tmp_path = str(paths[i]) + str(paths[paths-i])
+        # print(i, str(paths[i]), str(paths[len(paths) - i - 1]))
+        tmp_path = tmp_path + str(paths[i]) + '/' + str(paths[len(paths) - i - 1])
         if len(tmp_path) > max_length:
-            return tmp_path
+            tmp_path = ''
+            for j in range(0, i):
+                tmp_path = tmp_path + '/' + str(paths[j])
+            tmp_path += '/...'
+            for k in range(i, 0, -1):
+                tmp_path = tmp_path + '/' + str(paths[len(paths) - k])
+            if tmp_path == '/...':
+                return '.../{0}'.format(paths[len(paths) - 1])
+            elif tmp_path[0] == '/':
+                return tmp_path[1:]
+            else:
+                return tmp_path
 
+
+def path_to_file(path):
+    """
+    Path to file
+    /impl/src/main/java/com/mogujie/service/mgs/digitalcert/utils/CertUtil.java
+    .../CertUtil.java
+    :param path:
+    :return:
+    """
+    paths = path.split('/')
+    paths = filter(None, paths)
+    return '.../{0}'.format(paths[len(paths) - 1])
