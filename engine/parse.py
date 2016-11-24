@@ -232,7 +232,7 @@ class Parse:
                 logging.debug("参数是否直接函数入参: 否")
 
                 # 常量赋值
-                uc_rule = r'\{0}\s?=\s?([A-Z_]*)'.format(param_name)
+                uc_rule = r'{0}\s?=\s?([A-Z_]*)'.format(re.escape(param_name))
                 uc_rule_result = re.findall(uc_rule, param_block_code)
                 if len(uc_rule_result) >= 1:
                     logging.debug("参数变量是否直接赋值常量: 是 `{0} = {1}`".format(param_name, uc_rule_result[0]))
