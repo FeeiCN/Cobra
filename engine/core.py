@@ -76,6 +76,7 @@ class Core:
         self.repair_code_modify = 4005
         self.repair_code_empty_code = 4006
         self.repair_code_const_file = 4007
+        self.repair_code_third_party = 4008
 
         self.method = None
 
@@ -357,6 +358,17 @@ class Core:
         if len(ret_regex_const) > 0:
             self.status = self.status_fixed
             self.repair_code = self.repair_code_const_file
+            self.process_vulnerabilities()
+            return
+
+        """
+        @cobra third-party
+        `@[cC][oO][bB][rR][aA]\s*[tT][hH][iI][rR][dD]-[pP][aA][rR][tT][yY]`
+        """
+        ret_regex_third_party = re.findall(r'@[cC][oO][bB][rR][aA]\s*[tT][hH][iI][rR][dD]-[pP][aA][rR][tT][yY]', file_content)
+        if len(ret_regex_third_party) > 0:
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_third_party
             self.process_vulnerabilities()
             return
 
