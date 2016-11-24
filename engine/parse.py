@@ -212,7 +212,7 @@ class Parse:
                 $url = $_SERVER
                 $url = $testsdf;
                 """
-                regex_get_param = r'(\{0}\s*=\s*\$_[GET|POST|REQUEST|SERVER]+(?:\[))'.format(param_name)
+                regex_get_param = r'(\{0}\s*=\s*\$_[GET|POST|REQUEST|SERVER]+(?:\[))'.format(re.escape(param_name))
                 regex_get_param_result = re.findall(regex_get_param, param_block_code)
                 if len(regex_get_param_result) >= 1:
                     self.param_value = regex_get_param_result[0]
@@ -222,7 +222,7 @@ class Parse:
                 logging.debug("参数是否直接取自外部入参: 否")
 
                 # 函数入参
-                regex_function_param = r'(function\s*\w+\s*\(.*\{0})'.format(param_name)
+                regex_function_param = r'(function\s*\w+\s*\(.*\{0})'.format(re.escape(param_name))
                 regex_function_param_result = re.findall(regex_function_param, param_block_code)
                 if len(regex_function_param_result) >= 1:
                     self.param_value = regex_function_param_result[0]
@@ -241,7 +241,7 @@ class Parse:
                 logging.debug("参数变量是否直接赋值常量: 否")
 
                 # 固定字符串判断
-                regex_assign_string = self.regex[self.language]['assign_string'].format(param_name)
+                regex_assign_string = self.regex[self.language]['assign_string'].format(re.escape(param_name))
                 string = re.findall(regex_assign_string, param_block_code)
                 if len(string) >= 1 and string[0] != '':
                     logging.debug("是否赋值字符串: 是")
@@ -260,7 +260,7 @@ class Parse:
                         logging.info("返回: 可控 (代码未找到)")
                         return True
                     logging.debug("向上搜索参数区块代码: {0}".format(param_block_code))
-                    regex_assign_string = self.regex[self.language]['assign_string'].format(param_name)
+                    regex_assign_string = self.regex[self.language]['assign_string'].format(re.escape(param_name))
                     string = re.findall(regex_assign_string, param_block_code)
                     if len(string) >= 1 and string[0] != '':
                         logging.debug("是否赋值字符串: 是")
@@ -269,7 +269,7 @@ class Parse:
                     logging.debug("是否赋值字符串: 否")
 
                     # 是否取外部参数
-                    regex_get_param = r'String\s{0}\s=\s\w+\.getParameter(.*)'.format(param_name)
+                    regex_get_param = r'String\s{0}\s=\s\w+\.getParameter(.*)'.format(re.escape(param_name))
                     get_param = re.findall(regex_get_param, param_block_code)
                     if len(get_param) >= 1 and get_param[0] != '':
                         logging.debug("是否赋值外部取参: 是")
