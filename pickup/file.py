@@ -23,7 +23,7 @@ class File:
         读取文件内容
         :return:
         """
-        f = open(self.file_path, 'r').readlines()
+        f = open(self.file_path, 'r').read()
         return f
 
     def lines(self, line_rule):
