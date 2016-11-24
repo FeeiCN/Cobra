@@ -58,6 +58,23 @@ class Test(unittest.TestCase):
                 project_id = self.test_api()
                 print(index, self.target, project_id)
 
+    def test_get_all_git_projects(self):
+        project_id = 1302
+        checked_id = []
+        from app.models import db, CobraResults
+        results = CobraResults.query.filter(CobraResults.project_id == project_id).order_by(CobraResults.id.asc()).all()
+        for result in results:
+            checked_id.append(result.id)
+            same_result = CobraResults.query.filter(
+                CobraResults.project_id == project_id,
+                CobraResults.rule_id == result.rule_id,
+                CobraResults.file == result.file,
+                CobraResults.line == result.line,
+                CobraResults.status == result.status,
+                CobraResults.id.notin_(checked_id)
+            ).delete()
+            db.session.commit()
+
     def test_push(self):
         from daemon import push_vulnerabilities, error_handler
         from utils.third_party import Vulnerabilities
