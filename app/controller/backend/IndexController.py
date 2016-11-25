@@ -137,16 +137,16 @@ def main():
 
     data = {
         'amount': {
-            'vulnerabilities_fixed': convert_number(fixed_amount),
-            'vulnerabilities_not_fixed': convert_number(not_fixed_amount),
-            'vulnerabilities_total': convert_number(fixed_amount + not_fixed_amount),
+            'vulnerabilities_fixed': fixed_amount,
+            'vulnerabilities_not_fixed': not_fixed_amount,
+            'vulnerabilities_total': fixed_amount + not_fixed_amount,
             'projects': convert_number(projects_amount),
             'tasks': convert_number(tasks_amount),
             'files': convert_number(files_amount),
             'lines': convert_number(lines_amount),
-            'rules_on': convert_number(rules_on),
-            'rules_off': convert_number(rules_off),
-            'rules_total': convert_number(rules_on + rules_off)
+            'rules_on': rules_on,
+            'rules_off': rules_off,
+            'rules_total': rules_on + rules_off
         },
         'ranks': ranks,
         'hits': hits,
