@@ -1,6 +1,8 @@
 # 密码硬编码特殊情况下的处理方式
 
-#### 1. 该文件为测试用例的话怎么办？
+__(以下操作会导致Cobra跳过对应项目或文件的安全扫描,请谨慎使用!)__
+
+### 1. 该文件为测试用例的话怎么办？
 
 > 首先，如测试用例中的密码是工作中常用密码，必须改掉。
 >
@@ -39,7 +41,7 @@ class test{
 }
 ```
 
-#### 2. 如果整个项目都废弃了（未部署、未上线、未使用）
+### 2. 如果整个项目都废弃了（未部署、未上线、未使用）
 
 在项目根目录增加一个文件，并确保该文件无法通过线上Web目录获取到。
 
@@ -55,4 +57,36 @@ class test{
 # @link     https://github.com/wufeifei/cobra
 # @document http://cobra-docs.readthedocs.io/
 scan:false
+```
+
+### 3. 如果项目引用了开源项目
+
+开源项目中扫到的常规问题(硬编码密码等),是不需要修改的.
+
+可以在对应触发文件上头部注释中增加`@cobra third-party`即可跳过该文件的扫描.
+
+```php
+/**
+ * Something else
+ *
+ * @author Feei<wufeifei#wufeifei>
+ * @param something
+ * @cobra third-party
+ */
+ something code...
+```
+
+### 4. 常量(无鉴权作用的key)被判定成硬编码密码了
+
+在确定该常量的确无鉴权作用时,在触发文件头部注释中增加`@cobra const`即可跳过该文件的扫描.(若使用该方法跳过本应修复的地方,后果自负)
+
+```php
+/**
+ * Something else
+ *
+ * @author Feei<wufeifei#wufeifei>
+ * @param something
+ * @cobra const
+ */
+ something code...
 ```
