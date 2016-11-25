@@ -77,12 +77,13 @@ def main():
 
     # ranks & hits
     hit_rules = db.session.query(
-        func.count(CobraResults.rule_id).label("cnt"), CobraRules.author, CobraRules.description
+        func.count(CobraResults.rule_id).label("cnt"), CobraRules.author, CobraRules.description, CobraRules.id
     ).outerjoin(
         CobraRules, CobraResults.rule_id == CobraRules.id
     ).group_by(CobraResults.rule_id).all()
     ranks = dict()
     hits = dict()
+    hits_tmp = []
     for res in hit_rules:
         if len(ranks) < 7:
             # ranks
@@ -92,13 +93,18 @@ def main():
                 rank = res[0]
             ranks[res[1]] = rank
             # hits
-            if res[2] in hits:
-                rank = ranks[res[2]] + res[0]
+            if res[3] in hits:
+                rank = ranks[res[3]] + res[0]
             else:
                 rank = res[0]
-            hits[res[2]] = rank
+            hits[res[3]] = {
+                'name': res[2],
+                'rank': rank
+            }
+    for h in hits.values():
+        hits_tmp.append(h)
     ranks = sorted(ranks.items(), key=operator.itemgetter(1), reverse=True)
-    hits = sorted(hits.items(), key=operator.itemgetter(1), reverse=True)
+    hits = sorted(hits_tmp, key=lambda x: x['rank'], reverse=True)
 
     # vulnerabilities types
     cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id).all()

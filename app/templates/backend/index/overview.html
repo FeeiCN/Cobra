@@ -130,8 +130,8 @@
                 </h4>
                 {% for hit in data.hits %}
                     <a class="ph" href="#">
-                        <span class="dy dh">{{ hit[1] }}</span>
-                        {{ hit[0] }}
+                        <span class="dy dh">{{ hit['rank'] }}</span>
+                        {{ hit['name'] }}
                     </a>
                 {% endfor %}
             </div>
