@@ -312,3 +312,4 @@ from app.controller.backend import TasksController
 from app.controller.backend import VulsController
 from app.controller.backend import WhiteListsController
 from app.controller.backend import FramesController
+from app.controller.backend import ReportController
