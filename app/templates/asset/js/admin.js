@@ -70,74 +70,7 @@ $("#main-div").delegate("span", "click", function () {
             $.get('edit_rule/' + cid, function (result) {
                 $('#main-div').html(result);
 
-                $("#edit-rule-button").click(function () {
-                    var vul_type = $("#vul_type").val();
-                    var lang = $("#language").val();
-                    var regex_location = $("#regex-location").val();
-                    var description = $("#description").val();
-                    var regex_repair = $("#regex-repair").val();
-                    var block_reapir = $("#repair-block:checked").val();
-                    var repair = $("#repair").val();
-                    var author = $("input[name=author]").val();
-                    var status = $("#status:checked").val();
-                    var level = $("#level:checked").val();
-
-                    // check data
-                    if (!vul_type || vul_type == "") {
-                        showAlert('danger', 'vul type error.', '#edit-rule-result');
-                        return false;
-                    }
-                    if (!lang || lang == "") {
-                        showAlert('danger', 'language error.', '#edit-rule-result');
-                        return false;
-                    }
-                    if (!description || description == "") {
-                        showAlert('danger', 'description can not be blank.', '#edit-rule-result');
-                        return false;
-                    }
-                    if (!regex_location || regex_location == "") {
-                        showAlert("danger", "regex location cannot be blank.", "#edit-rule-result");
-                        return false;
-                    }
-                    if (!block_reapir || block_reapir == "") {
-                        showAlert("danger", "block repair cannot be blank.", "#edit-rule-result");
-                        return false;
-                    }
-                    if (!repair || repair == "") {
-                        showAlert('danger', 'repair can not be blank.', '#edit-rule-result');
-                        return false;
-                    }
-                    if (!author || author == "") {
-                        showAlert('danger', 'author can not be blank.', '#edit-rule-result');
-                        return false;
-                    }
-                    if (!status || status == "") {
-                        showAlert('danger', 'status error.', '#edit-rule-result');
-                        return false;
-                    }
-                    if (!level || level == "") {
-                        showAlert('danger', 'level can not be blank.', '#edit-rule-result');
-                        return false;
-                    }
-
-                    // post data
-                    var data = {
-                        'vul_type': vul_type,
-                        'language': lang,
-                        'regex_location': regex_location,
-                        'regex_repair': regex_repair,
-                        'block_repair': block_reapir,
-                        'description': description,
-                        'rule_id': cid,
-                        'repair': repair,
-                        'author': author,
-                        'status': status,
-                        'level': level
-                    };
-                    $.post('edit_rule/' + cid, data, function (res) {
-                        showAlert(res.tag, res.msg, "#edit-rule-result");
-                    });
-                });
+                
 
                 $("#back-rule-button").click(function () {
                     // back to rule list.
