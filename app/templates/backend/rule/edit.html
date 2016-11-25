@@ -1,0 +1,197 @@
+{% extends "backend/common/layout.html" %}
+{% block rule_active %}active{% endblock %}
+{% block nav_first %}Dashboards{% endblock %}
+{% block nav_second %}{{ data.title }}{% endblock %}
+{% block body %}
+    <hr class="aky">
+    <form role="form">
+        <input type="hidden" name="type" value="{{ data.type }}">
+        <input type="hidden" name="id" value="{{ data.id }}">
+        <div class="aon hb">
+            <label for="title">Name</label>
+            <input type="text" class="form-control" name="name" value="{{ data.rule.description }}" placeholder="Rule name">
+        </div>
+        <div class="gd">
+            <label for="author">Author</label>
+            <input type="text" class="form-control" name="author" value="{{ data.rule.author }}" placeholder="Rule author"/>
+        </div>
+        <div class="aon gp">
+            <label for="vul_type">Vul type</label>
+            <select id="vul_type" class="form-control">
+                {% for vul in data.all_vuls %}
+                    <option value="{{ vul.id }}" {% if vul.id == data.rule.vul_id %}selected{% endif %}>
+                        {{ vul.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="aon gp">
+            <label for="language">Language</label>
+            <select id="language" class="form-control">
+                {% for lang in data.all_lang %}
+                    <option value="{{ lang.id }}" {% if lang.id == data.rule.language %}selected{% endif %}>
+                        {{ lang.language }} ({{ lang.extensions }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="aon gh">
+            <label for="status">Status</label>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="status" value="1" {% if data.rule.status == 1 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    ON
+                </label>
+            </div>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="status" value="0" {% if data.rule.status == 0 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    OFF
+                </label>
+            </div>
+        </div>
+        <div class="aon gh">
+            <label>Repair Block</label>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="repair-block" value="0" {% if data.rule.block_repair == 0 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    Function Up
+                </label>
+            </div>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="repair-block" value="2" {% if data.rule.block_repair == 2 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    Location Rule Line
+                </label>
+            </div>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="repair-block" value="1" {% if data.rule.block_repair == 1 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    Function Down
+                </label>
+            </div>
+        </div>
+        <div class="aon gh">
+            <label>Level</label>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="level" value="1" {% if data.rule.level == 1 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    LOW
+                </label>
+            </div>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="level" value="2" {% if data.rule.level == 2 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    Medium
+                </label>
+            </div>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="level" value="3" {% if data.rule.level == 3 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    High
+                </label>
+            </div>
+        </div>
+        <div class="aon gp">
+            <label for="regex-location">Regex Location</label>
+            <textarea class="form-control" id="regex-location">{{ data.rule.regex_location }}</textarea>
+        </div>
+        <div class="aon gp">
+            <label for="regex-repair">Regex Repair</label>
+            <textarea class="form-control" id="regex-repair">{{ data.rule.regex_repair }}</textarea>
+        </div>
+        <div class="aon hn">
+            <label for="repair">Repair</label>
+            <textarea class="form-control" id="repair">{{ data.rule.repair }}</textarea>
+        </div>
+        <hr class="aky">
+        <div class="aon hj">
+            <button type="button" name="submit" class="ce apk fh">Submit</button>
+        </div>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $("button[name=submit]").click(function () {
+            var type = $('input[name=type]').val();
+            var id = $('input[name=id]').val();
+            var vul_type = $('#vul_type').val();
+            var lang = $('#language').val();
+            var regex_location = $("#regex-location").val();
+            var description = $('input[name=name]').val();
+            var regex_repair = $("#regex-repair").val();
+            var block_repair = $('input[name=repair-block]:checked').val();
+            var repair = $("#repair").val();
+            var author = $('input[name=author]').val();
+            var status = $('input[name=status]:checked').val();
+            var level = $('input[name=level]:checked').val();
+
+            // check data
+            if (!vul_type || vul_type == "") {
+                notification('vul type error.');
+                return false;
+            }
+            if (!lang || lang == "") {
+                notification('language error.');
+                return false;
+            }
+            if (!description || description == "") {
+                notification('description can not be blank.');
+                return false;
+            }
+            if (!regex_location || regex_location == "") {
+                notification("regex location cannot be blank.");
+                return false;
+            }
+            if (!block_repair || block_repair == "") {
+                notification("block repair cannot be blank.");
+                return false;
+            }
+            if (!repair || repair == "") {
+                notification('repair can not be blank.');
+                return false;
+            }
+            if (!author || author == "") {
+                notification('author can not be blank.');
+                return false;
+            }
+            if (!status || status == "") {
+                notification('status error.');
+                return false;
+            }
+            if (!level || level == "") {
+                notification('level can not be blank.');
+                return false;
+            }
+
+            // post data
+            var data = {
+                'vul_type': vul_type,
+                'language': lang,
+                'regex_location': regex_location,
+                'regex_repair': regex_repair,
+                'block_repair': block_repair,
+                'description': description,
+                'rule_id': id,
+                'repair': repair,
+                'author': author,
+                'status': status,
+                'level': level
+            };
+            $.post('/admin/rules/' + type + '/' + id, data, function (res) {
+                notification(res.tag, res.msg, "#edit-rule-result");
+            });
+        });
+    </script>
+{% endblock %}
+
+
+

@@ -27,6 +27,7 @@ __email__ = "root@lightless.me"
 
 
 # all rules button
+@web.route(ADMIN_URL + '/rules/', methods=['GET'], defaults={'page': 1})
 @web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
 @login_required
 def rules(page):
@@ -72,15 +73,15 @@ def rules(page):
             rule.level = 'Unknown Level'
 
     data = {
-        # 'paginate': cobra_rules,
         'rules': cobra_rules,
+        'page': page
     }
 
     return render_template('backend/rule/rules.html', data=data)
 
 
 # add new rules button
-@web.route(ADMIN_URL + '/add_new_rule', methods=['GET', 'POST'])
+@web.route(ADMIN_URL + '/rules/add/', methods=['GET', 'POST'])
 @login_required
 def add_new_rule():
     if request.method == 'POST':
@@ -88,7 +89,7 @@ def add_new_rule():
                            'description', 'repair', 'author', 'level', 'status')
         ret, msg = vc.check_args()
         if not ret:
-            return jsonify(tag="danger", msg=msg)
+            return jsonify(code=4004, message=msg)
 
         current_time = datetime.datetime.now()
         rule = CobraRules(
@@ -108,21 +109,24 @@ def add_new_rule():
         try:
             db.session.add(rule)
             db.session.commit()
-            return jsonify(tag='success', msg='add success.')
+            return jsonify(code=1001, message='add success.')
         except Exception as e:
-            return jsonify(tag='danger', msg='add failed, try again later?' + e.message)
+            return jsonify(code=1004, message='add failed, try again later?' + e.message)
     else:
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
         data = {
-            'vul_type': vul_type,
-            'languages': languages
+            'type': 'add',
+            'title': 'Create rule',
+            'all_vuls': vul_type,
+            'all_lang': languages,
+            'rule': dict()
         }
-        return render_template('backend/rule/add_new_rule.html', data=data)
+        return render_template('backend/rule/edit.html', data=data)
 
 
 # del special rule
-@web.route(ADMIN_URL + '/del_rule', methods=['POST'])
+@web.route(ADMIN_URL + '/rules/del', methods=['POST'])
 @login_required
 def del_rule():
     vc = ValidateClass(request, "rule_id")
@@ -143,21 +147,21 @@ def del_rule():
             message = "Delete failed. Please check and delete the task rely on this rule first.<br />"
             message += "<strong>Rely Tasks: </strong>" + task_rely
 
-            return jsonify(code=1004, tag="danger", msg=message)
+            return jsonify(code=1004, message=message)
 
         r = CobraRules.query.filter_by(id=rule_id).first()
         try:
             db.session.delete(r)
             db.session.commit()
-            return jsonify(code=1001, tag='success', msg='delete success.')
+            return jsonify(code=1001, message='delete success.')
         except SQLAlchemyError:
-            return jsonify(code=1004, tag='danger', msg='delete failed. Try again later?')
+            return jsonify(code=1004, message='delete failed. Try again later?')
     else:
-        return jsonify(code=1004, tag='danger', msg='wrong id')
+        return jsonify(code=1004, message='wrong id')
 
 
 # edit special rule
-@web.route(ADMIN_URL + '/edit_rule/<int:rule_id>', methods=['GET', 'POST'])
+@web.route(ADMIN_URL + '/rules/edit/<int:rule_id>', methods=['GET', 'POST'])
 @login_required
 def edit_rule(rule_id):
     if request.method == 'POST':
@@ -169,7 +173,7 @@ def edit_rule(rule_id):
         regex_repair = request.form.get("regex_repair", "")
 
         if not ret:
-            return jsonify(tag="danger", msg=msg)
+            return jsonify(code=4004, message=msg)
 
         r = CobraRules.query.filter_by(id=rule_id).first()
         r.vul_id = vc.vars.vul_type
@@ -186,34 +190,18 @@ def edit_rule(rule_id):
         try:
             db.session.add(r)
             db.session.commit()
-            return jsonify(tag='success', msg='save success.')
+            return jsonify(code=1001, message='success')
         except SQLAlchemyError:
-            return jsonify(tag='danger', msg='save failed. Try again later?')
+            return jsonify(code=4004, message='save failed. Try again later?')
     else:
         r = CobraRules.query.filter_by(id=rule_id).first()
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
-        return render_template('backend/rule/edit_rule.html', data={
+        return render_template('backend/rule/edit.html', data={
+            'type': 'edit',
+            'title': 'Edit rule',
+            'id': r.id,
             'rule': r,
             'all_vuls': vul_type,
             'all_lang': languages,
         })
-
-
-@web.route(ADMIN_URL + '/update_status', methods=['POST'])
-@login_required
-def update_status():
-    rid = request.form.get("id", "")
-    if rid == "":
-        return jsonify(message="id can't be blank.")
-
-    rule = CobraRules.query.filter(CobraRules.id == rid).first()
-    # print(rule)
-    rule.status = not rule.status
-    try:
-        db.session.add(rule)
-        db.session.commit()
-        return jsonify(message="Update Successful")
-    except SQLAlchemyError as e:
-        return jsonify(message=e.message)
-

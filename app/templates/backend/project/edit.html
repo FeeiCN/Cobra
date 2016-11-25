@@ -1,0 +1,93 @@
+{% extends "backend/common/layout.html" %}
+{% block nav_first %}Dashboards{% endblock %}
+{% block nav_second %}{{ data.title }}{% endblock %}
+{% block body %}
+    <hr class="aky">
+    <form role="form">
+        <input type="hidden" name="id" value="{{ data.id }}">
+        <input type="hidden" name="type" value="{{ data.type }}">
+        <div class="aol">
+            <input type="text" class="form-control" id="name" value="{{ data.project.name }}"/>
+            <span class="bv ade"></span>
+        </div>
+        <div class="aol">
+            <input type="text" class="form-control" id="author" value="{{ data.project.author }}"/>
+            <span class="bv ajh"></span>
+        </div>
+        <div class="aol">
+            <input type="text" class="form-control" id="pe" value="{{ data.project.pe }}"/>
+            <span class="bv aji"></span>
+        </div>
+        <div class="form-group">
+            <label for="branch">Repository</label>
+            <input type="text" class="form-control" id="repository" value="{{ data.project.repository }}"/>
+        </div>
+        <div class="form-group">
+            <label for="branch">URL</label>
+            <input type="text" class="form-control" id="url" value="{{ data.project.url }}"/>
+        </div>
+        <div class="form-group">
+            <label for="branch">Remark</label>
+            <textarea class="form-control" id="remark">{{ data.project.remark }}</textarea>
+        </div>
+        <hr class="aky">
+        <button type="button" class="ce apk fh">Submit</button>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $('nav li').removeClass('active').eq(3).addClass('active');
+        $("button").on('click', function () {
+            var type = $('input[name=type]').val();
+            var id = $('input[name=id]').val();
+            var name = $("#name").val();
+            var repository = $("#repository").val();
+            var url = $("#url").val();
+            var author = $("#author").val();
+            var pe = $("#pe").val();
+            var remark = $("#remark").val();
+
+            if (!name || name == "") {
+                notification('name can not be empty!');
+                return false;
+            }
+            if (!repository || repository == "") {
+                notification('repository can not be empty!');
+                return false;
+            }
+            if (!url || url == "") {
+                notification('url can not be empty!');
+                return false;
+            }
+            if (!remark || remark == "") {
+                notification('remark can not be empty!');
+                return false;
+            }
+            if (!author || author == "") {
+                notification('author cannot be empty!');
+                return false;
+            }
+            if (!pe || pe == "") {
+                notification('pe cannot be empty!');
+                return false;
+            }
+
+            data = {
+                'id': id,
+                'name': name,
+                'repository': repository,
+                'url': url,
+                'author': author,
+                'remark': remark,
+                'pe': pe
+            };
+            $.post('/admin/projects/' + type + '/' + id, data, function (res) {
+                if (res.code == 1001) {
+                    window.history.back();
+                } else {
+                    notification(res.message);
+                }
+            });
+        });
+    </script>
+{% endblock %}

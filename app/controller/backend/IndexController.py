@@ -12,14 +12,14 @@
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
 import time
-
+import operator
 from flask import redirect, request, session, escape, render_template
-
+from sqlalchemy.sql import func, and_
 from . import ADMIN_URL
 from app import web, db
 from app.CommonClass.ValidateClass import ValidateClass, login_required
-from app.models import CobraAdminUser
-
+from app.models import CobraAdminUser, CobraResults, CobraProjects, CobraTaskInfo, CobraRules, CobraVuls
+from utils.common import convert_number
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -29,7 +29,6 @@ __email__ = "root@lightless.me"
 @web.route(ADMIN_URL + '/', methods=['GET'])
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
-
     if ValidateClass.check_login():
         return redirect(ADMIN_URL + '/main')
 
@@ -63,8 +62,94 @@ def index():
 
 
 # main view
-@web.route(ADMIN_URL + '/main', methods=['GET'])
+@web.route(ADMIN_URL + '/overview', methods=['GET'])
 @login_required
 def main():
-    return render_template("backend/index/main.html")
+    # amount
+    fixed_amount = CobraResults.query.filter(CobraResults.status == 2).count()
+    not_fixed_amount = CobraResults.query.filter(CobraResults.status < 2).count()
+    projects_amount = CobraProjects.query.count()
+    tasks_amount = CobraTaskInfo.query.count()
+    files_amount = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]
+    lines_amount = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).first()[0]
+    rules_on = CobraRules.query.filter(CobraRules.status == 1).count()
+    rules_off = CobraRules.query.filter(CobraRules.status == 0).count()
 
+    # ranks & hits
+    hit_rules = db.session.query(
+        func.count(CobraResults.rule_id).label("cnt"), CobraRules.author, CobraRules.description
+    ).outerjoin(
+        CobraRules, CobraResults.rule_id == CobraRules.id
+    ).group_by(CobraResults.rule_id).all()
+    ranks = dict()
+    hits = dict()
+    for res in hit_rules:
+        if len(ranks) < 7:
+            # ranks
+            if res[1] in ranks:
+                rank = ranks[res[1]] + res[0]
+            else:
+                rank = res[0]
+            ranks[res[1]] = rank
+            # hits
+            if res[2] in hits:
+                rank = ranks[res[2]] + res[0]
+            else:
+                rank = res[0]
+            hits[res[2]] = rank
+    ranks = sorted(ranks.items(), key=operator.itemgetter(1), reverse=True)
+    hits = sorted(hits.items(), key=operator.itemgetter(1), reverse=True)
+
+    # vulnerabilities types
+    cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id).all()
+    cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
+
+    all_rules = {}
+    for x in cobra_rules:
+        all_rules[x.id] = x.vul_id  # rule_id -> vul_id
+    all_cobra_vuls = {}
+    for x in cobra_vuls:
+        all_cobra_vuls[x.id] = x.name  # vul_id -> vul_name
+    # show all vulns
+    all_vulnerabilities = db.session.query(
+        CobraResults.rule_id, func.count("*").label('counts')
+    ).group_by(CobraResults.rule_id).all()
+
+    vulnerabilities_types = []
+    for x in all_vulnerabilities:  # all_vuls: results group by rule_id and count(*)
+        t = {}
+        # get vul name
+        if x.rule_id not in all_rules:
+            continue
+        te = all_cobra_vuls[all_rules[x.rule_id]]
+        # check if there is already a same vul name in different language
+        flag = False
+        for tv in vulnerabilities_types:
+            if te == tv['name']:
+                tv['amount'] += x.counts
+                flag = True
+                break
+        if not flag:
+            t['name'] = all_cobra_vuls[all_rules[x.rule_id]]
+            t['amount'] = x.counts
+        if t:
+            vulnerabilities_types.append(t)
+
+    data = {
+        'amount': {
+            'vulnerabilities_fixed': fixed_amount,
+            'vulnerabilities_not_fixed': not_fixed_amount,
+            'vulnerabilities_total': fixed_amount + not_fixed_amount,
+            'projects': convert_number(projects_amount),
+            'tasks': convert_number(tasks_amount),
+            'files': convert_number(files_amount),
+            'lines': convert_number(lines_amount),
+            'rules_on': rules_on,
+            'rules_off': rules_off,
+            'rules_total': rules_on + rules_off
+        },
+        'ranks': ranks,
+        'hits': hits,
+        'vulnerabilities_types': vulnerabilities_types
+    }
+    return render_template("backend/index/overview.html", data=data)
