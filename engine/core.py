@@ -32,6 +32,7 @@ class Core:
                         {'task_id': self.task_id,
                         'project_id': self.project_id,
                         'rule_id': rule.id,
+                        'result_id': result_id,
                         'file': file_path,
                         'line_number': line_number,
                         'code_content': code_content}
@@ -43,6 +44,7 @@ class Core:
         self.project_directory = result['project_directory']
         self.rule_id = result['rule_id']
         self.task_id = result['task_id']
+        self.result_id = result['result_id']
 
         self.third_party_vulnerabilities_name = result['third_party_vulnerabilities_name']
         self.third_party_vulnerabilities_type = result['third_party_vulnerabilities_type']
@@ -62,6 +64,20 @@ class Core:
         self.status_init = 0
         self.status_fixed = 2
 
+        # const.py
+        self.repair_code = None
+        self.repair_code_init = 0
+        self.repair_code_fixed = 1
+        self.repair_code_not_exist_file = 4000
+        self.repair_code_special_file = 4001
+        self.repair_code_whitelist = 4002
+        self.repair_code_test_file = 4003
+        self.repair_code_annotation = 4004
+        self.repair_code_modify = 4005
+        self.repair_code_empty_code = 4006
+        self.repair_code_const_file = 4007
+        self.repair_code_third_party = 4008
+
         self.method = None
 
     def is_white_list(self):
@@ -78,6 +94,22 @@ class Core:
         :return: boolean
         """
         return ".min.js" in self.file_path
+
+    def is_test_file(self):
+        """
+        is test case file
+        :method: file name
+        :return: boolean
+        """
+        test_paths = [
+            '/test/',
+            '/tests/',
+            '/unitTests/'
+        ]
+        for path in test_paths:
+            if path in self.file_path:
+                return True
+        return False
 
     def is_match_only_rule(self):
         """
@@ -133,9 +165,10 @@ class Core:
         写入新漏洞
         :return:
         """
-        vul = CobraResults(self.task_id, self.project_id, self.rule_id, self.file_path, self.line_number, self.code_content, self.status)
+        vul = CobraResults(self.task_id, self.project_id, self.rule_id, self.file_path, self.line_number, self.code_content, self.repair_code, self.status)
         db.session.add(vul)
         db.session.commit()
+        logging.info("insert new vulnerabilities Method: {0} VID: {1}".format(self.method, vul.id))
         self.push_third_party_vulnerabilities(vul.id)
 
     def process_vulnerabilities(self):
@@ -154,131 +187,84 @@ class Core:
         # 扫描状态下
         if self.method == 0:
             """
-             1. 没有记录 (NotRecord)
-                1.1 扫描结果是已修复 -> 跳过
-                1.2 扫描结果是未修复 -> 写入
-
-             2. 有记录是待修复(status<2)
-                2.1 扫描结果是已修复 -> 更新
-                2.2 扫描结果是未修复 -> 跳过
-
-             3. 有记录是已修复(status=2)
-                3.1 扫描结果是已修复 -> 跳过
-                3.2 扫描结果是未修复 -> 写入
+            Scan下(method=1)只会有新增的未修复的漏洞(status=0)
             """
-            # 行号为0的时候则为搜索特殊文件
-            if self.line_number == 0:
-                exist_result = CobraResults.query.filter(
-                    CobraResults.project_id == self.project_id,
-                    CobraResults.rule_id == self.rule_id,
-                    CobraResults.file == self.file_path,
-                ).first()
-            else:
-                exist_result = CobraResults.query.filter(
-                    CobraResults.project_id == self.project_id,
-                    CobraResults.rule_id == self.rule_id,
-                    CobraResults.file == self.file_path,
-                    CobraResults.line == self.line_number,
-                ).first()
-            # 1. 没有记录
-            if exist_result is None:
-                # 1.1 扫描结果是已修复
-                if self.status == 2:
-                    # 跳过
-                    pass
-                # 1.2 扫描结果是未修复
+            if self.status == 0:
+                # 检查该未修复的漏洞是否已经扫到过
+                # 行号为0的时候则为搜索特殊文件(不用带上行号)
+                if self.line_number == 0:
+                    exist_result = CobraResults.query.filter(
+                        CobraResults.project_id == self.project_id,
+                        CobraResults.rule_id == self.rule_id,
+                        CobraResults.file == self.file_path,
+                    ).order_by(CobraResults.id.desc()).first()
                 else:
-                    # 写入
+                    exist_result = CobraResults.query.filter(
+                        CobraResults.project_id == self.project_id,
+                        CobraResults.rule_id == self.rule_id,
+                        CobraResults.file == self.file_path,
+                        CobraResults.line == self.line_number,
+                    ).order_by(CobraResults.id.desc()).first()
+
+                # 该未修复的漏洞之前没有扫到过,则写入漏洞库
+                if exist_result is None:
                     self.insert_vulnerabilities()
-            # 2/3 有记录
-            else:
-                # 2. 有记录是待修复
-                if exist_result.status < 2:
-                    # 2.1 扫描结果是已修复
-                    if self.status == 2:
-                        # 更新
-                        exist_result.status = 2
-                        db.session.add(exist_result)
-                        db.session.commit()
-                    # 2.2 扫描结果是未修复
-                    else:
-                        # 跳过
-                        pass
-                # 3. 有记录是已修复
                 else:
-                    # 3.1 扫描结果是已修复
-                    if self.status == 2:
-                        # 跳过
-                        pass
-                    # 3.2 扫描结果是未修复
-                    else:
-                        # 写入
-                        self.insert_vulnerabilities()
-        # 修复状态下
+                    logging.debug("This vulnerabilities already exist!")
         elif self.method == 1:
             """
-            1. 待修复状态
-               1.1 待修复 -> 跳过
-               1.2 已修复 -> 更新
-
-            2. 已修复状态(扫描时修复的)
-               2.1 全部跳过
+            Repair下(method=1)只有处理已修复的漏洞
             """
-            # 行号为0的时候则为搜索特殊文件
-            if self.line_number == 0:
-                exist_result = CobraResults.query.filter(
-                    CobraResults.project_id == self.project_id,
-                    CobraResults.rule_id == self.rule_id,
-                    CobraResults.file == self.file_path,
-                    CobraResults.status < 2
-                ).first()
-            else:
-                exist_result = CobraResults.query.filter(
-                    CobraResults.project_id == self.project_id,
-                    CobraResults.rule_id == self.rule_id,
-                    CobraResults.file == self.file_path,
-                    CobraResults.line == self.line_number,
-                    CobraResults.status < 2
-                ).first()
-            # 1. 待修复状态
-            if exist_result is not None:
-                # 1.2 已修复
-                if self.status == 2:
-                    exist_result.status = 2
-                    db.session.add(exist_result)
-                    db.session.commit()
-                # 1.1 待修复,跳过
+            if self.status == self.status_fixed:
+                # 查看漏洞原始状态
+                exist_result = CobraResults.query.filter_by(id=self.result_id).first()
+                if exist_result is not None:
+                    if exist_result.status < self.status_fixed:
+                        # 更新漏洞状态为已修复
+                        exist_result.status = self.status_fixed
+                        exist_result.repair = self.repair_code
+                        db.session.add(exist_result)
+                        db.session.commit()
+                    else:
+                        logging.critical("Vulnerabilities status not < fixed")
                 else:
-                    pass
-            # 2. 已修复状态(没有数据)
-            else:
-                pass
-
+                    logging.critical("Not found vulnerabilities on repair method")
         else:
-            logging.critical("方法未初始化")
+            logging.critical("Core method not initialize")
 
     def scan(self):
         """
-        扫描漏洞
+        Scan vulnerabilities
+        :flow:
+        - whitelist file
+        - special file
+        - test file
+        - annotation
+        - rule
         :return:
         """
         self.method = 0
-        # 白名单
+        # Whitelist file
         if self.is_white_list():
-            logging.info("存在白名单列表中 {0}".format(self.file_path))
+            logging.info("Whitelist file {0}".format(self.file_path))
             return False, 4000
 
-        # 特殊文件判断
+        # Special file
         if self.is_special_file():
-            logging.info("特殊文件 {0}".format(self.file_path))
+            logging.info("Special file: {0}".format(self.file_path))
             return False, 4001
 
-        # 注释判断
+        # Test file
+        if self.is_test_file():
+            logging.info("Test file: {0}".format(self.file_path))
+            return False, 4007
+
+        # Annotation
         if self.is_annotation():
-            logging.info("注释 {0}".format(self.code_content))
+            logging.info("Annotation {0}".format(self.code_content))
             return False, 4002
 
-        # 仅匹配规则
+        # Only location rule
         if self.is_match_only_rule():
             logging.info("仅匹配规则 {0}".format(self.rule_location))
             found_vul = True
@@ -290,10 +276,7 @@ class Core:
                     parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                     if parse_instance.is_controllable_param():
                         if parse_instance.is_repair(self.rule_repair, self.block_repair):
-                            logging.info("Static: repaired")
-                            # 标记已修复
-                            self.status = 2
-                            self.process_vulnerabilities()
+                            # fixed
                             return True, 1003
                         else:
                             found_vul = True
@@ -307,23 +290,36 @@ class Core:
         if found_vul:
             self.code_content = self.code_content.encode('unicode_escape')
             if len(self.code_content) > 512:
-                self.code_content = self.code_content[:500] + '...'
+                self.code_content = self.code_content[:500]
+            self.status = self.status_init
+            self.repair_code = self.repair_code_init
             self.process_vulnerabilities()
             return True, 1002
         else:
-            logging.critical("Exception core")
+            logging.info("Not found vulnerabilities")
             return False, 4006
 
     def repair(self):
         """
-        验证扫描到的漏洞是否修复
+        Scan vulnerabilities is repair
+        :flow:
+        - exist file [add]
+        - test file
+        - whitelist file
+        - special file
+        - annotation
+        - rule
         :return: (Status, Result)
         """
         self.method = 1
-        # 拼接绝对路径
+
+        # Full path
         self.file_path = self.project_directory + self.file_path
 
-        # 定位规则为空时或者行号为0,表示此类型语言(该语言所有后缀)文件都算作漏洞
+        """
+        定位规则为空时或者行号为0,表示此类型语言(该语言所有后缀)文件都算作漏洞
+        他们的修复方法只有一个:删除文件
+        """
         if self.rule_location == '' or self.line_number == 0:
             logging.info("Find special files: RID{0}".format(self.rule_id))
             # 检查文件是否存在
@@ -331,71 +327,112 @@ class Core:
                 # 未找到该文件则更新漏洞状态为已修复
                 logging.info("已删除文件修复完成 {0}".format(self.file_path))
                 self.status = self.status_fixed
+                self.repair_code = self.repair_code_not_exist_file
                 self.process_vulnerabilities()
-                return True, 1001
-            # 文件存在,漏洞还在
-            return False, 4007
+                return
+            else:
+                return
+
+        # Not exist file
+        if os.path.isfile(self.file_path) is False:
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_not_exist_file
+            self.process_vulnerabilities()
+            return
+
+        # Test file
+        if self.is_test_file():
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_test_file
+            self.process_vulnerabilities()
+            return
+
+        """
+        Cobra Skip
+
+        @cobra const
+        `@[cC][oO][bB][rR][aA]\s*[cC][oO][nN][sS][tT]`
+        """
+        file_content = File(self.file_path).read_file()
+        ret_regex_const = re.findall(r'@[cC][oO][bB][rR][aA]\s*[cC][oO][nN][sS][tT]', file_content)
+        if len(ret_regex_const) > 0:
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_const_file
+            self.process_vulnerabilities()
+            return
+
+        """
+        @cobra third-party
+        `@[cC][oO][bB][rR][aA]\s*[tT][hH][iI][rR][dD]-[pP][aA][rR][tT][yY]`
+        """
+        ret_regex_third_party = re.findall(r'@[cC][oO][bB][rR][aA]\s*[tT][hH][iI][rR][dD]-[pP][aA][rR][tT][yY]', file_content)
+        if len(ret_regex_third_party) > 0:
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_third_party
+            self.process_vulnerabilities()
+            return
 
         # 取出触发代码(实际文件)
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
         if trigger_code is False:
             logging.critical("触发代码获取失败 {0}".format(self.code_content))
-            return False, 4009
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_empty_code
+            self.process_vulnerabilities()
+            return
+
         self.code_content = trigger_code
 
-        # 白名单
+        # Whitelist
         if self.is_white_list():
             self.status = self.status_fixed
+            self.repair_code = self.repair_code_whitelist
             self.process_vulnerabilities()
             logging.info("In white list {0}".format(self.file_path))
-            return False, 4000
+            return
 
-        # 特殊文件判断
+        # Special file
         if self.is_special_file():
             self.status = self.status_fixed
+            self.repair_code = self.repair_code_special_file
             self.process_vulnerabilities()
             logging.info("Special File: {0}".format(self.file_path))
-            return False, 4001
+            return
 
-        # 注释判断
+        # Annotation
         if self.is_annotation():
             self.status = self.status_fixed
+            self.repair_code = self.repair_code_annotation
             self.process_vulnerabilities()
             logging.info("In Annotation {0}".format(self.code_content))
-            return False, 4002
+            return
 
-        # 仅匹配规则
-        if self.is_match_only_rule():
-            logging.info("Only match {0}".format(self.rule_location))
-            found_vul = True
-        else:
-            found_vul = False
-            # 判断参数是否可控
-            if self.is_can_parse() and self.rule_repair.strip() != '':
-                try:
-                    parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
-                    if parse_instance.is_controllable_param():
-                        if parse_instance.is_repair(self.rule_repair, self.block_repair):
-                            logging.info("Static: repaired")
-                            # 标记已修复
-                            self.status = self.status_fixed
-                            self.process_vulnerabilities()
-                            return True, 1003
-                        else:
-                            found_vul = True
-                    else:
-                        logging.info("参数不可控")
-                        return False, 4004
-                except:
-                    print(traceback.print_exc())
-                    return False, 4005
-
-        if found_vul:
-            self.code_content = self.code_content.encode('unicode_escape')
-            if len(self.code_content) > 512:
-                self.code_content = self.code_content[:500] + '...'
+        # Modify
+        ret_regex = re.findall(self.rule_location, trigger_code.strip())
+        if len(ret_regex) == 0:
+            self.status = self.status_fixed
+            self.repair_code = self.repair_code_modify
             self.process_vulnerabilities()
-            return True, 1002
-        else:
-            logging.info("Not found")
-            return False, 4006
+            return
+
+        # Fixed
+        if self.is_can_parse() and self.rule_repair.strip() != '':
+            try:
+                parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
+                if parse_instance.is_controllable_param():
+                    if parse_instance.is_repair(self.rule_repair, self.block_repair):
+                        logging.info("Static: repaired")
+                        # Fixed
+                        self.status = self.status_fixed
+                        self.repair_code = self.repair_code_fixed
+                        self.process_vulnerabilities()
+                        return
+                    else:
+                        logging.critical("[repair] not fixed")
+                        return
+                else:
+                    logging.info("[repair] param uncontrollable")
+                    return
+            except:
+                logging.info(traceback.print_exc())
+                return

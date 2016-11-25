@@ -13,7 +13,8 @@
 """
 import time
 import os
-from utils import common, config
+from pickup.git import Git
+from utils import common, config, const
 from flask import jsonify, render_template, request, abort
 from sqlalchemy import and_, func
 from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
@@ -50,6 +51,7 @@ def report(project_id):
     if project_info is None:
         # 没有该project id
         abort(404)
+
     # 获取task信息
     if search_task_id is None:
         # 没有传入task id，获取该project的最新task，用于获取task的基础信息
@@ -100,7 +102,6 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
@@ -109,7 +110,6 @@ def report(project_id):
             and_(
                 CobraResults.project_id == project_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()
@@ -166,7 +166,6 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
@@ -175,7 +174,6 @@ def report(project_id):
             and_(
                 CobraResults.task_id == search_task_id,
                 CobraResults.rule_id == CobraRules.id,
-                CobraResults.status < 2,
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()
@@ -266,6 +264,16 @@ def report(project_id):
         {"status": "Other", "value": 3},
     ]
 
+    # detect project Cobra configuration file
+    if project_info.repository[0] == '/':
+        project_directory = project_info.repository
+    else:
+        project_directory = Git(project_info.repository).repo_directory
+    cobra_properties = config.properties(os.path.join(project_directory, 'cobra'))
+    need_scan = True
+    if 'scan' in cobra_properties:
+        need_scan = common.to_bool(cobra_properties['scan'])
+
     data = {
         "project_id": project_id,
         "task_id": search_task_id,
@@ -278,6 +286,7 @@ def report(project_id):
         "file_count": common.convert_number(task_info.file_count),
         "tasks": tasks,
         "vuls_status": vuls_status,
+        'need_scan': need_scan,
         "task_time": {
             "time_start": time_start,
             "time_end": time_end,
@@ -392,22 +401,24 @@ def vulnerabilities_list():
         data_dict = dict()
         data_dict['id'] = result[0]
         data_dict["file"] = result[1]
+        data_dict["file_short"] = common.path_to_file(result[1])
         data_dict["line"] = result[2]
         data_dict["code"] = result[3]
         data_dict["rule"] = result[4]
         data_dict["level"] = map_level[result[5]]
         data_dict["color"] = map_color[result[5]]
         data_dict["repair"] = result[8]
+        data_dict["v_name"] = result[9]
         data_dict['verify'] = ''
         data_dict['rule_id'] = result[10]
         if result[11] == 2:
-            status = u"Fixed"
+            status_class = u'fixed'
         elif result[11] == 1:
-            status = u"Push third-party platform"
+            status_class = u'not_fixed'
         else:
-            status = u"Not fixed"
+            status_class = u'not_fixed'
         data_dict["status"] = result[11]
-        data_dict["status_description"] = status
+        data_dict["status_class"] = status_class
         vulnerabilities.append(data_dict)
     current_url = request.url.replace("&page={}".format(page), "").replace("page={}".format(page), "")
     if "?" not in current_url:
@@ -451,30 +462,55 @@ def vulnerabilities_detail():
     file_path = os.path.join(project_code_path, v_detail.file)
 
     if os.path.isfile(file_path) is not True:
-        return jsonify(status_code=4004, message='Failed get code: {0}'.format(file_path))
-
-    code_content = ''
-    fp = open(file_path, 'r')
-    block_lines = 50
-    if v_detail.line < block_lines:
-        block_start = 0
-        block_end = v_detail.line + block_lines
+        code_content = '// There is no code snippet for this type of file'
+        line_trigger = 1
+        line_start = 1
+        c_author = 'Not support'
+        c_time = 'Not support'
+        c_ret = False
     else:
-        block_start = v_detail.line - block_lines
-        block_end = v_detail.line + block_lines
-    for i, line in enumerate(fp):
-        if block_start <= i <= block_end:
-            code_content = code_content + line
-    fp.close()
+        # get committer
+        c_ret, c_author, c_time = Git.committer(v_detail.file, project_code_path, v_detail.line)
+        if c_ret is not True:
+            c_author = 'Not support'
+            c_time = 'Not support'
+
+        code_content = ''
+        fp = open(file_path, 'r')
+        block_lines = 50
+        if v_detail.line < block_lines:
+            block_start = 0
+            block_end = v_detail.line + block_lines
+        else:
+            block_start = v_detail.line - block_lines
+            block_end = v_detail.line + block_lines
+        for i, line in enumerate(fp):
+            if block_start <= i <= block_end:
+                code_content = code_content + line
+        fp.close()
+
+        line_trigger = v_detail.line - block_start
+        line_start = block_start + 1
+
+        try:
+            jsonify(data=code_content)
+        except Exception as e:
+            code_content = '// The encoding type code is not supported'
+            line_trigger = 1
+            line_start = 1
 
     return_data = {
         'detail': {
             'id': v_detail.id,
             'file': v_detail.file,
-            'line_trigger': v_detail.line - block_start,
-            'line_start': block_start + 1,
+            'line_trigger': line_trigger,
+            'line_start': line_start,
             'code': code_content,
-            'status': v_detail.status,
+            'c_ret': c_ret,
+            'c_author': c_author,
+            'c_time': c_time,
+            'repair': const.Vulnerabilities(v_detail.repair).repair_description(),
+            'status': const.Vulnerabilities(v_detail.status).status_description(),
             'created': v_detail.created_at,
             'updated': v_detail.updated_at
         },
@@ -484,7 +520,7 @@ def vulnerabilities_detail():
             'description': rule_info.description,
             'repair': rule_info.repair,
             'author': rule_info.author,
-            'level': rule_info.level,
+            'level': const.Vulnerabilities(rule_info.level).level_description(),
             'status': rule_info.status,
             'created': rule_info.created_at,
             'updated': rule_info.updated_at

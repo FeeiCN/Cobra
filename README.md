@@ -44,6 +44,9 @@ White Hat can be customized private Cobra scanning rules, open source project co
 ##### Cobra Manage
 ![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
 
+## Beta version
+Cobra is currently a beta version, there are some imperfections and bugs, so we need your contribution, whether it is testing, development, vulnerability scanning rules or advice.
+
 ## References
 - Documents - [http://cobra-docs.readthedocs.io](http://cobra-docs.readthedocs.io)
 - Website - Coming soon!

@@ -3388,17 +3388,18 @@ blockquote.styled {
 }
 
 .tab-content {
-    padding: 30px;
+    padding: 30px 30px 0px 30px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-top: none;
-    margin-bottom: 25px;
+    margin-bottom: 5px;
     -webkit-border-bottom-right-radius: 3px;
     -webkit-border-bottom-left-radius: 3px;
     -moz-border-radius-bottomright: 3px;
     -moz-border-radius-bottomleft: 3px;
     border-bottom-right-radius: 3px;
-    border-bottom-left-radius: 3px
+    border-bottom-left-radius: 3px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
 }
 
 .img-responsive.styled {

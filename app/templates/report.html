@@ -62,22 +62,43 @@
         .vulnerabilities_list > li {
             border-top: 1px solid #efefef;
             padding: 5px;
+            height: 75px;
         }
 
         .vulnerabilities_list > li.high {
-            border-bottom: 3px solid #FF0000;
+            border-bottom: 8px solid #ee9336;
         }
 
         .vulnerabilities_list > li.medium {
-            border-bottom: 3px solid #c1ff69;
+            border-bottom: 8px solid #fdc431;
         }
 
         .vulnerabilities_list > li.low {
-            border-bottom: 3px solid forestgreen;
+            border-bottom: 8px solid #357abd;
         }
 
         .vulnerabilities_list > li.active {
-            background: #dedede;
+            border-right: 8px solid red;
+        }
+
+        .vulnerabilities_list > li.fixed {
+            background-image: url("/asset/img/fixed.png");
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-size: 50px 50px;
+        }
+
+        .vulnerabilities_list > li.not_fixed {
+            background-image: url("/asset/img/not_fixed.png");
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-size: 50px 50px;
+        }
+
+        .congratulations {
+            display: block;
+            max-width: 100%;
+            margin: 80px auto;
         }
 
         pre {
@@ -103,6 +124,7 @@
 
         .filter_setting {
             float: right;
+            padding: 3px;
         }
 
         .file_line {
@@ -111,7 +133,24 @@
             padding: 3px;
             background-color: #908787;
             color: #efefef;
-            border-radius: 8px;
+            border-radius: 6px;
+        }
+
+        .n-o-v tr td:nth-child(2) {
+            color: red;
+        }
+
+        .n-o-v tr td:nth-child(3) {
+            color: green;
+        }
+
+        .n-o-v tr td:nth-child(4) {
+            color: #357abd;
+        }
+
+        .n-o-v tr:nth-child(4) {
+            background: #efefef;
+            font-weight: bold;
         }
     </style>
 
@@ -126,7 +165,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="invoice-title">
-                <h2>Cobra - code security report</h2>
+                <h2>Cobra</h2>
                 <h3 class="pull-right">{{ data.project_info.name | upper }} # {{ data.project_id }}</h3>
             </div>
             <hr>
@@ -215,7 +254,7 @@
                                                 <th>Total</th>
                                             </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody class="n-o-v">
                                             <tr>
                                                 <td>High</td>
                                                 <td>{{ data.vuls_number.unrepair.high }}</td>
@@ -248,24 +287,26 @@
                         </div>
                         <div class="col-md-8 column">
                             <h4>Vulnerability distribution statistics</h4>
-                            <div id="vul_distributing" style="height:400px;">
-                                {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
-                                    <h3 style="text-align: center;line-height: 400px;font-weight: bold;color: red;">wow, didn't detect vulnerabilities :)</h3>
-                                {% endif %}
-                            </div>
+                            {% if data.need_scan == False %}
+                                <h3 style="margin: 200px;">The project is deprecated :(</h3>
+                            {% else %}
+                                <div id="vul_distributing" style="height:400px;">
+                                    {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
+                                        <img src="/asset/img/congratulations.jpg" class="congratulations" alt="">
+                                        <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no vulnerability was detected :)</h3>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div><!-- End row -->
                 </div><!-- End rab -->
 
                 <div class="tab-pane" id="vul_l">
-                    {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
-                        <h3>No vulnerabilities</h3>
-                    {% endif %}
                     <div class="row">
                         <div class="panel panel-default col-md-3">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Vulnerabilities
-                                    <span class="filter_setting">Filters</span>
+                            <div class="panel-heading" style="padding-bottom: 15px;">
+                                <h3 class="panel-title">Vulnerability list
+                                    <button class="filter_setting btn btn-danger">Filters</button>
                                 </h3>
                             </div>
                             <div class="panel-body" style="padding: 15px 0;">
@@ -317,30 +358,12 @@
                                             <option value="1">Low</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-12" style="padding-top: 30px;padding-left: 40px;">
+                                    <div class="col-md-12" style="padding:20px 30%">
                                         <button class="btn btn-success filter_btn" style="">Summit filter</button>
                                     </div>
                                 </div>
                                 <ul class="vulnerabilities_list scroll">
-                                    {% for vulnerability in data.vulnerabilities %}
-                                        {% for each_vul in vulnerability.data %}
-                                            <li data-id="{{ each_vul.id }}">
-                                                <strong>{{ each_vul.file }}:{{ each_vul.line }}</strong><br>
-                                                <span class="issue-information">
-                                                    <small>
-                                                        {{ each_vul.level }} {{ each_vul.rule }}
-                                                        {% if each_vul.status == 2 %}
-                                                            Fixed
-                                                        {% elif each_vul.status == 1 %}
-                                                            Pushed third-party platform（Not fixed）
-                                                        {% elif each_vul.status == 0 %}
-                                                            Not fixed
-                                                        {% endif %}
-                                                    </small>
-                                                </span>
-                                            </li>
-                                        {% endfor %}
-                                    {% endfor %}
+
                                 </ul>
                             </div> <!-- .panel-body -->
                         </div>
@@ -351,39 +374,51 @@
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-md-8">
-                                        <strong class="file_line"></strong>
-                                    <pre data-line="1" data-start="1" class="line-numbers">
-<code class="language-php code_content">function test(){
-    print('Hello, Cobra!');
+                                        <strong class="file_line">demo/case/code_execute.php:11</strong>
+                                        <pre data-line="12" data-start="1" class="line-numbers">
+<code class="language-php code_content">/**
+ * This is a demo code to help you understand Cobra
+ * The code here demonstrates the #Code Execute# vulnerability
+ * You can click on the list of vulnerabilities on the left
+ *
+ * @author Feei < wufeifei#wufeifei.com >
+ * @link   https://github.com/wufeifei/cobra
+ */
+function demo_vulnerabilities(){
+    $code = $_GET['code'];
+    // Red highlighted where the vulnerability triggered
+    return system($code);
 }</code>
                                     </pre>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" style="margin-top: 26px;">
                                         <div class="panel panel-default col-md-12">
                                             <div class="panel-heading">
                                                 <h3 class="panel-title">Vulnerabilities detail</h3>
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>Found time: <span class="found_time"></span></li>
-                                                    <li>Status: <span class="status_description"></span></li>
-                                                    <li>Processed time: <span class="updated_time"></span></li>
-                                                    <li>Push third-party status: <span class="third_v_status"></span></li>
+                                                    <li><strong>VID: </strong><span class="v_id">MVE-000001</span></li>
+                                                    <li><strong>Status: </strong><span class="status_description">Not fixed</span>(<span class="repair_description">Initialize</span>)</li>
+                                                    <li><strong>Committer:</strong><span class="c_author">@demo</span></li>
+                                                    <li><strong>Commit time: </strong><span class="c_time">demo case</span></li>
+                                                    <li><strong>Found time: </strong><span class="found_time">demo case</span></li>
+                                                    <li><strong>Processed time: </strong><span class="updated_time">demo case</span></li>
                                                 </ul>
                                             </div> <!-- .panel-body -->
                                         </div>
                                         <div class="panel panel-default col-md-12">
                                             <div class="panel-heading">
-                                                <h3 class="panel-title">Rule</h3>
+                                                <h3 class="panel-title">Scan rule</h3>
                                             </div>
                                             <div class="panel-body">
                                                 <ul class="v_detail">
-                                                    <li>Name: <span class="r_name"></span></li>
-                                                    <li>Author: <span class="r_author"></span></li>
-                                                    <li>Level: <span class="r_level"></span></li>
-                                                    <li>Repair:</li>
+                                                    <li><strong>Name: </strong><span class="r_name">Scan rule name</span></li>
+                                                    <li><strong>Author: </strong><span class="r_author">Scan rule author</span></li>
+                                                    <li><strong>Level: </strong><span class="r_level">Scan rule level</span></li>
+                                                    <li><strong>Repair:</strong></li>
                                                     <li>
-                                                        <p class="r_repair"></p>
+                                                        <p class="r_repair">Vulnerability fix method</p>
                                                     </li>
                                                 </ul>
                                             </div> <!-- .panel-body -->
@@ -447,6 +482,7 @@
     </div>
     <input type="hidden" name="project_id" value="{{ data.project_id }}">
     <input type="hidden" name="task_id" value="{{ data.task_id }}">
+    <input type="hidden" name="need_scan" value="{{ data.need_scan }}">
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>

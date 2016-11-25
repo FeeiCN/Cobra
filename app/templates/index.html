@@ -12,7 +12,7 @@
     <meta name="keywords" content="static code scan">
     <meta name="description" content="Cobra is a code static security scan system">
     <meta name="author" content="Feei <wufeifei@wufeifei.com>">
-    <title>Cobra - 自动化静态代码安全审计系统</title>
+    <title>Cobra</title>
 
     <!-- Favicon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
@@ -67,54 +67,54 @@
 <section id="search_container">
     <div id="search">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#config" data-toggle="tab">扫描Git/SVN项目或本地项目</a></li>
-            <li><a href="#log" data-toggle="tab">上传压缩包扫描</a></li>
+            <li class="active"><a href="#config" data-toggle="tab">VCS</a></li>
+            <li><a href="#log" data-toggle="tab">UPLOAD</a></li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane active" id="config">
-                <h3>Github/Gitlab/Subversion仓库地址</h3>
+                <h3>Github/Gitlab/Subversion</h3>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>GIT/SVN仓库地址(.git结尾)或者本地项目路径</label>
-                                <input type="text" class="form-control" name="repository" placeholder="例子:http://github.com/wufeifei/grw.git 或 /home/Feei/project_name">
+                                <label>GIT / SVN repository address (.git at the end) or local project path</label>
+                                <input type="text" class="form-control" name="repository" placeholder="Ex:http://github.com/wufeifei/grw.git or /home/Feei/project_name">
                             </div>
                         </div>
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>Gitlab分支</label>
-                                <input type="text" class="form-control" name="branch" placeholder="默认为master,可不填写" value="master">
+                                <label>Gitlab branch(Not support)</label>
+                                <input type="text" class="form-control" name="branch" placeholder="Default: master, optional" disabled="disabled" value="master">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label><i class="icon-backward"></i> 老版本号</label>
-                                <input name="old_version" class="form-control" type="text" placeholder="可选">
+                                <label><i class="icon-backward"></i> Old commit version</label>
+                                <input name="old_version" class="form-control" type="text" placeholder="Optional">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label><i class="icon-forward-3"></i> 新版本号</label>
-                                <input name="new_version" class="form-control" type="text" placeholder="可选">
+                                <label><i class="icon-forward-3"></i> New commit version</label>
+                                <input name="new_version" class="form-control" type="text" placeholder="Optional">
                             </div>
                         </div>
                     </div>
                 </div><!-- End row -->
                 <hr>
-                <button class="btn_1 green" id="scan"><i class="icon-search"></i>扫描</button>
+                <button class="btn_1 green" id="scan"><i class="icon-search"></i>Scan</button>
             </div><!-- End rab -->
             <div class="tab-pane" id="log">
-                <h3>选择一个压缩包扫描</h3>
+                <h3>Select a compressed file scan</h3>
                 <div class="col-md-12">
                     <div class="box_style_2" id="dropbox">
                         <i class="icon-upload-cloud"></i>
-                        <h4><span>拖拽</span>文件上传</h4>
+                        <h4><span>Drag and drop</span>upload</h4>
                         <div align="center" id="selectFile"></div>
                         <hr>
                         <input type="file" class="btn_1" id="uploadFile" name="file" style="width: 100%;">
-                        <small>支持上传的后缀: {{ data.extensions }}</small>
+                        <small>Support for upload extensions: {{ data.extensions }}</small>
                         <div id="progress">
                             <div class="bar"></div>
                         </div>
