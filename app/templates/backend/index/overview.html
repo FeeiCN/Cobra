@@ -4,45 +4,50 @@
 {% block nav_second %}Overview{% endblock %}
 {% block body %}
     <hr class="aky">
-
-    <div class="fu db aln">
-        <div class="gi ali">
-            <div class="ako ale">
-                <canvas
-                        class="ant"
-                        width="200" height="200"
-                        data-chart="doughnut"
-                        data-value="[{ value: {{ data.amount.vulnerabilities_fixed }}, color: '#1bc98e', label: 'Fixed' }, { value: {{ data.amount.vulnerabilities_not_fixed }}, color: '#e64759', label: 'Not fixed' }]"
-                        data-segment-stroke-color="#252830">
-                </canvas>
-            </div>
-            <strong class="dh"><b style="color:#e64759;">{{ data.amount.vulnerabilities_not_fixed }}</b>/{{ data.amount.vulnerabilities_fixed }}/{{ data.amount.vulnerabilities_total }}</strong>
-            <h3>Vulnerabilities</h3>
+    <div class="fu apt alg ala ta te">
+        <div class="gh gi apu ala">
+            <h3 class="ani dm">
+                {{ data.amount.vulnerabilities_not_fixed }}
+                <small class="ank anm">0.0%</small>
+            </h3>
+            <span class="anj">Not fixed</span>
         </div>
-        <div class="gi ali">
-            <div class="ako ale">
-                <canvas
-                        class="ant"
-                        width="200" height="200"
-                        data-chart="doughnut"
-                        data-value="[{ value: {{ data.amount.rules_on }}, color: '#1bc98e', label: 'ON' }, { value: {{ data.amount.rules_off }}, color: '#e64759', label: 'OFF' }]"
-                        data-segment-stroke-color="#252830">
-                </canvas>
-            </div>
-            <strong class="dh"><b style="color:#e64759;">{{ data.amount.rules_off }}</b>/{{ data.amount.rules_on }}/{{ data.amount.rules_total }}</strong>
-            <h3>Rules</h3>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.amount.vulnerabilities_fixed }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Fixed</span>
         </div>
-        <div class="gi ali">
-            <div class="ako ale">
-                <canvas
-                        class="ant"
-                        width="200" height="200"
-                        data-chart="doughnut"
-                        data-value="[{ value: 100, color: '#1bc98e', label: 'Fixed' }, { value: 260, color: '#e64759', label: 'Not fixed' }]"
-                        data-segment-stroke-color="#252830">
-                </canvas>
-            </div>
-            <strong class="dh">Vulnerabilities(Low-risk)</strong>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.amount.vulnerabilities_total }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Total</span>
+        </div>
+    </div>
+    <div class="fu apt alg ala ta te">
+        <div class="gh gi apu ala">
+            <h3 class="ani dm">
+                {{ data.amount.rules_on }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Active rule</span>
+        </div>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.amount.rules_off }}
+                <small class="ank anm">0.0%</small>
+            </h3>
+            <span class="anj">Off rule</span>
+        </div>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.amount.rules_total }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Total</span>
         </div>
     </div>
 
@@ -51,7 +56,7 @@
     </div>
 
     <div class="fu apt">
-        <div class="gq gg ala">
+        <div class="gq gs ala">
             <div class="apu ano">
                 <div class="alz">
                     <span class="anj">Projects</span>
@@ -64,7 +69,7 @@
                 <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[28,68,41,43,96,45,100]}]" data-labels="['a','b','c','d','e','f','g']" style="width: 189px; height: 47px;"></canvas>
             </div>
         </div>
-        <div class="gq gg ala">
+        <div class="gq gs ala">
             <div class="apu anr">
                 <div class="alz">
                     <span class="anj">Tasks</span>
@@ -77,7 +82,7 @@
                 <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[4,34,64,27,96,50,80]}]" data-labels="['a', 'b','c','d','e','f','g']" style="width: 189px; height: 47px;"></canvas>
             </div>
         </div>
-        <div class="gq gg ala">
+        <div class="gq gs ala">
             <div class="apu anp">
                 <div class="alz">
                     <span class="anj">Files</span>
@@ -90,7 +95,7 @@
                 <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[12,38,32,60,36,54,68]}]" data-labels="['a', 'b','c','d','e','f','g']" style="width: 189px; height: 47px;"></canvas>
             </div>
         </div>
-        <div class="gq gg ala">
+        <div class="gq gs ala">
             <div class="apu anq">
                 <div class="alz">
                     <span class="anj">Lines</span>
@@ -121,7 +126,6 @@
                     </a>
                 {% endfor %}
             </div>
-            <a href="#" class="ce apn ame">View all ranks</a>
         </div>
         <div class="gr ali">
             <div class="by">
@@ -135,7 +139,6 @@
                     </a>
                 {% endfor %}
             </div>
-            <a href="#" class="ce apn ame">View all rules</a>
         </div>
     </div>
 
@@ -150,6 +153,5 @@
             </a>
         {% endfor %}
     </div>
-    <a href="#" class="ce apn ame">View all types</a>
 
 {% endblock %}
