@@ -103,10 +103,6 @@ class Git:
         repo_name = self.repo_address.split('/')[-1].replace('.git', '')
         self.repo_author = repo_user
         self.repo_name = repo_name
-        if '.git' not in self.repo_address:
-            self.repo_address += '.git'
-        else:
-            repo_name = repo_name.split('.')[0]
 
         self.repo_directory = os.path.join(os.path.join(self.upload_directory, repo_user), repo_name)
 
