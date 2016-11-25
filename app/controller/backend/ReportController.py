@@ -28,13 +28,12 @@ from utils import config, common
 def reports(vid):
     projects = CobraProjects.query.order_by(CobraProjects.id.asc()).all()
     rank = []
-    offline = []
     for project in projects:
         special_rules_ids = []
         if vid is 0:
             count_total = CobraResults.query.filter(CobraResults.project_id == project.id).count()
         else:
-            rules = CobraRules.query.with_entities(CobraResults.id).filter(CobraRules.vul_id == vid).all()
+            rules = CobraRules.query.with_entities(CobraRules.id).filter(CobraRules.vul_id == vid).all()
             for rule in rules:
                 special_rules_ids.append(rule.id)
             count_total = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.rule_id.in_(special_rules_ids)).count()
