@@ -542,9 +542,13 @@ def ext_statistic(task_id):
     exts = CobraExt.query.filter_by(task_id=task_id).all()
     exts_result = []
     for ext in exts:
+        if ext.ext == '':
+            name = '[No extension]'
+        else:
+            name = ext.ext
         exts_result.append({
             'value': ext.amount,
-            'name': ext.ext,
+            'name': name,
             'path': ext.ext
         })
     return jsonify(code=1001, result=exts_result)
