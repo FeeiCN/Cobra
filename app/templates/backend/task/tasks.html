@@ -28,7 +28,7 @@
 
                 {% for task in data.tasks %}
                     <tr>
-                        <td>#{{ task.id }}</td>
+                        <td>{{ task.id }}</td>
                         <td id="task-target-{{ task.id }}">{{ task.target }}</td>
                         <td align="center" id="task-time-consume-{{ task.time_consume }}">{{ task.time_consume }}</td>
                         <td align="center">
