@@ -59,6 +59,7 @@ def reports(vid):
             count_not_fixed = 0
             remark = 'offline'
         if count_total != 0:
+            report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
             s = {
                 'name': project.name,
                 'id': project.id,
@@ -66,7 +67,8 @@ def reports(vid):
                 'fixed': count_fixed,
                 'total': count_total,
                 'remark': remark,
-                'author': project.author
+                'author': project.author,
+                'report': report
             }
             rank.append(s)
     rank = sorted(rank, key=lambda x: x['not_fixed'], reverse=True)
