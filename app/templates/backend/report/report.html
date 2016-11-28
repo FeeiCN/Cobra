@@ -39,7 +39,7 @@
                 <tbody>
                 {% for item in data.rank %}
                     <tr>
-                        <td>{{ item.id }}</td>
+                        <td><a href="{{ item.report }}" target="_blank">{{ item.id }}</a></td>
                         <td>{{ item.name }}</td>
                         <td>{{ item.author }}</td>
                         <td>{{ item.not_fixed }}</td>
