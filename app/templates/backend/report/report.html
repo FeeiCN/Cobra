@@ -15,11 +15,63 @@
             </div>
         </div>
         <div class="akh">
-            <div class="nz">
-                <button type="button" class="ce apn add-project">
-                    <span class="bv afg"></span>
-                </button>
+            <div class="nz apg api">
+                <button type="button" class="ce apn">Day</button>
+                <button type="button" class="ce apn active">Week</button>
+                <button type="button" class="ce apn">Month</button>
             </div>
+        </div>
+    </div>
+    <div class="anv alg ala">
+        <h3 class="anw anx">Vulnerability statistics</h3>
+    </div>
+    <div class="fu apt alg ala ta te">
+        <div class="gh gi apu ala">
+            <h3 class="ani dm">
+                {{ data.count.vulnerability.not_fixed }}
+                <small class="ank anm">0.0%</small>
+            </h3>
+            <span class="anj">Not fixed</span>
+        </div>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.count.vulnerability.fixed }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Fixed</span>
+        </div>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.count.vulnerability.total }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Total</span>
+        </div>
+    </div>
+    <div class="anv alg ala">
+        <h3 class="anw anx">Project statistics</h3>
+    </div>
+    <div class="fu apt alg ala ta te">
+        <div class="gh gi apu ala">
+            <h3 class="ani dm">
+                {{ data.count.project.not_fixed }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Not fixed project</span>
+        </div>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.count.project.fixed }}
+                <small class="ank anm">0.0%</small>
+            </h3>
+            <span class="anj">Fixed project</span>
+        </div>
+        <div class="gh gi apu ala">
+            <h3 class="ani dj">
+                {{ data.count.project.total }}
+                <small class="ank anl">0.0%</small>
+            </h3>
+            <span class="anj">Total project</span>
         </div>
     </div>
     <div class="ud">
@@ -27,18 +79,18 @@
             <table class="cl" data-sort="table">
                 <thead>
                 <tr>
-                    <th class="header headerSortUp">ID</th>
-                    <th class="header">Project</th>
-                    <th class="header">Author</th>
-                    <th class="header">Not fixed</th>
-                    <th class="header">Fixed</th>
-                    <th class="header">Total</th>
-                    <th class="header">Remark</th>
+                    <th>PID</th>
+                    <th>Project</th>
+                    <th>Author</th>
+                    <th>Not fixed</th>
+                    <th>Fixed</th>
+                    <th>Total</th>
+                    <th>Remark</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="vulnerability_projects">
                 {% for item in data.rank %}
-                    <tr>
+                    <tr class="{{ item.class }}">
                         <td><a href="{{ item.report }}" target="_blank">{{ item.id }}</a></td>
                         <td>{{ item.name }}</td>
                         <td>{{ item.author }}</td>
@@ -52,6 +104,17 @@
             </table>
         </div>
     </div>
+{% endblock %}
+{% block style %}
+    <style>
+        .vulnerability_projects tr.fixed {
+            border-left: 2px solid forestgreen;
+        }
+
+        .vulnerability_projects tr.not_fixed {
+            border-left: 2px solid darkred;
+        }
+    </style>
 {% endblock %}
 {% block scripts %}
     <script>

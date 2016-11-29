@@ -28,6 +28,10 @@ from utils import config, common
 def reports(vid):
     projects = CobraProjects.query.order_by(CobraProjects.id.asc()).all()
     rank = []
+    count_project_not_fixed = 0
+    count_project_fixed = 0
+    count_vulnerability_not_fixed = 0
+    count_vulnerability_fixed = 0
     for project in projects:
         special_rules_ids = []
         if vid is 0:
@@ -55,10 +59,24 @@ def reports(vid):
             count_not_fixed = count_total - count_fixed
             remark = ''
         else:
-            count_fixed = 0
+            count_fixed = count_total
             count_not_fixed = 0
             remark = 'offline'
         if count_total != 0:
+            if need_scan:
+                if count_not_fixed == 0:
+                    count_project_fixed += 1
+                    count_vulnerability_fixed += count_fixed
+                    ret_whole = 'fixed'
+                else:
+                    count_project_not_fixed += 1
+                    count_vulnerability_fixed += count_fixed
+                    count_vulnerability_not_fixed += count_not_fixed
+                    ret_whole = 'not_fixed'
+            else:
+                count_project_fixed += 1
+                count_vulnerability_fixed += count_fixed
+                ret_whole = 'fixed'
             report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
             s = {
                 'name': project.name,
@@ -68,7 +86,8 @@ def reports(vid):
                 'total': count_total,
                 'remark': remark,
                 'author': project.author,
-                'report': report
+                'report': report,
+                'class': ret_whole
             }
             rank.append(s)
     rank = sorted(rank, key=lambda x: x['not_fixed'], reverse=True)
@@ -76,6 +95,18 @@ def reports(vid):
     data = {
         'rank': rank,
         'vulnerabilities_types': vulnerabilities_types,
-        'vid': vid
+        'vid': vid,
+        'count': {
+            'vulnerability': {
+                'not_fixed': count_vulnerability_not_fixed,
+                'fixed': count_vulnerability_fixed,
+                'total': count_vulnerability_not_fixed + count_vulnerability_fixed
+            },
+            'project': {
+                'not_fixed': count_project_not_fixed,
+                'fixed': count_project_fixed,
+                'total': count_project_not_fixed + count_project_fixed
+            }
+        }
     }
     return render_template("backend/report/report.html", data=data)
