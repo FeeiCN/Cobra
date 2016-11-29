@@ -106,8 +106,17 @@ def main():
     ranks = sorted(ranks.items(), key=operator.itemgetter(1), reverse=True)
     hits = sorted(hits_tmp, key=lambda x: x['rank'], reverse=True)
 
-    rule_amount = db.session.query(CobraRules.author, func.count("*").label('counts')).group_by(CobraRules.author).all()
+    rule_amount = db.session.query(CobraRules.author, func.count("*").label('counts')).filter(CobraRules.status == 1).group_by(CobraRules.author).all()
     rule_amount = sorted(rule_amount, key=operator.itemgetter(1), reverse=True)
+    rule_amount_rank = []
+    for ra in rule_amount:
+        count = CobraRules.query.with_entities(CobraRules.id).filter(CobraRules.author == ra[0]).count()
+        rule_amount_rank.append({
+            'author': ra[0],
+            'active': ra[1],
+            'not_active': count - ra[1],
+            'total': count
+        })
 
     # vulnerabilities types
     cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id).all()
@@ -157,7 +166,7 @@ def main():
             'rules_on': convert_number(rules_on),
             'rules_off': convert_number(rules_off),
             'rules_total': convert_number(rules_on + rules_off),
-            'rule': rule_amount
+            'rule': rule_amount_rank
         },
         'ranks': ranks,
         'hits': hits,

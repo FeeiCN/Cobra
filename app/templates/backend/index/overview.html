@@ -138,10 +138,10 @@
                     Amount rank
                 </h4>
                 {% for rank in data.amount.rule %}
-                    <a class="ph" href="#">
+                    <a class="ph" href="#" data-toggle="tooltip" data-placement="right" data-container="body" data-original-title="Active - Not active - Total">
                         <span class="tz"></span>
-                        <span class="dy dh">{{ rank[1] }}</span>
-                        {{ rank[0] }}
+                        <span class="dy dh">{{ rank['active'] }} - {{ rank['not_active'] }} - {{ rank['total'] }}</span>
+                        {{ rank['author'] }}
                     </a>
                 {% endfor %}
             </div>
