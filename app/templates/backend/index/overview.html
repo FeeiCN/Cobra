@@ -121,7 +121,7 @@
         <div class="gr ali">
             <div class="by">
                 <h4 class="ty">
-                    Ranks
+                    Hits rank
                 </h4>
                 {% for rank in data.ranks %}
                     <a class="ph" href="#">
@@ -135,7 +135,21 @@
         <div class="gr ali">
             <div class="by">
                 <h4 class="ty">
-                    Hits
+                    Amount rank
+                </h4>
+                {% for rank in data.amount.rule %}
+                    <a class="ph" href="#">
+                        <span class="tz"></span>
+                        <span class="dy dh">{{ rank[1] }}</span>
+                        {{ rank[0] }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="gr ali">
+            <div class="by">
+                <h4 class="ty">
+                    Rule hits
                 </h4>
                 {% for hit in data.hits %}
                     <a class="ph" href="#">
