@@ -115,7 +115,7 @@ def main():
             'author': ra[0],
             'active': ra[1] - count,
             'not_active': count,
-            'total': count
+            'total': ra[1]
         })
 
     # vulnerabilities types
