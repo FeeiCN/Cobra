@@ -41,38 +41,38 @@
                 <label>
                     <input type="radio" name="status" value="1" {% if data.rule.status == 1 %}checked{% endif %}>
                     <span class="aoc"></span>
-                    ON
+                    On
                 </label>
             </div>
             <div class="em aob aog">
                 <label>
                     <input type="radio" name="status" value="0" {% if data.rule.status == 0 %}checked{% endif %}>
                     <span class="aoc"></span>
-                    OFF
+                    Off
                 </label>
             </div>
         </div>
         <div class="aon gh">
-            <label>Repair Block</label>
+            <label>Repair block</label>
             <div class="em aob aog">
                 <label>
                     <input type="radio" name="repair-block" value="0" {% if data.rule.block_repair == 0 %}checked{% endif %}>
                     <span class="aoc"></span>
-                    Function Up
+                    Function up
                 </label>
             </div>
             <div class="em aob aog">
                 <label>
                     <input type="radio" name="repair-block" value="2" {% if data.rule.block_repair == 2 %}checked{% endif %}>
                     <span class="aoc"></span>
-                    Location Rule Line
+                    Current line
                 </label>
             </div>
             <div class="em aob aog">
                 <label>
                     <input type="radio" name="repair-block" value="1" {% if data.rule.block_repair == 1 %}checked{% endif %}>
                     <span class="aoc"></span>
-                    Function Down
+                    Function down
                 </label>
             </div>
         </div>
@@ -82,7 +82,7 @@
                 <label>
                     <input type="radio" name="level" value="1" {% if data.rule.level == 1 %}checked{% endif %}>
                     <span class="aoc"></span>
-                    LOW
+                    Low
                 </label>
             </div>
             <div class="em aob aog">
@@ -101,16 +101,16 @@
             </div>
         </div>
         <div class="aon gp">
-            <label for="regex-location">Regex Location</label>
+            <label for="regex-location">Regex location</label>
             <textarea class="form-control" id="regex-location">{{ data.rule.regex_location }}</textarea>
         </div>
         <div class="aon gp">
-            <label for="regex-repair">Regex Repair</label>
+            <label for="regex-repair">Regex repair</label>
             <textarea class="form-control" id="regex-repair">{{ data.rule.regex_repair }}</textarea>
         </div>
         <div class="aon hn">
             <label for="repair">Repair</label>
-            <textarea class="form-control" id="repair">{{ data.rule.repair }}</textarea>
+            <textarea class="form-control" rows="4" id="repair">{{ data.rule.repair }}</textarea>
         </div>
         <hr class="aky">
         <div class="aon hj">
