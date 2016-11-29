@@ -10,6 +10,7 @@
     <title>Cobra</title>
     <link href="{{ url_for('static', filename='css/toolkit-inverse.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/application.css') }}" rel="stylesheet">
+    {% block style %}{% endblock %}
 </head>
 <body>
 <div class="bw">

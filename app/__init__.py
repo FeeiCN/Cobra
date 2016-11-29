@@ -36,6 +36,7 @@ asset = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates/asse
 web = Flask(__name__, template_folder=template, static_folder=asset)
 web.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 web.config['SQLALCHEMY_DATABASE_URI'] = config.Config('database', 'mysql').value
+# web.config['SQLALCHEMY_ECHO'] = True
 web.secret_key = config.Config('cobra', 'secret_key').value
 
 bootstrap = Bootstrap(web)

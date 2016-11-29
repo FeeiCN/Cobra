@@ -8815,7 +8815,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.fd {
   vertical-align: middle;
 }
 .anl {
-  color: #1bc98e;
+  color: #e64759;
 }
 .anl:after {
   display: inline-block;
@@ -8832,7 +8832,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.fd {
   border-bottom: 4px solid;
 }
 .anm {
-  color: #e64759;
+  color: #1bc98e;
 }
 .anm:after {
   display: inline-block;

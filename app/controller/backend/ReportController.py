@@ -28,14 +28,26 @@ from utils import config, common
 def reports(vid):
     projects = CobraProjects.query.order_by(CobraProjects.id.asc()).all()
     rank = []
+    count_project_not_fixed = 0
+    count_project_fixed = 0
+    count_vulnerability_not_fixed = 0
+    count_vulnerability_fixed = 0
+
+    special_rules_ids = []
+    if vid is 0:
+        vulnerability_fixed_week = CobraResults.query.with_entities(CobraResults.id).filter(CobraResults.updated_at > '2016-11-28 00:00:00', CobraResults.updated_at < '2016-11-04 23:59:59', CobraResults.status == 2).count()
+        vulnerability_not_fixed_week = CobraResults.query.with_entities(CobraResults.id).filter(CobraResults.updated_at > '2016-11-28 00:00:00', CobraResults.updated_at < '2016-11-04 23:59:59', CobraResults.status < 2).count()
+    else:
+        rules = CobraRules.query.with_entities(CobraRules.id).filter(CobraRules.vul_id == vid).all()
+        for rule in rules:
+            special_rules_ids.append(rule.id)
+        vulnerability_fixed_week = CobraResults.query.filter(CobraResults.rule_id.in_(special_rules_ids), CobraResults.created_at > '2016-11-28 00:00:00', CobraResults.created_at < '2016-11-04 23:59:59', CobraResults.status == 2).count()
+        vulnerability_not_fixed_week = CobraResults.query.with_entities(CobraResults.id).filter(CobraResults.updated_at > '2016-11-28 00:00:00', CobraResults.updated_at < '2016-11-04 23:59:59', CobraResults.status < 2).count()
+
     for project in projects:
-        special_rules_ids = []
         if vid is 0:
             count_total = CobraResults.query.filter(CobraResults.project_id == project.id).count()
         else:
-            rules = CobraRules.query.with_entities(CobraRules.id).filter(CobraRules.vul_id == vid).all()
-            for rule in rules:
-                special_rules_ids.append(rule.id)
             count_total = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.rule_id.in_(special_rules_ids)).count()
 
         # detect project Cobra configuration file
@@ -51,14 +63,28 @@ def reports(vid):
             if vid is 0:
                 count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.status == 2).count()
             else:
-                count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.rule_id.in_(special_rules_ids), CobraResults.status == 2).count()
+                count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.status == 2, CobraResults.rule_id.in_(special_rules_ids)).count()
             count_not_fixed = count_total - count_fixed
             remark = ''
         else:
-            count_fixed = 0
+            count_fixed = count_total
             count_not_fixed = 0
             remark = 'offline'
         if count_total != 0:
+            if need_scan:
+                if count_not_fixed == 0:
+                    count_project_fixed += 1
+                    count_vulnerability_fixed += count_fixed
+                    ret_whole = 'fixed'
+                else:
+                    count_project_not_fixed += 1
+                    count_vulnerability_fixed += count_fixed
+                    count_vulnerability_not_fixed += count_not_fixed
+                    ret_whole = 'not_fixed'
+            else:
+                count_project_fixed += 1
+                count_vulnerability_fixed += count_fixed
+                ret_whole = 'fixed'
             report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
             s = {
                 'name': project.name,
@@ -68,7 +94,8 @@ def reports(vid):
                 'total': count_total,
                 'remark': remark,
                 'author': project.author,
-                'report': report
+                'report': report,
+                'class': ret_whole
             }
             rank.append(s)
     rank = sorted(rank, key=lambda x: x['not_fixed'], reverse=True)
@@ -76,6 +103,22 @@ def reports(vid):
     data = {
         'rank': rank,
         'vulnerabilities_types': vulnerabilities_types,
-        'vid': vid
+        'vid': vid,
+        'count': {
+            'vulnerability': {
+                'not_fixed': count_vulnerability_not_fixed,
+                'fixed': count_vulnerability_fixed,
+                'total': count_vulnerability_not_fixed + count_vulnerability_fixed
+            },
+            'project': {
+                'not_fixed': count_project_not_fixed,
+                'fixed': count_project_fixed,
+                'total': count_project_not_fixed + count_project_fixed
+            },
+            'week': {
+                'fixed': "{0}({1})".format(vulnerability_fixed_week, common.percent(vulnerability_fixed_week, count_vulnerability_fixed)),
+                'not_fixed': "{0}({1})".format(vulnerability_not_fixed_week, common.percent(vulnerability_not_fixed_week, count_vulnerability_not_fixed))
+            }
+        }
     }
     return render_template("backend/report/report.html", data=data)

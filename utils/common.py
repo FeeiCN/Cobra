@@ -136,3 +136,18 @@ def path_to_file(path):
     paths = path.split('/')
     paths = filter(None, paths)
     return '.../{0}'.format(paths[len(paths) - 1])
+
+
+def percent(part, whole, need_per=True):
+    """
+    Percent
+    :param part:
+    :param whole:
+    :param need_per:
+    :return:
+    """
+    if need_per:
+        per = '%'
+    else:
+        per = ''
+    return '{0}{1}'.format(100 * float(part) / float(whole), per)
