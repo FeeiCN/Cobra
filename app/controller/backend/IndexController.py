@@ -99,6 +99,7 @@ def main():
                 rank = res[0]
             hits[res[3]] = {
                 'name': res[2],
+                'author': res[1],
                 'rank': rank
             }
     for h in hits.values():
