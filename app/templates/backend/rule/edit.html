@@ -16,7 +16,7 @@
             <input type="text" class="form-control" name="author" value="{{ data.rule.author }}" placeholder="Rule author"/>
         </div>
         <div class="aon gp">
-            <label for="vul_type">Vul type</label>
+            <label for="vul_type">Vulnerability type</label>
             <select id="vul_type" class="form-control">
                 {% for vul in data.all_vuls %}
                     <option value="{{ vul.id }}" {% if vul.id == data.rule.vul_id %}selected{% endif %}>
