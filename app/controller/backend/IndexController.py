@@ -30,7 +30,7 @@ __email__ = "root@lightless.me"
 @web.route(ADMIN_URL + '/index', methods=['GET', 'POST'])
 def index():
     if ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/main')
+        return redirect(ADMIN_URL + '/overview')
 
     if request.method == "POST":
 
@@ -56,7 +56,7 @@ def index():
             db.session.add(au)
             db.session.commit()
 
-            return "Login success, jumping...<br /><script>window.setTimeout(\"location='main'\", 1000);</script>"
+            return "Login success, jumping...<br /><script>window.setTimeout(\"location='overview'\", 1000);</script>"
     else:
         return render_template("backend/index/index.html")
 
