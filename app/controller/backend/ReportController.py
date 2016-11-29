@@ -32,14 +32,22 @@ def reports(vid):
     count_project_fixed = 0
     count_vulnerability_not_fixed = 0
     count_vulnerability_fixed = 0
+
+    special_rules_ids = []
+    if vid is 0:
+        vulnerability_fixed_week = CobraResults.query.with_entities(CobraResults.id).filter(CobraResults.updated_at > '2016-11-28 00:00:00', CobraResults.updated_at < '2016-11-04 23:59:59', CobraResults.status == 2).count()
+        vulnerability_not_fixed_week = CobraResults.query.with_entities(CobraResults.id).filter(CobraResults.updated_at > '2016-11-28 00:00:00', CobraResults.updated_at < '2016-11-04 23:59:59', CobraResults.status < 2).count()
+    else:
+        rules = CobraRules.query.with_entities(CobraRules.id).filter(CobraRules.vul_id == vid).all()
+        for rule in rules:
+            special_rules_ids.append(rule.id)
+        vulnerability_fixed_week = CobraResults.query.filter(CobraResults.rule_id.in_(special_rules_ids), CobraResults.created_at > '2016-11-28 00:00:00', CobraResults.created_at < '2016-11-04 23:59:59', CobraResults.status == 2).count()
+        vulnerability_not_fixed_week = CobraResults.query.with_entities(CobraResults.id).filter(CobraResults.updated_at > '2016-11-28 00:00:00', CobraResults.updated_at < '2016-11-04 23:59:59', CobraResults.status < 2).count()
+
     for project in projects:
-        special_rules_ids = []
         if vid is 0:
             count_total = CobraResults.query.filter(CobraResults.project_id == project.id).count()
         else:
-            rules = CobraRules.query.with_entities(CobraRules.id).filter(CobraRules.vul_id == vid).all()
-            for rule in rules:
-                special_rules_ids.append(rule.id)
             count_total = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.rule_id.in_(special_rules_ids)).count()
 
         # detect project Cobra configuration file
@@ -55,7 +63,7 @@ def reports(vid):
             if vid is 0:
                 count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.status == 2).count()
             else:
-                count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.rule_id.in_(special_rules_ids), CobraResults.status == 2).count()
+                count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.status == 2, CobraResults.rule_id.in_(special_rules_ids)).count()
             count_not_fixed = count_total - count_fixed
             remark = ''
         else:
@@ -106,6 +114,10 @@ def reports(vid):
                 'not_fixed': count_project_not_fixed,
                 'fixed': count_project_fixed,
                 'total': count_project_not_fixed + count_project_fixed
+            },
+            'week': {
+                'fixed': "{0}({1})".format(vulnerability_fixed_week, common.percent(vulnerability_fixed_week, count_vulnerability_fixed)),
+                'not_fixed': "{0}({1})".format(vulnerability_not_fixed_week, common.percent(vulnerability_not_fixed_week, count_vulnerability_not_fixed))
             }
         }
     }
