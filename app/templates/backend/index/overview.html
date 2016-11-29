@@ -152,7 +152,7 @@
                     Rule hits
                 </h4>
                 {% for hit in data.hits %}
-                    <a class="ph" href="#">
+                    <a class="ph" href="#" data-toggle="tooltip" data-placement="right" data-container="body" data-original-title="Author: {{ hit['author'] }}">
                         <span class="dy dh">{{ hit['rank'] }}</span>
                         {{ hit['name'] }}
                     </a>
