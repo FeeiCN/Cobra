@@ -166,7 +166,7 @@ def del_rule():
 def edit_rule(rule_id):
     if request.method == 'POST':
 
-        vc = ValidateClass(request, "vul_type", "language", "regex_location", "block_repair", "description",
+        vc = ValidateClass(request, "vul_type", "language", "regex_location", "repair_block", "description",
                            "rule_id", "repair", "author", "status", "level")
         ret, msg = vc.check_args()
 
@@ -178,7 +178,7 @@ def edit_rule(rule_id):
         r = CobraRules.query.filter_by(id=rule_id).first()
         r.vul_id = vc.vars.vul_type
         r.language = vc.vars.language
-        r.block_repair = vc.vars.block_repair
+        r.block_repair = vc.vars.repair_block
         r.regex_location = vc.vars.regex_location
         r.regex_repair = regex_repair
         r.description = vc.vars.description

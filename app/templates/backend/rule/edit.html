@@ -178,7 +178,7 @@
                 'language': lang,
                 'regex_location': regex_location,
                 'regex_repair': regex_repair,
-                'block_repair': block_repair,
+                'repair_block': block_repair,
                 'description': description,
                 'rule_id': id,
                 'repair': repair,
@@ -187,7 +187,11 @@
                 'level': level
             };
             $.post('/admin/rules/' + type + '/' + id, data, function (res) {
-                notification(res.tag, res.msg, "#edit-rule-result");
+                if (res.code == 1001) {
+                    window.history.go(-1);
+                } else {
+                    notification(res.message);
+                }
             });
         });
     </script>
