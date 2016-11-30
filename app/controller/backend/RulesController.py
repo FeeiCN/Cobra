@@ -33,6 +33,23 @@ __email__ = "root@lightless.me"
 def rules(page):
     per_page = 10
     rules = CobraRules.query.order_by(CobraRules.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    cobra_vuls = CobraVuls.query.all()
+    cobra_lang = CobraLanguages.query.all()
+    all_vuls = {}
+    all_language = {}
+    for vul in cobra_vuls:
+        all_vuls[vul.id] = vul.name
+    for lang in cobra_lang:
+        all_language[lang.id] = lang.language
+    for rule in rules:
+        try:
+            rule.vul_id = all_vuls[rule.vul_id]
+        except KeyError:
+            rule.vul_id = 'Unknown Type'
+        try:
+            rule.language = all_language[rule.language]
+        except KeyError:
+            rule.language = 'Unknown Language'
     data = {
         'rules': rules,
         'page': page
@@ -171,6 +188,23 @@ def edit_rule(rule_id):
 @login_required
 def search_rule(keyword):
     rules = CobraRules.query.filter(CobraRules.description.like("%{}%".format(keyword))).all()
+    cobra_vuls = CobraVuls.query.all()
+    cobra_lang = CobraLanguages.query.all()
+    all_vuls = {}
+    all_language = {}
+    for vul in cobra_vuls:
+        all_vuls[vul.id] = vul.name
+    for lang in cobra_lang:
+        all_language[lang.id] = lang.language
+    for rule in rules:
+        try:
+            rule.vul_id = all_vuls[rule.vul_id]
+        except KeyError:
+            rule.vul_id = 'Unknown Type'
+        try:
+            rule.language = all_language[rule.language]
+        except KeyError:
+            rule.language = 'Unknown Language'
     data = {
         'rules': rules,
         'keyword': keyword
