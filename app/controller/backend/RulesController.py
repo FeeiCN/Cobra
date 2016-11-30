@@ -126,12 +126,12 @@ def add_new_rule():
 
 
 # del special rule
-@web.route(ADMIN_URL + '/rules/del', methods=['POST'])
+@web.route(ADMIN_URL + '/rules/del/', methods=['POST'])
 @login_required
 def del_rule():
-    vc = ValidateClass(request, "rule_id")
+    vc = ValidateClass(request, "id")
     vc.check_args()
-    rule_id = vc.vars.rule_id
+    rule_id = vc.vars.id
     if rule_id:
 
         # 检查该条rule是否存在result和task的依赖

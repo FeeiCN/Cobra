@@ -113,87 +113,118 @@
             <textarea class="form-control" rows="4" id="repair">{{ data.rule.repair }}</textarea>
         </div>
         <hr class="aky">
-        <div class="aon hj">
-            <button type="button" name="submit" class="ce apk fh">Submit</button>
+        <div class="aon hj akg">
+            <div class="akh aki">
+                <button type="button" name="submit" class="ce apk fh">Edit</button>
+            </div>
+            <div class="akh">
+                <button class="ce fh apr delete-rule" type="button">
+                    <span class="bv xm"></span> Delete
+                </button>
+            </div>
         </div>
     </form>
 {% endblock %}
 {% block scripts %}
     <script>
-        $("button[name=submit]").click(function () {
-            var type = $('input[name=type]').val();
-            var id = $('input[name=id]').val();
-            var vul_type = $('#vul_type').val();
-            var lang = $('#language').val();
-            var regex_location = $("#regex-location").val();
-            var description = $('input[name=name]').val();
-            var regex_repair = $("#regex-repair").val();
-            var block_repair = $('input[name=repair-block]:checked').val();
-            var repair = $("#repair").val();
-            var author = $('input[name=author]').val();
-            var status = $('input[name=status]:checked').val();
-            var level = $('input[name=level]:checked').val();
+        var app = {
+            id: $('input[name=id]').val(),
+            type: $('input[name=type]').val(),
+            init: function () {
+                $("button[name=submit]").click(function () {
+                    var type = $('input[name=type]').val();
+                    var id = $('input[name=id]').val();
+                    var vul_type = $('#vul_type').val();
+                    var lang = $('#language').val();
+                    var regex_location = $("#regex-location").val();
+                    var description = $('input[name=name]').val();
+                    var regex_repair = $("#regex-repair").val();
+                    var block_repair = $('input[name=repair-block]:checked').val();
+                    var repair = $("#repair").val();
+                    var author = $('input[name=author]').val();
+                    var status = $('input[name=status]:checked').val();
+                    var level = $('input[name=level]:checked').val();
 
-            // check data
-            if (!vul_type || vul_type == "") {
-                notification('vul type error.');
-                return false;
-            }
-            if (!lang || lang == "") {
-                notification('language error.');
-                return false;
-            }
-            if (!description || description == "") {
-                notification('description can not be blank.');
-                return false;
-            }
-            if (!regex_location || regex_location == "") {
-                notification("regex location cannot be blank.");
-                return false;
-            }
-            if (!block_repair || block_repair == "") {
-                notification("block repair cannot be blank.");
-                return false;
-            }
-            if (!repair || repair == "") {
-                notification('repair can not be blank.');
-                return false;
-            }
-            if (!author || author == "") {
-                notification('author can not be blank.');
-                return false;
-            }
-            if (!status || status == "") {
-                notification('status error.');
-                return false;
-            }
-            if (!level || level == "") {
-                notification('level can not be blank.');
-                return false;
-            }
+                    // check data
+                    if (!vul_type || vul_type == "") {
+                        notification('vul type error.');
+                        return false;
+                    }
+                    if (!lang || lang == "") {
+                        notification('language error.');
+                        return false;
+                    }
+                    if (!description || description == "") {
+                        notification('description can not be blank.');
+                        return false;
+                    }
+                    if (!regex_location || regex_location == "") {
+                        notification("regex location cannot be blank.");
+                        return false;
+                    }
+                    if (!block_repair || block_repair == "") {
+                        notification("block repair cannot be blank.");
+                        return false;
+                    }
+                    if (!repair || repair == "") {
+                        notification('repair can not be blank.');
+                        return false;
+                    }
+                    if (!author || author == "") {
+                        notification('author can not be blank.');
+                        return false;
+                    }
+                    if (!status || status == "") {
+                        notification('status error.');
+                        return false;
+                    }
+                    if (!level || level == "") {
+                        notification('level can not be blank.');
+                        return false;
+                    }
 
-            // post data
-            var data = {
-                'vul_type': vul_type,
-                'language': lang,
-                'regex_location': regex_location,
-                'regex_repair': regex_repair,
-                'repair_block': block_repair,
-                'description': description,
-                'rule_id': id,
-                'repair': repair,
-                'author': author,
-                'status': status,
-                'level': level
-            };
-            $.post('/admin/rules/' + type + '/' + id, data, function (res) {
-                if (res.code == 1001) {
-                    window.history.go(-1);
-                } else {
-                    notification(res.message);
+                    // post data
+                    var data = {
+                        'vul_type': vul_type,
+                        'language': lang,
+                        'regex_location': regex_location,
+                        'regex_repair': regex_repair,
+                        'repair_block': block_repair,
+                        'description': description,
+                        'rule_id': id,
+                        'repair': repair,
+                        'author': author,
+                        'status': status,
+                        'level': level
+                    };
+                    $.post('/admin/rules/' + type + '/' + id, data, function (res) {
+                        if (res.code == 1001) {
+                            window.history.go(-1);
+                        } else {
+                            notification(res.message);
+                        }
+                    });
+                });
+
+                if (app.type == 'add') {
+                    $('.delete-rule').hide();
                 }
-            });
-        });
+
+                $('.delete-rule').on('click', function () {
+                    var button = $(this);
+                    if (window.confirm("Do you want to delete this rule? (ID:" + app.id + ")")) {
+                        $.post("/admin/rules/del/", {"id": app.id}, function (result) {
+                            if (result.code == 1001) {
+                                window.history.go(-1);
+                            } else {
+                                alert(result.message);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        app.init();
     </script>
 {% endblock %}
 
