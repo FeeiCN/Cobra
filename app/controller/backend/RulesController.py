@@ -32,51 +32,11 @@ __email__ = "root@lightless.me"
 @login_required
 def rules(page):
     per_page = 10
-    cobra_rules = CobraRules.query.order_by(CobraRules.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
-    cobra_vuls = CobraVuls.query.all()
-    cobra_lang = CobraLanguages.query.all()
-    all_vuls = {}
-    all_language = {}
-    all_level = {1: 'Low', 2: 'Medium', 3: 'High'}
-    all_location = {0: "UP", 1: "Down", 2: "Current Line"}
-    for vul in cobra_vuls:
-        all_vuls[vul.id] = vul.name
-    for lang in cobra_lang:
-        all_language[lang.id] = lang.language
-
-    # replace id with real name
-    # status_desc = {1: 'ON', 0: 'OFF'}
-    for rule in cobra_rules:
-        try:
-            rule.vul_id = all_vuls[rule.vul_id]
-        except KeyError:
-            rule.vul_id = 'Unknown Type'
-
-        try:
-            rule.block_repair = all_location[rule.block_repair]
-        except KeyError:
-            rule.block_repair = 'Unknown Location'
-
-        # try:
-        #     rule.status = status_desc[rule.status]
-        # except KeyError:
-        #     rule.status = 'Unknown'
-
-        try:
-            rule.language = all_language[rule.language]
-        except KeyError:
-            rule.language = 'Unknown Language'
-
-        try:
-            rule.level = all_level[rule.level]
-        except KeyError:
-            rule.level = 'Unknown Level'
-
+    rules = CobraRules.query.order_by(CobraRules.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
     data = {
-        'rules': cobra_rules,
+        'rules': rules,
         'page': page
     }
-
     return render_template('backend/rule/rules.html', data=data)
 
 
@@ -205,3 +165,14 @@ def edit_rule(rule_id):
             'all_vuls': vul_type,
             'all_lang': languages,
         })
+
+
+@web.route(ADMIN_URL + "/rules/search/<keyword>", methods=['GET'])
+@login_required
+def search_rule(keyword):
+    rules = CobraRules.query.filter(CobraRules.description.like("%{}%".format(keyword))).all()
+    data = {
+        'rules': rules,
+        'keyword': keyword
+    }
+    return render_template('backend/rule/rules.html', data=data)
