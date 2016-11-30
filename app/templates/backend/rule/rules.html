@@ -54,13 +54,7 @@
                         <td>
                             <div class="nz">
                                 <button type="button" data-id="{{ rule.id }}" class="ce apn edit-rule">
-                                    <span class="bv aez"></span>
-                                </button>
-                                <button type="button" data-id="{{ rule.id }}" class="ce apn delete-rule">
-                                    <span class="bv zz"></span>
-                                </button>
-                                <button type="button" data-id="{{ rule.id }}" class="ce apn update-rule">
-                                    <span class="bv aak"></span>
+                                    <span class="bv xk"></span>
                                 </button>
                             </div>
                         </td>
@@ -98,80 +92,6 @@
             $('.edit-rule').on('click', function () {
                 var pid = $(this).attr('data-id');
                 window.location.href = '/admin/rules/edit/' + pid;
-            });
-
-            $('.delete-rule').on('click', function () {
-                var pid = $(this).attr('data-id');
-                var button = $(this);
-                $.post("/admin/rule/del/", {"id": pid}, function (result) {
-                    if (result.code == 1001) {
-                        button.parents('tr').hide();
-                    } else {
-                        alert(result.message);
-                    }
-                });
-            });
-
-
-            // 点击更新状态按钮
-            $("span[id^=update-rule-]").click(function () {
-                var rid = $(this).attr("id").split("-")[2];
-                $.post("update_status", {"id": rid}, function (retValue) {
-                    $(".update-rule-status").html(retValue.message);
-                    $("#update-rule-tip").modal();
-                    $("#update-rule-tip").on("hidden.bs.modal", function () {
-                        $("#main-div").load("rules/" + g_rule_back_page);
-                    });
-                });
-                return false;
-            });
-
-            // 点击该行弹出详情
-            $("td[id^=tr-rule-]").click(function () {
-                var rid = $(this).attr("id").split('-')[2];
-                var LocationRegex = $("<div/>").text($("#rule-regex-location-" + rid).text()).html();
-                var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + rid).text()).html();
-                var RepairBlock = $("<div/>").text($("#rule-block-repair-" + rid).text()).html();
-                var RepairMethod = $("<div/>").text($("#rule-repair-" + rid).text()).html();
-                var RuleLevel = $("<div/>").text($("#rule-level-" + rid).text()).html();
-
-                $("#view-title").html("Rule Details");
-                var contents = "<b>Location Regex: </b><pre class=pre-scrollable>" + LocationRegex + "</pre><br />";
-                contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
-                contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
-                contents += "<b>Repair Method: </b>" + RepairMethod + "<br />";
-                contents += "<b>Level: </b>" + RuleLevel + "<br />";
-                $("#view-body").html(contents);
-            });
-
-            // 点击删除按钮
-            $("span[id^=del-rule-]").click(function () {
-                var rid = $(this).attr("id").split('-')[2];
-                var LocationRegex = $("<div/>").text($("#rule-regex-location-" + rid).text()).html();
-                var RepairRegex = $("<div/>").text($("#rule-regex-repair-" + rid).text()).html();
-                var RepairBlock = $("<div/>").text($("#rule-block-repair-" + rid).text()).html();
-                var RepairMethod = $("<div/>").text($("#rule-repair-" + rid).text()).html();
-                var RuleLevel = $("<div/>").text($("#rule-level-" + rid).text()).html();
-                {#        var contents = '<h4>Are you sure DELETE this rule?</h4>'#}
-                $(".del-header").html("<h4>Are you <span style='color: red'>ABSOLUTELY</span> sure?</h4>");
-                var contents = "";
-                contents += "<b>Location Regex: </b><pre class=pre-scrollable>" + LocationRegex + "</pre><br />";
-                contents += "<b>Repair Regex: </b><pre>" + RepairRegex + "</pre><br />";
-                contents += "<b>Repair Block: </b>" + RepairBlock + "<br />";
-                contents += "<b>Repair Method: </b>" + RepairMethod + "<br />";
-                contents += "<b>Level: </b>" + RuleLevel + "<br />";
-                $("#delete-tip-body").html(contents);
-                $("#delete-tip").modal();
-
-                $("#del-rule-by-id").click(function () {
-                    $.post('del_rule', {'rule_id': rid}, function (data) {
-                        $(".update-rule-status").html(data.msg);
-                        $("#update-rule-tip").modal();
-                        $("#update-rule-tip").on("hidden.bs.modal", function () {
-                            $("#main-div").load("rules/" + g_rule_back_page);
-                        });
-                    });
-                });
             });
 
         });
