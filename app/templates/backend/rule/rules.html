@@ -36,21 +36,18 @@
                 <tbody>
                 {% for rule in data.rules %}
                     <tr>
-                        <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.id }}</td>
-                        <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.language }}</td>
-                        <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.vul_id }}</td>
-                        <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.description }}</td>
-                        <td data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">{{ rule.updated_at }}</td>
-                        <td align="center" data-toggle="modal" data-target="#view-modal" id="tr-rule-{{ rule.id }}">
-                <span style="color: {% if rule.status %}green{% else %}red{% endif %}"
-                      class="glyphicon glyphicon-{% if rule.status %}ok{% else %}remove{% endif %}">
-                </span>
+                        <td>{{ rule.id }}</td>
+                        <td>{{ rule.language }}</td>
+                        <td>{{ rule.vul_id }}</td>
+                        <td>{{ rule.description }}</td>
+                        <td>{{ rule.updated_at }}</td>
+                        <td align="center">
+                            {% if rule.status %}
+                                <span class="bv aae"></span>
+                            {% else %}
+                                <span class="bv aad"></span>
+                            {% endif %}
                         </td>
-                        <td hidden id="rule-regex-location-{{ rule.id }}">{{ rule.regex_location }}</td>
-                        <td hidden id="rule-regex-repair-{{ rule.id }}">{{ rule.regex_repair }}</td>
-                        <td hidden id="rule-block-repair-{{ rule.id }}">{{ rule.block_repair }}</td>
-                        <td hidden id="rule-repair-{{ rule.id }}">{{ rule.repair }}</td>
-                        <td hidden id="rule-level-{{ rule.id }}">{{ rule.level }}</td>
                         <td>
                             <div class="nz">
                                 <button type="button" data-id="{{ rule.id }}" class="ce apn edit-rule">
