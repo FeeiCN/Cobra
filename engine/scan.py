@@ -149,12 +149,12 @@ class Scan:
             cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
 
             if os.path.isfile(cobra_path) is not True:
-                return 1004, 'Cobra Not Found'
-            # 扫描漏洞
+                return 1004, 'cobra.py not found'
+            # scan vulnerability
             subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
-            # 统计代码行数
+            # statistic code
             subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
-            # 检测漏洞修复状况
+            # check repair
             subprocess.Popen(['python', cobra_path, "repair", "-p", str(project_id)])
             result = dict()
             result['scan_id'] = task.id
