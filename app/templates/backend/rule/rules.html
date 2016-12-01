@@ -57,6 +57,11 @@
                 </tr>
                 </thead>
                 <tbody>
+                {% if data.total == 0 %}
+                    <tr>
+                        <td>No one</td>
+                    </tr>
+                {% endif %}
                 {% for rule in data.rules %}
                     <tr>
                         <td>{{ rule.id }}</td>
