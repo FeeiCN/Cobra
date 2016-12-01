@@ -26,19 +26,27 @@ __email__ = "root@lightless.me"
 
 
 # show all projects
-@web.route(ADMIN_URL + '/projects/', methods=['GET'], defaults={'page': 1})
-@web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'])
+@web.route(ADMIN_URL + '/projects/', methods=['GET'], defaults={'keyword': '0', 'page': 1})
+@web.route(ADMIN_URL + '/projects/<int:page>', methods=['GET'], defaults={'keyword': '0'})
+@web.route(ADMIN_URL + '/projects/<int:page>/<keyword>', methods=['GET'])
 @login_required
-def projects(page):
+def projects(page, keyword):
+    if keyword != '0':
+        filter_group = (CobraProjects.repository.like("%{}%".format(keyword)))
+    else:
+        filter_group = (CobraProjects.id > 0)
     per_page = 10
-    projects = CobraProjects.query.order_by(CobraProjects.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
-    total = CobraProjects.query.count()
+    projects = CobraProjects.query.filter(filter_group).order_by(CobraProjects.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    total = CobraProjects.query.filter(filter_group).count()
     for project in projects:
         project.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
+    if keyword == '0':
+        keyword = ''
     data = {
         'projects': projects,
         'page': page,
-        'total': total
+        'total': total,
+        'keyword': keyword
     }
     return render_template("backend/project/projects.html", data=data)
 
