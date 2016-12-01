@@ -108,7 +108,7 @@ def rules(page, keyword, author, vulnerability_type, language):
 def add_new_rule():
     if request.method == 'POST':
         vc = ValidateClass(request, 'vul_type', 'language', 'regex_location', 'repair_block',
-                           'description', 'repair', 'author', 'level', 'status')
+                           'description', 'repair', 'verify', 'author', 'level', 'status')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(code=4004, message=msg)
@@ -122,6 +122,7 @@ def add_new_rule():
             block_repair=vc.vars.repair_block,
             description=vc.vars.description,
             repair=vc.vars.repair,
+            verify=vc.vars.verify,
             author=vc.vars.author,
             status=vc.vars.status,
             level=vc.vars.level,
@@ -189,7 +190,7 @@ def edit_rule(rule_id):
     if request.method == 'POST':
 
         vc = ValidateClass(request, "vul_type", "language", "regex_location", "repair_block", "description",
-                           "rule_id", "repair", "author", "status", "level")
+                           "rule_id", "repair", 'verify', "author", "status", "level")
         ret, msg = vc.check_args()
 
         regex_repair = request.form.get("regex_repair", "")
@@ -205,6 +206,7 @@ def edit_rule(rule_id):
         r.regex_repair = regex_repair
         r.description = vc.vars.description
         r.repair = vc.vars.repair
+        r.verify = vc.vars.verify
         r.author = vc.vars.author
         r.status = vc.vars.status
         r.level = vc.vars.level

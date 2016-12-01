@@ -112,6 +112,10 @@
             <label for="repair">Repair</label>
             <textarea class="form-control" rows="4" id="repair">{{ data.rule.repair }}</textarea>
         </div>
+        <div class="aon hn">
+            <label for="repair">Verify</label>
+            <textarea class="form-control" rows="6" id="verify">{{ data.rule.verify }}</textarea>
+        </div>
         <hr class="aky">
         <div class="aon hj akg">
             <div class="akh aki">
@@ -141,6 +145,7 @@
                     var regex_repair = $("#regex-repair").val();
                     var block_repair = $('input[name=repair-block]:checked').val();
                     var repair = $("#repair").val();
+                    var verify = $("#verify").val();
                     var author = $('input[name=author]').val();
                     var status = $('input[name=status]:checked').val();
                     var level = $('input[name=level]:checked').val();
@@ -170,6 +175,10 @@
                         notification('repair can not be blank.');
                         return false;
                     }
+                    if (!verify || verify == "") {
+                        notification('verify can not be blank.');
+                        return false;
+                    }
                     if (!author || author == "") {
                         notification('author can not be blank.');
                         return false;
@@ -193,6 +202,7 @@
                         'description': description,
                         'rule_id': id,
                         'repair': repair,
+                        'verify': verify,
                         'author': author,
                         'status': status,
                         'level': level
