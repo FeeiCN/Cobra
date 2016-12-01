@@ -25,7 +25,11 @@
                 </tr>
                 </thead>
                 <tbody>
-
+                {% if data.total == 0 %}
+                    <tr>
+                        <td>No one</td>
+                    </tr>
+                {% endif %}
                 {% for task in data.tasks %}
                     <tr>
                         <td>{{ task.id }}</td>
@@ -62,38 +66,48 @@
         </div>
     </div>
     <div class="db" id="paginate"></div>
+    <input type="hidden" name="page" value="{{ data.page }}">
 {% endblock %}
 {% block scripts %}
     <script>
-        $(document).ready(function () {
-            // pagination
-            make_pagination('{{ data.page }}', '{{ data.total }}');
+        var main = {
+            keyword: function () {
+                return $('input.btn-search-tasks').val();
+            },
+            page: function () {
+                return $('input[name=page]').val();
+            },
+            init: function () {
+                // pagination
+                make_pagination('{{ data.page }}', '{{ data.total }}');
 
-            $(".btn-search-tasks").keyup(function (event) {
-                if (event.keyCode == 13) {
-                    var keyword = $(this).val();
-                    if (keyword == "") {
-                        alert("keywords can't empty!")
-                    } else {
-                        window.location.href = "/admin/tasks/search/" + keyword;
-                    }
-                }
-
-            });
-
-            $("[id^=del-task-]").click(function () {
-                var tid = $(this).attr("id").split("-")[2];
-                if (window.confirm("Delete this task? " + tid)) {
-                    // send delete request
-                    $.post("del", {id: tid}, function (data) {
-                        if (data.code == 1001) {
-                            $('#task-target-' + tid).parent('tr').hide();
+                $(".btn-search-tasks").keyup(function (event) {
+                    if (event.keyCode == 13) {
+                        if (main.keyword() == "") {
+                            window.location.href = '/admin/tasks/' + main.page();
                         } else {
-                            alert(data.message);
+                            window.location.href = '/admin/tasks/' + main.page() + '/' + main.keyword();
                         }
-                    });
-                }
-            });
+                    }
+                });
+
+                $("[id^=del-task-]").click(function () {
+                    var tid = $(this).attr("id").split("-")[2];
+                    if (window.confirm("Delete this task? " + tid)) {
+                        // send delete request
+                        $.post("del", {id: tid}, function (data) {
+                            if (data.code == 1001) {
+                                $('#task-target-' + tid).parent('tr').hide();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        $(document).ready(function () {
+            main.init();
         });
     </script>
 {% endblock %}
