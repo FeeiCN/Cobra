@@ -25,109 +25,116 @@ __author__ = "lightless"
 __email__ = "root@lightless.me"
 
 
-# show all white lists
-@web.route(ADMIN_URL + '/whitelists/<int:page>', methods=['GET'])
+@web.route(ADMIN_URL + '/white-list/', methods=['GET'], defaults={'keyword': '0', 'page': 1})
+@web.route(ADMIN_URL + '/white-list/<int:page>', methods=['GET'], defaults={'keyword': '0'})
+@web.route(ADMIN_URL + '/white-list/<int:page>/<keyword>', methods=['GET'])
 @login_required
-def whitelists(page):
-
+def white_list(page, keyword):
+    if keyword != '0':
+        filter_group = (CobraWhiteList.path.like("%{}%".format(keyword)))
+    else:
+        filter_group = (CobraWhiteList.id > 0)
     per_page = 10
-    whitelists = CobraWhiteList.query.order_by(CobraWhiteList.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    whitelists = CobraWhiteList.query.filter(filter_group).order_by(CobraWhiteList.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    total = CobraWhiteList.query.filter(filter_group).count()
+
+    if keyword == '0':
+        keyword = ''
     data = {
+        'total': total,
         'whitelists': whitelists,
+        'keyword': keyword
     }
-    return render_template('backend/whitelist/whitelists.html', data=data)
+    return render_template('backend/white-list/white-list.html', data=data)
 
 
-# add new white list
-@web.route(ADMIN_URL + '/add_whitelist', methods=['GET', 'POST'])
+@web.route(ADMIN_URL + '/white-list/create/', methods=['GET', 'POST'])
 @login_required
-def add_whitelist():
-
+def add_white_list():
     if request.method == 'POST':
-
-        vc = ValidateClass(request, "project_id", "rule_id", "path", "reason")
+        vc = ValidateClass(request, "project", "rule", "path", "reason", 'status')
         ret, msg = vc.check_args()
         if not ret:
-            return jsonify(tag="danger", msg=msg)
+            return jsonify(code=4001, message=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
         if vc.vars.path[0] != '/':
             vc.vars.path = '/' + vc.vars.path
-        whitelist = CobraWhiteList(vc.vars.project_id, vc.vars.rule_id, vc.vars.path, vc.vars.reason,
-                                   1, current_time, current_time)
+        whitelist = CobraWhiteList(vc.vars.project, vc.vars.rule, vc.vars.path, vc.vars.reason, vc.vars.status, current_time, current_time)
         try:
             db.session.add(whitelist)
             db.session.commit()
-            return jsonify(tag='success', msg='add success.')
+            return jsonify(code=1001, message='add success.')
         except:
-            return jsonify(tag='danger', msg='unknown error. Try again later?')
+            return jsonify(code=4001, message='unknown error. Try again later?')
     else:
         rules = CobraRules.query.all()
         projects = CobraProjects.query.all()
         data = {
+            'title': 'Create white-list',
+            'type': 'create',
             'rules': rules,
             'projects': projects,
+            'whitelist': dict()
         }
-        return render_template('backend/whitelist/add_new_whitelist.html', data=data)
+        return render_template('backend/white-list/edit.html', data=data)
 
 
 # del the special white list
-@web.route(ADMIN_URL + '/del_whitelist', methods=['POST'])
+@web.route(ADMIN_URL + '/white-list/delete', methods=['POST'])
 @login_required
-def del_whitelist():
-
-    vc = ValidateClass(request, "whitelist_id")
+def delete_white_list():
+    vc = ValidateClass(request, "id")
     ret, msg = vc.check_args()
     if not ret:
-        return jsonify(tag="danger", msg=msg)
+        return jsonify(code=4001, message=msg)
 
-    whitelist = CobraWhiteList.query.filter_by(id=vc.vars.whitelist_id).first()
+    whitelist = CobraWhiteList.query.filter_by(id=vc.vars.id).first()
     try:
         db.session.delete(whitelist)
         db.session.commit()
-        return jsonify(tag='success', msg='delete success.')
+        return jsonify(code=1001, message='delete success.')
     except:
-        return jsonify(tag='danger', msg='unknown error.')
+        return jsonify(code=4002, message='unknown error.')
 
 
 # edit the special white list
-@web.route(ADMIN_URL + '/edit_whitelist/<int:whitelist_id>', methods=['GET', 'POST'])
+@web.route(ADMIN_URL + '/white-list/edit/<int:wid>', methods=['GET', 'POST'])
 @login_required
-def edit_whitelist(whitelist_id):
-
+def edit_white_list(wid):
     if request.method == 'POST':
-
-        vc = ValidateClass(request, "whitelist_id", "project", "rule", "path", "reason", "status")
+        vc = ValidateClass(request, "project", "rule", "path", "reason", "status")
         ret, msg = vc.check_args()
         if not ret:
-            return jsonify(tag="danger", msg=msg)
+            return jsonify(code=4001, message=msg)
 
-        whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
-        if not whitelist:
-            return jsonify(tag='danger', msg='wrong whitelist')
+        white_list = CobraWhiteList.query.filter_by(id=wid).first()
+        if not white_list:
+            return jsonify(code=4001, message='wrong white-list')
 
-        whitelist.project_id = vc.vars.project
-        whitelist.rule_id = vc.vars.rule
-        whitelist.path = vc.vars.path
-        whitelist.reason = vc.vars.reason
-        whitelist.status = vc.vars.status
-        whitelist.updated_at = datetime.datetime.now()
+        white_list.project_id = vc.vars.project
+        white_list.rule_id = vc.vars.rule
+        white_list.path = vc.vars.path
+        white_list.reason = vc.vars.reason
+        white_list.status = vc.vars.status
+        white_list.updated_at = datetime.datetime.now()
 
         try:
-            db.session.add(whitelist)
+            db.session.add(white_list)
             db.session.commit()
-            return jsonify(tag='success', msg='update success.')
+            return jsonify(code=1001, message='update success.')
         except:
-            return jsonify(tag='danger', msg='unknown error.')
+            return jsonify(code=4001, message='unknown error.')
     else:
         rules = CobraRules.query.all()
         projects = CobraProjects.query.all()
-        whitelist = CobraWhiteList.query.filter_by(id=whitelist_id).first()
+        white_list = CobraWhiteList.query.filter_by(id=wid).first()
         data = {
+            'title': 'Edit white-list',
+            'type': 'edit',
             'rules': rules,
             'projects': projects,
-            'whitelist': whitelist,
+            'whitelist': white_list,
+            'id': wid
         }
-
-        return render_template('backend/whitelist/edit_whitelist.html', data=data)
-
+        return render_template('backend/white-list/edit.html', data=data)
