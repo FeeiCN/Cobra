@@ -23,6 +23,7 @@ pages:
   - Vulnerabilities: 'vulnerabilities.md'
   - Languages: 'languages.md'
 - Modules:
+  - Rule: 'rule.md'
   - Detection URI: 'detection_uri.md'
 - FAQ:
   - FAQ: 'FAQ.md'
