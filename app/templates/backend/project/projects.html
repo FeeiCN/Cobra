@@ -64,7 +64,7 @@
     <script>
         $(document).ready(function () {
             // pagination
-            make_pagination('{{ data.page }}', 'projects');
+            make_pagination('{{ data.page }}', '{{ data.total }}');
 
             // search
             $(".btn-search-projects").keyup(function (event) {
