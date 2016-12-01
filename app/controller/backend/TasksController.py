@@ -36,6 +36,8 @@ def tasks(page):
         CobraTaskInfo.id.desc()
     ).limit(per_page).offset((page - 1) * per_page).all()
 
+    total = CobraTaskInfo.query.count()
+
     # 转换一些数据
     for task in all_tasks:
         task.file_count = convert_number(task.file_count)
@@ -45,6 +47,7 @@ def tasks(page):
         task.time_consume = convert_time(task.time_consume)
 
     data = {
+        'total': total,
         'tasks': all_tasks,
         'page': page
     }

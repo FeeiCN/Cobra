@@ -32,11 +32,13 @@ __email__ = "root@lightless.me"
 def projects(page):
     per_page = 10
     projects = CobraProjects.query.order_by(CobraProjects.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    total = CobraProjects.query.count()
     for project in projects:
         project.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(project.id)
     data = {
         'projects': projects,
-        'page': page
+        'page': page,
+        'total': total
     }
     return render_template("backend/project/projects.html", data=data)
 

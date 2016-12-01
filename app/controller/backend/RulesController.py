@@ -27,32 +27,77 @@ __email__ = "root@lightless.me"
 
 
 # all rules button
-@web.route(ADMIN_URL + '/rules/', methods=['GET'], defaults={'page': 1})
-@web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'])
+@web.route(ADMIN_URL + '/rules/', methods=['GET'], defaults={'page': 1, 'keyword': '0', 'author': '0', 'vulnerability_type': 0, 'language': 0})
+@web.route(ADMIN_URL + '/rules/<int:page>', methods=['GET'], defaults={'keyword': '0', 'author': '0', 'vulnerability_type': 0, 'language': 0})
+@web.route(ADMIN_URL + '/rules/<int:page>/<keyword>', methods=['GET'], defaults={'author': '0', 'vulnerability_type': 0, 'language': 0})
+@web.route(ADMIN_URL + '/rules/<int:page>/<keyword>/<author>/<int:vulnerability_type>/<int:language>', methods=['GET'])
 @login_required
-def rules(page):
+def rules(page, keyword, author, vulnerability_type, language):
     per_page = 10
-    rules = CobraRules.query.order_by(CobraRules.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    filter_group = (CobraRules.id > 0,)
+
+    if author == '0' and vulnerability_type == 0 and language == 0:
+        if keyword == '0':
+            # List mode
+            filter_group += ()
+        else:
+            # Only search mode
+            filter_group += (CobraRules.description.like("%{}%".format(keyword)),)
+    else:
+        if keyword != '0':
+            filter_group += (CobraRules.description.like("%{}%".format(keyword)),)
+        # Filter mode
+        if author != '0':
+            filter_group += (CobraRules.author == author,)
+        if vulnerability_type != 0:
+            filter_group += (CobraRules.vul_id == vulnerability_type,)
+        if language != 0:
+            filter_group += (CobraRules.language == language,)
+
+    rules = CobraRules.query.filter(*filter_group).order_by(CobraRules.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    total = CobraRules.query.filter(*filter_group).count()
+
     cobra_vuls = CobraVuls.query.all()
     cobra_lang = CobraLanguages.query.all()
     all_vuls = {}
     all_language = {}
+    all_rules = []
+
     for vul in cobra_vuls:
         all_vuls[vul.id] = vul.name
     for lang in cobra_lang:
         all_language[lang.id] = lang.language
-    for rule in rules:
-        try:
-            rule.vul_id = all_vuls[rule.vul_id]
-        except KeyError:
-            rule.vul_id = 'Unknown Type'
-        try:
-            rule.language = all_language[rule.language]
-        except KeyError:
-            rule.language = 'Unknown Language'
+    for index, item in enumerate(rules):
+        if item.vul_id in all_vuls:
+            vulnerability_type_desc = all_vuls[item.vul_id]
+        else:
+            vulnerability_type_desc = 'Unknown type'
+        if item.language in all_language:
+            language_desc = all_language[item.language]
+        else:
+            language_desc = 'Unknown language'
+        all_rules.append({
+            'id': item.id,
+            'name': item.description,
+            'language': language_desc,
+            'vulnerability_type': vulnerability_type_desc,
+            'updated_at': item.updated_at,
+            'status': item.status
+        })
+    authors = db.session.query(CobraRules.author).group_by(CobraRules.author).all()
+    if keyword == '0':
+        keyword = ''
     data = {
-        'rules': rules,
-        'page': page
+        'total': total,
+        'rules': all_rules,
+        'vulnerability_types': cobra_vuls,
+        'languages': cobra_lang,
+        'authors': authors,
+        'page': page,
+        'author': author,
+        'vulnerability_type': vulnerability_type,
+        'language': language,
+        'keyword': keyword
     }
     return render_template('backend/rule/rules.html', data=data)
 
@@ -182,31 +227,3 @@ def edit_rule(rule_id):
             'all_vuls': vul_type,
             'all_lang': languages,
         })
-
-
-@web.route(ADMIN_URL + "/rules/search/<keyword>", methods=['GET'])
-@login_required
-def search_rule(keyword):
-    rules = CobraRules.query.filter(CobraRules.description.like("%{}%".format(keyword))).all()
-    cobra_vuls = CobraVuls.query.all()
-    cobra_lang = CobraLanguages.query.all()
-    all_vuls = {}
-    all_language = {}
-    for vul in cobra_vuls:
-        all_vuls[vul.id] = vul.name
-    for lang in cobra_lang:
-        all_language[lang.id] = lang.language
-    for rule in rules:
-        try:
-            rule.vul_id = all_vuls[rule.vul_id]
-        except KeyError:
-            rule.vul_id = 'Unknown Type'
-        try:
-            rule.language = all_language[rule.language]
-        except KeyError:
-            rule.language = 'Unknown Language'
-    data = {
-        'rules': rules,
-        'keyword': keyword
-    }
-    return render_template('backend/rule/rules.html', data=data)

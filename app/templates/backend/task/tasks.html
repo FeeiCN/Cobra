@@ -67,7 +67,7 @@
     <script>
         $(document).ready(function () {
             // pagination
-            make_pagination('{{ data.page }}', 'tasks');
+            make_pagination('{{ data.page }}', '{{ data.total }}');
 
             $(".btn-search-tasks").keyup(function (event) {
                 if (event.keyCode == 13) {
