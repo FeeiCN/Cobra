@@ -41,17 +41,17 @@
                             <a href="/admin/report">Report</a>
                         </li>
                         <li class="{% block tasks_active %}{% endblock %}">
-                            <a href="/admin/tasks">Tasks</a>
+                            <a href="/admin/tasks">Task</a>
                         </li>
                         <li class="{% block projects_active %}{% endblock %}">
-                            <a href="/admin/projects">Projects</a>
+                            <a href="/admin/projects">Project</a>
                         </li>
                         <li class="tq">Settings</li>
-                        <li>
-                            <a href="/admin/whitelists">Whitelists</a>
+                        <li class="{% block white_list_active %}{% endblock %}">
+                            <a href="/admin/white-list">White-list</a>
                         </li>
                         <li class="{% block rule_active %}{% endblock %}">
-                            <a href="/admin/rules">Rules</a>
+                            <a href="/admin/rules">Rule</a>
                         </li>
                         <li>
                             <a href="/admin/vulnerabilities">Vulnerabilities</a>

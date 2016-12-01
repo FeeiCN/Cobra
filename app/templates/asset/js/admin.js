@@ -65,51 +65,7 @@ $("#main-div").delegate("span", "click", function () {
         $("#search_rules_bar").html("");
     }
 
-    if (target === "rule") {
-        if (type === 'edit') {
-            $.get('edit_rule/' + cid, function (result) {
-                $('#main-div').html(result);
-
-                
-
-                $("#back-rule-button").click(function () {
-                    // back to rule list.
-                    if (g_rule_back_method == "search") {
-                        data = {
-                            'language': g_rule_back_lang,
-                            'vul': g_rule_back_vul
-                        };
-                        $.post('search_rules', data, function (data) {
-                            $("#main-div").html(data);
-                        });
-                        $.get("search_rules_bar", function (raw_data) {
-                            $("#search_rules_bar").html(raw_data);
-                            $("#vul").val(g_rule_back_vul);
-                            $("#language").val(g_rule_back_lang);
-                        });
-
-                    } else if (g_rule_back_method == "page") {
-                        var back_page = g_rule_back_page;
-                        $.get('rules/' + back_page, function (data) {
-                            $("#main-div").html(data);
-                        });
-
-                        make_pagination(back_page, 'rules');
-
-                        // show search bar
-                        $("#search_rules_bar").load('search_rules_bar');
-                    }
-
-
-                });
-            });
-        } else if (type === 'view') {
-            // delete code
-        } else if (type === "del") {
-            // delete code
-        }
-
-    } else if (target === "vul") {
+    if (target === "vul") {
         if (type === 'view') {
             var repair = $("<div/>").text($("#vul-repair-" + cid).text()).html();
             $("#view-title").html("vul details.");
@@ -164,39 +120,7 @@ $("#main-div").delegate("span", "click", function () {
         if (type === "add") {
             $.get("add_project/", function (data) {
                 $("#main-div").html(data);
-                $("add-project-button").click(function () {
-                    var name = $("#name").val();
-                    var repository = $("#repository").val();
-                    var author = $("#author").val();
-                    var remark = $("#remark").val();
-
-                    if (!name || name == "") {
-                        showAlert('danger', 'name can not be empty!', 'add-project-result');
-                        return false;
-                    }
-                    if (!repository || repository == "") {
-                        showAlert('danger', 'repository can not be empty!', '#add-project-result');
-                        return false;
-                    }
-                    if (!remark || remark == "") {
-                        showAlert('danger', 'remark can not be empty!', '#add-project-result');
-                        return false;
-                    }
-                    if (!author || author == "") {
-                        showAlert('danger', 'author cannot be empty!', '#add-project-result');
-                        return false;
-                    }
-
-                    data = {
-                        'name': name,
-                        'repository': repository,
-                        'author': author,
-                        'remark': remark
-                    };
-                    $.post('add_project/', data, function (res) {
-                        showAlert(res.tag, res.msg, '#add-project-result');
-                    });
-                });
+                
             });
         }
         else if (type === "edit") {
