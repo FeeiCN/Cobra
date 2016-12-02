@@ -150,4 +150,6 @@ def percent(part, whole, need_per=True):
         per = '%'
     else:
         per = ''
+    if part == 0 and whole == 0:
+        return 0
     return '{0}{1}'.format(100 * float(part) / float(whole), per)
