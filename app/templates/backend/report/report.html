@@ -6,18 +6,26 @@
     <div class="akg ue">
         <div class="akh aki">
             <div class="tn aol">
-                <select class="anz aoa" name="vulnerabilities_types">
+                <select class="form-control" name="vulnerabilities_types">
                     <option value="0">All vulnerabilities types</option>
                     {% for item in data.vulnerabilities_types %}
                         <option value="{{ item.id }}" {% if data.vid == item.id %}selected{% endif %}>{{ item.name }}</option>
                     {% endfor %}
                 </select>
             </div>
+            <div class="tn aol">
+                <input type="text" value="{{ data.filter.start }}" class="form-control" data-provide="datepicker">
+                <span class="bv wt"></span>
+            </div>
+            <div class="tn aol">
+                <input type="text" value="{{ data.filter.end }}" class="form-control" data-provide="datepicker">
+                <span class="bv wt"></span>
+            </div>
         </div>
         <div class="akh">
             <div class="nz apg api">
                 <button type="button" class="ce apn">Day</button>
-                <button type="button" class="ce apn active">Week</button>
+                <button type="button" class="ce apn">Week</button>
                 <button type="button" class="ce apn">Month</button>
             </div>
         </div>

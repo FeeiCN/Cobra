@@ -126,6 +126,8 @@ class Git:
         logging.info(pull_out)
         logging.info(pull_err)
 
+        pull_err = pull_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
+
         # change work directory back.
         os.chdir(repo_dir)
 
@@ -170,6 +172,8 @@ class Git:
             return False, 'repo has already cloned.'
         elif 'Authentication failed' in clone_err:
             return False, 'Authentication failed.'
+
+        clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
         logging.info('clone done. Switching to branch ' + self.repo_branch)
         # check out to special branch
