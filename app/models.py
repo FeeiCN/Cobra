@@ -242,11 +242,12 @@ class CobraProjects(db.Model):
     framework = db.Column(db.String(32), nullable=False, default=None)
     pe = db.Column(db.String(32), nullable=False, default=None)
     remark = db.Column(db.String(512), nullable=False, default=None)
+    status = db.Column(TINYINT, nullable=False, default=1)
     last_scan = db.Column(db.DateTime, nullable=False, default=None)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
     updated_at = db.Column(db.DateTime, nullable=False, default=None)
 
-    def __init__(self, repository, url, name, author, framework, pe, remark, last_scan, created_at=None, updated_at=None):
+    def __init__(self, repository, url, name, author, framework, pe, remark, status, last_scan, created_at=None, updated_at=None):
         self.repository = repository
         self.url = url
         self.name = name
@@ -254,6 +255,7 @@ class CobraProjects(db.Model):
         self.framework = framework
         self.pe = pe
         self.remark = remark
+        self.status = status
         self.last_scan = last_scan
         self.created_at = created_at
         self.updated_at = updated_at

@@ -43,6 +43,13 @@
                         <td>{{ project.name }}</td>
                         <td>{{ project.author }}</td>
                         <td>{{ project.remark }}</td>
+                        <td align="center">
+                            {% if project.status %}
+                                <span class="bv aae"></span>
+                            {% else %}
+                                <span class="bv aad"></span>
+                            {% endif %}
+                        </td>
                         <td>{{ project.last_scan }}</td>
                         <td>
                             <div class="nz">

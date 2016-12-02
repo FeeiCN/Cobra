@@ -79,13 +79,13 @@ def add_project():
     if not ValidateClass.check_login():
         return redirect(ADMIN_URL + '/index')
     if request.method == "POST":
-        vc = ValidateClass(request, "name", "repository", "url", "author", "pe", "remark")
+        vc = ValidateClass(request, "name", "repository", "url", "author", "pe", "remark", 'status')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(tag="danger", msg=msg)
 
         current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        project = CobraProjects(vc.vars.repository, vc.vars.url, vc.vars.name, vc.vars.author, '', vc.vars.pe, vc.vars.remark, current_time)
+        project = CobraProjects(vc.vars.repository, vc.vars.url, vc.vars.name, vc.vars.author, '', vc.vars.pe, vc.vars.remark, vc.vars.status, current_time)
         try:
             db.session.add(project)
             db.session.commit()
@@ -107,7 +107,7 @@ def add_project():
 def edit_project(project_id):
     if request.method == "POST":
 
-        vc = ValidateClass(request, "id", "name", "repository", "url", "author", "pe", "remark")
+        vc = ValidateClass(request, "id", "name", "repository", "url", "author", "pe", "remark", 'status')
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(code=4004, message=msg)
@@ -122,6 +122,7 @@ def edit_project(project_id):
         project.author = vc.vars.author
         project.pe = vc.vars.pe
         project.remark = vc.vars.remark
+        project.status = vc.vars.status
         project.url = vc.vars.url
         project.repository = vc.vars.repository
         project.updated_at = current_time
