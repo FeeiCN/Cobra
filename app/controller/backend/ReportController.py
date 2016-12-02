@@ -11,7 +11,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2016 Feei. All rights reserved
 """
-from flask import render_template, request, jsonify, redirect
+from flask import render_template
 
 from . import ADMIN_URL
 import os
@@ -24,7 +24,7 @@ from utils import config, common
 
 @web.route(ADMIN_URL + '/report/', methods=['GET'], defaults={'vid': 0, 'start_time': '0', 'end_time': '0'})
 @web.route(ADMIN_URL + '/report/<int:vid>', methods=['GET'], defaults={'start_time': '0', 'end_time': '0'})
-@web.route(ADMIN_URL + '/report/<int:vid>/<start_time>/<end_time>', methods=['GET'], defaults={'vid': 0})
+@web.route(ADMIN_URL + '/report/<int:vid>/<start_time>/<end_time>', methods=['GET'])
 @login_required
 def reports(vid, start_time, end_time):
     projects = CobraProjects.query.order_by(CobraProjects.id.asc()).all()
@@ -137,6 +137,7 @@ def reports(vid, start_time, end_time):
             rank.append(s)
     rank = sorted(rank, key=lambda x: x['not_fixed'], reverse=True)
     vulnerabilities_types = CobraVuls.query.all()
+    print(vid)
     data = {
         'rank': rank,
         'vulnerabilities_types': vulnerabilities_types,
