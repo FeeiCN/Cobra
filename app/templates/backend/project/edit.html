@@ -1,5 +1,6 @@
 {% extends "backend/common/layout.html" %}
 {% block nav_first %}Dashboards{% endblock %}
+{% block projects_active %}active{% endblock %}
 {% block nav_second %}{{ data.title }}{% endblock %}
 {% block body %}
     <hr class="aky">
@@ -30,13 +31,29 @@
             <label for="branch">Remark</label>
             <textarea class="form-control" id="remark">{{ data.project.remark }}</textarea>
         </div>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="status" value="1" {% if data.project.status == 1 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    On
+                </label>
+            </div>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="status" value="0" {% if data.project.status == 0 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    Off
+                </label>
+            </div>
+        </div>
         <hr class="aky">
         <button type="button" class="ce apk fh">Submit</button>
     </form>
 {% endblock %}
 {% block scripts %}
     <script>
-        $('nav li').removeClass('active').eq(3).addClass('active');
         $("button").on('click', function () {
             var type = $('input[name=type]').val();
             var id = $('input[name=id]').val();
@@ -46,6 +63,7 @@
             var author = $("#author").val();
             var pe = $("#pe").val();
             var remark = $("#remark").val();
+            var status = $('input[name=status]:checked').val();
 
             if (!name || name == "") {
                 notification('name can not be empty!');
@@ -61,6 +79,10 @@
             }
             if (!remark || remark == "") {
                 notification('remark can not be empty!');
+                return false;
+            }
+            if (!status || status == "") {
+                notification('status can not be empty!');
                 return false;
             }
             if (!author || author == "") {
@@ -79,7 +101,8 @@
                 'url': url,
                 'author': author,
                 'remark': remark,
-                'pe': pe
+                'pe': pe,
+                'status': status
             };
             $.post('/admin/projects/' + type + '/' + id, data, function (res) {
                 if (res.code == 1001) {

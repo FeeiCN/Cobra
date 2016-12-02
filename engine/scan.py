@@ -55,7 +55,7 @@ class Scan:
         if not p:
             # insert into project table.
             repo_name = directory.split('/')[-1]
-            project = CobraProjects(directory, '', repo_name, 'Upload', project_framework, '', '', current_time)
+            project = CobraProjects(directory, '', repo_name, 'Upload', project_framework, '', '', 1, current_time)
             db.session.add(project)
             db.session.commit()
             project_id = project.id
@@ -133,7 +133,7 @@ class Scan:
         project_id = 0
         if not p:
             # insert into project table.
-            project = CobraProjects(self.target, '', repo_name, repo_author, project_framework, '', '', current_time)
+            project = CobraProjects(self.target, '', repo_name, repo_author, project_framework, '', '', 1, current_time)
         else:
             project_id = p.id
             # update project's framework
