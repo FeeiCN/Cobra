@@ -99,8 +99,9 @@ class Scan:
             repo_name = gg.repo_name
             repo_directory = gg.repo_directory
             # Git Clone Error
-            if gg.clone() is False:
-                return 4001, 'Clone Failed'
+            clone_ret, clone_err = gg.clone()
+            if clone_ret is False:
+                return 4001, 'Clone Failed ({0})'.format(clone_err)
         elif 'svn' in self.target:
             # SVN
             repo_name = 'mogujie'

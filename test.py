@@ -45,14 +45,14 @@ class Test(unittest.TestCase):
             if 'result' in response_json:
                 if 'project_id' in response_json['result']:
                     return response_json['result']['project_id']
-            print(response_json)
+            print(self.target, response_json)
             return 0
         except (requests.ConnectionError, requests.HTTPError) as e:
             self.fail("API Add failed: {0}".format(e))
             return 0
 
     def test_all_projects(self):
-        with open('/tmp/search.cobra') as f:
+        with open('/Volumes/Statics/Downloads/all_git') as f:
             for index, line in enumerate(f):
                 self.target = line.strip()
                 project_id = self.test_api()
