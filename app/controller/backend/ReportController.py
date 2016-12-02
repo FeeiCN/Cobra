@@ -85,7 +85,7 @@ def reports(vid, start_time, end_time):
             else:
                 filter_group_fixed_base = (CobraResults.project_id == project.id, CobraResults.status == 2, CobraResults.rule_id.in_(special_rules_ids))
                 if start_time == '0' and end_time == '0':
-                    filter_group_fixed = filter_group + ()
+                    filter_group_fixed = filter_group_fixed_base + ()
                     count_fixed = CobraResults.query.filter(*filter_group_fixed).count()
                 else:
                     filter_group_fixed = filter_group + filter_group_fixed_base + ()
