@@ -113,8 +113,7 @@ class Git:
         logging.info('Start Pull Repo...')
 
         if not self.__check_exist():
-            logging.info('No local repo exist. Please clone first.')
-            return False
+            return False, 'No local repo exist. Please clone first.'
 
         # change work directory to the repo
         repo_dir = self.repo_directory
@@ -132,10 +131,9 @@ class Git:
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
             logging.info('Pull done.')
-            return True
+            return True, None
         else:
-            logging.info('Pull failed')
-            return False
+            return False, pull_err
 
     def clone(self):
         """Clone a repo from repo_address
@@ -160,7 +158,6 @@ class Git:
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password
         cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '" -b master'
-        logging.info(cmd)
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
@@ -168,23 +165,18 @@ class Git:
         logging.info(clone_err)
 
         if 'not found' in clone_err or 'Not found' in clone_err:
-            logging.info("repo doesn't exist.")
-            return False
+            return False, 'repo doesn\'t exist.'
         elif 'already exists' in clone_err:
-            logging.info("repo has already cloned.")
-            return False
+            return False, 'repo has already cloned.'
         elif 'Authentication failed' in clone_err:
-            logging.info("Authentication failed.")
-            return False
+            return False, 'Authentication failed.'
 
         logging.info('clone done. Switching to branch ' + self.repo_branch)
         # check out to special branch
         if self.checkout(self.repo_branch):
-            logging.info('checkout success.')
-            return True
+            return True, None
         else:
-            logging.info('checkout failed.')
-            return False
+            return False, clone_err
 
     def diff(self, new_version, old_version, raw_output=False):
         """
