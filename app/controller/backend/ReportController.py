@@ -64,23 +64,34 @@ def reports(vid):
                 count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.status == 2).count()
             else:
                 count_fixed = CobraResults.query.filter(CobraResults.project_id == project.id, CobraResults.status == 2, CobraResults.rule_id.in_(special_rules_ids)).count()
-            count_not_fixed = count_total - count_fixed
-            remark = ''
+            if project.status == 1:
+                count_not_fixed = count_total - count_fixed
+                remark = ''
+            else:
+                count_fixed = count_total
+                count_not_fixed = 0
+                remark = 'deleted'
         else:
             count_fixed = count_total
             count_not_fixed = 0
             remark = 'offline'
         if count_total != 0:
             if need_scan:
-                if count_not_fixed == 0:
+                if project.status == 1:
+                    if count_not_fixed == 0:
+                        count_project_fixed += 1
+                        count_vulnerability_fixed += count_fixed
+                        ret_whole = 'fixed'
+                    else:
+                        count_project_not_fixed += 1
+                        count_vulnerability_fixed += count_fixed
+                        count_vulnerability_not_fixed += count_not_fixed
+                        ret_whole = 'not_fixed'
+                else:
+                    # deleted project
                     count_project_fixed += 1
                     count_vulnerability_fixed += count_fixed
                     ret_whole = 'fixed'
-                else:
-                    count_project_not_fixed += 1
-                    count_vulnerability_fixed += count_fixed
-                    count_vulnerability_not_fixed += count_not_fixed
-                    ret_whole = 'not_fixed'
             else:
                 count_project_fixed += 1
                 count_vulnerability_fixed += count_fixed
