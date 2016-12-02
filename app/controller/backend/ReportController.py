@@ -45,7 +45,7 @@ def reports(vid, start_time, end_time):
         vulnerability_fixed_week = CobraResults.query.filter(CobraResults.rule_id.in_(special_rules_ids), CobraResults.created_at > '2016-11-28 00:00:00', CobraResults.created_at < '2016-11-04 23:59:59', CobraResults.status == 2).count()
         vulnerability_not_fixed_week = CobraResults.query.with_entities(CobraResults.id).filter(CobraResults.updated_at > '2016-11-28 00:00:00', CobraResults.updated_at < '2016-11-04 23:59:59', CobraResults.status < 2).count()
 
-    filter_group = (CobraResults.updated_at > '{0} 00:00:00'.format(start_time), CobraResults.updated_at < '{0} 23:59:59'.format(end_time),)
+    filter_group = (CobraResults.created_at > '{0} 00:00:00'.format(start_time), CobraResults.created_at < '{0} 23:59:59'.format(end_time),)
     for project in projects:
         if vid is 0:
             filter_group_total_base = (CobraResults.project_id == project.id,)
