@@ -24,6 +24,36 @@ $(function () {
                     vulnerabilities_list.next_page();
                 }
             });
+
+            // mistake
+            $('button.mistake').on('click', function () {
+                if (window.confirm('Add white-list for the vulnerability?')) {
+                    var rule_id = $('input[name=rule_id]').val();
+                    if (rule_id == '') {
+                        alert('Select list of vulnerability!');
+                        return;
+                    }
+                    var reason = window.prompt('Why add white-list?');
+                    if (reason == '') {
+                        alert('Add white-list reason can\'t empty!');
+                        return;
+                    }
+                    var data = {
+                        'project': $('input[name=project_id]').val(),
+                        'rule': rule_id,
+                        'path': $('input[name=vulnerability_path]').val(),
+                        'reason': reason,
+                        'status': 1
+                    };
+                    $.post('/admin/white-list/create/', data, function (ret) {
+                        if (ret.code == 1001) {
+                            alert(ret.message);
+                        } else {
+                            alert(ret.message);
+                        }
+                    }, 'JSON');
+                }
+            });
         },
         next_page: function () {
             this.page = this.page + 1;
@@ -101,6 +131,9 @@ $(function () {
                                         $('.r_author').text(data.rule.author);
                                         $('.r_level').text(data.rule.level);
                                         $('.r_repair').html(data.rule.repair);
+
+                                        $('input[name=vulnerability_path]').val(data.detail.file);
+                                        $('input[name=rule_id]').val(data.rule.id);
 
                                         // vulnerabilities description
                                         // $('.v_name').text(data.vulnerabilities.name);
