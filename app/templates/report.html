@@ -405,6 +405,9 @@ function demo_vulnerabilities(){
                                                     <li><strong>Found time: </strong><span class="found_time">demo case</span></li>
                                                     <li><strong>Processed time: </strong><span class="updated_time">demo case</span></li>
                                                 </ul>
+                                                {% if data.is_login %}
+                                                    <button class="btn btn-info btn-xs mistake">Mistake?</button>
+                                                {% endif %}
                                             </div> <!-- .panel-body -->
                                         </div>
                                         <div class="panel panel-default col-md-12">
@@ -483,6 +486,8 @@ function demo_vulnerabilities(){
     <input type="hidden" name="project_id" value="{{ data.project_id }}">
     <input type="hidden" name="task_id" value="{{ data.task_id }}">
     <input type="hidden" name="need_scan" value="{{ data.need_scan }}">
+    <input type="hidden" name="rule_id" value="">
+    <input type="hidden" name="vulnerability_path" value="">
     <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>

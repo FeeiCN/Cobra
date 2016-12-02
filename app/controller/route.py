@@ -15,7 +15,7 @@ import time
 import os
 from pickup.git import Git
 from utils import common, config, const
-from flask import jsonify, render_template, request, abort
+from flask import jsonify, render_template, request, abort, session
 from sqlalchemy import and_, func
 from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
@@ -42,6 +42,7 @@ def homepage():
 
 @web.route('/report/<int:project_id>', methods=['GET'])
 def report(project_id):
+    is_login = session.get('is_login') and session.get('is_login') is True
     # 待搜索的task id
     search_task_id = request.args.get("search_task", "")
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
@@ -317,6 +318,7 @@ def report(project_id):
                 "unrepair_result_number": unrepair_results_number,
             }
         },
+        'is_login': is_login
     }
     return render_template('report.html', data=data)
 
