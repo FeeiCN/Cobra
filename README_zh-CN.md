@@ -37,13 +37,15 @@ Cobra是一款定位于静态代码安全分析系统。通过收集互联网常
 
 
 ## 截图
-##### 自助扫描
+##### Cobra Manual Scan
 ![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
-##### 审计报告
-![Cobra Report](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
-##### 管理后台
-![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
-
+##### Cobra Report
+![Cobra report overview](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
+![Cobra report vulnerability](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_vulnerability.png)
+![Cobra report extension](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_extension.png)
+##### Cobra Manage
+![Cobra manage overview](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
+![Cobra manage rule](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/manage_rule.png)
 ## Beta版本
 Cobra目前一个Beta版本，还有些不完善的地方，因此我们需要您的贡献，不管是测试、开发、漏洞扫描规则还是建议意见。
 

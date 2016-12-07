@@ -40,9 +40,12 @@ White Hat can be customized private Cobra scanning rules, open source project co
 ##### Cobra Manual Scan
 ![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
 ##### Cobra Report
-![Cobra Report](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
+![Cobra report overview](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
+![Cobra report vulnerability](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_vulnerability.png)
+![Cobra report extension](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_extension.png)
 ##### Cobra Manage
-![Cobra Manage](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
+![Cobra manage overview](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
+![Cobra manage rule](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/manage_rule.png)
 
 ## Beta version
 Cobra is currently a beta version, there are some imperfections and bugs, so we need your contribution, whether it is testing, development, vulnerability scanning rules or advice.
