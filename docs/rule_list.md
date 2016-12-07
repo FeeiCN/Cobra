@@ -7,21 +7,32 @@ _This chapter is perfect, please continue to pay attention!_
 
 You can use this to learn how to write a scan rule: [Cobra scan rule writing](http://wufeifei.com/scan-engine/)
 
-## Scan rule list (sorted)
+## Open scan rule list (sorted)
 
-| Supported Languages ​​| Types | Rules | Contributors | Accuracy ||
-|---|---|---|---|---|---|
-|PHP||||||
-||XSS|||||
-| | |Ouput|[@Feei](http://wufeifei.com)|100%|Output Param|
-| |SSRF||||||
-| | |CURL|[@Feei](http://wufeifei.com)|100%|CURL SSRF|
-| |Logic Bug||||||
-| |Stack Trace||||||
-| |Deprecated Function||||||
-| |Information Disclosure||||||
-|Java||||||
-|Backup||||||
-|PSD||||||
-|Thumb||||||
-|log||||||
+|SSRF|curl|
+|---|---|
+|Author|Feei|
+|Language| PHP|
+|Regex location|`curl_setopt\s?\(.*,\s?CURLOPT_URL\s?,(.*)\)`|
+|Regex repair|`curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)`|
+|TestCase|TODO|
+|Repair|[WAVR(SSRF)](https://github.com/wufeifei/WAVR/blob/master/SSRF.md)|
+
+|Trojan|eval|
+|---|---|
+|Author|Feei|
+|Language| PHP|
+|Regex location|`eval\(base64_decode\(\$_POST\[`|
+|Regex repair|None|
+|TestCase|TODO|
+|Repair|TODO|
+
+|Hard-coded Password|md5|
+|---|---|
+|Author|Magerx|
+|Language| PHP|
+|Regex location|`([\$\w\->]+\s*(?:=|=>)\s*["'][a-f0-9]{32}\s*["']\s*[;,])`|
+|Regex repair|None|
+|TestCase|TODO|
+|Repair|[WAVR(Hard-coded Password)](https://github.com/wufeifei/WAVR/blob/master/Hard-coded_password.md)|
+
