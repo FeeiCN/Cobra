@@ -7,7 +7,7 @@ _This chapter is perfect, please continue to pay attention!_
 
 You can use this to learn how to write a scan rule: [Cobra scan rule writing](http://wufeifei.com/scan-engine/)
 
-## Sweep Rule List (sorted)
+## Scan rule list (sorted)
 
 | Supported Languages ​​| Types | Rules | Contributors | Accuracy ||
 |---|---|---|---|---|---|
