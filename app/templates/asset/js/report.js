@@ -54,6 +54,27 @@ $(function () {
                     }, 'JSON');
                 }
             });
+
+            // delete
+            $('button.delete').on('click', function () {
+                var vid = $('input[name=vid]').val();
+                if (vid == "") {
+                    alert("Select vulnerability on the left");
+                    return;
+                }
+                if (window.confirm('Are you sure you want to remove this vulnerability?')) {
+                    var data = {
+                        'vid': vid
+                    };
+                    $.post('/admin/vulnerability/delete/', data, function (ret) {
+                        if (ret.code == 1001) {
+                            alert(ret.message);
+                        } else {
+                            alert(ret.message);
+                        }
+                    }, 'JSON');
+                }
+            });
         },
         next_page: function () {
             this.page = this.page + 1;
@@ -134,6 +155,7 @@ $(function () {
 
                                         $('input[name=vulnerability_path]').val(data.detail.file);
                                         $('input[name=rule_id]').val(data.rule.id);
+                                        $('input[name=vid]').val(data.detail.id);
 
                                         // vulnerabilities description
                                         // $('.v_name').text(data.vulnerabilities.name);
