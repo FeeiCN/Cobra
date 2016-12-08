@@ -98,6 +98,26 @@ def delete_white_list():
         return jsonify(code=4002, message='unknown error.')
 
 
+@web.route(ADMIN_URL + '/vulnerability/delete/', methods=['POST'])
+@login_required
+def delete_vulnerability():
+    vc = ValidateClass(request, 'vid')
+    ret, msg = vc.check_args()
+    if not ret:
+        return jsonify(code=4001, message=msg)
+    from app.models import CobraResults
+
+    try:
+        vulnerability_ret = CobraResults.query.filter(CobraResults.id == vc.vars.vid).delete()
+        if vulnerability_ret is not None:
+            db.session.commit()
+            return jsonify(code=1001, message='Deleted success!')
+        else:
+            return jsonify(code=4001, message='Not exist this vulnerability')
+    except:
+        return jsonify(code=4002, message="delete failed")
+
+
 # edit the special white list
 @web.route(ADMIN_URL + '/white-list/edit/<int:wid>', methods=['GET', 'POST'])
 @login_required
