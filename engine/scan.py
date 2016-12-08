@@ -112,7 +112,7 @@ class Scan:
             repo_author = getpass.getuser()
             repo_directory = self.target
             if not os.path.exists(repo_directory):
-                return 1004, 'Repo_directory Not Found'
+                return 1004, 'repo directory not exist ({0})'.format(repo_directory)
 
         if new_version == "" or old_version == "":
             scan_way = 1

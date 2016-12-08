@@ -290,7 +290,13 @@ class Repair(Command):
                 'third_party_vulnerabilities_name': rule.description,
                 'third_party_vulnerabilities_type': vuln_all_d[rule.vul_id]
             }
-            Core(result_info, rule, project_info.name, []).repair()
+            # White list
+            white_list = []
+            ws = CobraWhiteList.query.with_entities(CobraWhiteList.path).filter_by(project_id=result.project_id, rule_id=result.rule_id, status=1).all()
+            if ws is not None:
+                for w in ws:
+                    white_list.append(w.path)
+            Core(result_info, rule, project_info.name, white_list).repair()
 
 
 # 命令行
