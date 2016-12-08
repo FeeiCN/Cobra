@@ -137,7 +137,10 @@ def reports(vid, start_time, end_time):
             rank.append(s)
     rank = sorted(rank, key=lambda x: x['not_fixed'], reverse=True)
     vulnerabilities_types = CobraVuls.query.all()
-    print(vid)
+    if start_time == '0':
+        start_time = ''
+    if end_time == '0':
+        end_time = ''
     data = {
         'rank': rank,
         'vulnerabilities_types': vulnerabilities_types,
