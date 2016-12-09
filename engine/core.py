@@ -419,19 +419,15 @@ class Core:
         if self.is_can_parse() and self.rule_repair.strip() != '':
             try:
                 parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
-                if parse_instance.is_controllable_param():
-                    if parse_instance.is_repair(self.rule_repair, self.block_repair):
-                        logging.info("Static: repaired")
-                        # Fixed
-                        self.status = self.status_fixed
-                        self.repair_code = self.repair_code_fixed
-                        self.process_vulnerabilities()
-                        return
-                    else:
-                        logging.critical("[repair] not fixed")
-                        return
+                if parse_instance.is_repair(self.rule_repair, self.block_repair):
+                    logging.info("Static: repaired")
+                    # Fixed
+                    self.status = self.status_fixed
+                    self.repair_code = self.repair_code_fixed
+                    self.process_vulnerabilities()
+                    return
                 else:
-                    logging.info("[repair] param uncontrollable")
+                    logging.critical("[repair] not fixed")
                     return
             except:
                 logging.info(traceback.print_exc())
