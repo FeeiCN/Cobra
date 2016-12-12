@@ -27,10 +27,12 @@ from utils import config, common
 
 logging = logging.getLogger(__name__)
 
+VERSION = '1.6.3'
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-# 应用配置
+# Application Configuration
 template = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 asset = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates/asset')
 web = Flask(__name__, template_folder=template, static_folder=asset)
@@ -58,7 +60,9 @@ db = SQLAlchemy(web)
 with web.app_context():
     from models import *
 
-manager = Manager(web)
+description = "Cobra v{0} ( https://github.com/wufeifei/cobra ) is a static code analysis system that automates the detecting vulnerabilities and security issue.".format(VERSION)
+
+manager = Manager(web, description=description)
 
 host = config.Config('cobra', 'host').value
 port = config.Config('cobra', 'port').value
@@ -67,7 +71,7 @@ port = int(port)
 
 class Statistic(Command):
     """
-    统计代码相关信息(代码行数/注释行数/空白行数)
+    Statistics code-related information (lines of code / lines of comments / number of blank lines)
     """
     option_list = (
         Option('--target', '-t', dest='target', help='directory'),
@@ -102,7 +106,7 @@ class Statistic(Command):
 
 class Scan(Command):
     """
-    扫描漏洞
+    Scan for vulnerabilities
     """
     option_list = (
         Option('--target', '-t', dest='target', help='scan target(directory/git repository/svn url/file path)'),
@@ -144,7 +148,7 @@ class Scan(Command):
 
 class Install(Command):
     """
-    初始化表结构
+    Initialize the table structure
     """
 
     def run(self):
@@ -246,7 +250,7 @@ class Install(Command):
 
 class Repair(Command):
     """
-    检测已有漏洞修复状况
+    Detection of existing vulnerabilities to repair the situation
     Usage: python cobra.py repair --pid=your_project_id
     """
     option_list = (
@@ -260,24 +264,24 @@ class Repair(Command):
         if pid is None:
             logging.critical("Please set --pid param")
             sys.exit()
-        # 项目信息
+        # Project info
         project_info = CobraProjects.query.filter_by(id=pid).first()
         if project_info.repository[0] == '/':
             project_directory = project_info.repository
         else:
             project_directory = Git(project_info.repository).repo_directory
-        # 漏洞第三方ID
+        # Third-party ID
         vuln_all = CobraVuls.query.all()
         vuln_all_d = {}
         for vuln in vuln_all:
             vuln_all_d[vuln.id] = vuln.third_v_id
-        # 未修复的漏洞数据
+        # Not fixed vulnerabilities
         result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
             CobraResults.project_id == pid,
             CobraResults.status < 2
         ).all()
         for index, (rule, result) in enumerate(result_all):
-            # 核心规则校验
+            # Rule
             result_info = {
                 'task_id': result.task_id,
                 'project_id': result.project_id,
@@ -299,18 +303,19 @@ class Repair(Command):
             Core(result_info, rule, project_info.name, white_list).repair()
 
 
-# 命令行
+# CLI
 manager.add_command('start', Server(host=host, port=port, threaded=True))
 manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
 manager.add_command('install', Install())
 manager.add_command('repair', Repair())
+manager.add_option('-v', "--version", action="store_true", help="Cobra version", default=True)
 
-# 前端路由
+# Front route
 from app.controller import route
 from app.controller import api
 
-# 后端服务
+# Background route
 from app.controller.backend import BackendAPIController
 from app.controller.backend import DashboardController
 from app.controller.backend import IndexController
