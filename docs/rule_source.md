@@ -2,6 +2,7 @@
 
 ### [SonarQube](https://github.com/SonarSource/sonarqube)
 - [SonarQube Rule List](http://dist.sonarsource.com/reports/coverage/cwe/squid_cwe_coverage.html)
+- [SonarQube Vulnerability Rule List](https://sonarqube.com/coding_rules#types=VULNERABILITY)
 - [SonarQube Rule Source](https://github.com/SonarSource/sonar-java/tree/master/java-checks/src/main/java/org/sonar/java/checks)
 
 ### [RIPS](https://www.ripstech.com/)
