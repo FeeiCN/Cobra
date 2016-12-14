@@ -4,7 +4,7 @@
     controller.api
     ~~~~~~~~~~~~~~
 
-    对外API接口实现
+    External API interface implementation
     :doc:       http://cobra-docs.readthedocs.io/en/latest/API
 
     :author:    Feei <wufeifei#wufeifei.com>
@@ -23,14 +23,14 @@ from engine import scan
 
 logging = logging.getLogger(__name__)
 
-# API路径
+# API base path
 API_URL = '/api'
 
 
 @web.route(API_URL + '/add', methods=['POST'])
 def add_task():
     """
-    创建扫描任务
+    Create a scan task
     post json to http://url/api/add_new_task
     example:
         {
@@ -89,7 +89,7 @@ def add_task():
 @web.route(API_URL + '/status', methods=['POST'])
 def status_task():
     """
-    查询扫描任务状态
+    Query the scan task status
     :return:
     """
     scan_id = request.json.get('scan_id')
@@ -126,7 +126,7 @@ def status_task():
 @web.route(API_URL + '/upload', methods=['POST'])
 def upload_file():
     """
-    通过上传压缩文件进行扫描
+    Scan by uploading compressed files
     :return:
     """
     if 'file' not in request.files:
@@ -137,7 +137,7 @@ def upload_file():
     if file_instance and common.allowed_file(file_instance.filename):
         filename = secure_filename(file_instance.filename)
         file_instance.save(os.path.join(os.path.join(config.Config('upload', 'directory').value, 'uploads'), filename))
-        # 扫描任务
+        # Start scan
         code, result = scan.Scan(filename).compress()
         return jsonify(code=code, result=result)
     else:
@@ -148,22 +148,22 @@ def upload_file():
 def queue():
     from utils.queue import Queue
     """
-    推送到第三方漏洞管理平台
-    先启动队列
+    Pushed to a third-party vulnerability management platform
+    Start the queue first
         celery -A daemon worker --loglevel=info
 
     :return:
     """
-    # 配置项目ID和漏洞ID
+    # Configure the project ID and the vulnerability ID
     project_id = request.json.get('project_id')
     rule_id = request.json.get('rule_id')
     if project_id is None or rule_id is None:
-        return jsonify(code=1002, result='项目ID和规则ID不能为空')
+        return jsonify(code=1002, result='Project ID and Rule ID can\'t empty!')
 
-    # 项目信息
+    # Project Info
     project_info = CobraProjects.query.filter_by(id=project_id).first()
 
-    # 未推送的漏洞和规则信息
+    # Unpunched vulnerability and rule information
     result_all = db.session().query(CobraRules, CobraResults).join(CobraResults, CobraResults.rule_id == CobraRules.id).filter(
         CobraResults.project_id == project_id,
         CobraResults.status == 0,
@@ -171,16 +171,16 @@ def queue():
     ).all()
 
     if len(result_all) == 0:
-        return jsonify(code=1001, result="没有未推送的漏洞")
+        return jsonify(code=1001, result="There are no unpacked vulnerabilities")
 
-    # 处理漏洞
+    # Dealing with vulnerabilities
     for index, (rule, result) in enumerate(result_all):
         try:
-            # 取出漏洞类型信息
+            # Query the vulnerability type information
             vul_info = CobraVuls.query.filter(CobraVuls.id == rule.vul_id).first()
-            # 推动到第三方漏洞管理平台
+            # Pushed to a third-party vulnerability management platform
             q = Queue(project_info.name, vul_info.name, vul_info.third_v_id, result.file, result.line, result.code, result.id)
             q.push()
         except:
             print(traceback.print_exc())
-    return jsonify(code=1001, result="成功推送{0}个漏洞到第三方漏洞管理平台".format(len(result_all)))
+    return jsonify(code=1001, result="Successfully pushed {0} vulnerabilities to a third-party vulnerability management platform".format(len(result_all)))

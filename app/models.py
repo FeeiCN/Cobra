@@ -192,9 +192,10 @@ class CobraResults(db.Model):
     code = db.Column(db.String(512), nullable=False, default=None)
     repair = db.Column(INTEGER(6), nullable=False, default=None)
     """
-    0: 漏洞扫完后初始化状态
-    1: 已推送给第三方漏洞管理平台
-    2: 已经修复
+    status: description
+    0: Vulnerability after initializing state
+    1: Has been pushed to a third-party vulnerability management platform
+    2: Already fixed
     """
     status = db.Column(TINYINT, default=None, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
@@ -439,10 +440,10 @@ class CobraWebFrameRules(db.Model):
     __table_args__ = ({"mysql_charset": "utf8mb4"})
 
     id = db.Column(INTEGER(10, unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    frame_id = db.Column(INTEGER(10, unsigned=True), nullable=False, default=None)  # 框架ID
-    path_rule = db.Column(db.String(512), nullable=False, default=None)  # 路径规则
-    content_rule = db.Column(db.String(512), nullable=False, default=None)  # 文件内容规则
-    status = db.Column(TINYINT(1, unsigned=True), nullable=False, default=None)  # 状态1-开启，2-关闭
+    frame_id = db.Column(INTEGER(10, unsigned=True), nullable=False, default=None)  # frame id
+    path_rule = db.Column(db.String(512), nullable=False, default=None)  # path rule
+    content_rule = db.Column(db.String(512), nullable=False, default=None)  # file content rule
+    status = db.Column(TINYINT(1, unsigned=True), nullable=False, default=None)  # status 1:on/2:off
     created_time = db.Column(db.DATETIME, nullable=False, default=None)
     updated_time = db.Column(db.DATETIME, nullable=False, default=None)
 
@@ -466,8 +467,8 @@ class CobraWebFrame(db.Model):
     __table_args__ = ({"mysql_charset": "utf8mb4"})
 
     id = db.Column(INTEGER(10, unsigned=True), primary_key=True, autoincrement=True, nullable=False)
-    frame_name = db.Column(db.String(64), nullable=False, default=None)  # 框架名称
-    description = db.Column(db.String(256), nullable=False, default=None)  # 框架描述
+    frame_name = db.Column(db.String(64), nullable=False, default=None)  # frame name
+    description = db.Column(db.String(256), nullable=False, default=None)  # frame description
 
     def __init__(self, frame_name, description):
         self.frame_name = frame_name
