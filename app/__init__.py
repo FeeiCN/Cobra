@@ -309,7 +309,6 @@ manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
 manager.add_command('install', Install())
 manager.add_command('repair', Repair())
-manager.add_option('-v', "--version", action="store_true", help="Cobra version", default=True)
 
 # Front route
 from app.controller import route
