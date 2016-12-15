@@ -16,7 +16,7 @@ pages:
   - CLI: 'CLI.md'
   - API: 'API.md'
 - Structure:
-  - Framework: 'framework.md'
+  - Architecture: 'architecture.md'
   - Tables: 'tables.md'
 - Resources:
   - Rule List: 'rule_list.md'
