@@ -1,25 +1,31 @@
-# 特殊情况处理方式
+# Special circumstances
 
-__(以下操作会导致Cobra跳过对应项目或文件的安全扫描,请谨慎使用!)__
+__(The following actions will cause Cobra to skip the security scan of the corresponding project or file. Use caution!!!)__
 
-### 1. 该文件为测试用例
+### 1. TestCase file
 
-> 如测试用例中的密码是工作中常用密码，必须改掉。
+> Must fixed if the test case password is a common password at work.
 >
-> 如果不是常用密码，则按照以下方式修改，[Cobra](https://github.com/wufeifei/cobra)将跳过检测。
+> If it is not a common password, modify it in the following way，[Cobra](https://github.com/wufeifei/cobra) will skip。
 
-##### - Java测试用例
+```
+- /test/
+- /tests/
+- /unitTests/
+```
 
-请将上层文件夹命名为test，[Cobra](https://github.com/wufeifei/cobra)将跳过对该文件夹中所有文件的所有安全检测。
+##### - Java TestCase
+
+The file path contains test / tests / unitTests，[Cobra](https://github.com/wufeifei/cobra) will skip。
 
 
 
-##### - PHP测试用例
+##### - PHP TestCase
 
 ```php
 /**
- * 第一种情况：单函数为测试函数
- * @test // 在函数注释中增加此行，Cobra将跳过该函数的所有安全检查。
+ * The first case: a single function for the test function
+ * @test // When you add this line to a function comment, Cobra skips all the security checks for that function.
  */
 function test_sendSMS()
 {
@@ -31,8 +37,8 @@ function test_sendSMS()
 
 ```php
 /**
- * 第二种情况：整个文件或者类都为测试函数
- * @test // 在文件顶部注释中增加此行，Cobra将跳过该文件的所有安全检查。
+ * The second case: the entire file or class for the test function
+ * @test // When you add this line in the comment at the top of the file, Cobra skips all the security checks for that file.
  */
 class test{
   function test_1(){}
@@ -41,17 +47,17 @@ class test{
 }
 ```
 
-### 2. 如果整个项目都废弃了（未部署、未上线、未使用）
+### 2. Project offline (not deployed, not on-line, not used)
 
-在项目根目录增加一个文件，并确保该文件无法通过线上Web目录获取到。
+Add a file to the project root directory and make sure that the file is not available through the online Web directory.
 
-文件名：cobra
+Filename: cobra
 
-文件内容：
+File content:
 
 ```javascript
 #
-# 本文件为Cobra安全扫描配置文件，如不清楚使用方法请联系@止介，请勿擅自修改！
+# This file is the Cobra security scan configuration file, please contact @Security before making changes!
 #
 # @author   Feei <wufeifei#wufeifei.com>
 # @link     https://github.com/wufeifei/cobra
@@ -59,11 +65,11 @@ class test{
 scan:false
 ```
 
-### 3. 如果项目引用了开源项目
+### 3. Third-party Open Source code
 
-开源项目中扫到的常规问题(硬编码密码等),是不需要修改的.
+Open source projects in the sweep to the general problem, is no need to modify.
 
-可以在对应触发文件上头部注释中增加`@cobra third-party`即可跳过该文件的扫描.
+You can skip the scan of the file by adding `@cobra third-party` in the header comment on the corresponding trigger file.
 
 ```php
 /**
@@ -76,9 +82,9 @@ scan:false
  something code...
 ```
 
-### 4. 常量(无鉴权作用的key)被判定成硬编码密码了
+### 4. Const in Hard-coded Password Case
 
-在确定该常量的确无鉴权作用时,在触发文件头部注释中增加`@cobra const`即可跳过该文件的扫描.(若使用该方法跳过本应修复的地方,后果自负)
+When determining that the constant does not have authentication, add `@cobra const` to the file's header comment to skip the file's scan.
 
 ```php
 /**
