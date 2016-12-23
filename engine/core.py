@@ -95,6 +95,7 @@ class Core:
         """
         special_paths = [
             '/node_modules/',
+            '/bower_components/',
             '.min.js',
         ]
         for path in special_paths:
