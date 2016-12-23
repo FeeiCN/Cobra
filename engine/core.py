@@ -93,7 +93,14 @@ class Core:
         :method: 通过判断文件名中是否包含.min.js来判定
         :return: boolean
         """
-        return ".min.js" in self.file_path
+        special_paths = [
+            '/node_modules/',
+            '.min.js',
+        ]
+        for path in special_paths:
+            if path in self.file_path:
+                return True
+        return False
 
     def is_test_file(self):
         """
