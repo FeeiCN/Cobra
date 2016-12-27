@@ -43,60 +43,51 @@ def homepage():
 @web.route('/report/<int:project_id>', methods=['GET'])
 def report(project_id):
     is_login = session.get('is_login') and session.get('is_login') is True
-    # 待搜索的task id
     search_task_id = request.args.get("search_task", "")
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
-    # 判断project id 和 task id 是否存在
-    # 获取 project id 相关的信息
     project_info = CobraProjects.query.filter(CobraProjects.id == project_id).first()
     if project_info is None:
-        # 没有该project id
         abort(404)
 
-    # 获取task信息
+    # Use the project's latest task if not have task id
     if search_task_id is None:
-        # 没有传入task id，获取该project的最新task，用于获取task的基础信息
         task_info = CobraTaskInfo.query.filter(
             CobraTaskInfo.target == project_info.repository
         ).order_by(CobraTaskInfo.id.desc()).first()
     else:
-        # 传入了task id，获取信息
         task_info = CobraTaskInfo.query.filter(CobraTaskInfo.id == search_task_id).first()
 
-    # 判断是否取得task info
     if task_info is None:
         abort(404)
 
-    # 获取 task info 中的部分信息
-    code_number = u"统计中..." \
+    code_number = u"Statistics..." \
         if task_info.code_number is None or task_info.code_number == 0 \
         else common.convert_number(task_info.code_number)
 
-    # 时间戳->datetime
+    # timestamp->datetime
     time_start = time.strftime("%H:%M:%S", time.localtime(task_info.time_start))
     time_end = time.strftime("%H:%M:%S", time.localtime(task_info.time_end))
 
-    # 任务信息
+    # tasks
     tasks = CobraTaskInfo.query.filter_by(target=project_info.repository).order_by(CobraTaskInfo.updated_at.desc()).all()
 
-    # 没有指定task id，获取该project的所有扫描结果
-    # 指定了task id，选取该task的结果
+    # get project's all result if not have task id
     if search_task_id is None:
         # Default task id
         search_task_id = tasks[0].id
 
-        # 获取漏洞总数
+        # vulnerability count
         scan_results_number = CobraResults.query.filter(CobraResults.project_id == project_id).count()
         # scan_results_number = db.session.query(func.count()).filter(CobraResults.project_id == project_id)
-        # 待修复的漏洞总数
+        # Not fixed vulnerability count
         unrepair_results_number = CobraResults.query.filter(
             CobraResults.project_id == project_id, CobraResults.status < 2
         ).count()
-        # 已修复的漏洞总数
+        # Fixed vulnerability count
         repaired_results_number = CobraResults.query.filter(
             CobraResults.project_id == project_id, CobraResults.status == 2
         ).count()
-        # 获取出现的待修复的漏洞类型
+        # Not fixed vulnerability types
         showed_vul_type = db.session.query(
             func.count().label("showed_vul_number"), CobraVuls.name, CobraVuls.id
         ).filter(
@@ -106,7 +97,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
-        # 获取出现的待修复的规则类型
+        # Not fixed rules types
         showed_rule_type = db.session.query(CobraRules.description, CobraRules.id).filter(
             and_(
                 CobraResults.project_id == project_id,
@@ -114,7 +105,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()
-        # 获取不同等级的 已修复 漏洞数量
+        # Fixed vulnerability count group by level
         showed_repaired_level_number = db.session.query(
             func.count().label('vuln_number'), CobraRules.level
         ).filter(
@@ -125,7 +116,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
-        # 获取不同等级的 未修复 漏洞数量
+        # Not fixed vulnerability count group by level
         showed_unrepair_level_number = db.session.query(
             func.count().label('vuln_number'), CobraRules.level
         ).filter(
@@ -136,7 +127,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
-        # 获取不同等级的 总共 漏洞数量
+        # Total vulnerability count group by level
         showed_level_number = db.session.query(
             func.count().label('vuln_number'), CobraRules.level
         ).filter(
@@ -147,20 +138,20 @@ def report(project_id):
             )
         ).group_by(CobraRules.level).all()
     else:
-        # 指定了task id， 选取该task的结果
-        # 全部漏洞数量
+        # Select the task's result if have special task id
+        # Total vulnerability count
         scan_results_number = CobraResults.query.filter(
             CobraResults.task_id == search_task_id
         ).count()
-        # 待修复的漏洞数量
+        # Not fixed vulnerability count
         unrepair_results_number = CobraResults.query.filter(
             CobraResults.task_id == search_task_id, CobraResults.status < 2
         ).count()
-        # 已修复的漏洞数量
+        # Fixed vulnerability count
         repaired_results_number = CobraResults.query.filter(
             CobraResults.task_id == search_task_id, CobraResults.status == 2
         ).count()
-        # 获取出现的待修复的漏洞类型
+        # Not fixed vulnerability types
         showed_vul_type = db.session.query(
             func.count().label("showed_vul_number"), CobraVuls.name, CobraVuls.id
         ).filter(
@@ -170,7 +161,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraVuls.name, CobraVuls.id).all()
-        # 获取出现的待修复的规则类型
+        # Not fixed vulnerability rules types
         showed_rule_type = db.session.query(CobraRules.description, CobraRules.id).filter(
             and_(
                 CobraResults.task_id == search_task_id,
@@ -178,7 +169,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id
             )
         ).group_by(CobraRules.id).all()
-        # 获取不同等级的 已修复 漏洞数量
+        # Fixed vulnerability count group by level
         showed_repaired_level_number = db.session.query(
             func.count().label('vuln_number'), CobraRules.level
         ).filter(
@@ -189,7 +180,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
-        # 获取不同等级的 未修复 漏洞数量
+        # Not fixed vulnerability count group by level
         showed_unrepair_level_number = db.session.query(
             func.count().label('vuln_number'), CobraRules.level
         ).filter(
@@ -200,7 +191,7 @@ def report(project_id):
                 CobraVuls.id == CobraRules.vul_id,
             )
         ).group_by(CobraRules.level).all()
-        # 获取不同等级的 总共 漏洞数量
+        # Total vulnerability count group by level
         showed_level_number = db.session.query(
             func.count().label('vuln_number'), CobraRules.level
         ).filter(
@@ -211,9 +202,9 @@ def report(project_id):
             )
         ).group_by(CobraRules.level).all()
 
-    # 提供给筛选列表
+    # For frontpage filter
     select_vul_type = list()
-    # 存下每种漏洞数量
+    # Every vulnerability count
     chart_vuls_number = list()
     for r in showed_vul_type:
         select_vul_type.append([r[1], r[2]])
@@ -221,9 +212,9 @@ def report(project_id):
     select_rule_type = list()
     for r in showed_rule_type:
         select_rule_type.append([r[0], r[1]])
-    # 统计不同等级的漏洞信息
-    # 1-低危， 2-中危， 3-高危， 其他值-未定义
-    # 总共数量
+    # Statistic every vulnerability status level description
+    # 1-low， 2-medium， 3-high， other-undefined
+    # Total number
     low_level_number = medium_level_number = high_level_number = unknown_level_number = 0
     for every_level in showed_level_number:
         if every_level[1] == 1:
@@ -234,7 +225,7 @@ def report(project_id):
             high_level_number = every_level[0]
         else:
             unknown_level_number = every_level[0]
-    # 已经修复的数量
+    # Fixed number
     repaired_low_level_number = repaired_medium_level_number = repaired_high_level_number = repaired_unknown_level_number = 0
     for every_level in showed_repaired_level_number:
         if every_level[1] == 1:
@@ -245,7 +236,7 @@ def report(project_id):
             repaired_high_level_number = every_level[0]
         else:
             repaired_unknown_level_number = every_level[0]
-    # 未修复的数量
+    # Not fixed number
     unrepair_low_level_number = unrepair_medium_level_number = unrepair_high_level_number = unrepair_unknown_level_number = 0
     for every_level in showed_unrepair_level_number:
         if every_level[1] == 1:
@@ -257,7 +248,7 @@ def report(project_id):
         else:
             unrepair_unknown_level_number = every_level[0]
 
-    # 漏洞状态信息
+    # Status description
     vuls_status = [
         {"status": "All", "value": 0},
         {"status": "Fixed", "value": 1},
@@ -326,24 +317,18 @@ def report(project_id):
 @web.route('/list', methods=['POST'])
 def vulnerabilities_list():
     project_id = request.form.get("project_id", None)
-    # 待搜索的漏洞类型ID
     search_vul_id = request.form.get("search_vul_type", None)
-    # 待搜索的规则类型ID
     search_rule_id = request.form.get("search_rule", None)
-    # 待搜索的漏洞等级
     search_level = request.form.get("search_level", None)
-    # 待搜索的task id
     search_task_id = request.form.get("search_task", "")
     search_task_id = None if search_task_id == "all" or search_task_id == "" else search_task_id
-    # 获取页码， 默认第一页
+    # Default page 1
     try:
         page = int(request.form.get("page", 1))
     except ValueError:
         page = 1
-    # 是否显示修复的漏洞
     # 0 - all, 1 - repaired, 2 - unrepair, 3 - others
     search_status_type = request.form.get("search_status", 2)
-    # 检索全部的漏洞信息
     # status: 0 - all, 1 - repaired, 2 - unrepair, 3 - others
     if search_task_id is None:
         filter_group = (
@@ -365,7 +350,6 @@ def vulnerabilities_list():
     elif search_status_type == "3":
         filter_group += (CobraResults.status == 1,)
 
-    # 根据传入的筛选条件添加SQL的条件
     if search_vul_id is not None and search_vul_id != "all":
         filter_group += (CobraVuls.id == search_vul_id,)
     if search_rule_id is not None and search_rule_id != "all":
@@ -373,7 +357,6 @@ def vulnerabilities_list():
     if search_level is not None and search_level != "all":
         filter_group += (CobraRules.level == search_level,)
 
-    # 构建SQL语句
     all_scan_results = db.session.query(
         CobraResults.id, CobraResults.file, CobraResults.line, CobraResults.code,
         CobraRules.description, CobraRules.level, CobraRules.regex_location,
@@ -383,7 +366,7 @@ def vulnerabilities_list():
         *filter_group
     )
 
-    # 设置分页
+    # Single page size
     page_size = 15
     total_number = all_scan_results.all()
     pagination = {
@@ -394,12 +377,10 @@ def vulnerabilities_list():
     total_pages = len(total_number) / page_size + 1
     all_scan_results = all_scan_results.limit(page_size).offset((page - 1) * page_size).all()
 
-    # 处理漏洞信息
     vulnerabilities = list()
     map_level = ["Undefined", "Low", "Medium", "High"]
     map_color = ["low", "low", "medium", "high"]
     for result in all_scan_results:
-        # 生成data数据
         data_dict = dict()
         data_dict['id'] = result[0]
         data_dict["file"] = result[1]
