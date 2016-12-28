@@ -494,8 +494,8 @@ def vulnerabilities_detail():
             'c_time': c_time,
             'repair': const.Vulnerabilities(v_detail.repair).repair_description(),
             'status': const.Vulnerabilities(v_detail.status).status_description(),
-            'created': v_detail.created_at,
-            'updated': v_detail.updated_at
+            'created': str(v_detail.created_at),
+            'updated': str(v_detail.updated_at)
         },
         'rule': {
             'id': rule_info.id,
@@ -505,8 +505,8 @@ def vulnerabilities_detail():
             'author': rule_info.author,
             'level': const.Vulnerabilities(rule_info.level).level_description(),
             'status': rule_info.status,
-            'created': rule_info.created_at,
-            'updated': rule_info.updated_at
+            'created': str(rule_info.created_at),
+            'updated': str(rule_info.updated_at)
         },
         'description': {
             'id': vulnerabilities_description.id,
