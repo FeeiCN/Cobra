@@ -153,3 +153,18 @@ def percent(part, whole, need_per=True):
     if part == 0 and whole == 0:
         return 0
     return '{0}{1}'.format(100 * float(part) / float(whole), per)
+
+
+def format_gmt(time_gmt, time_format=None):
+    """
+    Format GMT time
+    Ex: Wed, 14 Sep 2016 17:57:41 GMT to 2016-09-14 17:57:41
+    :param time_gmt:
+    :param time_format:
+    :return:
+    """
+    import time
+    if time_format is None:
+        time_format = '%Y-%m-%d %X'
+    t = time.strptime(time_gmt, "%a, %d %b %Y %H:%M:%S GMT")
+    return time.strftime(time_format, t)
