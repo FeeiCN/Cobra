@@ -28,7 +28,7 @@ public class BlacklistServiceImpl implements com.feei.service.security.api.Black
     // 可控
     private void sendGet() throws Exception {
 
-        String url = "http://wufeifei.com/ssrf";
+        String url = "http://blog.feei.cn/ssrf";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

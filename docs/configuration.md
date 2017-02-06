@@ -5,7 +5,7 @@ Rename **config.example** in the Cobra root directory to **config**.
 #
 # Configure Cobra to run the domain name, but do not need to configure it
 #
-domain: cobra.wufeifei.com
+domain: cobra.feei.cn
 
 #
 # Configure the host

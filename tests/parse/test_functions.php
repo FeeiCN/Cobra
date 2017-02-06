@@ -1,18 +1,18 @@
 <?php
 # 字符串,不可控
 function request1(){
-    curl_setopt($curl, CURLOPT_URL, "http://wufeifei.com/ssrf");
+    curl_setopt($curl, CURLOPT_URL, "http://blog.feei.cn/ssrf");
 }
 
 # 常量,不可控
 function request2(){
-    const URL = 'http://wufeifei.com/ssrf';
+    const URL = 'http://blog.feei.cn/ssrf';
     curl_setopt($curl, CURLOPT_URL, URL);
 }
 
 # 变量,不可控
 function request3(){
-    $url = 'http://wufeifei.com/ssrf';
+    $url = 'http://blog.feei.cn/ssrf';
     curl_setopt($curl, CURLOPT_URL, $url);
 }
 

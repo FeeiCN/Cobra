@@ -7,10 +7,10 @@
 
     Implements the test for cobra
 
-    :author:    Feei <wufeifei#wufeifei.com>
+    :author:    Feei <feei#feei.cn>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2016 Feei. All rights reserved
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 
 import unittest
@@ -191,7 +191,7 @@ class Test(unittest.TestCase):
         tests = [
             {
                 'line': 4,
-                'code': "curl_setopt($curl, CURLOPT_URL, \"http://wufeifei.com/ssrf\");",
+                'code': "curl_setopt($curl, CURLOPT_URL, \"http://blog.feei.cn/ssrf\");",
                 'result': False,
             },
             {

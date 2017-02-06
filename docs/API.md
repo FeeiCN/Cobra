@@ -1,7 +1,7 @@
 
 # config
 ```
-{url} = http://cobra.wufeifei.com/api/
+{url} = http://cobra.feei.cn/api/
 {key} = *************************
 ```
 
@@ -37,7 +37,7 @@ new_version | POST | True | 'string' | New Branch Version(current version)
 
 ** Manual test **
 ```
-curl -H "Content-Type: application/json" -X POST -d '{"key":"you key", "target":"https://github.com/wufeifei/grw.git","branch":"master"}' http://cobra.wufeifei.com/api/add
+curl -H "Content-Type: application/json" -X POST -d '{"key":"you key", "target":"https://github.com/wufeifei/grw.git","branch":"master"}' http://cobra.feei.cn/api/add
 
 {
     code: 1001,
@@ -71,7 +71,7 @@ scan_id | POST | False | 'string' | Scan ID
     result: {
         status: 'info', // Status
         text: '通过(部分存在风险，建议优化!)', // Description
-        report: 'http://cobra.wufeifei.com/report/123', // Report URL
+        report: 'http://cobra.feei.cn/report/123', // Report URL
         allow_deploy: true // Allow deploy this code
     }
 }
@@ -93,14 +93,14 @@ Code | Mean
 
 ** Manual Test **
 ```
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your key", "scan_id":"24"}' http://cobra.wufeifei.com/api/status
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your key", "scan_id":"24"}' http://cobra.feei.cn/api/status
 
 {
     status: 1001,
     result: {
         status: 'info', // Status
         text: '通过(部分存在风险，建议优化!)', // Description
-        report: 'http://cobra.wufeifei.com/report/123', // Report URL
+        report: 'http://cobra.feei.cn/report/123', // Report URL
         allow_deploy: true // Allow deploy this code
     }
 }
