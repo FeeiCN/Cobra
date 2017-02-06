@@ -1,6 +1,6 @@
 <?php
 # 不可控
-$url = "http://wufeifei.com/ssrf"
+$url = "http://blog.feei.cn/ssrf"
 curl_setopt($curl, CURLOPT_URL, $url);
 
 # 可控

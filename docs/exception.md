@@ -59,7 +59,7 @@ File content:
 #
 # This file is the Cobra security scan configuration file, please contact @Security before making changes!
 #
-# @author   Feei <wufeifei#wufeifei.com>
+# @author   Feei <feei#feei.cn>
 # @link     https://github.com/wufeifei/cobra
 # @document http://cobra-docs.readthedocs.io/
 scan:false

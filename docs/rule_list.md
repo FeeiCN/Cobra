@@ -5,7 +5,7 @@
 
 _This chapter is perfect, please continue to pay attention!_
 
-You can use this to learn how to write a scan rule: [Cobra scan rule writing](http://wufeifei.com/scan-engine/)
+You can use this to learn how to write a scan rule: [Cobra scan rule writing](http://blog.feei.cn/scan-engine/)
 
 ## Open scan rule list (sorted)
 
