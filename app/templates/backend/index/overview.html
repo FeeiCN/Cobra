@@ -145,7 +145,7 @@
     <div class="fu chart" id="chart_rar" style="height:500px;margin-bottom:20px;">
 
     </div>
-    <div class="fu chart" id="chart_rhr" style="height:500px;">
+    <div class="fu chart" id="chart_rhr" style="height:800px;">
 
     </div>
     <hr class="aky">
@@ -452,8 +452,8 @@
                             name: '作者命中数量',
                             type: 'pie',
                             selectedMode: 'single',
-                            radius: [0, '40%'],
-
+                            center: ['70%', '50%'],
+                            radius: [0, '30%'],
                             label: {
                                 normal: {
                                     position: 'inner'
@@ -473,7 +473,8 @@
                         {
                             name: '规则命中数量',
                             type: 'pie',
-                            radius: ['70%', '65%'],
+                            center: ['70%', '50%'],
+                            radius: ['40%', '55%'],
                             data: [
                                 {% for hit in data.hits %}
                                     {value: {{ hit['rank'] }}, name: '{{ hit['name'] }}'},
