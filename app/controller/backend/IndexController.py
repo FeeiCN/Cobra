@@ -12,7 +12,9 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import time
+import datetime
 import operator
+import calendar
 from flask import redirect, request, session, escape, render_template
 from sqlalchemy.sql import func, and_
 from . import ADMIN_URL
@@ -65,13 +67,86 @@ def index():
 @web.route(ADMIN_URL + '/overview', methods=['GET'])
 @login_required
 def main():
+    # time type
+    date = datetime.datetime.now()
+    c_month = int(date.strftime('%m'))
+    c_day = int(date.strftime('%d'))
+    c_year = int(date.strftime('%Y'))
+    c_quarter = 0
+    day_first = ''
+    day_last = ''
+    if c_month in [1, 2, 3]:
+        c_quarter = 1
+        c_quarter_first = 1
+        c_quarter_last = 3
+    elif c_month in [4, 5, 6]:
+        c_quarter = 2
+        c_quarter_first = 4
+        c_quarter_last = 6
+    elif c_month in [7, 8, 9]:
+        c_quarter = 3
+        c_quarter_first = 7
+        c_quarter_last = 9
+    elif c_month in [10, 11, 12]:
+        c_quarter = 4
+        c_quarter_first = 10
+        c_quarter_last = 12
+    time_type = request.args.get('tt')
+    if time_type not in ['w', 'm', 'q']:
+        time_type = 'w'
+
+    if time_type == 'm':
+        vt_x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        for i, x in enumerate(vt_x):
+            if x == c_month:
+                vt_x[i] = '当前{0}月'.format(x)
+            else:
+                vt_x[i] = '{0}月'.format(x)
+        cm, last_day = calendar.monthrange(c_year, c_month)
+        day_first = '{0}-{1}-{2}'.format(c_year, c_month, 1)
+        day_last = '{0}-{1}-{2}'.format(c_year, c_month, last_day)
+    elif time_type == 'q':
+        vt_x = ['Q1', 'Q2', 'Q3', 'Q4']
+        for i, x in enumerate(vt_x):
+            if (i + 1) == c_quarter:
+                vt_x[i] = '当前{0}'.format(x)
+        cm, last_day = calendar.monthrange(c_year, c_quarter_last)
+        day_first = '{0}-{1}-{2}'.format(c_year, c_quarter_first, 1)
+        day_last = '{0}-{1}-{2}'.format(c_year, c_quarter_last, last_day)
+    else:
+        vt_x = []
+        week_desc = {
+            0: '日',
+            1: '一',
+            2: '二',
+            3: '三',
+            4: '四',
+            5: '五',
+            6: '六'
+        }
+        for d in range(-7, 1):
+            t = time.localtime(time.time() + (d * 86400))
+            if d == -7:
+                day_first = time.strftime('%Y-%m-%d', t)
+            elif d == 0:
+                day_last = time.strftime('%Y-%m-%d', t)
+            week = int(time.strftime('%w', t))
+            week_d = week_desc[week]
+            month = int(time.strftime('%m', t))
+            day = int(time.strftime('%d', t))
+            if day == c_day:
+                vt_x.append('当前{0}/{1}({2})'.format(month, day, week_d))
+            else:
+                vt_x.append('{0}/{1}({2})'.format(month, day, week_d))
     # amount
     fixed_amount = CobraResults.query.filter(CobraResults.status == 2).count()
     not_fixed_amount = CobraResults.query.filter(CobraResults.status < 2).count()
+
     projects_amount = CobraProjects.query.count()
     tasks_amount = CobraTaskInfo.query.count()
     files_amount = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]
     lines_amount = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).first()[0]
+
     rules_on = CobraRules.query.filter(CobraRules.status == 1).count()
     rules_off = CobraRules.query.filter(CobraRules.status == 0).count()
 
@@ -171,6 +246,11 @@ def main():
         },
         'ranks': ranks,
         'hits': hits,
-        'vulnerabilities_types': vulnerabilities_types
+        'vulnerabilities_types': vulnerabilities_types,
+        'time_type': time_type,
+        'vt_x': vt_x,
+        'day_first': day_first,
+        'day_last': day_last
     }
+
     return render_template("backend/index/overview.html", data=data)
