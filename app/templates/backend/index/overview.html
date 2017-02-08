@@ -156,9 +156,23 @@
     <script>
         var chart = {
             data: {
-                'vt': [{% for x in data.vt_x %}
-                    '{{ x }}',
-                {% endfor %}],
+                'vt': {
+                    'x': [
+                        {% for x in data.vt_x %}
+                            '{{ x['time'] }}',
+                        {% endfor %}
+                    ],
+                    'y_new': [
+                        {% for x in data.vt_x %}
+                            {{ x['data']['t'] }},
+                        {% endfor %}
+                    ],
+                    'y_fixed': [
+                        {% for x in data.vt_x %}
+                            {{ x['data'][2] }},
+                        {% endfor %}
+                    ],
+                },
                 'vdd': {
                     "charts": {
                         "支付与金融": 3237,
@@ -202,10 +216,18 @@
                  */
                 chart.options['vt'] = {
                     title: {
-                        text: 'TODO:漏洞趋势(VT)'
+                        text: '漏洞趋势(VT)'
                     },
                     tooltip: {
                         trigger: 'axis'
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            dataView: {readOnly: false},
+                            magicType: {type: ['line', 'bar']},
+                            restore: {},
+                        }
                     },
                     legend: {
                         data: ['新增(New)', '已修复(Fixed)']
@@ -220,7 +242,7 @@
                         {
                             type: 'category',
                             boundaryGap: false,
-                            data: chart.data.vt
+                            data: chart.data.vt.x
                         }
                     ],
                     yAxis: [
@@ -232,16 +254,14 @@
                         {
                             name: '新增(New)',
                             type: 'line',
-                            stack: '总量',
                             areaStyle: {normal: {}},
-                            data: [120, 132, 101, 134, 90, 230, 210]
+                            data: chart.data.vt.y_new
                         },
                         {
                             name: '已修复(Fixed)',
                             type: 'line',
-                            stack: '总量',
                             areaStyle: {normal: {}},
-                            data: [220, 182, 191, 234, 290, 330, 310]
+                            data: chart.data.vt.y_fixed
                         }
                     ]
                 };
@@ -249,8 +269,7 @@
                  * VDD (Vulnerability Department Distributing)
                  */
                 chart.options['vdd'] = {
-                    tooltip: {}
-                    ,
+                    tooltip: {},
                     title: [{
                         text: 'TODO:漏洞部门分布(VDD)',
                         textAlign: 'left'
@@ -308,8 +327,7 @@
                  * VTD (Vulnerability Type Distributing)
                  */
                 chart.options['vtd'] = {
-                    tooltip: {}
-                    ,
+                    tooltip: {},
                     title: [{
                         text: '漏洞类型分布(VTD)',
                         textAlign: 'left'
