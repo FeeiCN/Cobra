@@ -91,29 +91,38 @@ def main():
         c_quarter = 4
         c_quarter_first = 10
         c_quarter_last = 12
+
+    # time type
     time_type = request.args.get('tt')
     if time_type not in ['w', 'm', 'q']:
+        # default tt
         time_type = 'w'
 
+    # calculate first day/last day and VT's x axis data
+    c_mark = '#'
     if time_type == 'm':
         vt_x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         for i, x in enumerate(vt_x):
             if x == c_month:
-                vt_x[i] = '当前{0}月'.format(x)
+                vt_x[i] = '{0}{1}月'.format(c_mark, x)
             else:
                 vt_x[i] = '{0}月'.format(x)
         cm, last_day = calendar.monthrange(c_year, c_month)
         day_first = '{0}-{1}-{2}'.format(c_year, c_month, 1)
         day_last = '{0}-{1}-{2}'.format(c_year, c_month, last_day)
+
+        # VT x/y axis data
+
     elif time_type == 'q':
         vt_x = ['Q1', 'Q2', 'Q3', 'Q4']
         for i, x in enumerate(vt_x):
             if (i + 1) == c_quarter:
-                vt_x[i] = '当前{0}'.format(x)
+                vt_x[i] = '{0}{1}'.format(c_mark, x)
         cm, last_day = calendar.monthrange(c_year, c_quarter_last)
         day_first = '{0}-{1}-{2}'.format(c_year, c_quarter_first, 1)
         day_last = '{0}-{1}-{2}'.format(c_year, c_quarter_last, last_day)
     else:
+        # default TT(time type): w(weekly)
         vt_x = []
         week_desc = {
             0: '日',
@@ -135,9 +144,16 @@ def main():
             month = int(time.strftime('%m', t))
             day = int(time.strftime('%d', t))
             if day == c_day:
-                vt_x.append('当前{0}/{1}({2})'.format(month, day, week_d))
+                x_time = '{0}{1}/{2}({3})'.format(c_mark, month, day, week_d)
             else:
-                vt_x.append('{0}/{1}({2})'.format(month, day, week_d))
+                x_time = '{0}/{1}({2})'.format(month, day, week_d)
+            # VT x data
+            x_data = CobraResults.count_by_day(d)
+            x_data['t'] = x_data[0] + x_data[1] + x_data[2]
+            vt_x.append({
+                'time': x_time,
+                'data': x_data
+            })
     # amount
     fixed_amount = CobraResults.query.filter(CobraResults.status == 2).count()
     not_fixed_amount = CobraResults.query.filter(CobraResults.status < 2).count()

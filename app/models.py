@@ -15,6 +15,7 @@
 import time
 import datetime
 
+from sqlalchemy import func
 from sqlalchemy.schema import UniqueConstraint, Index
 from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT, TEXT
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -226,6 +227,30 @@ class CobraResults(db.Model):
 
     def __repr__(self):
         return "<CobraResults %r - %r>" % (self.id, self.task_id)
+
+    @staticmethod
+    def count_by_day(day):
+        localtime = time.localtime(time.time() + (day * 86400))
+        print(time.strftime('%Y-%m-%d', localtime))
+        filter_group = (CobraResults.id > 0,)
+        if day is not None:
+            filter_group += (CobraResults.created_at >= time.strftime('%Y-%m-%d 00:00:00', localtime), CobraResults.created_at <= time.strftime('%Y-%m-%d 23:59:59', localtime),)
+        count = db.session.query(
+            func.count().label('count'), CobraResults.status
+        ).filter(
+            *filter_group
+        ).group_by(CobraResults.status).all()
+        c_dict = {}
+        for ci in count:
+            count, status = ci
+            c_dict[status] = count
+        if 0 not in c_dict:
+            c_dict[0] = 0
+        if 1 not in c_dict:
+            c_dict[1] = 0
+        if 2 not in c_dict:
+            c_dict[2] = 0
+        return c_dict
 
 
 class CobraProjects(db.Model):
