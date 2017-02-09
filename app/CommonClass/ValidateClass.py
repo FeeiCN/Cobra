@@ -12,9 +12,8 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 from functools import wraps
-
-from flask import session, redirect
-
+from flask import session, redirect, request
+from utils import config
 from DataDictClass import DataDict
 from app.controller.backend import ADMIN_URL
 
@@ -49,8 +48,11 @@ class ValidateClass(object):
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        token = request.args.get('token')
+        is_auth_token = token is not None and token == config.Config('cobra', 'secret_key').value
         if not session.get('is_login'):
-            return redirect(ADMIN_URL + '/index')
+            if not is_auth_token:
+                return redirect(ADMIN_URL + '/index')
         return f(*args, **kwargs)
 
     return decorated_function
