@@ -25,6 +25,7 @@ pages:
 - Modules:
   - Rule: 'rule.md'
   - Detection URI: 'detection_uri.md'
+  - Scheduler: 'scheduler.md'
 - FAQ:
   - FAQ: 'FAQ.md'
   - Exception: 'exception.md'

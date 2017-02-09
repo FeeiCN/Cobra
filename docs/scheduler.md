@@ -13,6 +13,13 @@ brew install phantomjs
 wget --no-check-certificate https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
 tar xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
 cp phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin
+
+# SimHei font
+# centOS
+mkdir /usr/share/fonts/
+wget http://f.feei.cn/simhei.ttf
+cp simhei.ttf /usr/share/fonts/
+fc-cache -fv
 ```
 ## Configuration cron
 ```bash
