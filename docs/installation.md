@@ -38,7 +38,7 @@ brew install homebrew/dupes/grep
 brew install findutils
 ```
 
-## Install python dependencies
+## Install Python dependencies
 ```
 # on Cobra root
 [sudo] pip install -r requirements.txt

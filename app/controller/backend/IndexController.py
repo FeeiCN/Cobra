@@ -67,6 +67,10 @@ def index():
 @web.route(ADMIN_URL + '/overview', methods=['GET'])
 @login_required
 def main():
+    # is capture
+    # True:  nav will hidden
+    # False: nope
+    capture = request.args.get('capture')
     # time type
     date = datetime.datetime.now()
     c_month = int(date.strftime('%m'))
@@ -266,7 +270,7 @@ def main():
         'time_type': time_type,
         'vt_x': vt_x,
         'day_first': day_first,
-        'day_last': day_last
+        'day_last': day_last,
+        'capture': capture
     }
-
     return render_template("backend/index/overview.html", data=data)

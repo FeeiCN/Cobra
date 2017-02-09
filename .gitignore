@@ -61,8 +61,17 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
+# PyCharm project config
 .idea/
-config
-uploads/*
-logs/*
+
+# macOS tmp
 .DS_Store
+
+# Cobra config file
+config
+
+# Cobra logs
+logs/
+
+# Cobra automation report image file
+scheduler/reports/
