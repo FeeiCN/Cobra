@@ -303,12 +303,33 @@ class Repair(Command):
             Core(result_info, rule, project_info.name, white_list).repair()
 
 
+class Report(Command):
+    """
+    Usage:
+    python cobra.py report -t=w/m/q
+    """
+    option_list = (
+        Option('--time', '-t', dest='t', help='Time e.g. w(weekly)/m(monthly)/q(quarterly)'),
+    )
+
+    def run(self, t='w'):
+        from scheduler import report
+        if t not in ['w', 'm', 'q']:
+            print('Error: time type exception')
+            return
+        if report.Report(t).run():
+            print('Report Success')
+        else:
+            print('Report Failed')
+
+
 # CLI
 manager.add_command('start', Server(host=host, port=port, threaded=True))
 manager.add_command('scan', Scan())
 manager.add_command('statistic', Statistic())
 manager.add_command('install', Install())
 manager.add_command('repair', Repair())
+manager.add_command('report', Report())
 
 # Front route
 from app.controller import route
