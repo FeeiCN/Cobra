@@ -67,8 +67,8 @@
                 <div class="alz">
                     <span class="anj">项目数(Projects)</span>
                     <h2 class="ani">
-                        {{ data.amount.projects }}
-                        <small class="ank anl">0.0%</small>
+                        {{ data.amount.scan.projects.total }}
+                        <small class="ank anl">{{ data.amount.scan.projects.time_type }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -80,8 +80,8 @@
                 <div class="alz">
                     <span class="anj">任务数(Tasks)</span>
                     <h2 class="ani">
-                        {{ data.amount.tasks }}
-                        <small class="ank anm">0.0%</small>
+                        {{ data.amount.scan.tasks.total }}
+                        <small class="ank anm">{{ data.amount.scan.tasks.time_type }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -93,8 +93,8 @@
                 <div class="alz">
                     <span class="anj">文件数(Files)</span>
                     <h2 class="ani">
-                        {{ data.amount.files }}
-                        <small class="ank anl">0.0%</small>
+                        {{ data.amount.scan.files.total }}
+                        <small class="ank anl">{{ data.amount.scan.files.time_type }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -106,8 +106,8 @@
                 <div class="alz">
                     <span class="anj">代码行数(Lines)</span>
                     <h2 class="ani">
-                        {{ data.amount.lines }}
-                        <small class="ank anm">0.0%</small>
+                        {{ data.amount.scan.lines.total }}
+                        <small class="ank anm">{{ data.amount.scan.lines.time_type }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -121,22 +121,22 @@
     <div class="fu apt alg ala ta te">
         <div class="gh gi apu ala">
             <h3 class="ani dm">
-                {{ data.amount.rules_on }}
-                <small class="ank anl">0.0%</small>
+                {{ data.amount.rule.on.total }}
+                <small class="ank anl">{{ data.amount.rule.on.time_type }}</small>
             </h3>
             <span class="anj">开启(ON)</span>
         </div>
         <div class="gh gi apu ala">
             <h3 class="ani dj">
-                {{ data.amount.rules_off }}
-                <small class="ank anm">0.0%</small>
+                {{ data.amount.rule.off.total }}
+                <small class="ank anm">{{ data.amount.rule.off.time_type }}</small>
             </h3>
             <span class="anj">关闭(OFF)</span>
         </div>
         <div class="gh gi apu ala">
             <h3 class="ani dj">
-                {{ data.amount.rules_total }}
-                <small class="ank anl">0.0%</small>
+                {{ data.amount.rule.total.total }}
+                <small class="ank anl">{{ data.amount.rule.total.time_type }}</small>
             </h3>
             <span class="anj">全部(Total)</span>
         </div>
@@ -413,7 +413,7 @@
                     ,
                     yAxis: {
                         type: 'category',
-                        data: [{% for rank in data.amount.rule %}
+                        data: [{% for rank in data.amount.rar.rar %}
                             '{{ rank['author'] }}',
                         {% endfor %}]
                     }
@@ -422,21 +422,21 @@
                         {
                             name: '一共(Total)',
                             type: 'bar',
-                            data: [{% for rank in data.amount.rule %}
+                            data: [{% for rank in data.amount.rar.rar %}
                                 {{ rank['total'] }},
                             {% endfor %}]
                         },
                         {
                             name: '开启(On)',
                             type: 'bar',
-                            data: [{% for rank in data.amount.rule %}
+                            data: [{% for rank in data.amount.rar %}
                                 {{ rank['active'] }},
                             {% endfor %}]
                         },
                         {
                             name: '关闭(Off)',
                             type: 'bar',
-                            data: [{% for rank in data.amount.rule %}
+                            data: [{% for rank in data.amount.rar %}
                                 {{ rank['not_active'] }},
                             {% endfor %}]
                         }

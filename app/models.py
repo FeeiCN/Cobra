@@ -72,6 +72,35 @@ class CobraTaskInfo(db.Model):
     def __repr__(self):
         return '<task_info %r - %r>' % (self.id, self.target)
 
+    @staticmethod
+    def count_by_time(start, end, t='task'):
+        filter_group = (CobraTaskInfo.created_at >= '{0} 00:00:00'.format(start), CobraTaskInfo.created_at <= '{0} 23:59:59'.format(end),)
+        if t == 'task':
+            count = db.session.query(
+                func.count().label('count')
+            ).filter(
+                *filter_group
+            ).all()
+        elif t == 'project':
+            count = db.session.query(
+                func.count(func.distinct(CobraTaskInfo.target)).label('count')
+            ).filter(
+                *filter_group
+            ).all()
+        elif t == 'line':
+            count = db.session.query(
+                func.sum(CobraTaskInfo.code_number).label('count')
+            ).filter(
+                *filter_group
+            ).all()
+        elif t == 'file':
+            count = db.session.query(
+                func.sum(CobraTaskInfo.file_count).label('count')
+            ).filter(
+                *filter_group
+            ).all()
+        return count[0][0]
+
 
 class CobraRules(db.Model):
     """
@@ -121,6 +150,24 @@ class CobraRules(db.Model):
 
     def __repr__(self):
         return "<CobraRules %r - %r: %r>" % (self.id, self.language, self.regex_location)
+
+    @staticmethod
+    def count_by_time(start, end):
+        filter_group = (CobraRules.updated_at >= '{0} 00:00:00'.format(start), CobraRules.updated_at <= '{0} 23:59:59'.format(end),)
+        count = db.session.query(
+            func.count().label('count'), CobraRules.status
+        ).filter(
+            *filter_group
+        ).group_by(CobraRules.status).all()
+        c_dict = {}
+        for ci in count:
+            count, status = ci
+            c_dict[status] = count
+        if 0 not in c_dict:
+            c_dict[0] = 0
+        if 1 not in c_dict:
+            c_dict[1] = 0
+        return c_dict
 
 
 class CobraVuls(db.Model):
@@ -231,7 +278,6 @@ class CobraResults(db.Model):
     @staticmethod
     def count_by_day(day):
         localtime = time.localtime(time.time() + (day * 86400))
-        print(time.strftime('%Y-%m-%d', localtime))
         filter_group = (CobraResults.id > 0,)
         if day is not None:
             filter_group += (CobraResults.created_at >= time.strftime('%Y-%m-%d 00:00:00', localtime), CobraResults.created_at <= time.strftime('%Y-%m-%d 23:59:59', localtime),)
