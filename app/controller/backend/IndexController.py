@@ -162,13 +162,48 @@ def main():
     fixed_amount = CobraResults.query.filter(CobraResults.status == 2).count()
     not_fixed_amount = CobraResults.query.filter(CobraResults.status < 2).count()
 
-    projects_amount = CobraProjects.query.count()
-    tasks_amount = CobraTaskInfo.query.count()
-    files_amount = db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]
-    lines_amount = db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).first()[0]
+    # scan amount
+    amount_scan = {
+        'projects': {
+            'total': convert_number(CobraProjects.query.count()),
+            'time_type': convert_number(CobraTaskInfo.count_by_time(day_first, day_last, 'project'))
+        },
+        'tasks': {
+            'total': convert_number(CobraTaskInfo.query.count()),
+            'time_type': convert_number(CobraTaskInfo.count_by_time(day_first, day_last, 'task'))
+        },
+        'files': {
+            'total': convert_number(db.session.query(func.sum(CobraTaskInfo.file_count).label('files')).first()[0]),
+            'time_type': convert_number(CobraTaskInfo.count_by_time(day_first, day_last, 'file'))
+        },
+        'lines': {
+            'total': convert_number(db.session.query(func.sum(CobraTaskInfo.code_number).label('codes')).first()[0]),
+            'time_type': convert_number(CobraTaskInfo.count_by_time(day_first, day_last, 'line'))
+        }
+    }
 
-    rules_on = CobraRules.query.filter(CobraRules.status == 1).count()
-    rules_off = CobraRules.query.filter(CobraRules.status == 0).count()
+    # rule amount
+    rule_amount_status = CobraRules.count_by_time(day_first, day_last)
+    amount_rule = {
+        'on': {
+            'total': CobraRules.query.filter(CobraRules.status == 1).count(),
+            'time_type': rule_amount_status[1]
+        },
+        'off': {
+            'total': CobraRules.query.filter(CobraRules.status == 0).count(),
+            'time_type': rule_amount_status[0]
+        },
+        'total': {
+            'total': 0,
+            'time_type': 0
+        }
+    }
+    amount_rule['total']['total'] = convert_number(amount_rule['on']['total'] + amount_rule['off']['total'])
+    amount_rule['total']['time_type'] = convert_number(amount_rule['on']['time_type'] + amount_rule['off']['time_type'])
+    amount_rule['on']['total'] = convert_number(amount_rule['on']['total'])
+    amount_rule['on']['time_type'] = convert_number(amount_rule['on']['time_type'])
+    amount_rule['off']['total'] = convert_number(amount_rule['off']['total'])
+    amount_rule['off']['time_type'] = convert_number(amount_rule['off']['time_type'])
 
     # ranks & hits
     hit_rules = db.session.query(
@@ -255,14 +290,9 @@ def main():
             'vulnerabilities_fixed': convert_number(fixed_amount),
             'vulnerabilities_not_fixed': convert_number(not_fixed_amount),
             'vulnerabilities_total': convert_number(fixed_amount + not_fixed_amount),
-            'projects': convert_number(projects_amount),
-            'tasks': convert_number(tasks_amount),
-            'files': convert_number(files_amount),
-            'lines': convert_number(lines_amount),
-            'rules_on': convert_number(rules_on),
-            'rules_off': convert_number(rules_off),
-            'rules_total': convert_number(rules_on + rules_off),
-            'rule': rule_amount_rank
+            'scan': amount_scan,
+            'rule': amount_rule,
+            'rar': rule_amount_rank
         },
         'ranks': ranks,
         'hits': hits,
