@@ -44,7 +44,7 @@ class Report:
         self.time_type_de = time_type_des[time_type]
 
         # mail
-        wd = datetime.datetime.today().weekday()
+        wd = int(datetime.datetime.today().strftime("%U"))
         self.subject = '[Cobra] 代码安全{0}报(W{1})'.format(self.time_type_de, wd)
         self.user = Config('email', 'user').value
         self.name = Config('email', 'name').value
