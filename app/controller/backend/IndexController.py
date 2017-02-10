@@ -104,6 +104,12 @@ def main():
 
     # calculate first day/last day and VT's x axis data
     c_mark = '#'
+    trend_scan = {
+        'file': [],
+        'line': [],
+        'project': [],
+        'task': []
+    }
     if time_type == 'm':
         vt_x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         for i, x in enumerate(vt_x):
@@ -141,7 +147,7 @@ def main():
             t = time.localtime(time.time() + (d * 86400))
             if d == -7:
                 day_first = time.strftime('%Y-%m-%d', t)
-            elif d == 0:
+            if d == 0:
                 day_last = time.strftime('%Y-%m-%d', t)
             week = int(time.strftime('%w', t))
             week_d = week_desc[week]
@@ -158,6 +164,15 @@ def main():
                 'time': x_time,
                 'data': x_data
             })
+
+            # scan trend data
+            for k in trend_scan:
+                start = time.strftime('%Y-%m-%d', time.localtime(time.time() + (d * 86400)))
+                ct_count = CobraTaskInfo.count_by_time(start, start, k)
+                if ct_count is None:
+                    ct_count = 0
+                trend_scan[k].append(ct_count)
+
     # amount
     fixed_amount = CobraResults.query.filter(CobraResults.status == 2).count()
     not_fixed_amount = CobraResults.query.filter(CobraResults.status < 2).count()
@@ -293,6 +308,9 @@ def main():
             'scan': amount_scan,
             'rule': amount_rule,
             'rar': rule_amount_rank
+        },
+        'trend': {
+            'scan': trend_scan
         },
         'ranks': ranks,
         'hits': hits,

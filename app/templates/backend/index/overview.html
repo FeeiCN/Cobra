@@ -72,7 +72,8 @@
                     </h2>
                     <hr class="ans akt">
                 </div>
-                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[28,68,41,43,96,45,100]}]" data-labels="['a','b','c','d','e','f','g']" style="width: 189px; height: 47px;"></canvas>
+                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[{% for x in data.trend.scan.project %}{{ x }},{% endfor %}]}]" data-labels="['a','b','c','d','e','f','g','i']"
+                        style="width: 189px; height: 47px;"></canvas>
             </div>
         </div>
         <div class="gq gs ala">
@@ -85,7 +86,8 @@
                     </h2>
                     <hr class="ans akt">
                 </div>
-                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[4,34,64,27,96,50,80]}]" data-labels="['a', 'b','c','d','e','f','g']" style="width: 189px; height: 47px;"></canvas>
+                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[{% for x in data.trend.scan.task %}{{ x }},{% endfor %}]}]" data-labels="['a', 'b','c','d','e','f','g','i']"
+                        style="width: 189px; height: 47px;"></canvas>
             </div>
         </div>
         <div class="gq gs ala">
@@ -98,7 +100,8 @@
                     </h2>
                     <hr class="ans akt">
                 </div>
-                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[12,38,32,60,36,54,68]}]" data-labels="['a', 'b','c','d','e','f','g']" style="width: 189px; height: 47px;"></canvas>
+                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[{% for x in data.trend.scan.file %}{{ x }},{% endfor %}]}]" data-labels="['a', 'b','c','d','e','f','g','i']"
+                        style="width: 189px; height: 47px;"></canvas>
             </div>
         </div>
         <div class="gq gs ala">
@@ -111,7 +114,8 @@
                     </h2>
                     <hr class="ans akt">
                 </div>
-                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[43,48,52,58,50,95,100]}]" data-labels="['a', 'b','c','d','e','f','g']" style="width: 189px; height: 47px;"></canvas>
+                <canvas id="sparkline1" width="378" height="94" class="apv" data-chart="spark-line" data-value="[{data:[{% for x in data.trend.scan.line %}{{ x }},{% endfor %}]}]" data-labels="['a', 'b','c','d','e','f','g','i']"
+                        style="width: 189px; height: 47px;"></canvas>
             </div>
         </div>
     </div>
