@@ -22,6 +22,7 @@ fc-cache -fv
 ```
 ## Configuration cron
 ```bash
-# /etc/cron.weekly/cobra
-0 0 * * 5 /usr/local/bin/phantomjs /you/path/cobra/cobra.py report -t=w > /dev/null
+# 6:30 PM Friday
+vim /var/spool/cron/root
+30 18 * * 5 /usr/bin/python /path/to/cobra/cobra.py report -t=w > /dev/null
 ```
