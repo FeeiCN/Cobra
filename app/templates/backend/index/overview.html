@@ -421,7 +421,7 @@
                     ,
                     yAxis: {
                         type: 'category',
-                        data: [{% for rank in data.amount.rar.rar %}
+                        data: [{% for rank in data.amount.rar %}
                             '{{ rank['author'] }}',
                         {% endfor %}]
                     }
