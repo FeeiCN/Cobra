@@ -110,6 +110,16 @@ def main():
         'project': [],
         'task': []
     }
+    amount_vulnerability = {
+        'new': {
+            'total': 0,
+            'time_type': 0
+        },
+        'fixed': {
+            'total': 0,
+            'time_type': 0
+        }
+    }
     if time_type == 'm':
         vt_x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         for i, x in enumerate(vt_x):
@@ -160,11 +170,12 @@ def main():
             # VT x data
             x_data = CobraResults.count_by_day(d)
             x_data['t'] = x_data[0] + x_data[1] + x_data[2]
+            amount_vulnerability['new']['time_type'] += x_data['t']
+            amount_vulnerability['fixed']['time_type'] += x_data[2]
             vt_x.append({
                 'time': x_time,
                 'data': x_data
             })
-
             # scan trend data
             for k in trend_scan:
                 start = time.strftime('%Y-%m-%d', time.localtime(time.time() + (d * 86400)))
@@ -300,6 +311,14 @@ def main():
             vulnerabilities_types.append(t)
     vulnerabilities_types = sorted(vulnerabilities_types, key=lambda x: x['amount'], reverse=True)
 
+    comment_scan = '本周扫描数据各指标都比较平稳，无明显波动!'
+    if amount_rule['total']['time_type'] == 0:
+        comment_rule = '本周没有新增规则'
+    else:
+        comment_rule = '本周新增{0}条规则'.format(amount_rule['total']['time_type'])
+
+    comment_vulnerability = '本周扫出{0}个新漏洞, 修复了{1}个漏洞'.format(amount_vulnerability['new']['time_type'], amount_vulnerability['fixed']['time_type'])
+
     data = {
         'amount': {
             'vulnerabilities_fixed': convert_number(fixed_amount),
@@ -311,6 +330,11 @@ def main():
         },
         'trend': {
             'scan': trend_scan
+        },
+        'comment': {
+            'scan': comment_scan,
+            'rule': comment_rule,
+            'vulnerability': comment_vulnerability
         },
         'ranks': ranks,
         'hits': hits,
