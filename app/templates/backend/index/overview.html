@@ -52,9 +52,9 @@
     <div class="fu chart" id="chart_vt" style="height:400px;margin-bottom: 20px;">
 
     </div>
-    <div class="fu chart" id="chart_vdd" style="height:500px;">
-
-    </div>
+{#    <div class="fu chart" id="chart_vdd" style="height:500px;">#}
+{##}
+{#    </div>#}
     <div class="fu chart" id="chart_vtd" style="height:500px;">
 
     </div>
@@ -210,7 +210,7 @@
             ctx: null,
             options: {
                 'vt': {},
-                'vdd': {},
+{#                'vdd': {},#}
                 'vtd': {},
                 'rar': {},
                 'rhr': {}
@@ -273,6 +273,7 @@
                 /*
                  * VDD (Vulnerability Department Distributing)
                  */
+                /*
                 chart.options['vdd'] = {
                     tooltip: {},
                     title: [{
@@ -328,6 +329,7 @@
                         })
                     }]
                 };
+                */
                 /*
                  * VTD (Vulnerability Type Distributing)
                  */
@@ -376,7 +378,7 @@
                         })
                     }, {
                         type: 'pie',
-                        radius: [0, '40%'],
+                        radius: [0, '55%'],
                         center: ['75%', '35%'],
                         data: Object.keys(chart.data.vtd.charts).map(function (key) {
                             return {
