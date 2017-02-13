@@ -430,7 +430,7 @@
                         {
                             name: '一共(Total)',
                             type: 'bar',
-                            data: [{% for rank in data.amount.rar.rar %}
+                            data: [{% for rank in data.amount.rar %}
                                 {{ rank['total'] }},
                             {% endfor %}]
                         },
