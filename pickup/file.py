@@ -14,7 +14,7 @@
 import subprocess
 
 
-class File:
+class File(object):
     def __init__(self, file_path):
         self.file_path = file_path
 

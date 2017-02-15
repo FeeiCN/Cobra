@@ -24,7 +24,7 @@ log.Log()
 logging = logging.getLogger(__name__)
 
 
-class Parse:
+class Parse(object):
     def __init__(self, rule, file_path, line, code):
         logging.info('###############################')
         self.rule = rule

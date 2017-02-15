@@ -16,7 +16,7 @@ from daemon import push_vulnerabilities, error_handler
 from utils.third_party import Vulnerabilities
 
 
-class Queue:
+class Queue(object):
     def __init__(self, project_name, vuln_name, vuln_type, file_path, line_number, code, vuln_id, found_time=None):
         self.project_name = project_name
         self.vuln_name = vuln_name

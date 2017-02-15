@@ -1,17 +1,15 @@
 #!/usr/bin/env python2
 # coding: utf-8
-# file: FramesController.py
+# file: framework.py
 
 from flask import render_template
 from flask import request
 from flask import jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import db
-from app import web
-from app.models import CobraWebFrame
-from app.models import CobraWebFrameRules
-from app.CommonClass.ValidateClass import login_required
+from app import db, web
+from app.models import CobraWebFrame, CobraWebFrameRules
+from utils.validate import login_required
 from . import ADMIN_URL
 
 __author__ = "lightless"

@@ -16,7 +16,7 @@ import logging.config
 from utils import config
 
 
-class Log:
+class Log(object):
     def __init__(self):
         logs_directory = config.Config('cobra', 'logs_directory').value
         logs_directory = os.path.join(config.Config().project_directory, logs_directory)

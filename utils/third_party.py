@@ -15,10 +15,11 @@ import json
 import requests
 import logging
 from utils import config
-from app import CobraResults, db
+from app.models import CobraResults
+from app import db
 
 
-class Vulnerabilities:
+class Vulnerabilities(object):
     def __init__(self):
         self.status = config.Config('third_party_vulnerabilities', 'status').value
         self.api = config.Config('third_party_vulnerabilities', 'api').value

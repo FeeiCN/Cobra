@@ -18,7 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass, login_required
+from utils.validate import ValidateClass, login_required
 from app.models import CobraTaskInfo
 from utils.common import convert_number, convert_time
 
