@@ -13,8 +13,8 @@
 """
 import subprocess
 import sys
-import logging
 from utils import config
+from utils.log import logging
 
 logging = logging.getLogger(__name__)
 

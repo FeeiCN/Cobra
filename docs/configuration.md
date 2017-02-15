@@ -1,4 +1,7 @@
-Rename **config.example** in the Cobra root directory to **config**.
+Copy **config.example** to *config* in the Cobra root directory.
+```bash
+cp config.example config 
+```
 
 ```
 [cobra]

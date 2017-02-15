@@ -16,14 +16,13 @@ import os
 import time
 import subprocess
 import getpass
-import logging
 from app.models import CobraProjects, CobraTaskInfo
 from app import db
-from utils import config, decompress, log
+from utils import config, decompress
+from utils.log import logging
 from pickup import git
 from engine import detection
 
-log.Log()
 logging = logging.getLogger(__name__)
 
 

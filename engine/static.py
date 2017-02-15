@@ -17,11 +17,11 @@ import sys
 import time
 import subprocess
 import traceback
-import logging
 from engine.core import Core
 from pickup import directory
 from app.models import CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
 from app import db
+from utils.log import logging
 
 logging = logging.getLogger(__name__)
 

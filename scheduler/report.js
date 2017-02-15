@@ -60,8 +60,8 @@ if (system.args.length < 3 || system.args[0] in ['w', 'm', 'q']) {
 }
 var tt = system.args[2];
 // change work directory
-fs.changeWorkingDirectory(system.args[1])
-console.log('PWD: ' + fs.workingDirectory)
+fs.changeWorkingDirectory(system.args[1]);
+console.log('PWD: ' + fs.workingDirectory);
 var config_path = 'config';
 // check file exists
 if (!fs.exists(config_path)) {
@@ -107,7 +107,7 @@ page.open(domain, function (status) {
          */
         window.setTimeout(function () {
             page.render(file);
-            console.log('Success: ' + file)
+            console.log('Success: ' + file);
             phantom.exit();
         }, 1000);
     }

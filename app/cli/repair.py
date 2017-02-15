@@ -13,14 +13,15 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import sys
-import logging
 from flask_script import Command, Option
 from app.models import CobraProjects, CobraWhiteList
 from app.models import CobraResults, CobraRules, CobraVuls
 from engine.core import Core
 from pickup.git import Git
 from app import db
+from utils.log import logging
 
+logging = logging.getLogger(__name__)
 
 class Repair(Command):
     """

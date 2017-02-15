@@ -13,17 +13,15 @@
 """
 import os
 import subprocess
-import logging
 import base64
 import datetime
-from utils import log
+from utils.log import logging
 from utils.config import Config
 
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-log.Log()
 logging = logging.getLogger(__name__)
 
 phantomjs = '/usr/local/bin/phantomjs'
