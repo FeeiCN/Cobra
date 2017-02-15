@@ -39,43 +39,6 @@ class Install(Command):
             print(e)
             sys.exit(0)
         print("Create Structure Success.")
-        # table `auth`
-        print('Insert api key...')
-        auth = CobraAuth('manual', common.md5('CobraAuthKey'), 1)
-        db.session.add(auth)
-
-        # table `languages`
-        print('Insert language...')
-        languages = {
-            "php": ".php|.php3|.php4|.php5",
-            "jsp": ".jsp",
-            "java": ".java",
-            "html": ".html|.htm|.phps|.phtml",
-            "js": ".js",
-            "backup": ".zip|.bak|.tar|.tar.gz|.rar",
-            "xml": ".xml",
-            "image": ".jpg|.png|.bmp|.gif|.ico|.cur",
-            "font": ".eot|.otf|.svg|.ttf|.woff",
-            "css": ".css|.less|.scss|.styl",
-            "exe": ".exe",
-            "shell": ".sh",
-            "log": ".log",
-            "text": ".txt|.text",
-            "flash": ".swf",
-            "yml": ".yml",
-            "cert": ".p12|.crt|.key|.pfx|.csr",
-            "psd": ".psd",
-            "iml": ".iml",
-            "spf": ".spf",
-            "markdown": ".md",
-            "office": ".doc|.docx|.wps|.rtf|.csv|.xls|.ppt",
-            "bat": ".bat",
-            "PSD": ".psd",
-            "Thumb": ".db",
-        }
-        for language, extensions in languages.items():
-            a_language = CobraLanguages(language, extensions)
-            db.session.add(a_language)
 
         # table `user`
         print('Insert admin user...')
@@ -84,38 +47,6 @@ class Install(Command):
         role = 1  # 1: super admin, 2: admin, 3: rules admin
         a_user = CobraAdminUser(username, password, role)
         db.session.add(a_user)
-
-        # table `vuls`
-        print('Insert vuls...')
-        vuls = [
-            'SQL Injection',
-            'LFI/RFI',
-            'Header Injection',
-            'XSS',
-            'CSRF',
-            'Logic Bug',
-            'Command Execute',
-            'Code Execute',
-            'Information Disclosure',
-            'Data Exposure',
-            'Xpath Injection',
-            'LDAP Injection',
-            'XML/XXE Injection',
-            'Unserialize',
-            'Variables Override',
-            'URL Redirect',
-            'Weak Function',
-            'Buffer Overflow',
-            'Deprecated Function',
-            'Stack Trace',
-            'Resource Executable',
-            'SSRF',
-            'Misconfiguration',
-            'Components'
-        ]
-        for vul in vuls:
-            a_vul = CobraVuls(vul, 'Vul Description', 'Vul Repair', 0)
-            db.session.add(a_vul)
 
         # commit
         db.session.commit()
