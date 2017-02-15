@@ -66,7 +66,7 @@ print diff_result
 """
 
 
-class Git:
+class Git(object):
     """
     A Git class.
     You can clone, pull, diff the repo via this class.

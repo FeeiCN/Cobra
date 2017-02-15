@@ -17,7 +17,8 @@ import time
 import subprocess
 import getpass
 import logging
-from app import db, CobraProjects, CobraTaskInfo
+from app.models import CobraProjects, CobraTaskInfo
+from app import db
 from utils import config, decompress, log
 from pickup import git
 from engine import detection
@@ -26,7 +27,7 @@ log.Log()
 logging = logging.getLogger(__name__)
 
 
-class Scan:
+class Scan(object):
     def __init__(self, target):
         """
         Set target

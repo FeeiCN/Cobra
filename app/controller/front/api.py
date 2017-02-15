@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-    controller.api
-    ~~~~~~~~~~~~~~
+    controller.front.api
+    ~~~~~~~~~~~~~~~~~~~~
 
     External API interface implementation
     :doc:       http://cobra-docs.readthedocs.io/en/latest/API
@@ -18,7 +18,8 @@ import traceback
 from utils import config, common
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
-from app import web, db, CobraResults, CobraRules, CobraProjects, CobraVuls, CobraAuth, CobraTaskInfo
+from app import db, web
+from app.models import CobraResults, CobraRules, CobraProjects, CobraVuls, CobraAuth, CobraTaskInfo
 from engine import scan
 
 logging = logging.getLogger(__name__)

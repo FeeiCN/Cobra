@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-    controller.route
-    ~~~~~~~~~~~~~~~~
+    controller.front.route
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Implements the route for controller
 
@@ -17,7 +17,8 @@ from pickup.git import Git
 from utils import common, config, const
 from flask import jsonify, render_template, request, abort, session
 from sqlalchemy import and_, func
-from app import web, db, CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
+from app import db, web
+from app.models import CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
 
 
 @web.route('/', methods=['GET'])

@@ -19,8 +19,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from . import ADMIN_URL
 from app import web, db
 from app.models import CobraRules, CobraVuls, CobraLanguages, CobraResults
-from app.CommonClass.ValidateClass import ValidateClass
-from app.CommonClass.ValidateClass import login_required
+from utils.validate import ValidateClass, login_required
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"

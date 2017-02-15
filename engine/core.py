@@ -17,14 +17,15 @@ import logging
 import traceback
 from engine import parse
 from pickup.file import File
-from app import db, CobraResults
+from app.models import CobraResults
+from app import db
 from utils.queue import Queue
 from utils.config import Config
 
 logging = logging.getLogger(__name__)
 
 
-class Core:
+class Core(object):
     def __init__(self, result, rule, project_name, white_list):
         """
         Initialize

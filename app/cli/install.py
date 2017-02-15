@@ -1,0 +1,122 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+    cli.install
+    ~~~~~~~~~~~
+
+    Implements CLI install
+
+    :author:    Feei <feei#feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
+import sys
+from sqlalchemy import exc
+from flask_script import Command
+from utils import common
+from app.models import CobraAuth, CobraLanguages, CobraAdminUser, CobraVuls
+from app import db
+
+
+class Install(Command):
+    """
+    Initialize the table structure
+    Usage:
+        python cobra.py install
+    """
+
+    def run(self):
+        # create database structure
+        print("Start create database structure...")
+        try:
+            db.create_all()
+        except exc.SQLAlchemyError as e:
+            print("MySQL database error: {0}\nFAQ: {1}".format(e, 'http://cobra-docs.readthedocs.io/en/latest/FAQ/'))
+            sys.exit(0)
+        except Exception as e:
+            print(e)
+            sys.exit(0)
+        print("Create Structure Success.")
+        # table `auth`
+        print('Insert api key...')
+        auth = CobraAuth('manual', common.md5('CobraAuthKey'), 1)
+        db.session.add(auth)
+
+        # table `languages`
+        print('Insert language...')
+        languages = {
+            "php": ".php|.php3|.php4|.php5",
+            "jsp": ".jsp",
+            "java": ".java",
+            "html": ".html|.htm|.phps|.phtml",
+            "js": ".js",
+            "backup": ".zip|.bak|.tar|.tar.gz|.rar",
+            "xml": ".xml",
+            "image": ".jpg|.png|.bmp|.gif|.ico|.cur",
+            "font": ".eot|.otf|.svg|.ttf|.woff",
+            "css": ".css|.less|.scss|.styl",
+            "exe": ".exe",
+            "shell": ".sh",
+            "log": ".log",
+            "text": ".txt|.text",
+            "flash": ".swf",
+            "yml": ".yml",
+            "cert": ".p12|.crt|.key|.pfx|.csr",
+            "psd": ".psd",
+            "iml": ".iml",
+            "spf": ".spf",
+            "markdown": ".md",
+            "office": ".doc|.docx|.wps|.rtf|.csv|.xls|.ppt",
+            "bat": ".bat",
+            "PSD": ".psd",
+            "Thumb": ".db",
+        }
+        for language, extensions in languages.items():
+            a_language = CobraLanguages(language, extensions)
+            db.session.add(a_language)
+
+        # table `user`
+        print('Insert admin user...')
+        username = 'admin'
+        password = 'admin123456!@#'
+        role = 1  # 1: super admin, 2: admin, 3: rules admin
+        a_user = CobraAdminUser(username, password, role)
+        db.session.add(a_user)
+
+        # table `vuls`
+        print('Insert vuls...')
+        vuls = [
+            'SQL Injection',
+            'LFI/RFI',
+            'Header Injection',
+            'XSS',
+            'CSRF',
+            'Logic Bug',
+            'Command Execute',
+            'Code Execute',
+            'Information Disclosure',
+            'Data Exposure',
+            'Xpath Injection',
+            'LDAP Injection',
+            'XML/XXE Injection',
+            'Unserialize',
+            'Variables Override',
+            'URL Redirect',
+            'Weak Function',
+            'Buffer Overflow',
+            'Deprecated Function',
+            'Stack Trace',
+            'Resource Executable',
+            'SSRF',
+            'Misconfiguration',
+            'Components'
+        ]
+        for vul in vuls:
+            a_vul = CobraVuls(vul, 'Vul Description', 'Vul Repair', 0)
+            db.session.add(a_vul)
+
+        # commit
+        db.session.commit()
+        print('All Done.')

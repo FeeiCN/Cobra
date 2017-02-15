@@ -15,7 +15,7 @@ from flask import request, jsonify, render_template, redirect
 
 from .import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass
+from utils.validate import ValidateClass
 from app.models import CobraLanguages
 
 

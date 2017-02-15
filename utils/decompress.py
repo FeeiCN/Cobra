@@ -37,7 +37,7 @@ dc.decompress()
 """
 
 
-class Decompress:
+class Decompress(object):
     """Decompress zip, rar and tar.gz
 
     filename: filename without path

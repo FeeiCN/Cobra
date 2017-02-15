@@ -19,7 +19,7 @@ from utils import config
 logging = logging.getLogger(__name__)
 
 
-class Subversion:
+class Subversion(object):
     """Subversion Utility Class"""
     svn = '/usr/bin/svn'
 

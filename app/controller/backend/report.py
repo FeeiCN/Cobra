@@ -16,7 +16,7 @@ from flask import render_template
 from . import ADMIN_URL
 import os
 from app import web
-from app.CommonClass.ValidateClass import login_required
+from utils.validate import login_required
 from app.models import CobraProjects, CobraResults, CobraRules, CobraVuls
 from pickup.git import Git
 from utils import config, common

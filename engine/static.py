@@ -20,12 +20,13 @@ import traceback
 import logging
 from engine.core import Core
 from pickup import directory
-from app import db, CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
+from app.models import CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
+from app import db
 
 logging = logging.getLogger(__name__)
 
 
-class Static:
+class Static(object):
     def __init__(self, directory_path=None, task_id=None, project_id=None):
         self.directory = directory_path
         self.task_id = task_id

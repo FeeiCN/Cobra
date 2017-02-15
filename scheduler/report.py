@@ -35,11 +35,11 @@ time_type_des = {
 }
 
 
-class Report:
+class Report(object):
     def __init__(self, time_type):
         if time_type not in time_types:
             logging.critical('Time type exception')
-            return False
+            return
 
         self.time_type_de = time_type_des[time_type]
 

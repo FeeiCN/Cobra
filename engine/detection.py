@@ -18,7 +18,7 @@ import logging
 logging = logging.getLogger(__name__)
 
 
-class Detection:
+class Detection(object):
     def __init__(self, project_directory=None):
         self.project_directory = project_directory
         self.rules = [

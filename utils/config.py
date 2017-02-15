@@ -16,7 +16,7 @@ import StringIO
 import ConfigParser
 
 
-class Config:
+class Config(object):
     def __init__(self, level1=None, level2=None):
         self.level1 = level1
         self.level2 = level2

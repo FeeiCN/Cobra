@@ -18,7 +18,7 @@ from flask import jsonify, render_template, request
 
 from . import ADMIN_URL
 from app import web, db
-from app.CommonClass.ValidateClass import ValidateClass, login_required
+from utils.validate import ValidateClass, login_required
 from app.models import CobraWhiteList, CobraRules, CobraProjects
 
 __author__ = "lightless"
