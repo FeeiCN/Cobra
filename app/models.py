@@ -314,6 +314,11 @@ class CobraProjects(db.Model):
     framework = db.Column(db.String(32), nullable=False, default=None)
     pe = db.Column(db.String(32), nullable=False, default=None)
     remark = db.Column(db.String(512), nullable=False, default=None)
+    #
+    # `status` field description
+    #   1: on
+    #   0: off
+    #
     status = db.Column(TINYINT, nullable=False, default=1)
     last_scan = db.Column(db.DateTime, nullable=False, default=None)
     created_at = db.Column(db.DateTime, nullable=False, default=None)
@@ -340,6 +345,17 @@ class CobraProjects(db.Model):
             self.updated_at = current_time
         else:
             self.updated_at = updated_at
+
+    @staticmethod
+    def get_status(status):
+        state_int = {
+            0: 'off',
+            1: 'on'
+        }
+        if isinstance(status, str):
+            return {v: k for k, v in state_int.items()}[status.lower()]
+        else:
+            return state_int[status]
 
     def __repr__(self):
         return "<CobraProjects %r - %r>" % (self.id, self.name)

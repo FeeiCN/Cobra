@@ -13,6 +13,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 from flask_script import Command, Option
+from scheduler import report
 
 
 class Report(Command):
@@ -26,7 +27,6 @@ class Report(Command):
     )
 
     def run(self, t='w'):
-        from scheduler import report
         if t not in ['w', 'm', 'q']:
             print('Error: time type exception')
             return

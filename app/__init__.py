@@ -12,18 +12,14 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import logging
 import os
 import sys
-
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_script import Manager, Server
 from flask_sqlalchemy import SQLAlchemy
 
 from utils import config
-
-logging = logging.getLogger(__name__)
 
 VERSION = '1.6.3'
 

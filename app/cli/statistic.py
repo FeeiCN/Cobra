@@ -13,12 +13,13 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import sys
-import logging
 import subprocess
 from flask_script import Command, Option
 from app.models import CobraTaskInfo
 from app import db
+from utils.log import logging
 
+logging = logging.getLogger(__name__)
 
 class Statistic(Command):
     """

@@ -13,7 +13,7 @@
 """
 import time
 import os
-import logging
+from utils.log import logging
 from app.models import CobraExt
 from app import db
 

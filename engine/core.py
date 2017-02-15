@@ -13,7 +13,6 @@
 """
 import os
 import re
-import logging
 import traceback
 from engine import parse
 from pickup.file import File
@@ -21,6 +20,7 @@ from app.models import CobraResults
 from app import db
 from utils.queue import Queue
 from utils.config import Config
+from utils.log import logging
 
 logging = logging.getLogger(__name__)
 

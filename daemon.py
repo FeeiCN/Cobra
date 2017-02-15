@@ -14,10 +14,10 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import logging
 from celery import Celery
 from utils.third_party import Vulnerabilities
 from utils import config
+from utils.log import logging
 
 logging = logging.getLogger(__name__)
 

@@ -13,10 +13,12 @@
 """
 import json
 import requests
-import logging
 from utils import config
 from app.models import CobraResults
 from app import db
+from utils.log import logging
+
+logging = logging.getLogger(__name__)
 
 
 class Vulnerabilities(object):

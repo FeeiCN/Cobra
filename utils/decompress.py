@@ -16,8 +16,8 @@ import shutil
 import zipfile
 import tarfile
 import rarfile
-import logging
 from utils import config
+from utils.log import logging
 
 logging = logging.getLogger(__name__)
 """example

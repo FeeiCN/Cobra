@@ -17,10 +17,8 @@ import sys
 import re
 import subprocess
 from pickup.file import File
-from utils import log
-import logging
+from utils.log import logging
 
-log.Log()
 logging = logging.getLogger(__name__)
 
 

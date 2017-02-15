@@ -13,7 +13,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import logging
+from utils.log import logging
 
 logging = logging.getLogger(__name__)
 
