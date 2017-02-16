@@ -43,7 +43,8 @@ def white_list(page, keyword):
     data = {
         'total': total,
         'whitelists': whitelists,
-        'keyword': keyword
+        'keyword': keyword,
+        'page': page
     }
     return render_template('backend/white-list/white-list.html', data=data)
 

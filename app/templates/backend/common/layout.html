@@ -54,14 +54,14 @@
                             <li class="{% block rule_active %}{% endblock %}">
                                 <a href="/admin/rules">Rule</a>
                             </li>
-                            <li>
-                                <a href="/admin/vulnerabilities">Vulnerabilities</a>
+                            <li class="{% block vulnerability_active %}{% endblock %}">
+                                <a href="/admin/vulnerability">Vulnerability</a>
                             </li>
-                            <li>
-                                <a href="/admin/languages">Languages</a>
+                            <li class="{% block language_active %}{% endblock %}">
+                                <a href="/admin/language">Language</a>
                             </li>
-                            <li>
-                                <a href="/admin/frameworks" href="#docsModal" data-toggle="modal">Frameworks</a>
+                            <li class="{% block framework_active %}{% endblock %}">
+                                <a href="/admin/framework" >Frameworks</a>
                             </li>
                         </ul>
                         <hr class="rw aky">

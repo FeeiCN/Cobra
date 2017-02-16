@@ -91,11 +91,11 @@ def dashboard():
     total_vuls = []
     for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
         t = {}
-        # get vul name
+        # get vulnerability name
         if x.rule_id not in all_rules:
             continue
         te = all_cobra_vuls[all_rules[x.rule_id]]
-        # check if there is already a same vul name in different language
+        # check if there is already a same vulnerability name in different language
         flag = False
         for tv in total_vuls:
             if te == tv.get('vuls'):
@@ -110,9 +110,9 @@ def dashboard():
     today_vuls = []
     for x in all_vuls_today:
         t = {}
-        # get vul name
+        # get vulnerability name
         te = all_cobra_vuls[all_rules[x.rule_id]]
-        # check if there is already a same vul name in different language
+        # check if there is already a same vulnerability name in different language
         flag = False
         for tv in today_vuls:
             if te == tv.get('vuls'):
@@ -206,11 +206,11 @@ def graph_vulns():
             total_vuls = []
             for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
                 t = {}
-                # get vul name
+                # get vulnerability name
                 if x.rule_id not in all_rules:
                     continue
                 te = all_cobra_vuls[all_rules[x.rule_id]]
-                # check if there is already a same vul name in different language
+                # check if there is already a same vulnerability name in different language
                 flag = False
                 for tv in total_vuls:
                     if te == tv['vuls']:
@@ -243,9 +243,9 @@ def graph_vulns():
             total_vuls = []
             for x in all_vuls:  # all_vuls: results group by rule_id and count(*)
                 t = {}
-                # get vul name
+                # get vulnerability name
                 te = all_cobra_vuls[all_rules[x.rule_id]]
-                # check if there is already a same vul name in different language
+                # check if there is already a same vulnerability name in different language
                 flag = False
                 for tv in total_vuls:
                     if te == tv['vuls']:
