@@ -1,0 +1,103 @@
+{% extends "backend/common/layout.html" %}
+{% block framework_active %}active{% endblock %}
+{% block nav_first %}Framework{% endblock %}
+{% block nav_second %}{{ data.framework.frame_name }}{% endblock %}
+{% block body %}
+    <div class="akg ue">
+        <div class="akh aki">
+            <div class="tn aol">
+                <input type="text" class="form-control aqr btn-search-framework" placeholder="Search framework rule" value="{{ data.keyword }}">
+                <span class="bv adn"></span>
+            </div>
+        </div>
+        <div class="akh">
+            <div class="nz">
+                <button type="button" class="ce apn create">
+                    <span class="bv afg"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="ud">
+        <div class="eg">
+            <table class="cl" data-sort="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Path</th>
+                    <th>Status</th>
+                    <th>Update time</th>
+                    <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if data.total == 0 %}
+                    <tr>
+                        <td>No one</td>
+                    </tr>
+                {% endif %}
+                {% for item in data.framework_rule %}
+                    <tr data-id="{{ item.id }}">
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.path_rule }}</td>
+                        <td>{{ item.status }}</td>
+                        <td>{{ item.updated_time }}</td>
+                        <td>
+                            <div class="nz">
+                                <button type="button" class="ce fr apk fe edit">
+                                    <span class="bv zt"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="db" id="paginate"></div>
+    <input type="hidden" name="page" value="{{ data.page }}">
+    <input type="hidden" name="fid" value="{{ data.fid }}">
+{% endblock %}
+{% block scripts %}
+    <script>
+        var app = {
+            keyword: function () {
+                return $('input.btn-search-framework').val();
+            },
+            page: function () {
+                return $('input[name=page]').val();
+            },
+            fid: function () {
+                return $('input[name=fid]').val();
+            },
+            init: function () {
+                // pagination
+                make_pagination('{{ data.page }}', '{{ data.total }}');
+
+                $(".btn-search-framework").keyup(function (event) {
+                    if (event.keyCode == 13) {
+                        if (app.keyword() == "") {
+                            window.location.href = '/admin/framework/rule/' + app.fid() + '/' + app.page();
+                        } else {
+                            window.location.href = '/admin/framework/rule/' + app.fid() + '/' + app.page() + '/' + app.keyword();
+                        }
+                    }
+                });
+
+                $('button.edit').click(function () {
+                    var button = $(this);
+                    var id = button.parents('tr').attr('data-id');
+                    window.location.href = '/admin/framework/rule/' + app.fid() + '/edit/' + id;
+                });
+
+                $('button.create').on('click', function () {
+                    window.location.href = '/admin/framework/rule/' + app.fid() + '/create'
+                });
+            }
+        };
+        $(document).ready(function () {
+            app.init();
+        });
+    </script>
+{% endblock %}
