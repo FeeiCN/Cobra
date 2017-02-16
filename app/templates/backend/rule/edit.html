@@ -111,7 +111,13 @@
         <div class="aon hn">
             <label for="repair">Verify <a href="http://cobra-docs.readthedocs.io/en/latest/rule/" target="_blank">
                 <span class="bv abu" data-toggle="tooltip" data-placement="right" data-container="body" data-original-title="Click view rule verify detail"></span></a></label>
-            <textarea class="form-control" rows="6" id="verify">{{ data.rule.verify }}</textarea>
+            <textarea class="form-control" rows="6" id="verify" placeholder="Matched1
+***
+Matched2
+---
+Not matched1
+***
+Not matched2">{{ data.rule.verify }}</textarea>
         </div>
         <div class="aon hn">
             <label for="repair">Repair</label>
@@ -120,7 +126,7 @@
         <hr class="aky">
         <div class="aon hj akg">
             <div class="akh aki">
-                <button type="button" name="submit" class="ce apk fh">Edit</button>
+                <button type="button" name="submit" class="ce apk fh">Save</button>
             </div>
             <div class="akh">
                 <button class="ce fh apr delete-rule" type="button">
