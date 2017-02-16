@@ -16,6 +16,7 @@
             <table class="cl" data-sort="table">
                 <thead>
                 <tr>
+                    <th>PID</th>
                     <th>TID</th>
                     <th>Target</th>
                     <th>Consume</th>
@@ -32,6 +33,7 @@
                 {% endif %}
                 {% for task in data.tasks %}
                     <tr>
+                        <td><a href="{{ task.report }}" target="_blank">{{ task.pid }}</a></td>
                         <td>{{ task.id }}</td>
                         <td id="task-target-{{ task.id }}">{{ task.target }}</td>
                         <td align="center" id="task-time-consume-{{ task.time_consume }}">{{ task.time_consume }}</td>

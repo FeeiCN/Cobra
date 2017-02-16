@@ -19,8 +19,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from . import ADMIN_URL
 from app import web, db
 from utils.validate import ValidateClass, login_required
-from app.models import CobraTaskInfo
+from app.models import CobraTaskInfo, CobraProjects
 from utils.common import convert_number, convert_time
+from utils import config
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -41,18 +42,28 @@ def tasks(page, keyword):
 
     total = CobraTaskInfo.query.filter(filter_group).count()
 
+    tasks_dict = []
     for task in all_tasks:
-        task.file_count = convert_number(task.file_count)
-        task.code_number = convert_number(task.code_number) if task.code_number != 0 else u"统计中..."
-        task.time_start = datetime.datetime.fromtimestamp(task.time_start)
-        task.time_end = datetime.datetime.fromtimestamp(task.time_end)
-        task.time_consume = convert_time(task.time_consume)
+        p = CobraProjects.query.with_entities(CobraProjects.id).filter(CobraProjects.repository == task.target).first()
+        tasks_dict.append({
+            'file_count': convert_number(task.file_count),
+            'code_number': convert_number(task.code_number) if task.code_number != 0 else u"Statistic...",
+            'time_start': datetime.datetime.fromtimestamp(task.time_start),
+            'time_end': datetime.datetime.fromtimestamp(task.time_end),
+            'time_consume': convert_time(task.time_consume),
+            'updated_at': task.updated_at,
+            'target': task.target,
+            'id': task.id,
+            'status': task.status,
+            'pid': p.id,
+            'report': 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(p.id)
+        })
 
     if keyword == '0':
         keyword = ''
     data = {
         'total': total,
-        'tasks': all_tasks,
+        'tasks': tasks_dict,
         'page': page,
         'keyword': keyword
     }
