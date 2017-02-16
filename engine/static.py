@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -195,8 +194,8 @@ class Static(object):
                     for explode_dir in explode_dirs:
                         filters.append('--exclude-dir={0}'.format(explode_dir))
 
-                    # -n Show Line number / -r Recursive / -P Perl regular expression
-                    param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
+                    # -s suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
+                    param = [grep, "-s", "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
                 logging.debug(rule.regex_location)
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
