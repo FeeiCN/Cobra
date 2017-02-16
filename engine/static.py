@@ -11,7 +11,6 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import os
 import sys
 import time
 import subprocess
@@ -20,6 +19,7 @@ from engine.core import Core
 from pickup import directory
 from app.models import CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
 from app import db
+from utils import tool
 from utils.log import logging
 
 logging = logging.getLogger(__name__)
@@ -41,10 +41,9 @@ class Static(object):
         if self.directory is None:
             logging.critical("Please set directory")
             sys.exit()
-        logging.info('Start code static analyse...')
+        logging.info('[START] Scan')
 
-        d = directory.Directory(self.directory)
-        files = d.collect_files(self.task_id)
+        files = directory.Directory(self.directory).collect_files(self.task_id)
         logging.info('Scan Files: {0}, Total Time: {1}s'.format(files['file_nums'], files['collect_time']))
 
         ext_language = {
@@ -114,43 +113,19 @@ class Static(object):
                 logging.info(ext)
 
         languages = CobraLanguages.query.all()
-
         rules = CobraRules.query.filter_by(status=1).all()
         extensions = None
-        # `grep` (`ggrep` on Mac)
-        grep = '/bin/grep'
-        # `find` (`gfind` on Mac)
-        find = '/bin/find'
-        if 'darwin' == sys.platform:
-            ggrep = ''
-            gfind = ''
-            for root, dir_names, file_names in os.walk('/usr/local/Cellar/grep'):
-                for filename in file_names:
-                    if 'ggrep' == filename or 'grep' == filename:
-                        ggrep = os.path.join(root, filename)
-            for root, dir_names, file_names in os.walk('/usr/local/Cellar/findutils'):
-                for filename in file_names:
-                    if 'gfind' == filename:
-                        gfind = os.path.join(root, filename)
-            if ggrep == '':
-                logging.critical("brew install ggrep pleases!")
-                sys.exit(0)
-            else:
-                grep = ggrep
-            if gfind == '':
-                logging.critical("brew install findutils pleases!")
-                sys.exit(0)
-            else:
-                find = gfind
+        find = tool.find
+        grep = tool.grep
 
         """
-        all vulnerabilities
-        vulnerabilities_all[vuln_id] = {'name': 'vuln_name', 'third_v_id': 'third_v_id'}
+        Vulnerability Types
+        vulnerability_types[vuln_id] = {'name': 'vuln_name', 'third_v_id': 'third_v_id'}
         """
-        vulnerabilities_all = {}
+        vulnerability_types = {}
         vulnerabilities = CobraVuls.query.all()
         for v in vulnerabilities:
-            vulnerabilities_all[v.id] = {
+            vulnerability_types[v.id] = {
                 'name': v.name,
                 'third_v_id': v.third_v_id
             }
@@ -158,7 +133,7 @@ class Static(object):
         for rule in rules:
             rule.regex_location = rule.regex_location.strip()
             rule.regex_repair = rule.regex_repair.strip()
-            logging.info('------------------ RID: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
+            logging.info('------------------ PID: {0} RID: {1} NAME: {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
                 if language.id == rule.language:
@@ -201,25 +176,25 @@ class Static(object):
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
-                # Exists result
+                # exists result
                 if len(result[0]):
                     lines = str(result[0]).strip().split("\n")
                     for line in lines:
                         line = line.strip()
                         if line == '':
                             continue
-                        # 处理grep结果
+                        # grep result
                         if ':' in line:
                             line_split = line.split(':', 1)
                             file_path = line_split[0].strip()
                             code_content = line_split[1].split(':', 1)[1].strip()
                             line_number = line_split[1].split(':', 1)[0].strip()
                         else:
-                            # 搜索文件
+                            # search file
                             file_path = line
                             code_content = ''
                             line_number = 0
-                        # 核心规则校验
+                        # core rule check
                         result_info = {
                             'task_id': self.task_id,
                             'project_id': self.project_id,
@@ -229,12 +204,12 @@ class Static(object):
                             'file_path': file_path,
                             'line_number': line_number,
                             'code_content': code_content,
-                            'third_party_vulnerabilities_name': vulnerabilities_all[rule.vul_id]['name'],
-                            'third_party_vulnerabilities_type': vulnerabilities_all[rule.vul_id]['third_v_id']
+                            'third_party_vulnerabilities_name': vulnerability_types[rule.vul_id]['name'],
+                            'third_party_vulnerabilities_type': vulnerability_types[rule.vul_id]['third_v_id']
                         }
                         ret_status, ret_result = Core(result_info, rule, self.project_name, white_list).scan()
                         if ret_status is False:
-                            logging.info("扫描 R: False {0}".format(ret_result))
+                            logging.info("SCAN R: False {0}".format(ret_result))
                             continue
 
                 else:
@@ -244,7 +219,7 @@ class Static(object):
                 print(traceback.print_exc())
                 logging.critical('Error calling grep: ' + str(e))
 
-        # Set End Time For Task
+        # set end time for task
         t = CobraTaskInfo.query.filter_by(id=self.task_id).first()
         t.status = 2
         t.file_count = files['file_nums']
@@ -256,4 +231,4 @@ class Static(object):
             db.session.commit()
         except Exception as e:
             logging.critical("Set start time failed:" + e.message)
-        logging.info("Scan Done")
+        logging.info("[END] Scan")
