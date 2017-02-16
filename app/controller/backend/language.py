@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-    backend.languages
-    ~~~~~~~~~~~~~~~~~
+    backend.language
+    ~~~~~~~~~~~~~~~~
 
-    Implements languages controller
+    Implements language controller
 
     :author:    Feei <feei#feei.cn>
     :homepage:  https://github.com/wufeifei/cobra
@@ -13,101 +13,108 @@
 """
 from flask import request, jsonify, render_template, redirect
 
-from .import ADMIN_URL
+from . import ADMIN_URL
 from app import web, db
-from utils.validate import ValidateClass
+from utils.validate import ValidateClass, login_required
 from app.models import CobraLanguages
-
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
 
 
-@web.route(ADMIN_URL + "/add_new_language", methods=['GET', 'POST'])
-def add_new_language():
+@web.route(ADMIN_URL + '/language/', methods=['GET'], defaults={'keyword': '0', 'page': 1})
+@web.route(ADMIN_URL + '/language/<int:page>', methods=['GET'], defaults={'keyword': '0'})
+@web.route(ADMIN_URL + '/language/<int:page>/<keyword>', methods=['GET'])
+@login_required
+def language_list(page, keyword):
+    if keyword != '0':
+        filter_group = (CobraLanguages.name.like("%{}%".format(keyword)))
+    else:
+        filter_group = (CobraLanguages.id > 0)
+    per_page = 10
+    language = CobraLanguages.query.filter(filter_group).order_by(CobraLanguages.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    total = CobraLanguages.query.filter(filter_group).count()
 
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + '/index')
+    if keyword == '0':
+        keyword = ''
+    data = {
+        'total': total,
+        'language': language,
+        'keyword': keyword,
+        'page': page
+    }
+    return render_template('backend/language/language.html', data=data)
 
-    if request.method == "POST":
 
+@web.route(ADMIN_URL + '/language/create/', methods=['GET', 'POST'])
+@login_required
+def language_create():
+    if request.method == 'POST':
         vc = ValidateClass(request, "language", "extensions")
         ret, msg = vc.check_args()
         if not ret:
-            return jsonify(tag="danger", msg=msg)
+            return jsonify(code=4001, message=msg)
 
         l = CobraLanguages(vc.vars.language, vc.vars.extensions)
         try:
             db.session.add(l)
             db.session.commit()
-            return jsonify(tag="success", msg="add success")
+            return jsonify(code=1001, message='add success.')
         except:
-            return jsonify(tag="danger", msg="try again later?")
+            return jsonify(code=4001, message='unknown error. Try again later?')
     else:
-        return render_template("backend/language/add_new_language.html")
+        data = {
+            'title': 'Create language',
+            'type': 'create',
+            'language': dict()
+        }
+        return render_template('backend/language/edit.html', data=data)
 
 
-@web.route(ADMIN_URL + "/languages/<int:page>", methods=['GET'])
-def languages(page):
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + "/index")
-
-    per_page = 10
-    languages = CobraLanguages.query.order_by(CobraLanguages.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
-    data = {
-        'languages': languages,
-    }
-    return render_template("backend/language/languages.html", data=data)
-
-
-@web.route(ADMIN_URL + "/del_language", methods=['POST'])
-def del_language():
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + "/index")
-
+@web.route(ADMIN_URL + '/language/delete', methods=['POST'])
+@login_required
+def language_delete():
     vc = ValidateClass(request, "id")
     ret, msg = vc.check_args()
     if not ret:
-        return jsonify(tag="danger", msg=msg)
-
-    l = CobraLanguages.query.filter_by(id=vc.vars.id).first()
+        return jsonify(code=4001, message=msg)
+    v = CobraLanguages.query.filter_by(id=vc.vars.id).first()
     try:
-        db.session.delete(l)
+        db.session.delete(v)
         db.session.commit()
-        return jsonify(tag="success", msg="delete success.")
+        return jsonify(code=1001, message='delete success.')
     except:
-        return jsonify(tag="danger", msg="delete failed.")
+        return jsonify(code=4002, message='unknown error.')
 
 
-@web.route(ADMIN_URL + "/edit_language/<int:language_id>", methods=['POST', 'GET'])
-def edit_language(language_id):
-
-    if not ValidateClass.check_login():
-        return redirect(ADMIN_URL + "/index")
-
-    if request.method == "POST":
-
+@web.route(ADMIN_URL + '/language/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def language_edit(id):
+    if request.method == 'POST':
         vc = ValidateClass(request, "language", "extensions")
         ret, msg = vc.check_args()
         if not ret:
-            return jsonify(tag="danger", msg=msg)
+            return jsonify(code=4001, message=msg)
 
-        l = CobraLanguages.query.filter_by(id=language_id).first()
+        item = CobraLanguages.query.filter_by(id=id).first()
+        if not item:
+            return jsonify(code=4001, message='wrong white-list')
+
+        item.language = vc.vars.language
+        item.extensions = vc.vars.extensions
+
         try:
-            l.language = vc.vars.language
-            l.extensions = vc.vars.extensions
-            db.session.add(l)
+            db.session.add(item)
             db.session.commit()
-            return jsonify(tag="success", msg="update success.")
+            return jsonify(code=1001, message='update success.')
         except:
-            return jsonify(tag="danger", msg="try again later?")
-
+            return jsonify(code=4001, message='unknown error.')
     else:
-        l = CobraLanguages.query.filter_by(id=language_id).first()
+        language = CobraLanguages.query.filter_by(id=id).first()
         data = {
-            'language': l,
+            'title': 'Edit language',
+            'type': 'edit',
+            'language': language,
+            'id': id
         }
-        return render_template("backend/language/edit_language.html", data=data)
-
+        return render_template('backend/language/edit.html', data=data)
