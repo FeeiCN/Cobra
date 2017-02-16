@@ -106,15 +106,14 @@ class Detection(object):
         :return: self.rules['name']
         """
         for rule in self.rules:
-            logging.info("Name: {0} Site: {1} Source: {2}".format(rule['name'], rule['site'], rule['source']))
             rules_types = ['file', 'directory']
             rules_count = len(rule['rules'])
             rules_completed = 0
-            logging.info('Rules Count: {0} Rules Info: {1}'.format(rules_count, rule['rules']))
+            logging.info("------ {0} COUNT: {1}".format(rule['name'], rules_count))
             for rule_type in rules_types:
                 if rule_type in rule['rules']:
                     target = os.path.join(self.project_directory, rule['rules'][rule_type])
-                    logging.debug('Detection({0}): {1}'.format(rule_type, target))
+                    logging.debug('{0}: {1}'.format(rule_type, target))
                     if rule_type == 'file':
                         if os.path.isfile(target):
                             rules_completed += 1

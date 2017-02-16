@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -159,7 +158,7 @@ class Static(object):
         for rule in rules:
             rule.regex_location = rule.regex_location.strip()
             rule.regex_repair = rule.regex_repair.strip()
-            logging.info('------------------\r\nScan rule id: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
+            logging.info('------------------ RID: {0} {1} {2}'.format(self.project_id, rule.id, rule.description))
             # Filters
             for language in languages:
                 if language.id == rule.language:
@@ -195,10 +194,10 @@ class Static(object):
                     for explode_dir in explode_dirs:
                         filters.append('--exclude-dir={0}'.format(explode_dir))
 
-                    # -n Show Line number / -r Recursive / -P Perl regular expression
-                    param = [grep, "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
+                    # -s suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
+                    param = [grep, "-s", "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
 
-                logging.debug(' '.join(param))
+                logging.debug(rule.regex_location)
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
