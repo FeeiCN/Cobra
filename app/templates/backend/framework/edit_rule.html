@@ -1,0 +1,115 @@
+{% extends "backend/common/layout.html" %}
+{% block framework_active %}active{% endblock %}
+{% block nav_first %}Framework{% endblock %}
+{% block nav_second %}{{ data.title }}{% endblock %}
+{% block body %}
+    <hr class="aky">
+    <form role="form">
+        <input type="hidden" name="type" value="{{ data.type }}">
+        <input type="hidden" name="id" value="{{ data.id }}">
+        <input type="hidden" name="fid" value="{{ data.fid }}">
+        <div class="form-group">
+            <label for="path">Path</label>
+            <input type="text" class="form-control" name="path" value="{{ data.framework_rule.path_rule }}" placeholder="Path">
+        </div>
+        <div class="form-group">
+            <label for="content">Content</label>
+            <input type="text" class="form-control" name="content" value="{{ data.framework_rule.content_rule }}" placeholder="Content"/>
+        </div>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="status" value="1" {% if data.framework_rule.status == 1 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    On
+                </label>
+            </div>
+            <div class="em aob aog">
+                <label>
+                    <input type="radio" name="status" value="0" {% if data.framework_rule.status == 0 %}checked{% endif %}>
+                    <span class="aoc"></span>
+                    Off
+                </label>
+            </div>
+        </div>
+        <hr class="aky">
+        <div class="aon hj akg">
+            <div class="akh aki">
+                <button type="button" name="submit" class="ce apk fh">Submit</button>
+            </div>
+            <div class="akh">
+                <button class="ce fh apr delete" type="button">
+                    <span class="bv xm"></span> Delete
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script>
+        var app = {
+            id: function () {
+                return $('input[name=id]').val();
+            },
+            type: function () {
+                return $('input[name=type]').val()
+            },
+            fid: function () {
+                return $('input[name=fid]').val()
+            },
+            init: function () {
+                $('button[name=submit]').click(function () {
+                    var path = $('input[name=path]').val();
+                    var content = $('input[name=content]').val();
+                    var status = $('input[name=status]:checked').val();
+
+                    if (!path || path == "") {
+                        notification('path can not be empty!');
+                        return false;
+                    }
+                    if (!content || content == "") {
+                        notification('content can not be empty!');
+                        return false;
+                    }
+                    if (!status || status == "") {
+                        notification('status can not be empty!');
+                        return false;
+                    }
+
+                    data = {
+                        'path': path,
+                        'content': content,
+                        'status': status
+                    };
+                    $.post('/admin/framework/rule/' + app.fid() + '/' + app.type() + '/' + app.id(), data, function (ret) {
+                        if (ret.code == 1001) {
+                            window.location.href = '/admin/framework/rule/' + app.fid();
+                        } else {
+                            notification(ret.message);
+                        }
+                    });
+                });
+
+                if (app.type() == 'create') {
+                    $('.delete').hide();
+                }
+
+                $('button.delete').click(function () {
+                    var button = $(this);
+                    var id = button.parents('tr').attr('data-id');
+                    if (window.confirm('Do you want to delete this framework? (ID:' + app.id() + ')')) {
+                        $.post('/admin/framework/rule/' + app.fid() + '/delete', {id: app.id()}, function (ret) {
+                            if (ret.code == 1001) {
+                                window.history.go(-1)
+                            } else {
+                                alert(data.message);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        app.init();
+    </script>
+{% endblock %}

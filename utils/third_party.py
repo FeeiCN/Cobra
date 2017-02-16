@@ -4,7 +4,7 @@
     utils.third_party
     ~~~~~~~~~~~~~~~~~
 
-    实现第三方漏洞管理平台对接
+    Implement Third-party Vulnerability Manage Push
 
     :author:    Feei <feei#feei.cn>
     :homepage:  https://github.com/wufeifei/cobra

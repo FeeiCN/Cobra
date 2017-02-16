@@ -37,7 +37,7 @@ $("#search_rules_bar").delegate("button#search_rules_button", "click", function 
     event.preventDefault();
 
     var language = $("#search_language").val();
-    var vul = $("#vul").val();
+    var vul = $("#vulnerability").val();
     g_rule_back_lang = language;
     g_rule_back_vul = vul;
     g_rule_back_method = "search";
@@ -67,8 +67,8 @@ $("#main-div").delegate("span", "click", function () {
 
     if (target === "vul") {
         if (type === 'view') {
-            var repair = $("<div/>").text($("#vul-repair-" + cid).text()).html();
-            $("#view-title").html("vul details.");
+            var repair = $("<div/>").text($("#vulnerability-repair-" + cid).text()).html();
+            $("#view-title").html("vulnerability details.");
             var content = "<b>repair: </b>" + repair + "<br />";
             $("#view-body").html(content);
         } else if (type === "del") {
@@ -79,22 +79,22 @@ $("#main-div").delegate("span", "click", function () {
         } else if (type === "edit") {
             $.get('edit_vul/' + cid, function (data) {
                 $("#main-div").html(data);
-                $("#edit-vul-button").click(function () {
+                $("#edit-vulnerability-button").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
                     var third_v_id = $('input[name=third_v_id]').val();
 
                     if (!name || name == "") {
-                        showAlert('danger', 'name can not be blank.', '#edit-vul-result');
+                        showAlert('danger', 'name can not be blank.', '#edit-vulnerability-result');
                         return false;
                     }
                     if (!description || description == "") {
-                        showAlert('danger', 'description can not be blank.', '#edit-vul-result');
+                        showAlert('danger', 'description can not be blank.', '#edit-vulnerability-result');
                         return false;
                     }
                     if (!repair || repair == "") {
-                        showAlert('danger', 'repair can not be blank.', '#edit-vul-result');
+                        showAlert('danger', 'repair can not be blank.', '#edit-vulnerability-result');
                         return false;
                     }
 
@@ -106,7 +106,7 @@ $("#main-div").delegate("span", "click", function () {
                         'third_v_id': third_v_id
                     };
                     $.post('edit_vul/' + cid, data, function (res) {
-                        showAlert(res.tag, res.msg, '#edit-vul-result');
+                        showAlert(res.tag, res.msg, '#edit-vulnerability-result');
                     });
                 });
 
@@ -313,7 +313,7 @@ $("#show_all_rules").click(function () {
 
                     // check data
                     if (!vul_type || vul_type == -1) {
-                        showAlert('danger', 'vul type error.', '#add-new-rule-result');
+                        showAlert('danger', 'vulnerability type error.', '#add-new-rule-result');
                         return false;
                     }
                     if (!lang || lang == -1) {
@@ -385,28 +385,28 @@ $("#show_all_vuls").click(function () {
                 $("#main-div").html(data);
 
                 $("#name").focus(function () {
-                    $("#add-new-vul-result").fadeOut(1000);
+                    $("#add-new-vulnerability-result").fadeOut(1000);
                 });
                 $("#description").focus(function () {
-                    $("#add-new-vul-result").fadeOut(1000);
+                    $("#add-new-vulnerability-result").fadeOut(1000);
                 });
 
-                $("#add-new-vul-button").click(function () {
+                $("#add-new-vulnerability-button").click(function () {
                     var name = $("#name").val();
                     var description = $("#description").val();
                     var repair = $("#repair").val();
                     var third_v_id = $('input[name=third_v_id]').val();
 
                     if (name == "" || !name) {
-                        showAlert('danger', 'name can not be blank.', '#add-new-vul-result');
+                        showAlert('danger', 'name can not be blank.', '#add-new-vulnerability-result');
                         return false;
                     }
                     if (description == "" || !description) {
-                        showAlert('danger', 'description can not be blank.', '#add-new-vul-result');
+                        showAlert('danger', 'description can not be blank.', '#add-new-vulnerability-result');
                         return false;
                     }
                     if (repair == "" || !description) {
-                        showAlert('danger', 'description can not be blank.', '#add-new-vul-result');
+                        showAlert('danger', 'description can not be blank.', '#add-new-vulnerability-result');
                         return false;
                     }
                     var data = {
@@ -416,7 +416,7 @@ $("#show_all_vuls").click(function () {
                         'third_v_id': third_v_id
                     };
                     $.post('add_new_vul', data, function (res) {
-                        showAlert(res.tag, res.msg, "#add-new-vul-result");
+                        showAlert(res.tag, res.msg, "#add-new-vulnerability-result");
                     });
                 });
             });

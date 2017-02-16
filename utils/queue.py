@@ -4,7 +4,7 @@
     utils.queue
     ~~~~~~~~~~~
 
-    实现漏洞推送队列
+    Implement Vulnerability Push Queue
 
     :author:    Feei <feei#feei.cn>
     :homepage:  https://github.com/wufeifei/cobra
