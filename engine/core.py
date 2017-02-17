@@ -26,7 +26,7 @@ logging = logging.getLogger(__name__)
 
 
 class Core(object):
-    def __init__(self, result, rule, project_name, white_list):
+    def __init__(self, result, rule, project_name, white_list, test=False, index=None):
         """
         Initialize
         :param result: vulnerability info
@@ -40,7 +40,10 @@ class Core(object):
         :param rule: rule info
         :param project_name: project name
         :param white_list: white-list
+        :param test: is test
+        :param index: vulnerability index
         """
+        self.data = []
         self.project_id = result['project_id']
         self.project_directory = result['project_directory']
         self.rule_id = result['rule_id']
@@ -60,6 +63,7 @@ class Core(object):
 
         self.project_name = project_name
         self.white_list = white_list
+        self.test = test
 
         self.status = None
         self.status_init = 0
@@ -80,6 +84,21 @@ class Core(object):
         self.repair_code_third_party = 4008
 
         self.method = None
+        self.log('info', '**Vulnerability({index})**\r\n > Task ID: `{tid}`\r\n > Project ID: `{pid}`\r\n > Rule ID: `{rid}`\r\n > File: `{file}:{line}`\r\n > Code: `{code}`\r\n > Repair Code: `{repair}`'.format(index=index, tid=self.task_id, pid=self.project_id, rid=self.rule_id, file=self.file_path.replace(self.project_directory, ''), line=self.line_number, code=self.code_content, repair=self.repair_code))
+
+    def log(self, level, message, test=True):
+        if test:
+            self.data.append('[{0}] {1}'.format(level.upper(), message))
+        if level == 'critical':
+            logging.critical(message)
+        elif level == 'warning':
+            logging.warning(message)
+        elif level == 'info':
+            logging.info(message)
+        elif level == 'debug':
+            logging.debug(message)
+        elif level == 'error':
+            logging.error(message)
 
     def is_white_list(self):
         """
@@ -166,19 +185,22 @@ class Core(object):
                 q = Queue(self.project_name, self.third_party_vulnerabilities_name, self.third_party_vulnerabilities_type, self.file_path, self.line_number, self.code_content, vulnerabilities_id)
                 q.push()
         except Exception as e:
-            print(traceback.print_exc())
-            logging.critical(e.message)
+            traceback.print_exc()
+            self.log('critical', e.message)
 
     def insert_vulnerabilities(self):
         """
         Write a new vulnerability to the database
         :return:
         """
-        vul = CobraResults(self.task_id, self.project_id, self.rule_id, self.file_path, self.line_number, self.code_content, self.repair_code, self.status)
-        db.session.add(vul)
-        db.session.commit()
-        logging.info("insert new vulnerabilities Method: {0} VID: {1}".format(self.method, vul.id))
-        self.push_third_party_vulnerabilities(vul.id)
+        if self.test:
+            self.log('info', '[RET] insert vulnerability\r\n')
+        else:
+            vul = CobraResults(self.task_id, self.project_id, self.rule_id, self.file_path, self.line_number, self.code_content, self.repair_code, self.status)
+            db.session.add(vul)
+            db.session.commit()
+            self.log('info', "insert new vulnerabilities Method: {0} VID: {1}".format(self.method, vul.id))
+            self.push_third_party_vulnerabilities(vul.id)
 
     def process_vulnerabilities(self):
         """
@@ -219,7 +241,7 @@ class Core(object):
                 if exist_result is None:
                     self.insert_vulnerabilities()
                 else:
-                    logging.debug("This vulnerabilities already exist!")
+                    self.log('info', "[RET] This vulnerabilities already exist!")
         elif self.method == 1:
             """
             On Repair (method=1)
@@ -235,11 +257,11 @@ class Core(object):
                         db.session.add(exist_result)
                         db.session.commit()
                     else:
-                        logging.critical("Vulnerabilities status not < fixed")
+                        self.log('critical', "Vulnerabilities status not < fixed")
                 else:
-                    logging.critical("Not found vulnerabilities on repair method")
+                    self.log('critical', "Not found vulnerabilities on repair method")
         else:
-            logging.critical("Core method not initialize")
+            self.log('critical', "Core method not initialize")
 
     def scan(self):
         """
@@ -254,23 +276,23 @@ class Core(object):
         """
         self.method = 0
         if self.is_white_list():
-            logging.info("Whitelist file {0}".format(self.file_path))
-            return False, 4000
+            self.log('info', "[RET] Whitelist\r\n")
+            return self.data
 
         if self.is_special_file():
-            logging.info("Special file: {0}".format(self.file_path))
-            return False, 4001
+            self.log('info', "[RET] Special File\r\n")
+            return self.data
 
         if self.is_test_file():
-            logging.info("Test file: {0}".format(self.file_path))
-            return False, 4007
+            self.log('info', "[RET] Test File\r\n")
+            return self.data
 
         if self.is_annotation():
-            logging.info("Annotation {0}".format(self.code_content))
-            return False, 4002
+            self.log('info', "[RET] Annotation\r\n")
+            return self.data
 
         if self.is_match_only_rule():
-            logging.info("Only Rule: {0}".format(self.rule_location))
+            self.log('info', "Only Rule: {0}".format(self.rule_location))
             found_vul = True
         else:
             found_vul = False
@@ -278,18 +300,26 @@ class Core(object):
             if self.is_can_parse() and self.rule_repair.strip() != '':
                 try:
                     parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
-                    if parse_instance.is_controllable_param():
-                        if parse_instance.is_repair(self.rule_repair, self.block_repair):
+                    param_is_controllable, data = parse_instance.is_controllable_param()
+                    if param_is_controllable:
+                        self.data += data
+                        self.log('info', '[RET] Param is controllable\r\n')
+                        is_repair, data = parse_instance.is_repair(self.rule_repair, self.block_repair)
+                        self.data += data
+                        if is_repair:
                             # fixed
-                            return True, 1003
+                            self.log('info', '[RET] Vulnerability Fixed\r\n')
+                            return self.data
                         else:
+                            self.log('info', 'Repair: Not fixed')
                             found_vul = True
                     else:
-                        logging.info("parameter is not controllable")
-                        return False, 4004
+                        self.data += data
+                        self.log('info', '[RET] Param Not Controllable\r\n')
+                        return self.data
                 except:
-                    print(traceback.print_exc())
-                    return False, 4005
+                    traceback.print_exc()
+                    return self.data
 
         if found_vul:
             self.code_content = self.code_content.encode('unicode_escape')
@@ -298,10 +328,10 @@ class Core(object):
             self.status = self.status_init
             self.repair_code = self.repair_code_init
             self.process_vulnerabilities()
-            return True, 1002
+            return self.data
         else:
-            logging.info("Not found vulnerabilities")
-            return False, 4006
+            self.log('info', "[RET] Not found vulnerability\r\n")
+            return self.data
 
     def repair(self):
         """

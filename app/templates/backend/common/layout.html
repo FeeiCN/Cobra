@@ -61,7 +61,7 @@
                                 <a href="/admin/language">Language</a>
                             </li>
                             <li class="{% block framework_active %}{% endblock %}">
-                                <a href="/admin/framework" >Framework</a>
+                                <a href="/admin/framework">Framework</a>
                             </li>
                         </ul>
                         <hr class="rw aky">
@@ -85,26 +85,6 @@
         </div>
     </div>
 </div>
-
-<div id="docsModal" class="cb fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <div class="ri">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Example modal</h4>
-            </div>
-            <div class="modal-body">
-                <p>You're looking at an example modal in the dashboard theme.</p>
-            </div>
-            <div class="rj">
-                <button type="button" class="ce fh" data-dismiss="modal">Cool, got it!</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tablesorter.min.js') }}"></script>
