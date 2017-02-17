@@ -18,8 +18,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from . import ADMIN_URL
 from app import web, db
-from app.models import CobraRules, CobraVuls, CobraLanguages, CobraResults
+from app.models import CobraRules, CobraVuls, CobraLanguages, CobraResults, CobraProjects
 from utils.validate import ValidateClass, login_required
+from engine import static
+from utils import config
+from pickup import git
 
 __author__ = "lightless"
 __email__ = "root@lightless.me"
@@ -220,6 +223,7 @@ def edit_rule(rule_id):
         r = CobraRules.query.filter_by(id=rule_id).first()
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
+        projects = CobraProjects.query.with_entities(CobraProjects.id, CobraProjects.name, CobraProjects.repository).all()
         return render_template('backend/rule/edit.html', data={
             'type': 'edit',
             'title': 'Edit rule',
@@ -227,4 +231,29 @@ def edit_rule(rule_id):
             'rule': r,
             'all_vuls': vul_type,
             'all_lang': languages,
+            'projects': projects
         })
+
+
+@web.route(ADMIN_URL + '/rules/test/', methods=['POST'])
+@login_required
+def test_rule():
+    vc = ValidateClass(request, 'rid', 'pid')
+    ret, msg = vc.check_args()
+    if not ret:
+        return jsonify(code=4004, message=msg)
+
+    project = CobraProjects.query.filter(CobraProjects.id == vc.vars.pid).first()
+    if 'gitlab' in project.repository or 'github' in project.repository:
+        username = config.Config('git', 'username').value
+        password = config.Config('git', 'password').value
+        gg = git.Git(project.repository, branch='master', username=username, password=password)
+        clone_ret, clone_err = gg.clone()
+        if clone_ret is False:
+            return jsonify(code=4001, message='Clone Failed ({0})'.format(clone_err))
+        project_directory = gg.repo_directory
+    else:
+        project_directory = project.repository
+    data = static.Static(project_directory, project_id=vc.vars.pid, rule_id=vc.vars.rid).analyse(test=True)
+    data = '\r\n'.join(data)
+    return jsonify(code=1001, message=data)

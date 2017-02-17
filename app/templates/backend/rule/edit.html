@@ -129,18 +129,80 @@ Not matched2">{{ data.rule.verify }}</textarea>
                 <button type="button" name="submit" class="ce apk fh">Save</button>
             </div>
             <div class="akh">
+{#                <a class="ce apk fl" href="#ruleRunModal" data-toggle="modal" style="margin-right:10px;">Run</a>#}
+                <a class="ce apk fi" href="#ruleTestModal" data-toggle="modal" style="margin-right:10px;">Test</a>
                 <button class="ce fh apr delete-rule" type="button">
                     <span class="bv xm"></span> Delete
                 </button>
             </div>
         </div>
     </form>
+
+    <div id="ruleRunModal" class="cb fade" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="ri">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Rule Run</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You're looking at an example modal in the dashboard theme.</p>
+                </div>
+                <div class="rj">
+                    <button type="button" class="ce fh" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ruleTestModal" class="cb fade" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="ri">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Rule Test</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Test this rule veracity.</p>
+                    <div class="form-group">
+                        <select class="project" style="width: 100%;">
+                            {% for item in data.projects %}
+                                <option value="{{ item.id }}">{{ item.name }} ({{ item.repository }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <pre id="test_log" style="min-height: 600px;color: #000;border:1px solid #ec971f;margin-top: 20px;"></pre>
+                </div>
+                <div class="rj">
+                    <button type="button" name="start" class="ce fl" data-dismiss="modal">Start</button>
+                    <button type="button" class="ce fi" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 {% block scripts %}
+    <link href="{{ url_for('static', filename='css/select2.min.css') }}" rel="stylesheet">
+    <style>
+        .select2-results__option {
+            color: black;
+        }
+
+        .CodeMirror {
+            height: 600px !important;
+        }
+    </style>
+    <script src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/theme/material.css') }}">
+    <script src="{{ url_for('static', filename='codemirror/mode/markdown/markdown.js') }}"></script>
     <script>
         var app = {
             id: $('input[name=id]').val(),
             type: $('input[name=type]').val(),
+            pid: function () {
+                return $('select.project').val();
+            },
             init: function () {
                 $("button[name=submit]").click(function () {
                     var type = $('input[name=type]').val();
@@ -237,6 +299,37 @@ Not matched2">{{ data.rule.verify }}</textarea>
                                 alert(result.message);
                             }
                         });
+                    }
+                });
+
+                // Rule Test
+                $(".project").select2({
+                    placeholder: 'Select test project'
+                });
+
+                $('button[name=start]').click(function (e) {
+                    e.preventDefault();
+                    if (window.confirm("Start test this rule? (RID: " + app.id + " PID：" + app.pid() + ")")) {
+                        $('button[name=start]').attr('disabled', true);
+                        $('#test_log').text('Scanning...');
+                        $.post("/admin/rules/test/", {"rid": app.id, 'pid': app.pid()}, function (result) {
+                            $('button[name=start]').attr('disabled', false);
+                            if (result.code == 1001) {
+                                $('#test_log').text('');
+                                var test_log = CodeMirror(document.getElementById("test_log"), {
+                                    value: result.message,
+                                    mode: 'markdown',
+                                    theme: 'material',
+                                    readOnly: true
+                                });
+                            } else {
+                                alert(result.message);
+                            }
+                        }).fail(function (jqXHR, textStatus, errorThrown) {
+                            $('button[name=start]').attr('disabled', false);
+                            alert("Server error: " + errorThrown);
+                        });
+                        return false;
                     }
                 });
             }
