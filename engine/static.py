@@ -192,7 +192,7 @@ class Static(object):
 
                     # -s suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-s", "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
-                self.log('info', '**Rule Info({index})**\r\n > ID: `{rid}` \r\n > Name: `{name}` \r\n > Language: `{language}`\r\n > Rule mode:`{mode}`\r\n > Location: `{location}` \r\n > Repair: `{repair}`\r\n'.format(index=index, rid=rule.id, name=rule.description, language=extensions, mode=mode, location=rule.regex_location, repair=rule.regex_repair))
+                self.log('info', '**Rule Info({index})**\r\n > ID: `{rid}` \r\n > Name: `{name}` \r\n > Language: `{language}`\r\n > Rule mode:`{mode}`\r\n > Location: `{location}` \r\n > Repair: `{repair} `\r\n'.format(index=index, rid=rule.id, name=rule.description, language=extensions, mode=mode, location=rule.regex_location, repair=rule.regex_repair))
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
