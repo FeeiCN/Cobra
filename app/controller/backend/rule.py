@@ -145,6 +145,7 @@ def add_new_rule():
             'title': 'Create rule',
             'all_vuls': vul_type,
             'all_lang': languages,
+            'verify': {},
             'rule': dict()
         }
         return render_template('backend/rule/edit.html', data=data)
