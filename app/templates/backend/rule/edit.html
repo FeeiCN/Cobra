@@ -108,7 +108,7 @@
             <label for="regex-repair">Regex repair</label>
             <textarea class="form-control" id="regex-repair">{{ data.rule.regex_repair }}</textarea>
         </div>
-        <div class="aon hn">
+        <div class="aon hn verify_form">
             <label for="repair">Verify <a href="http://cobra-docs.readthedocs.io/en/latest/rule/" target="_blank">
                 <span class="bv abu" data-toggle="tooltip" data-placement="right" data-container="body" data-original-title="Click view rule verify detail"></span></a></label>
             <textarea class="form-control" rows="6" id="verify" placeholder="Matched1
@@ -129,7 +129,7 @@ Not matched2">{{ data.rule.verify }}</textarea>
                 <button type="button" name="submit" class="ce apk fh">Save</button>
             </div>
             <div class="akh">
-{#                <a class="ce apk fl" href="#ruleRunModal" data-toggle="modal" style="margin-right:10px;">Run</a>#}
+                {#                <a class="ce apk fl" href="#ruleRunModal" data-toggle="modal" style="margin-right:10px;">Run</a>#}
                 <a class="ce apk fi" href="#ruleTestModal" data-toggle="modal" style="margin-right:10px;">Test</a>
                 <button class="ce fh apr delete-rule" type="button">
                     <span class="bv xm"></span> Delete
@@ -187,14 +187,26 @@ Not matched2">{{ data.rule.verify }}</textarea>
             color: black;
         }
 
-        .CodeMirror {
+        .verify_form .CodeMirror {
+            height: auto;
+        }
+
+        .modal-body .CodeMirror {
             height: 600px !important;
+        }
+
+        .verify-status {
+            width: 1em;
         }
     </style>
     <script src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/theme/material.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.css') }}">
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldcode.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/markdown-fold.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/mode/markdown/markdown.js') }}"></script>
     <script>
         var app = {
@@ -203,7 +215,26 @@ Not matched2">{{ data.rule.verify }}</textarea>
             pid: function () {
                 return $('select.project').val();
             },
+            marker: function (status) {
+                var marker = document.createElement("div");
+                marker.style.color = status == 'False' ? '#d4333f' : 'green';
+                marker.style.paddingLeft = '0.3em';
+                marker.innerHTML = "●";
+                return marker;
+            },
             init: function () {
+                // Rule verify
+                var cm_verify = CodeMirror.fromTextArea(document.getElementById("verify"), {
+                    mode: 'markdown',
+                    theme: 'material',
+                    lineNumbers: true,
+                    gutters: ["CodeMirror-linenumbers", 'verify-status']
+                });
+                var doc = cm_verify.getDoc();
+                {% for line, status in data.verify.iteritems() %}
+                    doc.setGutterMarker({{ line }}, 'verify-status', app.marker('{{ status }}'));
+                {% endfor %}
+
                 $("button[name=submit]").click(function () {
                     var type = $('input[name=type]').val();
                     var id = $('input[name=id]').val();
@@ -214,7 +245,7 @@ Not matched2">{{ data.rule.verify }}</textarea>
                     var regex_repair = $("#regex-repair").val();
                     var block_repair = $('input[name=repair-block]:checked').val();
                     var repair = $("#repair").val();
-                    var verify = $("#verify").val();
+                    var verify = cm_verify.getValue();
                     var author = $('input[name=author]').val();
                     var status = $('input[name=status]:checked').val();
                     var level = $('input[name=level]:checked').val();
@@ -278,7 +309,7 @@ Not matched2">{{ data.rule.verify }}</textarea>
                     };
                     $.post('/admin/rules/' + type + '/' + id, data, function (res) {
                         if (res.code == 1001) {
-                            window.history.go(-1);
+                            notification(res.message);
                         } else {
                             notification(res.message);
                         }

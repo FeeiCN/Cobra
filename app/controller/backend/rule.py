@@ -20,7 +20,7 @@ from . import ADMIN_URL
 from app import web, db
 from app.models import CobraRules, CobraVuls, CobraLanguages, CobraResults, CobraProjects
 from utils.validate import ValidateClass, login_required
-from engine import static
+from engine import static, rule
 from utils import config
 from pickup import git
 
@@ -221,6 +221,7 @@ def edit_rule(rule_id):
             return jsonify(code=4004, message='save failed. Try again later?')
     else:
         r = CobraRules.query.filter_by(id=rule_id).first()
+        verify_data = rule.Rule(r.regex_location, r.regex_repair, r.verify).verify()
         vul_type = CobraVuls.query.all()
         languages = CobraLanguages.query.all()
         projects = CobraProjects.query.with_entities(CobraProjects.id, CobraProjects.name, CobraProjects.repository).all()
@@ -229,6 +230,7 @@ def edit_rule(rule_id):
             'title': 'Edit rule',
             'id': r.id,
             'rule': r,
+            'verify': verify_data,
             'all_vuls': vul_type,
             'all_lang': languages,
             'projects': projects
