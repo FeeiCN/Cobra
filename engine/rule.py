@@ -29,25 +29,14 @@ class Rule(object):
 
     def verify(self):
         # current mode
-        mode = 'MATCHED'
         if self.verify_content == '':
             return self.data
         lines = self.verify_content.split(self.NEWLINE)
         for index, line in enumerate(lines):
-            if self.SPLIT_TYPE in line:
-                mode = 'NOT_MATCHED'
             if self.COMMENT not in line and self.SPLIT_TYPE not in line and self.SPLIT_RULE not in line:
-                not_matched = mode == 'NOT_MATCHED'
-                self.data[index] = self.verify_check(line, not_matched)
+                self.data[index] = self.verify_check(line)
         return self.data
 
-    def verify_check(self, test_rule, reverse=False):
+    def verify_check(self, test_rule):
         regex_test_rule = re.findall(self.rule_location, test_rule)
-        ret = len(regex_test_rule) >= 1
-        if reverse:
-            if ret:
-                return False
-            else:
-                return True
-        else:
-            return ret
+        return len(regex_test_rule) >= 1
