@@ -1,0 +1,199 @@
+.invoice-title h2, .invoice-title h3 {
+    display: inline-block;
+}
+
+.table > tbody > tr > .no-line {
+    border-top: none;
+}
+
+.table > thead > tr > .no-line {
+    border-bottom: none;
+}
+
+.table > tbody > tr > .thick-line {
+    border-top: 2px solid;
+}
+
+.content {
+    text-indent: 30px;
+    display: inline-block;
+}
+
+.sum_number {
+    display: inline;
+    font-size: 20px;
+    color: #F00;
+    font-weight: bold;
+}
+
+#ext_distributing {
+    height: 400px;
+    width: 1000px;
+    margin: 20px auto;
+}
+
+.vulnerabilities_list {
+    height: 500px;
+    list-style-type: none;
+    -webkit-padding-start: 0;
+    border: 1px solid #d6d6d6;
+    overflow-y: scroll;
+}
+
+.vulnerabilities_list > li {
+    border-top: 1px solid #efefef;
+    padding: 5px;
+    height: 75px;
+}
+
+.vulnerabilities_list > li.high {
+    border-bottom: 8px solid #ee9336;
+}
+
+.vulnerabilities_list > li.medium {
+    border-bottom: 8px solid #fdc431;
+}
+
+.vulnerabilities_list > li.low {
+    border-bottom: 8px solid #357abd;
+}
+
+.vulnerabilities_list > li.active {
+    border-right: 8px solid red;
+}
+
+.vulnerabilities_list > li.fixed {
+    background-image: url("/asset/img/fixed.png");
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: 50px 50px;
+}
+
+.vulnerabilities_list > li.not_fixed {
+    background-image: url("/asset/img/not_fixed.png");
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: 50px 50px;
+}
+
+.congratulations {
+    display: block;
+    max-width: 100%;
+    margin: 80px auto;
+}
+
+pre {
+    max-height: 600px;
+}
+
+pre > code.highlight {
+    outline: .4em solid #f00;
+    outline-offset: .4em;
+}
+
+.filter {
+    display: none;
+}
+
+ul.v_detail {
+    padding: 0;
+}
+
+ul.v_detail li {
+    list-style-type: none;
+}
+
+.filter_setting {
+    float: right;
+    padding: 3px;
+}
+
+.file_line {
+    margin: 20px 0 10px 0;
+    border: 1px solid #a58181;
+    padding: 3px;
+    background-color: #908787;
+    color: #efefef;
+    border-radius: 6px;
+}
+
+.n-o-v tr td:nth-child(2) {
+    color: red;
+}
+
+.n-o-v tr td:nth-child(3) {
+    color: green;
+}
+
+.n-o-v tr td:nth-child(4) {
+    color: #357abd;
+}
+
+.n-o-v tr:nth-child(4) {
+    background: #efefef;
+    font-weight: bold;
+}
+
+.form_code .CodeMirror {
+    height: 500px;
+}
+
+.CodeMirror-activeline-background {
+    background: rgba(0, 0, 0, .5) !important;
+}
+
+.cm_panel {
+    background-color: #343f44;
+    color: #aebdc4;
+    border-top: 1px solid #545554;
+    border-bottom: 1px solid #545554;
+    padding: 8px 15px;
+}
+
+.CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
+    background: transparent !important;
+}
+
+.CodeMirror-simplescroll-vertical {
+    width: 10px !important;
+}
+
+.CodeMirror-simplescroll-vertical div {
+    background: #525b5f !important;
+    border-radius: 5px !important;
+    border: 1px solid #383e40 !important;
+    width: 10px !important;
+}
+
+.CodeMirror-focused .cm-matchhighlight {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+    background-position: bottom;
+    background-repeat: repeat-x;
+}
+
+.cm-matchhighlight {
+    background-color: lightgreen
+}
+
+.CodeMirror-selection-highlight-scrollbar {
+    background-color: green
+}
+
+.widget-list {
+    display: none;
+}
+
+.widget-trigger {
+    position: relative;
+    padding: 10px 30px;
+    border: 1px solid rgba(0, 0, 0, 0);
+    background-color: #0f1113;
+}
+
+.widget-trigger li {
+    list-style-type: none;
+}
+
+.widget-bottom span {
+    float: right;
+}

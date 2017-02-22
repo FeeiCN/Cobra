@@ -80,6 +80,7 @@ $(function () {
             this.page = this.page + 1;
             this.get(true);
         },
+        cm_code: null,
         get: function (next_page) {
             if ($("input[name=need_scan]").val() != "False") {
                 // load vulnerabilities list
@@ -127,31 +128,83 @@ $(function () {
                                 $.post('/detail', {id: id}, function (result) {
                                     if (result.status_code == 1001) {
                                         var data = result.data;
-
+                                        $('#code').val(data.detail.code);
                                         // vulnerabilities code
-                                        var code_content = Prism.highlight(data.detail.code, Prism.languages.php);
-                                        $('.code_content').html(code_content);
-                                        var pre = $('pre');
-                                        pre.attr('data-start', data.detail.line_start);
-                                        pre.attr('data-line', data.detail.line_trigger);
-                                        Prism.highlightAll();
-                                        pre.scrollTop(data.detail.line_trigger * 13);
+                                        if (vulnerabilities_list.cm_code == null) {
+                                            vulnerabilities_list.cm_code = CodeMirror.fromTextArea(document.getElementById("code"), {
+                                                mode: 'php',
+                                                theme: 'material',
+                                                lineNumbers: true,
+                                                lineWrapping: true,
+                                                matchBrackets: true,
+                                                matchTags: {bothTags: true},
+                                                indentUnit: 4,
+                                                indentWithTabs: true,
+                                                foldGutter: true,
+                                                scrollbarStyle: 'simple',
+                                                autofocus: false,
+                                                readOnly: true,
+                                                highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+                                                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+                                            });
 
-                                        // vulnerabilities detail
-                                        $('.v_id').text('MVE-' + data.detail.id);
-                                        $('.file_line').text(data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1));
-                                        $('.found_time').text(data.detail.created);
-                                        $('.updated_time').text(data.detail.updated);
-                                        $('.status_description').text(data.detail.status);
-                                        $('.repair_description').text(data.detail.repair);
-                                        $('.c_author').text(data.detail.c_author);
-                                        $('.c_time').text(data.detail.c_time);
+                                            // fullscreen
+                                            // cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                                            // if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
 
+                                            // panel
+                                            var numPanels = 0;
+                                            var panels = {};
 
-                                        $('.r_name').text(data.rule.description);
-                                        $('.r_author').text(data.rule.author);
-                                        $('.r_level').text(data.rule.level);
-                                        $('.r_repair').html(data.rule.repair);
+                                            function makePanel(where, content) {
+                                                var node = document.createElement("div");
+                                                var id = ++numPanels;
+                                                var widget;
+                                                node.id = "panel-" + id;
+                                                node.className = "cm_panel widget-" + where;
+                                                node.innerHTML = content;
+                                                return node;
+                                            }
+
+                                            function addPanel(where, content) {
+                                                var node = makePanel(where, content);
+                                                panels[node.id] = vulnerabilities_list.cm_code.addPanel(node, {position: where, stable: true});
+                                            }
+
+                                            var content_bottom = 'MVE-' + ' ' + data.detail.id + ' ' + data.detail.created + '<span> ' + data.rule.language + '</span>';
+                                            addPanel('bottom', content_bottom);
+                                            var content_top = '<strong>' + data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1) + '</strong>';
+                                            addPanel('top', content_top);
+                                        } else {
+                                            var doc = vulnerabilities_list.cm_code.getDoc();
+                                            doc.setValue(data.detail.code);
+                                        }
+
+                                        vulnerabilities_list.cm_code.operation(function () {
+                                            // widget
+                                            function init_widget() {
+                                                var lis = $('.widget-trigger li');
+                                                $('.commit-author').text('@' + data.detail.c_author);
+                                                $('.commit-time').text('@' + data.detail.c_time);
+                                                $('.v-status').text(data.detail.status);
+                                                $('.v-level').text(data.rule.level);
+                                                $('.v-type').text(data.description.name);
+                                                $('.v-rule').text(data.rule.description);
+                                                $('.v-rule-author').text('@' + data.rule.author);
+                                                $('.v-repair-time').text(data.detail.updated);
+                                                $('.v-repair-description').text(data.rule.repair);
+                                            }
+
+                                            init_widget();
+                                            var widget_trigger_line = $('.widget-trigger').clone().get(0);
+                                            var widget_config = {
+                                                coverGutter: true,
+                                                noHScroll: true
+                                            };
+                                            vulnerabilities_list.cm_code.addLineWidget(data.detail.line_trigger - 1, widget_trigger_line, widget_config);
+                                            var after = vulnerabilities_list.cm_code.charCoords({line: vulnerabilities_list.cm_code.getCursor().line + 1, ch: 0}, "isEmpty").top;
+                                            vulnerabilities_list.cm_code.scrollTo(null, after);
+                                        });
 
                                         $('input[name=vulnerability_path]').val(data.detail.file);
                                         $('input[name=rule_id]').val(data.rule.id);
