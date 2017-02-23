@@ -196,6 +196,7 @@ $(function () {
                                     if (result.status_code == 1001) {
                                         var data = result.data;
                                         $('#code').val(data.detail.code);
+                                        vulnerabilities_list.cm_code.setOption("mode", data.detail.mode);
                                         if (vulnerabilities_list.cm_code !== null) {
                                             var doc = vulnerabilities_list.cm_code.getDoc();
                                             doc.setValue(data.detail.code);

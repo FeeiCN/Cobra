@@ -28,7 +28,7 @@ __email__ = "root@lightless.me"
 @login_required
 def language_list(page, keyword):
     if keyword != '0':
-        filter_group = (CobraLanguages.name.like("%{}%".format(keyword)))
+        filter_group = (CobraLanguages.language.like("%{}%".format(keyword)))
     else:
         filter_group = (CobraLanguages.id > 0)
     per_page = 10

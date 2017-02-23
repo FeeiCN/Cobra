@@ -427,6 +427,39 @@ def vulnerabilities_detail():
     rule_info = CobraRules.query.filter_by(id=v_detail.rule_id).first()
     language_info = CobraLanguages.query.filter(CobraLanguages.id == rule_info.language).first()
     language = language_info.language
+    # https://codemirror.net/mode/clike/index.html
+    mode_mime = {
+        'javascript': 'javascript',
+        'php': 'php',
+        'python': 'python',
+        'lua': 'lua',
+        'ruby': 'ruby',
+        'perl': 'perl',
+        'go': 'go',
+        'cmake': 'cmake',
+        'html': 'htmlmixed',
+        'jsp': 'htmlmixed',
+        'xml': 'xml',
+        'yaml': 'yaml',
+        'css': 'css',
+        'markdown': 'markdown',
+        'shell': 'shell',
+        'sql': 'sql',
+        'c': 'text/x-csrc',
+        'c++': 'text/x-c++src',
+        'java': 'text/x-java',
+        'c#': 'text/x-csharp',
+        'objective-c': 'text/x-objectivec',
+        'scale': 'text/x-scale',
+        'shader': 'text/x-vertex',
+        'squirrel': 'text/x-squirrel',
+        'kotlin': 'text/x-kotlin',
+        'ceylon': 'text/ceylon'
+    }
+    if language.lower() in mode_mime:
+        mode = mode_mime[language.lower()]
+    else:
+        mode = 'htmlmixed'
     vulnerabilities_description = CobraVuls.query.filter_by(id=rule_info.vul_id).first()
 
     if rule_info.author.strip() == '':
@@ -494,6 +527,7 @@ def vulnerabilities_detail():
             'c_ret': c_ret,
             'c_author': c_author,
             'c_time': c_time,
+            'mode': mode,
             'repair': const.Vulnerabilities(v_detail.repair).repair_description(),
             'status': const.Vulnerabilities(v_detail.status).status_description(),
             'created': str(v_detail.created_at),
