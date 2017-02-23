@@ -231,7 +231,7 @@ ul.v_detail li {
     list-style-type: none;
 }
 
-.widget-bottom span {
+.widget-bottom span.v-language {
     float: right;
 }
 
@@ -245,7 +245,7 @@ ul.v_detail li {
     position: relative;
     width: 100%;
     display: block;
-    height: 32px;
+    height: 500px;
     position: relative;
     width: 32px;
 }

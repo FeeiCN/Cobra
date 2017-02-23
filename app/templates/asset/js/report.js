@@ -162,9 +162,9 @@ $(function () {
                                     panels[node.id] = vulnerabilities_list.cm_code.addPanel(node, {position: where, stable: true});
                                 }
 
-                                var content_bottom = 'MVE-0001' + '<span>PHP</span>';
+                                var content_bottom = '<span class="v-id">MVE-0001</span>' + '<span class="v-language">PHP</span>';
                                 addPanel('bottom', content_bottom);
-                                var content_top = '<strong>/this/is/a/demo/code.php:1</strong>';
+                                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong>';
                                 addPanel('top', content_top);
                             }
 
@@ -187,6 +187,10 @@ $(function () {
                                             doc.setValue(data.detail.code);
                                         }
                                         vulnerabilities_list.cm_code.operation(function () {
+                                            // panel
+                                            $('.v-path').text(data.detail.file + ':' + data.detail.line_trigger);
+                                            $('.v-id').text('MVE-' + data.detail.id);
+                                            $('.v-language').text(data.rule.language);
                                             // widget
                                             function init_widget() {
                                                 var lis = $('.widget-trigger li');
@@ -208,8 +212,9 @@ $(function () {
                                                 noHScroll: true
                                             };
                                             vulnerabilities_list.cm_code.addLineWidget(data.detail.line_trigger - 1, widget_trigger_line, widget_config);
-                                            var after = vulnerabilities_list.cm_code.charCoords({line: vulnerabilities_list.cm_code.getCursor().line + 1, ch: 0}, "isEmpty").top;
-                                            vulnerabilities_list.cm_code.scrollTo(null, after);
+                                            var h = vulnerabilities_list.cm_code.getScrollInfo().clientHeight;
+                                            var coords = vulnerabilities_list.cm_code.charCoords({line: data.detail.line_trigger, ch: 0}, "local");
+                                            vulnerabilities_list.cm_code.scrollTo(null, (coords.top + coords.bottom - h) / 2);
                                         });
 
                                         $('input[name=vulnerability_path]').val(data.detail.file);
