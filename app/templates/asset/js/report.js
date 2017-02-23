@@ -231,7 +231,11 @@ $(function () {
                                     } else {
                                         alert(result.message);
                                     }
-                                }, 'JSON');
+                                }, 'JSON').fail(function (response) {
+                                    alert('Backend service failed, try again later! ' + response.responseText);
+                                    // hide loading
+                                    $('.CodeMirror .cm-loading').hide();
+                                });
                             });
                         }
                     } else {

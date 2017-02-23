@@ -2,6 +2,12 @@
     padding: 0;
 }
 
+.icon {
+    width: 16px;
+    fill: #cfd2da;
+    cursor: pointer;
+}
+
 .invoice-title h2, .invoice-title h3 {
     display: inline-block;
 }
@@ -120,8 +126,10 @@ pre > code.highlight {
 
 .filter {
     display: none;
-    height: 500px;
+    height: 576px;
     background: #253238;
+    padding: 20px;
+    border-right: 1px solid #282828;
 }
 
 ul.v_detail {
