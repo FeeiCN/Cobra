@@ -31,3 +31,4 @@ pages:
   - Exception: 'exception.md'
 - Reference:
   - Rule Source: 'rule_source.md'
+  - Third Party: 'THIRD-PARTY.md'
