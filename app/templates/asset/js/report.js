@@ -139,10 +139,6 @@ $(function () {
                                     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
                                 });
 
-                                // fullscreen
-                                // cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                                // if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-
                                 // panel
                                 var numPanels = 0;
                                 var panels = {};
@@ -164,8 +160,26 @@ $(function () {
 
                                 var content_bottom = '<span class="v-id">MVE-0001</span>' + '<span class="v-language">PHP</span>';
                                 addPanel('bottom', content_bottom);
-                                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong>';
+                                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong><img class="icon full-screen" src="/asset/icon/resize-full-screen.svg" alt="Full screen">';
                                 addPanel('top', content_top);
+
+                                // full screen
+                                $('.full-screen').click(function () {
+                                    $('.exit-full-screen').show();
+                                    vulnerabilities_list.cm_code.setOption("fullScreen", !vulnerabilities_list.cm_code.getOption("fullScreen"));
+                                });
+                                $('.exit-full-screen').click(function () {
+                                    $('.exit-full-screen').hide();
+                                    if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
+                                });
+
+                                // ESC exit full screen
+                                $('body').on('keydown', function (evt) {
+                                    if (evt.keyCode === 27) {
+                                        if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
+                                    }
+                                    evt.stopPropagation();
+                                });
                             }
 
                             // vulnerabilities list detail

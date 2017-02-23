@@ -273,7 +273,7 @@
     <div class="widget-list">
         <ul class="widget-trigger">
             <li>
-                Commit Author: <span class="commit-author"></span> AT: <span class="commit-time"></span>
+                <img class="icon" src="{{ url_for('static', filename='icon/v-card.svg') }}" alt="Commit Author"> <span class="commit-author"></span> <img class="icon" src="{{ url_for('static', filename='icon/calendar.svg') }}" alt="Commit Time"> <span class="commit-time"></span>
             </li>
             <li>
                 Status: <span class="v-status"></span>
@@ -295,6 +295,7 @@
             </li>
         </ul>
     </div>
+    <img class="icon exit-full-screen" src="{{ url_for('static', filename='icon/resize-100.svg') }}" alt="Full screen">
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
     <!-- CodeMirror START -->
@@ -305,6 +306,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/dialog/dialog.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/search/matchesonscrollbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/scroll/simplescrollbars.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/display/fullscreen.css') }}">
     <script src="{{ url_for('static', filename='codemirror/addon/fold/foldcode.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/addon/fold/markdown-fold.js') }}"></script>

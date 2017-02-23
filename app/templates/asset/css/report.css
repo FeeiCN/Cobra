@@ -5,7 +5,6 @@
 .icon {
     width: 16px;
     fill: #cfd2da;
-    cursor: pointer;
 }
 
 .invoice-title h2, .invoice-title h3 {
@@ -185,6 +184,7 @@ ul.v_detail li {
 
 .vl_panel .cog-panel {
     float: right;
+    cursor: pointer;
 }
 
 .cm_panel {
@@ -193,6 +193,20 @@ ul.v_detail li {
     border-top: 1px solid #282828;
     border-bottom: 1px solid #282828;
     padding: 8px 15px;
+}
+
+.full-screen {
+    float: right;
+    cursor: pointer;
+}
+
+.exit-full-screen {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 99;
+    cursor: pointer;
+    display: none;
 }
 
 .CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
