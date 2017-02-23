@@ -108,7 +108,7 @@ class Detection(object):
             rules_types = ['file', 'directory']
             rules_count = len(rule['rules'])
             rules_completed = 0
-            logging.info("------ {0} COUNT: {1}".format(rule['name'], rules_count))
+            logging.info("------ {0} (C: {1})".format(rule['name'], rules_count))
             for rule_type in rules_types:
                 if rule_type in rule['rules']:
                     target = os.path.join(self.project_directory, rule['rules'][rule_type])

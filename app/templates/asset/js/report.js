@@ -80,6 +80,7 @@ $(function () {
             this.page = this.page + 1;
             this.get(true);
         },
+        cm_code: null,
         get: function (next_page) {
             if ($("input[name=need_scan]").val() != "False") {
                 // load vulnerabilities list
@@ -119,39 +120,116 @@ $(function () {
                                 $('.vulnerabilities_list').html(list_html);
                             }
 
+                            // vulnerabilities code
+                            if (vulnerabilities_list.cm_code == null) {
+                                vulnerabilities_list.cm_code = CodeMirror.fromTextArea(document.getElementById("code"), {
+                                    mode: 'php',
+                                    theme: 'material',
+                                    lineNumbers: true,
+                                    lineWrapping: true,
+                                    matchBrackets: true,
+                                    matchTags: {bothTags: true},
+                                    indentUnit: 4,
+                                    indentWithTabs: true,
+                                    foldGutter: true,
+                                    scrollbarStyle: 'simple',
+                                    autofocus: false,
+                                    readOnly: true,
+                                    highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+                                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+                                });
+
+                                // panel
+                                var numPanels = 0;
+                                var panels = {};
+
+                                function makePanel(where, content) {
+                                    var node = document.createElement("div");
+                                    var id = ++numPanels;
+                                    var widget;
+                                    node.id = "panel-" + id;
+                                    node.className = "cm_panel widget-" + where;
+                                    node.innerHTML = content;
+                                    return node;
+                                }
+
+                                function addPanel(where, content) {
+                                    var node = makePanel(where, content);
+                                    panels[node.id] = vulnerabilities_list.cm_code.addPanel(node, {position: where, stable: true});
+                                }
+
+                                var content_bottom = '<span class="v-id">MVE-0001</span>' + '<span class="v-language">PHP</span>';
+                                addPanel('bottom', content_bottom);
+                                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong><img class="icon full-screen" src="/asset/icon/resize-full-screen.svg" alt="Full screen">';
+                                addPanel('top', content_top);
+
+                                // full screen
+                                $('.full-screen').click(function () {
+                                    $('.exit-full-screen').show();
+                                    vulnerabilities_list.cm_code.setOption("fullScreen", !vulnerabilities_list.cm_code.getOption("fullScreen"));
+                                });
+                                $('.exit-full-screen').click(function () {
+                                    $('.exit-full-screen').hide();
+                                    if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
+                                });
+
+                                // ESC exit full screen
+                                $('body').on('keydown', function (evt) {
+                                    if (evt.keyCode === 27) {
+                                        if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
+                                    }
+                                    evt.stopPropagation();
+                                });
+                            }
+
                             // vulnerabilities list detail
                             $('.vulnerabilities_list li').off('click').on('click', function () {
+                                // loading
+                                $('.CodeMirror').prepend($('.cm-loading').show().get(0));
+
                                 $('.vulnerabilities_list li').removeClass('active');
                                 $(this).addClass('active');
                                 var id = $(this).attr('data-id');
                                 $.post('/detail', {id: id}, function (result) {
+                                    // hide loading
+                                    $('.CodeMirror .cm-loading').hide();
                                     if (result.status_code == 1001) {
                                         var data = result.data;
+                                        $('#code').val(data.detail.code);
+                                        if (vulnerabilities_list.cm_code !== null) {
+                                            var doc = vulnerabilities_list.cm_code.getDoc();
+                                            doc.setValue(data.detail.code);
+                                        }
+                                        vulnerabilities_list.cm_code.operation(function () {
+                                            // panel
+                                            $('.v-path').text(data.detail.file + ':' + data.detail.line_trigger);
+                                            $('.v-id').text('MVE-' + data.detail.id);
+                                            $('.v-language').text(data.rule.language);
+                                            // widget
+                                            function init_widget() {
+                                                var lis = $('.widget-trigger li');
+                                                $('.commit-author').text('@' + data.detail.c_author);
+                                                $('.commit-time').text('@' + data.detail.c_time);
+                                                $('.v-status').text(data.detail.status);
+                                                $('.v-level').text(data.rule.level);
+                                                $('.v-type').text(data.description.name);
+                                                $('.v-rule').text(data.rule.description);
+                                                $('.v-rule-author').text('@' + data.rule.author);
+                                                $('.v-repair-time').text(data.detail.updated);
+                                                $('.v-repair-description').text(data.rule.repair);
+                                            }
 
-                                        // vulnerabilities code
-                                        var code_content = Prism.highlight(data.detail.code, Prism.languages.php);
-                                        $('.code_content').html(code_content);
-                                        var pre = $('pre');
-                                        pre.attr('data-start', data.detail.line_start);
-                                        pre.attr('data-line', data.detail.line_trigger);
-                                        Prism.highlightAll();
-                                        pre.scrollTop(data.detail.line_trigger * 13);
-
-                                        // vulnerabilities detail
-                                        $('.v_id').text('MVE-' + data.detail.id);
-                                        $('.file_line').text(data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1));
-                                        $('.found_time').text(data.detail.created);
-                                        $('.updated_time').text(data.detail.updated);
-                                        $('.status_description').text(data.detail.status);
-                                        $('.repair_description').text(data.detail.repair);
-                                        $('.c_author').text(data.detail.c_author);
-                                        $('.c_time').text(data.detail.c_time);
-
-
-                                        $('.r_name').text(data.rule.description);
-                                        $('.r_author').text(data.rule.author);
-                                        $('.r_level').text(data.rule.level);
-                                        $('.r_repair').html(data.rule.repair);
+                                            init_widget();
+                                            var widget_trigger_line = $('.widget-trigger').clone().get(0);
+                                            var widget_config = {
+                                                coverGutter: true,
+                                                noHScroll: true
+                                            };
+                                            vulnerabilities_list.cm_code.addLineWidget(data.detail.line_trigger - 1, widget_trigger_line, widget_config);
+                                            var h = vulnerabilities_list.cm_code.getScrollInfo().clientHeight;
+                                            var coords = vulnerabilities_list.cm_code.charCoords({line: data.detail.line_trigger, ch: 0}, "local");
+                                            vulnerabilities_list.cm_code.scrollTo(null, (coords.top + coords.bottom - h) / 2);
+                                        });
 
                                         $('input[name=vulnerability_path]').val(data.detail.file);
                                         $('input[name=rule_id]').val(data.rule.id);
@@ -167,7 +245,11 @@ $(function () {
                                     } else {
                                         alert(result.message);
                                     }
-                                }, 'JSON');
+                                }, 'JSON').fail(function (response) {
+                                    alert('Backend service failed, try again later! ' + response.responseText);
+                                    // hide loading
+                                    $('.CodeMirror .cm-loading').hide();
+                                });
                             });
                         }
                     } else {

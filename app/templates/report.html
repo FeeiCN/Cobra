@@ -16,144 +16,7 @@
 
     <!-- CSS -->
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/prism.css') }}" rel="stylesheet"/>
-    <style>
-        .invoice-title h2, .invoice-title h3 {
-            display: inline-block;
-        }
-
-        .table > tbody > tr > .no-line {
-            border-top: none;
-        }
-
-        .table > thead > tr > .no-line {
-            border-bottom: none;
-        }
-
-        .table > tbody > tr > .thick-line {
-            border-top: 2px solid;
-        }
-
-        .content {
-            text-indent: 30px;
-            display: inline-block;
-        }
-
-        .sum_number {
-            display: inline;
-            font-size: 20px;
-            color: #F00;
-            font-weight: bold;
-        }
-
-        #ext_distributing {
-            height: 400px;
-            width: 1000px;
-            margin: 20px auto;
-        }
-
-        .vulnerabilities_list {
-            height: 500px;
-            list-style-type: none;
-            -webkit-padding-start: 0;
-            border: 1px solid #d6d6d6;
-            overflow-y: scroll;
-        }
-
-        .vulnerabilities_list > li {
-            border-top: 1px solid #efefef;
-            padding: 5px;
-            height: 75px;
-        }
-
-        .vulnerabilities_list > li.high {
-            border-bottom: 8px solid #ee9336;
-        }
-
-        .vulnerabilities_list > li.medium {
-            border-bottom: 8px solid #fdc431;
-        }
-
-        .vulnerabilities_list > li.low {
-            border-bottom: 8px solid #357abd;
-        }
-
-        .vulnerabilities_list > li.active {
-            border-right: 8px solid red;
-        }
-
-        .vulnerabilities_list > li.fixed {
-            background-image: url("/asset/img/fixed.png");
-            background-position: right center;
-            background-repeat: no-repeat;
-            background-size: 50px 50px;
-        }
-
-        .vulnerabilities_list > li.not_fixed {
-            background-image: url("/asset/img/not_fixed.png");
-            background-position: right center;
-            background-repeat: no-repeat;
-            background-size: 50px 50px;
-        }
-
-        .congratulations {
-            display: block;
-            max-width: 100%;
-            margin: 80px auto;
-        }
-
-        pre {
-            max-height: 600px;
-        }
-
-        pre > code.highlight {
-            outline: .4em solid #f00;
-            outline-offset: .4em;
-        }
-
-        .filter {
-            display: none;
-        }
-
-        ul.v_detail {
-            padding: 0;
-        }
-
-        ul.v_detail li {
-            list-style-type: none;
-        }
-
-        .filter_setting {
-            float: right;
-            padding: 3px;
-        }
-
-        .file_line {
-            margin: 20px 0 10px 0;
-            border: 1px solid #a58181;
-            padding: 3px;
-            background-color: #908787;
-            color: #efefef;
-            border-radius: 6px;
-        }
-
-        .n-o-v tr td:nth-child(2) {
-            color: red;
-        }
-
-        .n-o-v tr td:nth-child(3) {
-            color: green;
-        }
-
-        .n-o-v tr td:nth-child(4) {
-            color: #357abd;
-        }
-
-        .n-o-v tr:nth-child(4) {
-            background: #efefef;
-            font-weight: bold;
-        }
-    </style>
+    <link href="{{ url_for('static', filename='css/report.css') }}" rel="stylesheet">
 
     <!--[if lt IE 9]>
       <script src="js/html5shiv.min.js"></script>
@@ -304,151 +167,67 @@
 
                 <div class="tab-pane" id="vul_l">
                     <div class="row">
-                        <div class="panel panel-default col-md-3">
-                            <div class="panel-heading" style="padding-bottom: 15px;">
-                                <h3 class="panel-title">Vulnerability list
-                                    <button class="filter_setting btn btn-danger">Filters</button>
-                                </h3>
-                            </div>
-                            <div class="panel-body" style="padding: 15px 0;">
-                                <div class="filter">
-                                    <div class="col-md-12">
-                                        <label for="search_task" style="color: #aaaaaa;">Scan job</label>
-                                        <select id="search_task" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            {% for t in data.tasks %}
-                                                <option value="{{ t.id }}">{{ t.id }}. {{ t.updated_at }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label for="search_status" style="color: #aaaaaa;">Status</label>
-                                        <select id="search_status" class="form-control" style="height: 30px;">
-                                            {% for s in data.vuls_status %}
-                                                <option value="{{ s.value }}"
-                                                        {% if s.value == data.search_status_type %}selected{% endif %}>
-                                                    {{ s.status }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="margin-top: 10px;">
-                                        <label for="search_vul_type" style="color: #aaaaaa;">Types</label>
-                                        <select id="search_vul_type" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            {% for vul in data.select_vul_type %}
-                                                <option value="{{ vul[1] }}">{{ vul[0] }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="margin-top: 10px">
-                                        <label for="search_rule" style="color: #aaaaaa;">Rule</label>
-                                        <select id="search_rule" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            {% for rule in data.select_rule_type %}
-                                                <option value="{{ rule[1] }}">{{ rule[0] }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="margin-top: 10px;">
-                                        <label for="search_level" style="color: #aaaaaa;">Level</label>
-                                        <select id="search_level" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            <option value="3">High</option>
-                                            <option value="2">Medium</option>
-                                            <option value="1">Low</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="padding:20px 30%">
-                                        <button class="btn btn-success filter_btn" style="">Summit filter</button>
-                                    </div>
+                        <div class="col-md-3 p0">
+                            <div id="panel-2" class="vl_panel"><strong>Vulnerabilities</strong><a title="Setting vulnerabilities filter" class="cog-panel filter_setting"><img class="icon" src="{{ url_for('static', filename='icon/funnel.svg') }}" alt="1"></a></div>
+                            <div class="filter">
+                                <div class="col-md-12">
+                                    <label for="search_task" style="color: #aaaaaa;">Scan job</label>
+                                    <select id="search_task" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for t in data.tasks %}
+                                            <option value="{{ t.id }}">{{ t.id }}. {{ t.updated_at }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                                <ul class="vulnerabilities_list scroll">
+                                <div class="col-md-12">
+                                    <label for="search_status" style="color: #aaaaaa;">Status</label>
+                                    <select id="search_status" class="form-control" style="height: 30px;">
+                                        {% for s in data.vuls_status %}
+                                            <option value="{{ s.value }}"
+                                                    {% if s.value == data.search_status_type %}selected{% endif %}>
+                                                {{ s.status }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_vul_type" style="color: #aaaaaa;">Types</label>
+                                    <select id="search_vul_type" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for vul in data.select_vul_type %}
+                                            <option value="{{ vul[1] }}">{{ vul[0] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px">
+                                    <label for="search_rule" style="color: #aaaaaa;">Rule</label>
+                                    <select id="search_rule" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for rule in data.select_rule_type %}
+                                            <option value="{{ rule[1] }}">{{ rule[0] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_level" style="color: #aaaaaa;">Level</label>
+                                    <select id="search_level" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        <option value="3">High</option>
+                                        <option value="2">Medium</option>
+                                        <option value="1">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="padding:20px 30%">
+                                    <button class="btn btn-success filter_btn" style="">Summit filter</button>
+                                </div>
+                            </div>
+                            <ul class="vulnerabilities_list scroll">
 
-                                </ul>
-                            </div> <!-- .panel-body -->
+                            </ul>
                         </div>
-                        <div class="col-md-9">
-                            <div class="panel panel-default col-md-12">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Vulnerabilities detail</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="col-md-8">
-                                        <strong class="file_line">demo/case/code_execute.php:11</strong>
-                                        <pre data-line="12" data-start="1" class="line-numbers">
-<code class="language-php code_content">/**
- * This is a demo code to help you understand Cobra
- * The code here demonstrates the #Code Execute# vulnerability
- * You can click on the list of vulnerabilities on the left
- *
- * @author Feei < feei#feei.cn >
- * @link   https://github.com/wufeifei/cobra
- */
-function demo_vulnerabilities(){
-    $code = $_GET['code'];
-    // Red highlighted where the vulnerability triggered
-    return system($code);
-}</code>
-                                    </pre>
-                                    </div>
-                                    <div class="col-md-4" style="margin-top: 26px;">
-                                        <div class="panel panel-default col-md-12">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">Vulnerabilities detail</h3>
-                                            </div>
-                                            <div class="panel-body">
-                                                <ul class="v_detail">
-                                                    <li><strong>VID: </strong><span class="v_id">MVE-000001</span></li>
-                                                    <li><strong>Status: </strong><span class="status_description">Not fixed</span>(<span class="repair_description">Initialize</span>)</li>
-                                                    <li><strong>Committer:</strong><span class="c_author">@demo</span></li>
-                                                    <li><strong>Commit time: </strong><span class="c_time">demo case</span></li>
-                                                    <li><strong>Found time: </strong><span class="found_time">demo case</span></li>
-                                                    <li><strong>Processed time: </strong><span class="updated_time">demo case</span></li>
-                                                </ul>
-                                                {% if data.is_login %}
-                                                    <button class="btn btn-info btn-xs mistake">Mistake</button>
-                                                    <button class="btn btn-danger btn-xs delete">Delete</button>
-                                                {% endif %}
-                                            </div> <!-- .panel-body -->
-                                        </div>
-                                        <div class="panel panel-default col-md-12">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">Scan rule</h3>
-                                            </div>
-                                            <div class="panel-body">
-                                                <ul class="v_detail">
-                                                    <li><strong>Name: </strong><span class="r_name">Scan rule name</span></li>
-                                                    <li><strong>Author: </strong><span class="r_author">Scan rule author</span></li>
-                                                    <li><strong>Level: </strong><span class="r_level">Scan rule level</span></li>
-                                                    <li><strong>Repair:</strong></li>
-                                                    <li>
-                                                        <p class="r_repair">Vulnerability fix method</p>
-                                                    </li>
-                                                </ul>
-                                            </div> <!-- .panel-body -->
-                                        </div>
-                                        <div class="panel hidden panel-default col-md-12">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">Vulnerabilities type</h3>
-                                            </div>
-                                            <div class="panel-body">
-                                                <ul class="v_detail">
-                                                    <li>Name: <span class="v_name"></span></li>
-                                                    <li>Score: <span class="v_score"></span></li>
-                                                    <li>CWE: <span class="v_cwe"></span></li>
-                                                    <li>OWASP Top 10: <span class="v_owasp"></span></li>
-                                                    <li>SANA 25 Rank: <span class="v_sana"></span></li>
-                                                    <li>Bounty: <span class="v_bounty"></span></li>
-                                                    <li>
-                                                        <p class="v_description"></p>
-                                                    </li>
-                                                </ul>
-                                            </div> <!-- .panel-body -->
-                                        </div>
-                                    </div>
-                                </div> <!-- .panel-body -->
-                            </div>
+                        <div class="col-md-9 p0 form_code">
+                            <textarea id="code"></textarea>
+                            <div class="cm-loading" style="display:none;"></div>
                         </div>
                     </div>
                 </div>
@@ -491,9 +270,70 @@ function demo_vulnerabilities(){
     <input type="hidden" name="rule_id" value="">
     <input type="hidden" name="vid" value="">
     <input type="hidden" name="vulnerability_path" value="">
-    <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
+    <div class="widget-list">
+        <ul class="widget-trigger">
+            <li>
+                <img class="icon" src="{{ url_for('static', filename='icon/v-card.svg') }}" alt="Commit Author"> <span class="commit-author"></span> <img class="icon" src="{{ url_for('static', filename='icon/calendar.svg') }}" alt="Commit Time"> <span class="commit-time"></span>
+            </li>
+            <li>
+                Status: <span class="v-status"></span>
+            </li>
+            <li>
+                Level: <span class="v-level"></span> <span class="v-type"></span> - <span class="v-rule"></span> By <span class="v-rule-author"></span>
+            </li>
+            <li>
+                Repair AT: <span class="v-repair-time"></span> Repair: <span class="v-repair-description"></span>
+            </li>
+            <li class="hidden">
+                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank: <span></span> Bounty: <span></span>
+            </li>
+            <li>
+                {% if data.is_login %}
+                    <button class="btn btn-info btn-xs mistake">Mistake</button>
+                    <button class="btn btn-danger btn-xs delete">Delete</button>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+    <img class="icon exit-full-screen" src="{{ url_for('static', filename='icon/resize-100.svg') }}" alt="Full screen">
     <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <!-- CodeMirror START -->
+    <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/theme/material.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/dialog/dialog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/search/matchesonscrollbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/scroll/simplescrollbars.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/display/fullscreen.css') }}">
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldcode.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/markdown-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/comment-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/xml-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/brace-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/placeholder.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/fullscreen.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/panel.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/edit/matchbrackets.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/edit/matchtags.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/dialog/dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/searchcursor.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/scroll/annotatescrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/matchesonscrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/jump-to-line.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/match-highlighter.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/scroll/simplescrollbars.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/markdown/markdown.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/php/php.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/clike/clike.js') }}"></script>
+    <!-- CodeMirror END -->
     <script src="{{ url_for('static', filename='js/report.js') }}" charset="utf-8"></script>
     <script>
         var types = [];

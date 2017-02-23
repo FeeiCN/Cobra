@@ -228,7 +228,7 @@ class Static(object):
                             'third_party_vulnerabilities_name': vulnerability_types[rule.vul_id]['name'],
                             'third_party_vulnerabilities_type': vulnerability_types[rule.vul_id]['third_v_id']
                         }
-                        self.data += Core(result_info, rule, self.project_name, white_list, test=True, index=index).scan()
+                        self.data += Core(result_info, rule, self.project_name, white_list, test=test, index=index).scan()
                 else:
                     self.log('info', 'Not Found')
             except Exception as e:

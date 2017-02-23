@@ -1,7 +1,16 @@
 # Theme
 * http://www.ansonika.com/citytours/index_7.html
 
+# Module
+* Flask - https://github.com/pallets/flask
+* Celery - https://github.com/celery/celery
+* CLOC - https://github.com/AlDanial/cloc
+
+# Icons
+* EnTypo icons - http://entypo.com/
+
 # Code Scanner
+* SonarQube - https://sonarqube.com
 * Scanner - https://github.com/mitsuhiko/python-regex-scanner
 * w3af - https://github.com/andresriancho/w3af
 * Android Scan - https://github.com/AndroBugs/AndroBugs_Framework

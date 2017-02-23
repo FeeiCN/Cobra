@@ -18,7 +18,7 @@ from utils import common, config, const
 from flask import jsonify, render_template, request, abort, session
 from sqlalchemy import and_, func
 from app import db, web
-from app.models import CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt
+from app.models import CobraTaskInfo, CobraProjects, CobraResults, CobraRules, CobraVuls, CobraExt, CobraLanguages
 
 
 @web.route('/', methods=['GET'])
@@ -425,6 +425,8 @@ def vulnerabilities_detail():
     # query result/rules/vulnerabilities
     v_detail = CobraResults.query.filter_by(id=v_id).first()
     rule_info = CobraRules.query.filter_by(id=v_detail.rule_id).first()
+    language_info = CobraLanguages.query.filter(CobraLanguages.id == rule_info.language).first()
+    language = language_info.language
     vulnerabilities_description = CobraVuls.query.filter_by(id=rule_info.vul_id).first()
 
     if rule_info.author.strip() == '':
@@ -462,11 +464,10 @@ def vulnerabilities_detail():
         code_content = ''
         fp = open(file_path, 'r')
         block_lines = 50
+        block_start = 0
         if v_detail.line < block_lines:
-            block_start = 0
             block_end = v_detail.line + block_lines
         else:
-            block_start = v_detail.line - block_lines
             block_end = v_detail.line + block_lines
         for i, line in enumerate(fp):
             if block_start <= i <= block_end:
@@ -500,7 +501,7 @@ def vulnerabilities_detail():
         },
         'rule': {
             'id': rule_info.id,
-            'language': rule_info.language,
+            'language': language,
             'description': rule_info.description,
             'repair': rule_info.repair,
             'author': rule_info.author,
