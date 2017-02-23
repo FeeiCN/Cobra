@@ -167,81 +167,67 @@
 
                 <div class="tab-pane" id="vul_l">
                     <div class="row">
-                        <div class="panel panel-default col-md-3">
-                            <div class="panel-heading" style="padding-bottom: 15px;">
-                                <h3 class="panel-title">Vulnerability list
-                                    <button class="filter_setting btn btn-danger">Filters</button>
-                                </h3>
-                            </div>
-                            <div class="panel-body" style="padding: 15px 0;">
-                                <div class="filter">
-                                    <div class="col-md-12">
-                                        <label for="search_task" style="color: #aaaaaa;">Scan job</label>
-                                        <select id="search_task" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            {% for t in data.tasks %}
-                                                <option value="{{ t.id }}">{{ t.id }}. {{ t.updated_at }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label for="search_status" style="color: #aaaaaa;">Status</label>
-                                        <select id="search_status" class="form-control" style="height: 30px;">
-                                            {% for s in data.vuls_status %}
-                                                <option value="{{ s.value }}"
-                                                        {% if s.value == data.search_status_type %}selected{% endif %}>
-                                                    {{ s.status }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="margin-top: 10px;">
-                                        <label for="search_vul_type" style="color: #aaaaaa;">Types</label>
-                                        <select id="search_vul_type" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            {% for vul in data.select_vul_type %}
-                                                <option value="{{ vul[1] }}">{{ vul[0] }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="margin-top: 10px">
-                                        <label for="search_rule" style="color: #aaaaaa;">Rule</label>
-                                        <select id="search_rule" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            {% for rule in data.select_rule_type %}
-                                                <option value="{{ rule[1] }}">{{ rule[0] }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="margin-top: 10px;">
-                                        <label for="search_level" style="color: #aaaaaa;">Level</label>
-                                        <select id="search_level" class="form-control" style="height: 30px;">
-                                            <option value="all">All</option>
-                                            <option value="3">High</option>
-                                            <option value="2">Medium</option>
-                                            <option value="1">Low</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12" style="padding:20px 30%">
-                                        <button class="btn btn-success filter_btn" style="">Summit filter</button>
-                                    </div>
+                        <div class="col-md-3 p0">
+                            <div id="panel-2" class="vl_panel"><strong>Vulnerabilities</strong><a title="Remove me!" class="cog-panel filter_setting">#</a></div>
+                            <div class="filter">
+                                <div class="col-md-12">
+                                    <label for="search_task" style="color: #aaaaaa;">Scan job</label>
+                                    <select id="search_task" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for t in data.tasks %}
+                                            <option value="{{ t.id }}">{{ t.id }}. {{ t.updated_at }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                                <ul class="vulnerabilities_list scroll">
+                                <div class="col-md-12">
+                                    <label for="search_status" style="color: #aaaaaa;">Status</label>
+                                    <select id="search_status" class="form-control" style="height: 30px;">
+                                        {% for s in data.vuls_status %}
+                                            <option value="{{ s.value }}"
+                                                    {% if s.value == data.search_status_type %}selected{% endif %}>
+                                                {{ s.status }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_vul_type" style="color: #aaaaaa;">Types</label>
+                                    <select id="search_vul_type" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for vul in data.select_vul_type %}
+                                            <option value="{{ vul[1] }}">{{ vul[0] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px">
+                                    <label for="search_rule" style="color: #aaaaaa;">Rule</label>
+                                    <select id="search_rule" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for rule in data.select_rule_type %}
+                                            <option value="{{ rule[1] }}">{{ rule[0] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_level" style="color: #aaaaaa;">Level</label>
+                                    <select id="search_level" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        <option value="3">High</option>
+                                        <option value="2">Medium</option>
+                                        <option value="1">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="padding:20px 30%">
+                                    <button class="btn btn-success filter_btn" style="">Summit filter</button>
+                                </div>
+                            </div>
+                            <ul class="vulnerabilities_list scroll">
 
-                                </ul>
-                            </div> <!-- .panel-body -->
+                            </ul>
                         </div>
-                        <div class="col-md-9">
-                            <div class="panel panel-default col-md-12">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Vulnerabilities detail</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="col-md-12 form_code">
-                                        <textarea id="code"></textarea>
-                                    </div>
-                                </div> <!-- .panel-body -->
-                            </div>
+                        <div class="col-md-9 p0 form_code">
+                            <textarea id="code"></textarea>
+                            <div class="cm-loading" style="display:none;"></div>
                         </div>
                     </div>
                 </div>

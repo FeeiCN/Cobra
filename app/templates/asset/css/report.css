@@ -37,12 +37,13 @@
 }
 
 .vulnerabilities_list {
-    height: 500px;
+    height: 576px;
     list-style-type: none;
     -webkit-padding-start: 0;
     border: 1px solid #272827;
     overflow-y: scroll;
     background: #253238;
+    color: #9ebdc4;
 }
 
 /* Let's get this party started */
@@ -67,25 +68,25 @@
 }
 
 .vulnerabilities_list > li {
-    border-top: 1px solid #efefef;
+    border-top: 1px solid #282828;
     padding: 5px;
     height: 75px;
 }
 
 .vulnerabilities_list > li.high {
-    border-bottom: 8px solid #ee9336;
+    border-left: 5px solid #ee9336;
 }
 
 .vulnerabilities_list > li.medium {
-    border-bottom: 8px solid #fdc431;
+    border-left: 5px solid #fdc431;
 }
 
 .vulnerabilities_list > li.low {
-    border-bottom: 8px solid #357abd;
+    border-left: 5px solid #357abd;
 }
 
 .vulnerabilities_list > li.active {
-    border-right: 8px solid red;
+    background: #1c2427;
 }
 
 .vulnerabilities_list > li.fixed {
@@ -119,6 +120,8 @@ pre > code.highlight {
 
 .filter {
     display: none;
+    height: 500px;
+    background: #253238;
 }
 
 ul.v_detail {
@@ -127,11 +130,6 @@ ul.v_detail {
 
 ul.v_detail li {
     list-style-type: none;
-}
-
-.filter_setting {
-    float: right;
-    padding: 3px;
 }
 
 .file_line {
@@ -161,18 +159,31 @@ ul.v_detail li {
 }
 
 .form_code .CodeMirror {
-    height: 500px;
+    height: 538px;
 }
 
 .CodeMirror-activeline-background {
     background: rgba(0, 0, 0, .5) !important;
 }
 
-.cm_panel {
-    background-color: #343f44;
+.vl_panel {
+    border-right: 1px solid #282828;
+    background: #253036;
+    border-bottom: 1px solid #171e22;
+    border-top: 1px solid #333a3e;
+    padding: 8px 15px;
     color: #aebdc4;
-    border-top: 1px solid #545554;
-    border-bottom: 1px solid #545554;
+}
+
+.vl_panel .cog-panel {
+    float: right;
+}
+
+.cm_panel {
+    background-color: #263238;
+    color: #aebdc4;
+    border-top: 1px solid #282828;
+    border-bottom: 1px solid #282828;
     padding: 8px 15px;
 }
 
@@ -222,4 +233,136 @@ ul.v_detail li {
 
 .widget-bottom span {
     float: right;
+}
+
+.cm-loading {
+    background: rgb(38, 50, 56);
+    color: rgb(0, 0, 0);
+    font: 36px "Helvetica Neue", sans-serif;
+    line-height: 225px;
+    margin: 225px auto;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    display: block;
+    height: 32px;
+    position: relative;
+    width: 32px;
+}
+
+.cm-loading::before, .cm-loading::after {
+    position: absolute;
+    font-smoothing: none;
+    -o-font-smoothing: none;
+    -ms-font-smoothing: none;
+    -webkit-font-smoothing: none;
+    -moz-font-smoothing: none;
+}
+
+.cm-loading::before {
+    animation: cssload-spin 1.15s linear infinite;
+    -o-animation: cssload-spin 1.15s linear infinite;
+    -ms-animation: cssload-spin 1.15s linear infinite;
+    -webkit-animation: cssload-spin 1.15s linear infinite;
+    -moz-animation: cssload-spin 1.15s linear infinite;
+    box-shadow: 0 0 0 2px #1d1c1c;
+    color: rgb(38, 50, 56);
+    content: "+";
+    font-size: 239px;
+    height: 59px;
+    line-height: 0;
+    left: 0;
+    top: 0;
+    text-indent: -38px;
+    transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    width: 59px;
+}
+
+.cm-loading::after {
+    content: "";
+    background: #1c2427;
+    height: 32px;
+    width: 32px;
+    position: absolute;
+    top: 14px;
+    left: 14px;
+}
+
+@keyframes cssload-spin {
+    0% {
+        transform: scale(1) rotate(0deg) translateZ(0);
+    }
+    10%, 20% {
+        transform: scale(1.4) rotate(0deg) translateZ(0);
+    }
+    30%, 45% {
+        transform: scale(1.4) rotate(-90deg) translateZ(0);
+    }
+    55%, 100% {
+        transform: scale(1) rotate(-90deg) translateZ(0);
+    }
+}
+
+@-o-keyframes cssload-spin {
+    0% {
+        -o-transform: scale(1) rotate(0deg) translateZ(0);
+    }
+    10%, 20% {
+        -o-transform: scale(1.4) rotate(0deg) translateZ(0);
+    }
+    30%, 45% {
+        -o-transform: scale(1.4) rotate(-90deg) translateZ(0);
+    }
+    55%, 100% {
+        -o-transform: scale(1) rotate(-90deg) translateZ(0);
+    }
+}
+
+@-ms-keyframes cssload-spin {
+    0% {
+        -ms-transform: scale(1) rotate(0deg) translateZ(0);
+    }
+    10%, 20% {
+        -ms-transform: scale(1.4) rotate(0deg) translateZ(0);
+    }
+    30%, 45% {
+        -ms-transform: scale(1.4) rotate(-90deg) translateZ(0);
+    }
+    55%, 100% {
+        -ms-transform: scale(1) rotate(-90deg) translateZ(0);
+    }
+}
+
+@-webkit-keyframes cssload-spin {
+    0% {
+        -webkit-transform: scale(1) rotate(0deg) translateZ(0);
+    }
+    10%, 20% {
+        -webkit-transform: scale(1.4) rotate(0deg) translateZ(0);
+    }
+    30%, 45% {
+        -webkit-transform: scale(1.4) rotate(-90deg) translateZ(0);
+    }
+    55%, 100% {
+        -webkit-transform: scale(1) rotate(-90deg) translateZ(0);
+    }
+}
+
+@-moz-keyframes cssload-spin {
+    0% {
+        -moz-transform: scale(1) rotate(0deg) translateZ(0);
+    }
+    10%, 20% {
+        -moz-transform: scale(1.4) rotate(0deg) translateZ(0);
+    }
+    30%, 45% {
+        -moz-transform: scale(1.4) rotate(-90deg) translateZ(0);
+    }
+    55%, 100% {
+        -moz-transform: scale(1) rotate(-90deg) translateZ(0);
+    }
 }

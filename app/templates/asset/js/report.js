@@ -120,66 +120,72 @@ $(function () {
                                 $('.vulnerabilities_list').html(list_html);
                             }
 
+                            // vulnerabilities code
+                            if (vulnerabilities_list.cm_code == null) {
+                                vulnerabilities_list.cm_code = CodeMirror.fromTextArea(document.getElementById("code"), {
+                                    mode: 'php',
+                                    theme: 'material',
+                                    lineNumbers: true,
+                                    lineWrapping: true,
+                                    matchBrackets: true,
+                                    matchTags: {bothTags: true},
+                                    indentUnit: 4,
+                                    indentWithTabs: true,
+                                    foldGutter: true,
+                                    scrollbarStyle: 'simple',
+                                    autofocus: false,
+                                    readOnly: true,
+                                    highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+                                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+                                });
+
+                                // fullscreen
+                                // cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                                // if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+
+                                // panel
+                                var numPanels = 0;
+                                var panels = {};
+
+                                function makePanel(where, content) {
+                                    var node = document.createElement("div");
+                                    var id = ++numPanels;
+                                    var widget;
+                                    node.id = "panel-" + id;
+                                    node.className = "cm_panel widget-" + where;
+                                    node.innerHTML = content;
+                                    return node;
+                                }
+
+                                function addPanel(where, content) {
+                                    var node = makePanel(where, content);
+                                    panels[node.id] = vulnerabilities_list.cm_code.addPanel(node, {position: where, stable: true});
+                                }
+
+                                var content_bottom = 'MVE-0001' + '<span>PHP</span>';
+                                addPanel('bottom', content_bottom);
+                                var content_top = '<strong>/this/is/a/demo/code.php:1</strong>';
+                                addPanel('top', content_top);
+                            }
+
                             // vulnerabilities list detail
                             $('.vulnerabilities_list li').off('click').on('click', function () {
+                                // loading
+                                $('.CodeMirror').prepend($('.cm-loading').show().get(0));
+
                                 $('.vulnerabilities_list li').removeClass('active');
                                 $(this).addClass('active');
                                 var id = $(this).attr('data-id');
                                 $.post('/detail', {id: id}, function (result) {
+                                    // hide loading
+                                    $('.CodeMirror .cm-loading').hide();
                                     if (result.status_code == 1001) {
                                         var data = result.data;
                                         $('#code').val(data.detail.code);
-                                        // vulnerabilities code
-                                        if (vulnerabilities_list.cm_code == null) {
-                                            vulnerabilities_list.cm_code = CodeMirror.fromTextArea(document.getElementById("code"), {
-                                                mode: 'php',
-                                                theme: 'material',
-                                                lineNumbers: true,
-                                                lineWrapping: true,
-                                                matchBrackets: true,
-                                                matchTags: {bothTags: true},
-                                                indentUnit: 4,
-                                                indentWithTabs: true,
-                                                foldGutter: true,
-                                                scrollbarStyle: 'simple',
-                                                autofocus: false,
-                                                readOnly: true,
-                                                highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
-                                                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
-                                            });
-
-                                            // fullscreen
-                                            // cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                                            // if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-
-                                            // panel
-                                            var numPanels = 0;
-                                            var panels = {};
-
-                                            function makePanel(where, content) {
-                                                var node = document.createElement("div");
-                                                var id = ++numPanels;
-                                                var widget;
-                                                node.id = "panel-" + id;
-                                                node.className = "cm_panel widget-" + where;
-                                                node.innerHTML = content;
-                                                return node;
-                                            }
-
-                                            function addPanel(where, content) {
-                                                var node = makePanel(where, content);
-                                                panels[node.id] = vulnerabilities_list.cm_code.addPanel(node, {position: where, stable: true});
-                                            }
-
-                                            var content_bottom = 'MVE-' + ' ' + data.detail.id + ' ' + data.detail.created + '<span> ' + data.rule.language + '</span>';
-                                            addPanel('bottom', content_bottom);
-                                            var content_top = '<strong>' + data.detail.file + ':' + (data.detail.line_start + data.detail.line_trigger - 1) + '</strong>';
-                                            addPanel('top', content_top);
-                                        } else {
+                                        if (vulnerabilities_list.cm_code !== null) {
                                             var doc = vulnerabilities_list.cm_code.getDoc();
                                             doc.setValue(data.detail.code);
                                         }
-
                                         vulnerabilities_list.cm_code.operation(function () {
                                             // widget
                                             function init_widget() {
