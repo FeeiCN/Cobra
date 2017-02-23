@@ -54,7 +54,9 @@ def language_create():
         ret, msg = vc.check_args()
         if not ret:
             return jsonify(code=4001, message=msg)
-
+        exist = CobraLanguages.query.filter(CobraLanguages.language == vc.vars.language).first()
+        if exist is not None:
+            return jsonify(code=4001, message='The language exist')
         l = CobraLanguages(vc.vars.language, vc.vars.extensions)
         try:
             db.session.add(l)
