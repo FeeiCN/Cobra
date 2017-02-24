@@ -119,11 +119,11 @@ Not matched1
 ***
 Not matched2">{{ data.rule.verify }}</textarea>
         </div>
-        <div class="aon gp repair_form">
+        <div class="aon hn repair_form">
             <label for="repair">Repair Editor</label>
-            <textarea class="form-control" rows="4" id="repair">{{ data.rule.repair }}</textarea>
+            <textarea class="form-control" rows="8" id="repair">{{ data.rule.repair }}</textarea>
         </div>
-        <div class="aon gp">
+        <div class="aon hn">
             <label for="preview">Repair Preview</label>
             <div id="preview"></div>
         </div>
@@ -196,7 +196,7 @@ Not matched2">{{ data.rule.verify }}</textarea>
         }
 
         .repair_form .CodeMirror {
-            height: 155px;
+            height: auto;
         }
 
         .modal-body .CodeMirror {
@@ -209,6 +209,9 @@ Not matched2">{{ data.rule.verify }}</textarea>
 
         #preview {
             width: 100%;
+            min-height: 20px;
+            border: 1px solid #464646;
+            padding: 10px;
         }
     </style>
     <script src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
@@ -267,6 +270,7 @@ Not matched2">{{ data.rule.verify }}</textarea>
                 function updatePreview() {
                     $('#preview').html(cm_repair.getValue());
                 }
+
                 setTimeout(updatePreview, 300);
 
 
