@@ -7,6 +7,7 @@
     Implements index controller
 
     :author:    Feei <feei@feei.cn>
+    :author:    Lightless <root@lightless.me>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
@@ -22,9 +23,6 @@ from app import web, db
 from utils.validate import ValidateClass, login_required
 from app.models import CobraAdminUser, CobraResults, CobraProjects, CobraTaskInfo, CobraRules, CobraVuls
 from utils.common import convert_number
-
-__author__ = "lightless"
-__email__ = "root@lightless.me"
 
 
 # login page and index

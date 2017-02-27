@@ -7,6 +7,7 @@
     Implements framework controller
 
     :author:    Feei <feei@feei.cn>
+    :author:    Lightless <root@lightless.me>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
@@ -20,9 +21,6 @@ from app import db, web
 from app.models import CobraWebFrame, CobraWebFrameRules
 from utils.validate import login_required, ValidateClass
 from . import ADMIN_URL
-
-__author__ = "lightless"
-__email__ = "root@lightless.me"
 
 
 @web.route(ADMIN_URL + '/framework/', methods=['GET'], defaults={'keyword': '0', 'page': 1})

@@ -7,6 +7,7 @@
     Implements api
 
     :author:    Feei <feei@feei.cn>
+    :author:    Lightless <root@lightless.me>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
@@ -16,9 +17,6 @@ from . import ADMIN_URL
 from app import web
 from app.models import CobraRules, CobraVuls, CobraProjects, CobraWhiteList, CobraTaskInfo, CobraLanguages
 from utils.validate import login_required
-
-__author__ = "lightless"
-__email__ = "root@lightless.me"
 
 
 # api: get all rules count
