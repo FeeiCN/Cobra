@@ -7,7 +7,7 @@
     External API interface implementation
     :doc:       http://cobra-docs.readthedocs.io/en/latest/API
 
-    :author:    Feei <feei#feei.cn>
+    :author:    Feei <feei@feei.cn>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved

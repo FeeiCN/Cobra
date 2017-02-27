@@ -6,7 +6,8 @@
 
     Implements dashboard controller
 
-    :author:    Feei <feei#feei.cn>
+    :author:    Feei <feei@feei.cn>
+    :author:    Lightless <root@lightless.me>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
@@ -21,9 +22,6 @@ from . import ADMIN_URL
 from app import web, db
 from utils.validate import ValidateClass
 from app.models import CobraRules, CobraVuls, CobraTaskInfo, CobraLanguages, CobraResults, CobraProjects
-
-__author__ = "lightless"
-__email__ = "root@lightless.me"
 
 
 @web.route(ADMIN_URL + "/dashboard", methods=['GET'])

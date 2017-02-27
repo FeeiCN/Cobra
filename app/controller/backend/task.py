@@ -6,7 +6,8 @@
 
     Implements tasks controller
 
-    :author:    Feei <feei#feei.cn>
+    :author:    Feei <feei@feei.cn>
+    :author:    Lightless <root@lightless.me>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
@@ -22,9 +23,6 @@ from utils.validate import ValidateClass, login_required
 from app.models import CobraTaskInfo, CobraProjects
 from utils.common import convert_number, convert_time
 from utils import config
-
-__author__ = "lightless"
-__email__ = "root@lightless.me"
 
 
 # show all tasks
