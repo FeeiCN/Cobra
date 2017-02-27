@@ -24,57 +24,6 @@ $(function () {
                     vulnerabilities_list.next_page();
                 }
             });
-
-            // mistake
-            $('button.mistake').on('click', function () {
-                if (window.confirm('Add white-list for the vulnerability?')) {
-                    var rule_id = $('input[name=rule_id]').val();
-                    if (rule_id == '') {
-                        alert('Select list of vulnerability!');
-                        return;
-                    }
-                    var reason = window.prompt('Why add white-list?');
-                    if (reason == '') {
-                        alert('Add white-list reason can\'t empty!');
-                        return;
-                    }
-                    var data = {
-                        'project': $('input[name=project_id]').val(),
-                        'rule': rule_id,
-                        'path': $('input[name=vulnerability_path]').val(),
-                        'reason': reason,
-                        'status': 1
-                    };
-                    $.post('/admin/white-list/create/', data, function (ret) {
-                        if (ret.code == 1001) {
-                            alert(ret.message);
-                        } else {
-                            alert(ret.message);
-                        }
-                    }, 'JSON');
-                }
-            });
-
-            // delete
-            $('button.delete').on('click', function () {
-                var vid = $('input[name=vid]').val();
-                if (vid == "") {
-                    alert("Select vulnerability on the left");
-                    return;
-                }
-                if (window.confirm('Are you sure you want to remove this vulnerability?')) {
-                    var data = {
-                        'vid': vid
-                    };
-                    $.post('/admin/vulnerability/delete/', data, function (ret) {
-                        if (ret.code == 1001) {
-                            alert(ret.message);
-                        } else {
-                            alert(ret.message);
-                        }
-                    }, 'JSON');
-                }
-            });
         },
         next_page: function () {
             this.page = this.page + 1;
@@ -196,6 +145,7 @@ $(function () {
                                     if (result.status_code == 1001) {
                                         var data = result.data;
                                         $('#code').val(data.detail.code);
+                                        // Highlighting param
                                         vulnerabilities_list.cm_code.setOption("mode", data.detail.mode);
                                         if (vulnerabilities_list.cm_code !== null) {
                                             var doc = vulnerabilities_list.cm_code.getDoc();
@@ -230,6 +180,57 @@ $(function () {
                                             var h = vulnerabilities_list.cm_code.getScrollInfo().clientHeight;
                                             var coords = vulnerabilities_list.cm_code.charCoords({line: data.detail.line_trigger, ch: 0}, "local");
                                             vulnerabilities_list.cm_code.scrollTo(null, (coords.top + coords.bottom - h) / 2);
+
+                                            // mistake
+                                            $('button.mistake').on('click', function () {
+                                                if (window.confirm('Add white-list for the vulnerability?')) {
+                                                    var rule_id = $('input[name=rule_id]').val();
+                                                    if (rule_id == '') {
+                                                        alert('Select list of vulnerability!');
+                                                        return;
+                                                    }
+                                                    var reason = window.prompt('Why add white-list?');
+                                                    if (reason == '') {
+                                                        alert('Add white-list reason can\'t empty!');
+                                                        return;
+                                                    }
+                                                    var data = {
+                                                        'project': $('input[name=project_id]').val(),
+                                                        'rule': rule_id,
+                                                        'path': $('input[name=vulnerability_path]').val(),
+                                                        'reason': reason,
+                                                        'status': 1
+                                                    };
+                                                    $.post('/admin/white-list/create/', data, function (ret) {
+                                                        if (ret.code == 1001) {
+                                                            alert(ret.message);
+                                                        } else {
+                                                            alert(ret.message);
+                                                        }
+                                                    }, 'JSON');
+                                                }
+                                            });
+
+                                            // delete
+                                            $('button.delete').on('click', function () {
+                                                var vid = $('input[name=vid]').val();
+                                                if (vid == "") {
+                                                    alert("Select vulnerability on the left");
+                                                    return;
+                                                }
+                                                if (window.confirm('Are you sure you want to remove this vulnerability?')) {
+                                                    var data = {
+                                                        'vid': vid
+                                                    };
+                                                    $.post('/admin/vulnerability/delete/', data, function (ret) {
+                                                        if (ret.code == 1001) {
+                                                            alert(ret.message);
+                                                        } else {
+                                                            alert(ret.message);
+                                                        }
+                                                    }, 'JSON');
+                                                }
+                                            });
                                         });
 
                                         $('input[name=vulnerability_path]').val(data.detail.file);
@@ -247,7 +248,7 @@ $(function () {
                                         alert(result.message);
                                     }
                                 }, 'JSON').fail(function (response) {
-                                    alert('Backend service failed, try again later! ' + response.responseText);
+                                    alert('Backend service failed, try again later!');
                                     // hide loading
                                     $('.CodeMirror .cm-loading').hide();
                                 });
