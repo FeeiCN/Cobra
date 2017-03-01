@@ -1,5 +1,5 @@
 [cobra]
-domain: 127.0.0.1
+domain: 127.0.0.1:5000
 
 # 0.0.0.0   can bind any domain
 # 127.0.0.1 request localhost
