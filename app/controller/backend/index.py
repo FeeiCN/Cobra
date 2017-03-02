@@ -121,10 +121,11 @@ def main():
     }
     vt_x = []
     if time_type == 'm':
+        p_month = 0
         if month is None:
-            month = int(time.strftime('%m', time.localtime()))
+            p_month = int(time.strftime('%m', time.localtime()))
         elif int(month) <= 12:
-            month = int(month)
+            p_month = int(month)
 
         current_time = time.strftime('%Y-{month}-{day}', time.localtime())
         day_first = current_time.format(month=month, day=1)
@@ -138,8 +139,9 @@ def main():
             end = next_month - datetime.timedelta(days=next_month.day)
             x_data = CobraResults.count_by_time(start, end)
             x_data['t'] = x_data[0] + x_data[1] + x_data[2]
-            amount_vulnerability['new']['time_type'] += x_data['t']
-            amount_vulnerability['fixed']['time_type'] += x_data[2]
+            if month == p_month:
+                amount_vulnerability['new']['time_type'] += x_data['t']
+                amount_vulnerability['fixed']['time_type'] += x_data[2]
             vt_x.append({
                 'time': x_time,
                 'data': x_data
