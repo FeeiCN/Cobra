@@ -247,11 +247,13 @@ def main():
     amount_rule['off']['time_type'] = convert_number(amount_rule['off']['time_type'])
 
     # ranks & hits
+    filter_group = (CobraResults.id > 0,)
+    filter_group += (CobraResults.created_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.created_at <= '{end} 23:59:59'.format(end=day_last),)
     hit_rules = db.session.query(
         func.count(CobraResults.rule_id).label("cnt"), CobraRules.author, CobraRules.description, CobraRules.id
     ).outerjoin(
         CobraRules, CobraResults.rule_id == CobraRules.id
-    ).group_by(CobraResults.rule_id).all()
+    ).filter(*filter_group).group_by(CobraResults.rule_id).all()
     ranks = dict()
     hits = dict()
     hits_tmp = []
@@ -278,6 +280,11 @@ def main():
     ranks = sorted(ranks.items(), key=operator.itemgetter(1), reverse=True)
     hits = sorted(hits_tmp, key=lambda x: x['rank'], reverse=True)
 
+    # new rule
+    filter_group = (CobraRules.id > 0,)
+    filter_group += (CobraRules.updated_at >= '{start} 00:00:00'.format(start=day_first), CobraRules.updated_at <= '{end} 23:59:59'.format(end=day_last),)
+    new_rules = db.session.query(CobraRules.author, CobraRules.description).filter(*filter_group).all()
+
     rule_amount = db.session.query(CobraRules.author, func.count("*").label('counts')).group_by(CobraRules.author).all()
     rule_amount = sorted(rule_amount, key=operator.itemgetter(1), reverse=True)
     rule_amount_rank = []
@@ -303,7 +310,7 @@ def main():
     # show all vulns
     all_vulnerabilities = db.session.query(
         CobraResults.rule_id, func.count("*").label('counts')
-    ).group_by(CobraResults.rule_id).all()
+    ).filter(*filter_group).group_by(CobraResults.rule_id).all()
 
     vulnerabilities_types = []
     for x in all_vulnerabilities:  # all_vuls: results group by rule_id and count(*)
@@ -359,6 +366,7 @@ def main():
         },
         'ranks': ranks,
         'hits': hits,
+        'rules': new_rules,
         'vulnerabilities_types': vulnerabilities_types,
         'time_type': time_type,
         'vt_x': vt_x,

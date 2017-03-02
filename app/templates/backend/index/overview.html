@@ -52,9 +52,9 @@
     <div class="fu chart" id="chart_vt" style="height:400px;margin-bottom: 20px;">
 
     </div>
-{#    <div class="fu chart" id="chart_vdd" style="height:500px;">#}
-{##}
-{#    </div>#}
+    {#    <div class="fu chart" id="chart_vdd" style="height:500px;">#}
+    {##}
+    {#    </div>#}
     <div class="fu chart" id="chart_vtd" style="height:500px;">
 
     </div>
@@ -68,8 +68,8 @@
                 <div class="alz">
                     <span class="anj">项目数(Projects)</span>
                     <h2 class="ani">
-                        {{ data.amount.scan.projects.total }}
-                        <small class="ank anl">{{ data.amount.scan.projects.time_type }}</small>
+                        {{ data.amount.scan.projects.time_type }}
+                        <small class="ank anl">Total: {{ data.amount.scan.projects.total }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -82,8 +82,8 @@
                 <div class="alz">
                     <span class="anj">任务数(Tasks)</span>
                     <h2 class="ani">
-                        {{ data.amount.scan.tasks.total }}
-                        <small class="ank anm">{{ data.amount.scan.tasks.time_type }}</small>
+                        {{ data.amount.scan.tasks.time_type }}
+                        <small class="ank anm">Total: {{ data.amount.scan.tasks.total }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -96,8 +96,8 @@
                 <div class="alz">
                     <span class="anj">文件数(Files)</span>
                     <h2 class="ani">
-                        {{ data.amount.scan.files.total }}
-                        <small class="ank anl">{{ data.amount.scan.files.time_type }}</small>
+                        {{ data.amount.scan.files.time_type }}
+                        <small class="ank anl">Total: {{ data.amount.scan.files.total }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -110,8 +110,8 @@
                 <div class="alz">
                     <span class="anj">代码行数(Lines)</span>
                     <h2 class="ani">
-                        {{ data.amount.scan.lines.total }}
-                        <small class="ank anm">{{ data.amount.scan.lines.time_type }}</small>
+                        {{ data.amount.scan.lines.time_type }}
+                        <small class="ank anm">Total: {{ data.amount.scan.lines.total }}</small>
                     </h2>
                     <hr class="ans akt">
                 </div>
@@ -145,6 +145,22 @@
                 <small class="ank anl">{{ data.amount.rule.total.time_type }}</small>
             </h3>
             <span class="anj">全部(Total)</span>
+        </div>
+    </div>
+
+    <div class="fu">
+        <div class="hp ali">
+            <div class="by">
+                <h4 class="ty">
+                    新增或优化规则(NIR)
+                </h4>
+                {% for item in data.rules %}
+                    <a class="ph" href="#">
+                        <span class="dy dh">{{ item.author }}</span>
+                        {{ item.description }}
+                    </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -210,7 +226,7 @@
             ctx: null,
             options: {
                 'vt': {},
-{#                'vdd': {},#}
+                {#                'vdd': {},#}
                 'vtd': {},
                 'rar': {},
                 'rhr': {}
@@ -274,62 +290,62 @@
                  * VDD (Vulnerability Department Distributing)
                  */
                 /*
-                chart.options['vdd'] = {
-                    tooltip: {},
-                    title: [{
-                        text: 'TODO:漏洞部门分布(VDD)',
-                        textAlign: 'left'
-                    }],
-                    grid: [{
-                        top: 50,
-                        width: '50%',
-                        left: 10,
-                        containLabel: true
-                    }],
-                    xAxis: [{
-                        type: 'value',
-                        max: chart.data.vdd.all,
-                        splitLine: {
-                            show: false
-                        }
-                    }],
-                    yAxis: [{
-                        type: 'category',
-                        data: Object.keys(chart.data.vdd.charts),
-                        axisLabel: {
-                            interval: 0,
-                            rotate: 30
-                        },
-                        splitLine: {
-                            show: false
-                        }
-                    }],
-                    series: [{
-                        type: 'bar',
-                        stack: 'chart',
-                        z: 3,
-                        label: {
-                            normal: {
-                                position: 'right',
-                                show: true
-                            }
-                        },
-                        data: Object.keys(chart.data.vdd.charts).map(function (key) {
-                            return chart.data.vdd.charts[key];
-                        })
-                    }, {
-                        type: 'pie',
-                        radius: [0, '40%'],
-                        center: ['75%', '35%'],
-                        data: Object.keys(chart.data.vdd.charts).map(function (key) {
-                            return {
-                                name: key,
-                                value: chart.data.vdd.charts[key]
-                            }
-                        })
-                    }]
-                };
-                */
+                 chart.options['vdd'] = {
+                 tooltip: {},
+                 title: [{
+                 text: 'TODO:漏洞部门分布(VDD)',
+                 textAlign: 'left'
+                 }],
+                 grid: [{
+                 top: 50,
+                 width: '50%',
+                 left: 10,
+                 containLabel: true
+                 }],
+                 xAxis: [{
+                 type: 'value',
+                 max: chart.data.vdd.all,
+                 splitLine: {
+                 show: false
+                 }
+                 }],
+                 yAxis: [{
+                 type: 'category',
+                 data: Object.keys(chart.data.vdd.charts),
+                 axisLabel: {
+                 interval: 0,
+                 rotate: 30
+                 },
+                 splitLine: {
+                 show: false
+                 }
+                 }],
+                 series: [{
+                 type: 'bar',
+                 stack: 'chart',
+                 z: 3,
+                 label: {
+                 normal: {
+                 position: 'right',
+                 show: true
+                 }
+                 },
+                 data: Object.keys(chart.data.vdd.charts).map(function (key) {
+                 return chart.data.vdd.charts[key];
+                 })
+                 }, {
+                 type: 'pie',
+                 radius: [0, '40%'],
+                 center: ['75%', '35%'],
+                 data: Object.keys(chart.data.vdd.charts).map(function (key) {
+                 return {
+                 name: key,
+                 value: chart.data.vdd.charts[key]
+                 }
+                 })
+                 }]
+                 };
+                 */
                 /*
                  * VTD (Vulnerability Type Distributing)
                  */
