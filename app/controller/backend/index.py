@@ -181,8 +181,8 @@ def main():
             else:
                 x_time = '{0}/{1}({2})'.format(month, day, week_d)
             # VT x data
-            localtime = time.localtime(time.time() + (day * 86400))
-            start_end = time.strftime('%Y-%m-%d 00:00:00', localtime)
+            localtime = time.localtime(time.time() + (d * 86400))
+            start_end = time.strftime('%Y-%m-%d', localtime)
             x_data = CobraResults.count_by_time(start_end, start_end)
             x_data['t'] = x_data[0] + x_data[1] + x_data[2]
             amount_vulnerability['new']['time_type'] += x_data['t']
