@@ -69,6 +69,7 @@ def main():
     # True:  nav will hidden
     # False: nope
     capture = request.args.get('capture')
+    month = request.args.get('month')
     # time type
     date = datetime.datetime.now()
     c_month = int(date.strftime('%m'))
@@ -120,11 +121,20 @@ def main():
     }
     vt_x = []
     if time_type == 'm':
+        if month is None:
+            month = int(time.strftime('%m', time.localtime()))
+        elif int(month) <= 12:
+            month = int(month)
+
+        current_time = time.strftime('%Y-{month}-{day}', time.localtime())
+        day_first = current_time.format(month=month, day=1)
+        day_last = current_time.format(month=month, day=31)
+
         for month in range(1, 13):
             x_time = '{month}月'.format(month=month)
-            year = int(time.strftime('%Y', time.localtime()))
-            start = '{year}-{month}-{day}'.format(year=year, month=month, day=1)
-            next_month = datetime.date(year, month, 1).replace(day=28) + datetime.timedelta(days=4)
+            c_year = int(time.strftime('%Y', time.localtime()))
+            start = '{year}-{month}-{day}'.format(year=c_year, month=month, day=1)
+            next_month = datetime.date(c_year, month, 1).replace(day=28) + datetime.timedelta(days=4)
             end = next_month - datetime.timedelta(days=next_month.day)
             x_data = CobraResults.count_by_time(start, end)
             x_data['t'] = x_data[0] + x_data[1] + x_data[2]
@@ -132,10 +142,6 @@ def main():
                 'time': x_time,
                 'data': x_data
             })
-            if month == 1:
-                day_first = start
-            elif month == 12:
-                day_last = end
 
     elif time_type == 'q':
         vt_x = ['Q1', 'Q2', 'Q3', 'Q4']
