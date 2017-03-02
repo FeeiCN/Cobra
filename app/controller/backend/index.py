@@ -69,6 +69,7 @@ def main():
     # True:  nav will hidden
     # False: nope
     capture = request.args.get('capture')
+    month = request.args.get('month')
     # time type
     date = datetime.datetime.now()
     c_month = int(date.strftime('%m'))
@@ -118,18 +119,33 @@ def main():
             'time_type': 0
         }
     }
+    vt_x = []
     if time_type == 'm':
-        vt_x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        for i, x in enumerate(vt_x):
-            if x == c_month:
-                vt_x[i] = '{0}{1}月'.format(c_mark, x)
-            else:
-                vt_x[i] = '{0}月'.format(x)
-        cm, last_day = calendar.monthrange(c_year, c_month)
-        day_first = '{0}-{1}-{2}'.format(c_year, c_month, 1)
-        day_last = '{0}-{1}-{2}'.format(c_year, c_month, last_day)
+        p_month = 0
+        if month is None:
+            p_month = int(time.strftime('%m', time.localtime()))
+        elif int(month) <= 12:
+            p_month = int(month)
 
-        # VT x/y axis data
+        current_time = time.strftime('%Y-{month}-{day}', time.localtime())
+        day_first = current_time.format(month=p_month, day=1)
+        day_last = current_time.format(month=p_month, day=31)
+
+        for month in range(1, 13):
+            x_time = '{month}月'.format(month=month)
+            c_year = int(time.strftime('%Y', time.localtime()))
+            start = '{year}-{month}-{day}'.format(year=c_year, month=month, day=1)
+            next_month = datetime.date(c_year, month, 1).replace(day=28) + datetime.timedelta(days=4)
+            end = next_month - datetime.timedelta(days=next_month.day)
+            x_data = CobraResults.count_by_time(start, end)
+            x_data['t'] = x_data[0] + x_data[1] + x_data[2]
+            if month == p_month:
+                amount_vulnerability['new']['time_type'] += x_data['t']
+                amount_vulnerability['fixed']['time_type'] += x_data[2]
+            vt_x.append({
+                'time': x_time,
+                'data': x_data
+            })
 
     elif time_type == 'q':
         vt_x = ['Q1', 'Q2', 'Q3', 'Q4']
@@ -141,7 +157,6 @@ def main():
         day_last = '{0}-{1}-{2}'.format(c_year, c_quarter_last, last_day)
     else:
         # default TT(time type): w(weekly)
-        vt_x = []
         week_desc = {
             0: '日',
             1: '一',
@@ -166,7 +181,9 @@ def main():
             else:
                 x_time = '{0}/{1}({2})'.format(month, day, week_d)
             # VT x data
-            x_data = CobraResults.count_by_day(d)
+            localtime = time.localtime(time.time() + (day * 86400))
+            start_end = time.strftime('%Y-%m-%d 00:00:00', localtime)
+            x_data = CobraResults.count_by_time(start_end, start_end)
             x_data['t'] = x_data[0] + x_data[1] + x_data[2]
             amount_vulnerability['new']['time_type'] += x_data['t']
             amount_vulnerability['fixed']['time_type'] += x_data[2]
@@ -309,13 +326,19 @@ def main():
             vulnerabilities_types.append(t)
     vulnerabilities_types = sorted(vulnerabilities_types, key=lambda x: x['amount'], reverse=True)
 
-    comment_scan = '本周扫描数据各指标都比较平稳，无明显波动!'
+    time_type_desc = {
+        'w': '周',
+        'm': '月',
+        'q': '季度'
+    }
+    ttd = time_type_desc[time_type]
+    comment_scan = '本{ttd}扫描数据各指标都比较平稳，无明显波动!'.format(ttd=ttd)
     if amount_rule['total']['time_type'] == 0:
-        comment_rule = '本周没有新增规则'
+        comment_rule = '本{ttd}没有新增规则'.format(ttd=ttd)
     else:
-        comment_rule = '本周新增{0}条规则'.format(amount_rule['total']['time_type'])
+        comment_rule = '本{ttd}新增{count}条规则'.format(ttd=ttd, count=amount_rule['total']['time_type'])
 
-    comment_vulnerability = '本周扫出{0}个新漏洞, 修复了{1}个漏洞'.format(amount_vulnerability['new']['time_type'], amount_vulnerability['fixed']['time_type'])
+    comment_vulnerability = '本{ttd}扫出{new}个新漏洞, 修复了{fixed}个漏洞'.format(ttd=ttd, new=amount_vulnerability['new']['time_type'], fixed=amount_vulnerability['fixed']['time_type'])
 
     data = {
         'amount': {

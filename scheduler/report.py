@@ -34,7 +34,7 @@ time_type_des = {
 
 
 class Report(object):
-    def __init__(self, time_type):
+    def __init__(self, time_type, month=None):
         if time_type not in time_types:
             logging.critical('Time type exception')
             return
@@ -42,8 +42,29 @@ class Report(object):
         self.time_type_de = time_type_des[time_type]
 
         # mail
-        wd = int(datetime.datetime.today().strftime("%U"))
-        self.subject = '[Cobra] 代码安全{0}报(W{1})'.format(self.time_type_de, wd)
+        mark = ''
+        if month is None:
+            c_month = int(datetime.datetime.today().strftime("%m"))
+        else:
+            c_month = int(month)
+
+        if time_type == 'w':
+            c_week = int(datetime.datetime.today().strftime("%U"))
+            mark = 'W{week}'.format(week=c_week)
+        elif time_type == 'm':
+            mark = 'M{month}'.format(month=c_month)
+        elif time_type == 'q':
+            c_quarter = 0
+            if c_month in [1, 2, 3]:
+                c_quarter = 1
+            elif c_month in [4, 5, 6]:
+                c_quarter = 2
+            elif c_month in [7, 8, 9]:
+                c_quarter = 3
+            elif c_month in [10, 11, 12]:
+                c_quarter = 4
+            mark = 'Q{quarter}'.format(quarter=c_quarter)
+        self.subject = '[Cobra] 代码安全{0}报({mark})'.format(self.time_type_de, mark=mark)
         self.user = Config('email', 'user').value
         self.name = Config('email', 'name').value
         self.to = Config('report', 'to').value
@@ -52,6 +73,8 @@ class Report(object):
         self.password = Config('email', 'password').value
 
         self.param = [phantomjs, os.path.join(Config().project_directory, 'scheduler', 'report.js'), Config().project_directory, time_type]
+        if month is not None:
+            self.param.append(month)
 
     def run(self):
         capture = self.capture()

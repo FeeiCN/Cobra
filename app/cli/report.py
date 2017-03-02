@@ -24,13 +24,14 @@ class Report(Command):
     """
     option_list = (
         Option('--time', '-t', dest='t', help='Time e.g. w(weekly)/m(monthly)/q(quarterly)'),
+        Option('--month', '-m', dest='m', help='Special month e.g. 1')
     )
 
-    def run(self, t='w'):
+    def run(self, t='w', m=None):
         if t not in ['w', 'm', 'q']:
             print('Error: time type exception')
             return
-        if report.Report(t).run():
+        if report.Report(t, m).run():
             print('Report Success')
         else:
             print('Report Failed')
