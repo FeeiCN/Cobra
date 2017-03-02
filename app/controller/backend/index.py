@@ -308,10 +308,12 @@ def main():
     for x in cobra_vuls:
         all_cobra_vuls[x.id] = x.name  # vul_id -> vul_name
     # show all vulns
+    filter_group = (CobraResults.id > 0,)
+    filter_group += (CobraResults.updated_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.updated_at <= '{end} 23:59:59'.format(end=day_last),)
     all_vulnerabilities = db.session.query(
         CobraResults.rule_id, func.count("*").label('counts')
     ).filter(*filter_group).group_by(CobraResults.rule_id).all()
-
+    print(all_vulnerabilities)
     vulnerabilities_types = []
     for x in all_vulnerabilities:  # all_vuls: results group by rule_id and count(*)
         t = {}
@@ -332,6 +334,7 @@ def main():
         if t:
             vulnerabilities_types.append(t)
     vulnerabilities_types = sorted(vulnerabilities_types, key=lambda x: x['amount'], reverse=True)
+    print(vulnerabilities_types)
 
     time_type_desc = {
         'w': '周',
