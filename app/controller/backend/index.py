@@ -78,6 +78,8 @@ def main():
     c_quarter = 0
     day_first = ''
     day_last = ''
+    c_quarter_first = 0
+    c_quarter_last = 0
     if c_month in [1, 2, 3]:
         c_quarter = 1
         c_quarter_first = 1
@@ -148,10 +150,34 @@ def main():
             })
 
     elif time_type == 'q':
-        vt_x = ['Q1', 'Q2', 'Q3', 'Q4']
-        for i, x in enumerate(vt_x):
-            if (i + 1) == c_quarter:
-                vt_x[i] = '{0}{1}'.format(c_mark, x)
+        for q in range(1, 5):
+            x_time = 'Q{quarter}'.format(quarter=q)
+            s_month = 0
+            e_month = 0
+            if q == 1:
+                s_month = 1
+                e_month = 3
+            elif q == 2:
+                s_month = 4
+                e_month = 6
+            elif q == 3:
+                s_month = 7
+                e_month = 9
+            elif q == 4:
+                s_month = 10
+                e_month = 12
+            cm, last_day = calendar.monthrange(c_year, e_month)
+            start = '{year}-{month}-{day}'.format(year=c_year, month=s_month, day=1)
+            end = '{year}-{month}-{day}'.format(year=c_year, month=e_month, day=last_day)
+            x_data = CobraResults.count_by_time(start, end)
+            x_data['t'] = x_data[0] + x_data[1] + x_data[2]
+            if q == c_quarter:
+                amount_vulnerability['new']['time_type'] += x_data['t']
+                amount_vulnerability['fixed']['time_type'] += x_data[2]
+            vt_x.append({
+                'time': x_time,
+                'data': x_data
+            })
         cm, last_day = calendar.monthrange(c_year, c_quarter_last)
         day_first = '{0}-{1}-{2}'.format(c_year, c_quarter_first, 1)
         day_last = '{0}-{1}-{2}'.format(c_year, c_quarter_last, last_day)
@@ -299,26 +325,28 @@ def main():
 
     # vulnerabilities types
     cobra_rules = db.session.query(CobraRules.id, CobraRules.vul_id).all()
-    cobra_vuls = db.session.query(CobraVuls.id, CobraVuls.name).all()
+    cobra_vulnerabilities = db.session.query(CobraVuls.id, CobraVuls.name).all()
 
     all_rules = {}
     for x in cobra_rules:
         all_rules[x.id] = x.vul_id  # rule_id -> vul_id
-    all_cobra_vuls = {}
-    for x in cobra_vuls:
-        all_cobra_vuls[x.id] = x.name  # vul_id -> vul_name
-    # show all vulns
+    all_cobra_vulnerabilities = {}
+    for x in cobra_vulnerabilities:
+        all_cobra_vulnerabilities[x.id] = x.name  # vul_id -> vul_name
+    # show all vulnerabilities
+    filter_group = (CobraResults.id > 0,)
+    filter_group += (CobraResults.updated_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.updated_at <= '{end} 23:59:59'.format(end=day_last),)
     all_vulnerabilities = db.session.query(
         CobraResults.rule_id, func.count("*").label('counts')
     ).filter(*filter_group).group_by(CobraResults.rule_id).all()
 
     vulnerabilities_types = []
-    for x in all_vulnerabilities:  # all_vuls: results group by rule_id and count(*)
+    for x in all_vulnerabilities:  # results group by rule_id and count(*)
         t = {}
         # get vul name
         if x.rule_id not in all_rules:
             continue
-        te = all_cobra_vuls[all_rules[x.rule_id]]
+        te = all_cobra_vulnerabilities[all_rules[x.rule_id]]
         # check if there is already a same vul name in different language
         flag = False
         for tv in vulnerabilities_types:
@@ -327,7 +355,7 @@ def main():
                 flag = True
                 break
         if not flag:
-            t['name'] = all_cobra_vuls[all_rules[x.rule_id]]
+            t['name'] = all_cobra_vulnerabilities[all_rules[x.rule_id]]
             t['amount'] = x.counts
         if t:
             vulnerabilities_types.append(t)
