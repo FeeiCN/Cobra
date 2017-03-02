@@ -247,11 +247,13 @@ def main():
     amount_rule['off']['time_type'] = convert_number(amount_rule['off']['time_type'])
 
     # ranks & hits
+    filter_group = (CobraResults.id > 0,)
+    filter_group += (CobraResults.created_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.created_at <= '{end} 23:59:59'.format(end=day_last),)
     hit_rules = db.session.query(
         func.count(CobraResults.rule_id).label("cnt"), CobraRules.author, CobraRules.description, CobraRules.id
     ).outerjoin(
         CobraRules, CobraResults.rule_id == CobraRules.id
-    ).group_by(CobraResults.rule_id).all()
+    ).filter(*filter_group).group_by(CobraResults.rule_id).all()
     ranks = dict()
     hits = dict()
     hits_tmp = []
@@ -301,8 +303,6 @@ def main():
     for x in cobra_vuls:
         all_cobra_vuls[x.id] = x.name  # vul_id -> vul_name
     # show all vulns
-    filter_group = (CobraResults.id > 0,)
-    filter_group += (CobraResults.created_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.created_at <= '{end} 23:59:59'.format(end=day_last),)
     all_vulnerabilities = db.session.query(
         CobraResults.rule_id, func.count("*").label('counts')
     ).filter(*filter_group).group_by(CobraResults.rule_id).all()
