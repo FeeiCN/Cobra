@@ -128,8 +128,8 @@ def main():
             p_month = int(month)
 
         current_time = time.strftime('%Y-{month}-{day}', time.localtime())
-        day_first = current_time.format(month=month, day=1)
-        day_last = current_time.format(month=month, day=31)
+        day_first = current_time.format(month=p_month, day=1)
+        day_last = current_time.format(month=p_month, day=31)
 
         for month in range(1, 13):
             x_time = '{month}月'.format(month=month)

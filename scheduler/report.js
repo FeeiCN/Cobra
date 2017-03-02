@@ -55,9 +55,10 @@ function getFileName(viewport, tt) {
  * @type {string}
  */
 if (system.args.length < 3 || system.args[0] in ['w', 'm', 'q']) {
-    console.log('Usage: report.js <work_directory> <time_type: e.g. w(weekly)/m(monthly)/q(quarterly)>');
+    console.log('Usage: report.js <work_directory> <time_type: e.g. w(weekly)/m(monthly)/q(quarterly)> <month(Optional): e.g. 1');
     phantom.exit(1);
 }
+
 var tt = system.args[2];
 // change work directory
 fs.changeWorkingDirectory(system.args[1]);
@@ -93,6 +94,10 @@ page.viewportSize = {width: 1024, height: 1000};
 
 console.log('TimeType: ' + tt);
 var domain = 'http://' + cobra_domain + '/admin/overview?tt=' + tt + '&capture=true&token=' + secret_key;
+if (system.args.length >= 4) {
+    var month = system.args[3];
+    domain += '&month=' + month;
+}
 var file = 'reports/' + getFileName(page.viewportSize, tt);
 /**
  * Capture

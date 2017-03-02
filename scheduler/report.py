@@ -34,7 +34,7 @@ time_type_des = {
 
 
 class Report(object):
-    def __init__(self, time_type):
+    def __init__(self, time_type, month=None):
         if time_type not in time_types:
             logging.critical('Time type exception')
             return
@@ -52,6 +52,8 @@ class Report(object):
         self.password = Config('email', 'password').value
 
         self.param = [phantomjs, os.path.join(Config().project_directory, 'scheduler', 'report.js'), Config().project_directory, time_type]
+        if month is not None:
+            self.param.append(month)
 
     def run(self):
         capture = self.capture()
