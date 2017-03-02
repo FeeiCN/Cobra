@@ -276,11 +276,9 @@ class CobraResults(db.Model):
         return "<CobraResults %r - %r>" % (self.id, self.task_id)
 
     @staticmethod
-    def count_by_day(day):
-        localtime = time.localtime(time.time() + (day * 86400))
+    def count_by_time(start, end):
         filter_group = (CobraResults.id > 0,)
-        if day is not None:
-            filter_group += (CobraResults.created_at >= time.strftime('%Y-%m-%d 00:00:00', localtime), CobraResults.created_at <= time.strftime('%Y-%m-%d 23:59:59', localtime),)
+        filter_group += (CobraResults.created_at >= '{start} 00:00:00'.format(start=start), CobraResults.created_at <= '{end} 23:59:59'.format(end=end),)
         count = db.session.query(
             func.count().label('count'), CobraResults.status
         ).filter(
