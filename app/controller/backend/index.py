@@ -138,6 +138,8 @@ def main():
             end = next_month - datetime.timedelta(days=next_month.day)
             x_data = CobraResults.count_by_time(start, end)
             x_data['t'] = x_data[0] + x_data[1] + x_data[2]
+            amount_vulnerability['new']['time_type'] += x_data['t']
+            amount_vulnerability['fixed']['time_type'] += x_data[2]
             vt_x.append({
                 'time': x_time,
                 'data': x_data
