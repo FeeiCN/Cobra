@@ -42,8 +42,26 @@ class Report(object):
         self.time_type_de = time_type_des[time_type]
 
         # mail
-        wd = int(datetime.datetime.today().strftime("%U"))
-        self.subject = '[Cobra] 代码安全{0}报(W{1})'.format(self.time_type_de, wd)
+        mark = ''
+        if time_type == 'w':
+            wd = int(datetime.datetime.today().strftime("%U"))
+            mark = 'W{week}'.format(week=wd)
+        elif time_type == 'm':
+            md = int(datetime.datetime.today().strftime("%m"))
+            mark = 'M{month}'.format(month=md)
+        elif time_type == 'q':
+            c_month = int(datetime.datetime.today().strftime("%m"))
+            c_quarter = 0
+            if c_month in [1, 2, 3]:
+                c_quarter = 1
+            elif c_month in [4, 5, 6]:
+                c_quarter = 2
+            elif c_month in [7, 8, 9]:
+                c_quarter = 3
+            elif c_month in [10, 11, 12]:
+                c_quarter = 4
+            mark = 'Q{quarter}'.format(quarter=c_quarter)
+        self.subject = '[Cobra] 代码安全{0}报({mark})'.format(self.time_type_de, mark=mark)
         self.user = Config('email', 'user').value
         self.name = Config('email', 'name').value
         self.to = Config('report', 'to').value
