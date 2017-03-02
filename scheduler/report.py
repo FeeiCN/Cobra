@@ -43,14 +43,17 @@ class Report(object):
 
         # mail
         mark = ''
-        if time_type == 'w':
-            wd = int(datetime.datetime.today().strftime("%U"))
-            mark = 'W{week}'.format(week=wd)
-        elif time_type == 'm':
-            md = int(datetime.datetime.today().strftime("%m"))
-            mark = 'M{month}'.format(month=md)
-        elif time_type == 'q':
+        if month is None:
             c_month = int(datetime.datetime.today().strftime("%m"))
+        else:
+            c_month = int(month)
+
+        if time_type == 'w':
+            c_week = int(datetime.datetime.today().strftime("%U"))
+            mark = 'W{week}'.format(week=c_week)
+        elif time_type == 'm':
+            mark = 'M{month}'.format(month=c_month)
+        elif time_type == 'q':
             c_quarter = 0
             if c_month in [1, 2, 3]:
                 c_quarter = 1
