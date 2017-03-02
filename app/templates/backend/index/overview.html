@@ -52,9 +52,9 @@
     <div class="fu chart" id="chart_vt" style="height:400px;margin-bottom: 20px;">
 
     </div>
-{#    <div class="fu chart" id="chart_vdd" style="height:500px;">#}
-{##}
-{#    </div>#}
+    {#    <div class="fu chart" id="chart_vdd" style="height:500px;">#}
+    {##}
+    {#    </div>#}
     <div class="fu chart" id="chart_vtd" style="height:500px;">
 
     </div>
@@ -148,6 +148,22 @@
         </div>
     </div>
 
+    <div class="fu">
+        <div class="hp ali">
+            <div class="by">
+                <h4 class="ty">
+                    新增或优化规则(NIR)
+                </h4>
+                {% for item in data.rules %}
+                    <a class="ph" href="#">
+                        <span class="dy dh">{{ item.author }}</span>
+                        {{ item.description }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
     <div class="fu chart" id="chart_rar" style="height:500px;margin-bottom:20px;">
 
     </div>
@@ -210,7 +226,7 @@
             ctx: null,
             options: {
                 'vt': {},
-{#                'vdd': {},#}
+                {#                'vdd': {},#}
                 'vtd': {},
                 'rar': {},
                 'rhr': {}
@@ -274,62 +290,62 @@
                  * VDD (Vulnerability Department Distributing)
                  */
                 /*
-                chart.options['vdd'] = {
-                    tooltip: {},
-                    title: [{
-                        text: 'TODO:漏洞部门分布(VDD)',
-                        textAlign: 'left'
-                    }],
-                    grid: [{
-                        top: 50,
-                        width: '50%',
-                        left: 10,
-                        containLabel: true
-                    }],
-                    xAxis: [{
-                        type: 'value',
-                        max: chart.data.vdd.all,
-                        splitLine: {
-                            show: false
-                        }
-                    }],
-                    yAxis: [{
-                        type: 'category',
-                        data: Object.keys(chart.data.vdd.charts),
-                        axisLabel: {
-                            interval: 0,
-                            rotate: 30
-                        },
-                        splitLine: {
-                            show: false
-                        }
-                    }],
-                    series: [{
-                        type: 'bar',
-                        stack: 'chart',
-                        z: 3,
-                        label: {
-                            normal: {
-                                position: 'right',
-                                show: true
-                            }
-                        },
-                        data: Object.keys(chart.data.vdd.charts).map(function (key) {
-                            return chart.data.vdd.charts[key];
-                        })
-                    }, {
-                        type: 'pie',
-                        radius: [0, '40%'],
-                        center: ['75%', '35%'],
-                        data: Object.keys(chart.data.vdd.charts).map(function (key) {
-                            return {
-                                name: key,
-                                value: chart.data.vdd.charts[key]
-                            }
-                        })
-                    }]
-                };
-                */
+                 chart.options['vdd'] = {
+                 tooltip: {},
+                 title: [{
+                 text: 'TODO:漏洞部门分布(VDD)',
+                 textAlign: 'left'
+                 }],
+                 grid: [{
+                 top: 50,
+                 width: '50%',
+                 left: 10,
+                 containLabel: true
+                 }],
+                 xAxis: [{
+                 type: 'value',
+                 max: chart.data.vdd.all,
+                 splitLine: {
+                 show: false
+                 }
+                 }],
+                 yAxis: [{
+                 type: 'category',
+                 data: Object.keys(chart.data.vdd.charts),
+                 axisLabel: {
+                 interval: 0,
+                 rotate: 30
+                 },
+                 splitLine: {
+                 show: false
+                 }
+                 }],
+                 series: [{
+                 type: 'bar',
+                 stack: 'chart',
+                 z: 3,
+                 label: {
+                 normal: {
+                 position: 'right',
+                 show: true
+                 }
+                 },
+                 data: Object.keys(chart.data.vdd.charts).map(function (key) {
+                 return chart.data.vdd.charts[key];
+                 })
+                 }, {
+                 type: 'pie',
+                 radius: [0, '40%'],
+                 center: ['75%', '35%'],
+                 data: Object.keys(chart.data.vdd.charts).map(function (key) {
+                 return {
+                 name: key,
+                 value: chart.data.vdd.charts[key]
+                 }
+                 })
+                 }]
+                 };
+                 */
                 /*
                  * VTD (Vulnerability Type Distributing)
                  */
