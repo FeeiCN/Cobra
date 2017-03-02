@@ -338,7 +338,7 @@ def main():
     else:
         comment_rule = '本{ttd}新增{count}条规则'.format(ttd=ttd, count=amount_rule['total']['time_type'])
 
-    comment_vulnerability = '本{ttd}扫出{new}个新漏洞, 修复了{fixed}个漏洞'.format(ttd=ttd, new=amount_vulnerability['new']['time_type'], fixed=amount_vulnerability['fixed']['time_type'])
+    comment_vulnerability = '本{ttd}扫出{new}个新漏洞, 修复了{fixed}个漏洞，待修复漏洞进入漏洞修复跟进流程。'.format(ttd=ttd, new=amount_vulnerability['new']['time_type'], fixed=amount_vulnerability['fixed']['time_type'])
 
     data = {
         'amount': {
