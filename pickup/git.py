@@ -7,6 +7,7 @@
     Implements various git methods
 
     :author:    Feei <feei@feei.cn>
+    :author:    Lightless <root@lightless.me>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
