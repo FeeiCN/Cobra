@@ -82,37 +82,30 @@ class CobraTaskInfo(db.Model):
             CobraTaskInfo.created_at <= '{0} 23:59:59'.format(end),
             # Active project
             CobraProjects.status > 0,
+            CobraProjects.repository == CobraTaskInfo.target
         )
         count = 0
         if t == 'task':
             count = db.session.query(
                 func.count(CobraTaskInfo.id).label('count')
-            ).outerjoin(
-                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
             ).first()
         elif t == 'project':
             count = db.session.query(
                 func.count(func.distinct(CobraTaskInfo.target)).label('count')
-            ).outerjoin(
-                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
             ).first()
         elif t == 'line':
             count = db.session.query(
                 func.sum(CobraTaskInfo.code_number).label('count')
-            ).outerjoin(
-                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
             ).first()
         elif t == 'file':
             count = db.session.query(
                 func.sum(CobraTaskInfo.file_count).label('count')
-            ).outerjoin(
-                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
             ).first()
@@ -299,18 +292,15 @@ class CobraResults(db.Model):
 
     @staticmethod
     def count_by_time(start, end):
-        filter_group = (CobraResults.id > 0,)
-        filter_group += (
+        count = db.session.query(
+            func.count(CobraResults.id).label('count'), CobraResults.status
+        ).filter(
             CobraResults.created_at >= '{start} 00:00:00'.format(start=start),
             CobraResults.created_at <= '{end} 23:59:59'.format(end=end),
             # Active project
-            CobraProjects.status > 0
-        )
-        count = db.session.query(
-            func.count(CobraResults.id).label('count'), CobraResults.status
-        ).outerjoin(
-            CobraProjects, CobraResults.project_id == CobraProjects.id
-        ).filter(*filter_group).group_by(CobraResults.status).all()
+            CobraProjects.status > 0,
+            CobraResults.project_id == CobraProjects.id
+        ).group_by(CobraResults.status).all()
         logging.debug('VT {start} {end} {count}'.format(start=start, end=end, count=count))
         c_dict = {}
         for ci in count:

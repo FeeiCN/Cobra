@@ -227,54 +227,46 @@ def main():
                 trend_scan[k].append(ct_count)
 
     # Vulnerability Data (VD)
-    filter_group = (
-        CobraResults.status == 2,
-        # Active project
-        CobraProjects.status > 0
-    )
     fixed_amount = db.session.query(
         func.count(CobraResults.id).label('count')
-    ).outerjoin(
-        CobraProjects, CobraResults.project_id == CobraProjects.id
-    ).filter(*filter_group).group_by(CobraResults.status).first()[0]
-
-    filter_group = (
-        CobraResults.status < 2,
+    ).filter(
+        CobraResults.status == 2,
         # Active project
-        CobraProjects.status > 0
-    )
+        CobraProjects.status > 0,
+        CobraResults.project_id == CobraProjects.id
+    ).group_by(CobraResults.status).first()[0]
+
     not_fixed_amount = db.session.query(
         func.count(CobraResults.id).label('count')
-    ).outerjoin(
-        CobraProjects, CobraResults.project_id == CobraProjects.id
-    ).filter(*filter_group).group_by(CobraResults.status).first()[0]
+    ).filter(
+        CobraResults.status < 2,
+        # Active project
+        CobraProjects.status > 0,
+        CobraResults.project_id == CobraProjects.id
+    ).group_by(CobraResults.status).first()[0]
 
     # Scan Data (SD)
     project_total = CobraProjects.query.filter(CobraProjects.status > 0).count()
-    filter_group = (CobraProjects.status > 0,)
 
     task_total = db.session.query(
         func.count(CobraTaskInfo.id).label('count')
-    ).outerjoin(
-        CobraProjects, CobraProjects.repository == CobraTaskInfo.target
     ).filter(
-        *filter_group
+        CobraProjects.status > 0,
+        CobraProjects.repository == CobraTaskInfo.target
     ).first()[0]
 
     file_total = db.session.query(
         func.sum(CobraTaskInfo.file_count).label('files')
-    ).outerjoin(
-        CobraProjects, CobraProjects.repository == CobraTaskInfo.target
     ).filter(
-        *filter_group
+        CobraProjects.status > 0,
+        CobraProjects.repository == CobraTaskInfo.target
     ).first()[0]
 
     line_total = db.session.query(
         func.sum(CobraTaskInfo.code_number).label('codes')
-    ).outerjoin(
-        CobraProjects, CobraProjects.repository == CobraTaskInfo.target
     ).filter(
-        *filter_group
+        CobraProjects.status > 0,
+        CobraProjects.repository == CobraTaskInfo.target
     ).first()[0]
 
     amount_scan = {
@@ -320,13 +312,18 @@ def main():
     amount_rule['off']['time_type'] = convert_number(amount_rule['off']['time_type'])
 
     # Rule Hits Rank (RHR)
-    # ranks & hits
-    filter_group = (CobraResults.created_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.created_at <= '{end} 23:59:59'.format(end=day_last), CobraProjects.status > 0, CobraResults.project_id == CobraProjects.id)
     hit_rules = db.session.query(
-        func.count(CobraResults.rule_id).label("cnt"), CobraRules.author, CobraRules.description, CobraRules.id
-    ).outerjoin(
-        CobraRules, CobraResults.rule_id == CobraRules.id
-    ).filter(*filter_group).group_by(CobraResults.rule_id).all()
+        func.count(CobraResults.rule_id).label("cnt"),
+        CobraRules.author,
+        CobraRules.description,
+        CobraRules.id,
+    ).filter(
+        CobraResults.created_at >= '{start} 00:00:00'.format(start=day_first),
+        CobraResults.created_at <= '{end} 23:59:59'.format(end=day_last),
+        CobraProjects.status > 0,
+        CobraResults.project_id == CobraProjects.id,
+        CobraResults.rule_id == CobraRules.id
+    ).group_by(CobraResults.rule_id).all()
     ranks = dict()
     hits = dict()
     hits_tmp = []
@@ -387,18 +384,15 @@ def main():
         all_cobra_vulnerabilities[x.id] = x.name  # vul_id -> vul_name
     # VTD
     # show all vulnerabilities
-    filter_group = (CobraResults.id > 0,)
-    filter_group += (
+    all_vulnerabilities = db.session.query(
+        CobraResults.rule_id, func.count("*").label('counts')
+    ).filter(
         CobraResults.updated_at >= '{start} 00:00:00'.format(start=day_first),
         CobraResults.updated_at <= '{end} 23:59:59'.format(end=day_last),
         # Active project
-        CobraProjects.status > 0
-    )
-    all_vulnerabilities = db.session.query(
-        CobraResults.rule_id, func.count("*").label('counts')
-    ).outerjoin(
-        CobraProjects, CobraResults.project_id == CobraProjects.id
-    ).filter(*filter_group).group_by(CobraResults.rule_id).all()
+        CobraProjects.status > 0,
+        CobraResults.project_id == CobraProjects.id
+    ).group_by(CobraResults.rule_id).all()
 
     vulnerabilities_types = []
     for x in all_vulnerabilities:  # results group by rule_id and count(*)
