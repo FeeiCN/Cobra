@@ -321,8 +321,7 @@ def main():
 
     # Rule Hits Rank (RHR)
     # ranks & hits
-    filter_group = (CobraResults.id > 0,)
-    filter_group += (CobraResults.created_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.created_at <= '{end} 23:59:59'.format(end=day_last),)
+    filter_group = (CobraResults.created_at >= '{start} 00:00:00'.format(start=day_first), CobraResults.created_at <= '{end} 23:59:59'.format(end=day_last), CobraProjects.status > 0, CobraResults.project_id == CobraProjects.id)
     hit_rules = db.session.query(
         func.count(CobraResults.rule_id).label("cnt"), CobraRules.author, CobraRules.description, CobraRules.id
     ).outerjoin(
