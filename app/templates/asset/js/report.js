@@ -162,6 +162,7 @@ $(function () {
                                                 $('.commit-author').text('@' + data.detail.c_author);
                                                 $('.commit-time').text('@' + data.detail.c_time);
                                                 $('.v-status').text(data.detail.status);
+                                                $('.v-repair').text(data.detail.repair);
                                                 $('.v-level').text(data.rule.level);
                                                 $('.v-type').text(data.description.name);
                                                 $('.v-rule').text(data.rule.description);
