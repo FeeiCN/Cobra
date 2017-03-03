@@ -21,6 +21,9 @@ from sqlalchemy.dialects.mysql import TINYINT, INTEGER, SMALLINT, TEXT
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
+from utils.log import logging
+
+logging = logging.getLogger(__name__)
 
 
 class CobraTaskInfo(db.Model):
@@ -74,32 +77,51 @@ class CobraTaskInfo(db.Model):
 
     @staticmethod
     def count_by_time(start, end, t='task'):
-        filter_group = (CobraTaskInfo.created_at >= '{0} 00:00:00'.format(start), CobraTaskInfo.created_at <= '{0} 23:59:59'.format(end),)
+        filter_group = (
+            CobraTaskInfo.created_at >= '{0} 00:00:00'.format(start),
+            CobraTaskInfo.created_at <= '{0} 23:59:59'.format(end),
+            # Active project
+            CobraProjects.status > 0,
+        )
+        count = 0
         if t == 'task':
             count = db.session.query(
-                func.count().label('count')
+                func.count(CobraTaskInfo.id).label('count')
+            ).outerjoin(
+                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
-            ).all()
+            ).first()
         elif t == 'project':
             count = db.session.query(
                 func.count(func.distinct(CobraTaskInfo.target)).label('count')
+            ).outerjoin(
+                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
-            ).all()
+            ).first()
         elif t == 'line':
             count = db.session.query(
                 func.sum(CobraTaskInfo.code_number).label('count')
+            ).outerjoin(
+                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
-            ).all()
+            ).first()
         elif t == 'file':
             count = db.session.query(
                 func.sum(CobraTaskInfo.file_count).label('count')
+            ).outerjoin(
+                CobraProjects, CobraProjects.repository == CobraTaskInfo.target
             ).filter(
                 *filter_group
-            ).all()
-        return count[0][0]
+            ).first()
+
+        if count[0] is None:
+            return 0
+        else:
+            logging.debug('SD {t} {start} {end} {count}'.format(start=start, end=end, t=t, count=int(count[0])))
+            return int(count[0])
 
 
 class CobraRules(db.Model):
@@ -278,12 +300,18 @@ class CobraResults(db.Model):
     @staticmethod
     def count_by_time(start, end):
         filter_group = (CobraResults.id > 0,)
-        filter_group += (CobraResults.created_at >= '{start} 00:00:00'.format(start=start), CobraResults.created_at <= '{end} 23:59:59'.format(end=end),)
+        filter_group += (
+            CobraResults.created_at >= '{start} 00:00:00'.format(start=start),
+            CobraResults.created_at <= '{end} 23:59:59'.format(end=end),
+            # Active project
+            CobraProjects.status > 0
+        )
         count = db.session.query(
-            func.count().label('count'), CobraResults.status
-        ).filter(
-            *filter_group
-        ).group_by(CobraResults.status).all()
+            func.count(CobraResults.id).label('count'), CobraResults.status
+        ).outerjoin(
+            CobraProjects, CobraResults.project_id == CobraProjects.id
+        ).filter(*filter_group).group_by(CobraResults.status).all()
+        logging.debug('VT {start} {end} {count}'.format(start=start, end=end, count=count))
         c_dict = {}
         for ci in count:
             count, status = ci
