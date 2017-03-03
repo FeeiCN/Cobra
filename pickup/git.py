@@ -304,7 +304,6 @@ class Git(object):
         cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file)
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
-        logging.info(checkout_err)
         if len(checkout_out) != 0:
             group = re.findall(r'(?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})', checkout_out)
             return True, group[0][0], group[0][1]
