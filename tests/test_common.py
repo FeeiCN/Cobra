@@ -15,23 +15,31 @@ from utils import common
 
 
 def test_convert_time():
-    time = common.convert_time(129)
-    assert time == '2\xe2\x80\xb29\xe2\x80\xb3'
+    assert common.convert_time(129) == '2\xe2\x80\xb29\xe2\x80\xb3'
+
+
+def test_convert_time_err():
+    assert common.convert_time(0) == '0\xe2\x80\xb3'
 
 
 def test_convert_number():
-    number = common.convert_number(1234)
-    assert number == '1,234'
+    assert common.convert_number(1234) == '1,234'
+
+
+def test_convert_number_0():
+    assert common.convert_number(0) == 0
+
+
+def test_convert_number_none():
+    assert common.convert_number(None) == 0
 
 
 def test_md5():
-    md5 = common.md5('Cobra')
-    assert md5 == 'd13eca1c700558f57d0310ef14277cc2'
+    assert common.md5('Cobra') == 'd13eca1c700558f57d0310ef14277cc2'
 
 
 def test_allowed_file():
-    is_allowed = common.allowed_file('test01/test02/file.rar')
-    assert is_allowed is True
+    assert common.allowed_file('test01/test02/file.rar') is True
 
 
 def test_to_bool():
@@ -53,8 +61,8 @@ def test_path_to_file():
 
 
 def test_percent():
-    assert '20.0%' == common.percent(20, 100)
+    assert common.percent(20, 100) == '20.0%'
 
 
 def test_format_gmt():
-    assert '2016-09-14 17:57:41' == common.format_gmt('Wed, 14 Sep 2016 17:57:41 GMT')
+    assert common.format_gmt('Wed, 14 Sep 2016 17:57:41 GMT') == '2016-09-14 17:57:41'
