@@ -12,6 +12,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import os
 import datetime
 
 from flask import render_template, request, jsonify
@@ -244,17 +245,21 @@ def test_rule():
     if not ret:
         return jsonify(code=4004, message=msg)
 
-    project = CobraProjects.query.filter(CobraProjects.id == vc.vars.pid).first()
-    if 'gitlab' in project.repository or 'github' in project.repository:
-        username = config.Config('git', 'username').value
-        password = config.Config('git', 'password').value
-        gg = git.Git(project.repository, branch='master', username=username, password=password)
-        clone_ret, clone_err = gg.clone()
-        if clone_ret is False:
-            return jsonify(code=4001, message='Clone Failed ({0})'.format(clone_err))
-        project_directory = gg.repo_directory
+    # all projects
+    if int(vc.vars.pid) == 0:
+        project_directory = os.path.join(config.Config('upload', 'directory').value, 'versions')
     else:
-        project_directory = project.repository
+        project = CobraProjects.query.filter(CobraProjects.id == vc.vars.pid).first()
+        if 'gitlab' in project.repository or 'github' in project.repository:
+            username = config.Config('git', 'username').value
+            password = config.Config('git', 'password').value
+            gg = git.Git(project.repository, branch='master', username=username, password=password)
+            clone_ret, clone_err = gg.clone()
+            if clone_ret is False:
+                return jsonify(code=4001, message='Clone Failed ({0})'.format(clone_err))
+            project_directory = gg.repo_directory
+        else:
+            project_directory = project.repository
     data = static.Static(project_directory, project_id=vc.vars.pid, rule_id=vc.vars.rid).analyse(test=True)
     data = '\r\n'.join(data)
     return jsonify(code=1001, message=data)

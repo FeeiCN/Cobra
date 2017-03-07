@@ -34,12 +34,17 @@ class Static(object):
         self.project_id = project_id
         self.rule_id = rule_id
         # project info
-        project_info = CobraProjects.query.filter_by(id=project_id).first()
-        if project_info:
-            self.project_name = project_info.name
+        if project_id == 0:
+            project_info = CobraProjects.query.filter_by(id=project_id).first()
+            if project_info:
+                self.project_name = project_info.name
+            else:
+                self.project_name = 'Undefined Project'
+            repository = project_info.repository
         else:
-            self.project_name = 'Undefined Project'
-        self.log('info', '**Project Info**\r\n > ID: `{id}`\r\n > Repository: `{repository}`\r\n > Directory: `{directory}`\r\n'.format(id=project_id, repository=project_info.repository, directory=self.directory))
+            self.project_name = 'All Projects'
+            repository = 'All repositories'
+        self.log('info', '**Project Info**\r\n > ID: `{id}`\r\n > Repository: `{repository}`\r\n > Directory: `{directory}`\r\n'.format(id=project_id, repository=repository, directory=self.directory))
 
     def log(self, level, message, test=True):
         if test:

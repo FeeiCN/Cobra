@@ -169,6 +169,7 @@ Not matched2">{{ data.rule.verify }}</textarea>
                     <p>Test this rule veracity.</p>
                     <div class="form-group">
                         <select class="project" style="width: 100%;">
+                            <option value="0">All Project</option>
                             {% for item in data.projects %}
                                 <option value="{{ item.id }}">{{ item.name }} ({{ item.repository }})</option>
                             {% endfor %}
