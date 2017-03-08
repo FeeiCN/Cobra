@@ -481,7 +481,7 @@ def vulnerabilities_detail():
     else:
         mode = 'htmlmixed'
         if '.' in file_path:
-            ext = file_path.split('.')[-1:]
+            ext = file_path.split('.')[-1:][0]
             if ext.lower() in mode_mime:
                 mode = mode_mime[ext.lower()]
 
