@@ -427,6 +427,26 @@ def vulnerabilities_detail():
     rule_info = CobraRules.query.filter_by(id=v_detail.rule_id).first()
     language_info = CobraLanguages.query.filter(CobraLanguages.id == rule_info.language).first()
     language = language_info.language
+    vulnerabilities_description = CobraVuls.query.filter_by(id=rule_info.vul_id).first()
+
+    if rule_info.author.strip() == '':
+        rule_info.author = 'Undefined'
+
+    # get code content
+    project = CobraProjects.query.filter_by(id=v_detail.project_id).first()
+    if project.repository[0] == '/':
+        # upload directory
+        project_code_path = project.repository
+    else:
+        # git
+        project_path_split = project.repository.replace('.git', '').split('/')
+        project_path = os.path.join(project_path_split[3], project_path_split[4])
+        upload = os.path.join(config.Config('upload', 'directory').value, 'versions')
+        project_code_path = os.path.join(upload, project_path)
+    if v_detail.file[0] == '/':
+        v_detail.file = v_detail.file[1:]
+    file_path = os.path.join(project_code_path, v_detail.file)
+
     # https://codemirror.net/mode/clike/index.html
     mode_mime = {
         'javascript': 'javascript',
@@ -460,25 +480,10 @@ def vulnerabilities_detail():
         mode = mode_mime[language.lower()]
     else:
         mode = 'htmlmixed'
-    vulnerabilities_description = CobraVuls.query.filter_by(id=rule_info.vul_id).first()
-
-    if rule_info.author.strip() == '':
-        rule_info.author = 'Undefined'
-
-    # get code content
-    project = CobraProjects.query.filter_by(id=v_detail.project_id).first()
-    if project.repository[0] == '/':
-        # upload directory
-        project_code_path = project.repository
-    else:
-        # git
-        project_path_split = project.repository.replace('.git', '').split('/')
-        project_path = os.path.join(project_path_split[3], project_path_split[4])
-        upload = os.path.join(config.Config('upload', 'directory').value, 'versions')
-        project_code_path = os.path.join(upload, project_path)
-    if v_detail.file[0] == '/':
-        v_detail.file = v_detail.file[1:]
-    file_path = os.path.join(project_code_path, v_detail.file)
+        if '.' in file_path:
+            ext = file_path.split('.')[-1:]
+            if ext.lower() in mode_mime:
+                mode = mode_mime[ext.lower()]
 
     if os.path.isfile(file_path) is not True:
         code_content = '// There is no code snippet for this type of file'
