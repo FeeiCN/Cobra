@@ -77,6 +77,7 @@ $(function () {
                                     lineNumbers: true,
                                     lineWrapping: true,
                                     matchBrackets: true,
+                                    styleActiveLine: true,
                                     matchTags: {bothTags: true},
                                     indentUnit: 4,
                                     indentWithTabs: true,
@@ -168,19 +169,21 @@ $(function () {
                                                 $('.v-rule').text(data.rule.description);
                                                 $('.v-rule-author').text('@' + data.rule.author);
                                                 $('.v-repair-time').text(data.detail.updated);
-                                                $('.v-repair-description').text(data.rule.repair);
+                                                $('.v-repair-description').html(data.rule.repair);
                                             }
 
                                             init_widget();
                                             var widget_trigger_line = $('.widget-trigger').clone().get(0);
                                             var widget_config = {
-                                                coverGutter: true,
-                                                noHScroll: true
+                                                coverGutter: false,
+                                                noHScroll: false
                                             };
                                             vulnerabilities_list.cm_code.addLineWidget(data.detail.line_trigger - 1, widget_trigger_line, widget_config);
                                             var h = vulnerabilities_list.cm_code.getScrollInfo().clientHeight;
                                             var coords = vulnerabilities_list.cm_code.charCoords({line: data.detail.line_trigger, ch: 0}, "local");
                                             vulnerabilities_list.cm_code.scrollTo(null, (coords.top + coords.bottom - h) / 2);
+                                            // set cursor
+                                            doc.setCursor({line: data.detail.line_trigger - 1, ch: 0});
 
                                             // mistake
                                             $('button.mistake').on('click', function () {
