@@ -237,7 +237,8 @@ def main():
         # Active project
         CobraProjects.status > 0,
         CobraResults.project_id == CobraProjects.id
-    ).group_by(CobraResults.status).first()[0]
+    ).group_by(CobraResults.status).first()
+    fixed_amount = fixed_amount[0] if fixed_amount else 0
 
     not_fixed_amount = db.session.query(
         func.count(CobraResults.id).label('count')
@@ -246,7 +247,8 @@ def main():
         # Active project
         CobraProjects.status > 0,
         CobraResults.project_id == CobraProjects.id
-    ).group_by(CobraResults.status).first()[0]
+    ).group_by(CobraResults.status).first()
+    not_fixed_amount = not_fixed_amount[0] if not_fixed_amount else 0
 
     # Scan Data (SD)
     project_total = CobraProjects.query.filter(CobraProjects.status > 0).count()
