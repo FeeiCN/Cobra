@@ -99,7 +99,7 @@ def main():
 
     # time type
     time_type = request.args.get('tt')
-    if time_type not in ['w', 'm', 'q']:
+    if time_type not in ['w', 'm', 'q', 'a']:
         # default tt
         time_type = 'w'
 
@@ -225,6 +225,9 @@ def main():
                 if ct_count is None:
                     ct_count = 0
                 trend_scan[k].append(ct_count)
+        if time_type == 'a':
+            day_first = '1997-10-10'
+            day_last = time.strftime('%Y-%m-%d', time.localtime())
 
     # Vulnerability Data (VD)
     fixed_amount = db.session.query(
@@ -418,7 +421,8 @@ def main():
     time_type_desc = {
         'w': '周',
         'm': '月',
-        'q': '季度'
+        'q': '季度',
+        'a': '全部'
     }
     ttd = time_type_desc[time_type]
     comment_scan = '本{ttd}扫描数据各指标都比较平稳，无明显波动!'.format(ttd=ttd)

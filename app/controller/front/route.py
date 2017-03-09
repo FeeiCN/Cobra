@@ -486,7 +486,7 @@ def vulnerabilities_detail():
                 mode = mode_mime[ext.lower()]
 
     if os.path.isfile(file_path) is not True:
-        code_content = '// There is no code snippet for this type of file'
+        code_content = '// File does not exist'
         line_trigger = 1
         line_start = 1
         c_author = 'Not support'
@@ -518,7 +518,7 @@ def vulnerabilities_detail():
         try:
             jsonify(data=code_content)
         except Exception as e:
-            code_content = '// The encoding type code is not supported'
+            code_content = '// The file encoding type is not supported'
             line_trigger = 1
             line_start = 1
 
