@@ -38,5 +38,8 @@ class Rule(object):
         return self.data
 
     def verify_check(self, test_rule):
-        regex_test_rule = re.findall(self.rule_location, test_rule)
-        return len(regex_test_rule) >= 1
+        try:
+            regex_test_rule = re.findall(self.rule_location, test_rule)
+            return len(regex_test_rule) >= 1
+        except Exception as e:
+            return False
