@@ -30,6 +30,7 @@ class Scan(Command):
     Usage:
         # Scan special project
         python cobra.py scan --target=project_directory --tid=task_id --pid=project_id
+        
         # Scan all projects
         python cobra.py scan --all=true
     """

@@ -25,6 +25,7 @@ from utils.validate import ValidateClass, login_required
 from engine import static, rule
 from utils import config
 from pickup import git
+from pickup.git import GitError
 
 
 # all rules button
@@ -254,9 +255,12 @@ def test_rule():
             username = config.Config('git', 'username').value
             password = config.Config('git', 'password').value
             gg = git.Git(project.repository, branch='master', username=username, password=password)
-            clone_ret, clone_err = gg.clone()
-            if clone_ret is False:
-                return jsonify(code=4001, message='Clone Failed ({0})'.format(clone_err))
+            try:
+                clone_ret, clone_err = gg.clone()
+                if clone_ret is False:
+                    return jsonify(code=4001, message='Clone Failed ({0})'.format(clone_err))
+            except GitError:
+                return jsonify(code=4001, message='Exception')
             project_directory = gg.repo_directory
         else:
             project_directory = project.repository
