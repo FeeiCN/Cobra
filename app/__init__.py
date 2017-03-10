@@ -21,7 +21,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from utils import config
 
-VERSION = '1.6.3'
+VERSION = '1.7'
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
