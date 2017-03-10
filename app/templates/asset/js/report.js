@@ -31,6 +31,68 @@ $(function () {
         },
         cm_code: null,
         get: function (next_page) {
+            // vulnerabilities code
+            if (vulnerabilities_list.cm_code == null) {
+                vulnerabilities_list.cm_code = CodeMirror.fromTextArea(document.getElementById("code"), {
+                    mode: 'php',
+                    theme: 'material',
+                    lineNumbers: true,
+                    lineWrapping: true,
+                    matchBrackets: true,
+                    styleActiveLine: true,
+                    matchTags: {bothTags: true},
+                    indentUnit: 4,
+                    indentWithTabs: true,
+                    foldGutter: true,
+                    scrollbarStyle: 'simple',
+                    autofocus: false,
+                    readOnly: true,
+                    highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+                });
+
+                // panel
+                var numPanels = 0;
+                var panels = {};
+
+                function makePanel(where, content) {
+                    var node = document.createElement("div");
+                    var id = ++numPanels;
+                    var widget;
+                    node.id = "panel-" + id;
+                    node.className = "cm_panel widget-" + where;
+                    node.innerHTML = content;
+                    return node;
+                }
+
+                function addPanel(where, content) {
+                    var node = makePanel(where, content);
+                    panels[node.id] = vulnerabilities_list.cm_code.addPanel(node, {position: where, stable: true});
+                }
+
+                var content_bottom = '<span class="v-id">MVE-0001</span>' + '<span class="v-language">PHP</span>';
+                addPanel('bottom', content_bottom);
+                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong><img class="icon full-screen" src="/asset/icon/resize-full-screen.png" alt="Full screen">';
+                addPanel('top', content_top);
+
+                // full screen
+                $('.full-screen').click(function () {
+                    $('.exit-full-screen').show();
+                    vulnerabilities_list.cm_code.setOption("fullScreen", !vulnerabilities_list.cm_code.getOption("fullScreen"));
+                });
+                $('.exit-full-screen').click(function () {
+                    $('.exit-full-screen').hide();
+                    if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
+                });
+
+                // ESC exit full screen
+                $('body').on('keydown', function (evt) {
+                    if (evt.keyCode === 27) {
+                        if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
+                    }
+                    evt.stopPropagation();
+                });
+            }
             if ($("input[name=need_scan]").val() != "False") {
                 // load vulnerabilities list
                 $.post('/list', {
@@ -67,69 +129,6 @@ $(function () {
                                 $('.vulnerabilities_list').append(list_html);
                             } else {
                                 $('.vulnerabilities_list').html(list_html);
-                            }
-
-                            // vulnerabilities code
-                            if (vulnerabilities_list.cm_code == null) {
-                                vulnerabilities_list.cm_code = CodeMirror.fromTextArea(document.getElementById("code"), {
-                                    mode: 'php',
-                                    theme: 'material',
-                                    lineNumbers: true,
-                                    lineWrapping: true,
-                                    matchBrackets: true,
-                                    styleActiveLine: true,
-                                    matchTags: {bothTags: true},
-                                    indentUnit: 4,
-                                    indentWithTabs: true,
-                                    foldGutter: true,
-                                    scrollbarStyle: 'simple',
-                                    autofocus: false,
-                                    readOnly: true,
-                                    highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
-                                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
-                                });
-
-                                // panel
-                                var numPanels = 0;
-                                var panels = {};
-
-                                function makePanel(where, content) {
-                                    var node = document.createElement("div");
-                                    var id = ++numPanels;
-                                    var widget;
-                                    node.id = "panel-" + id;
-                                    node.className = "cm_panel widget-" + where;
-                                    node.innerHTML = content;
-                                    return node;
-                                }
-
-                                function addPanel(where, content) {
-                                    var node = makePanel(where, content);
-                                    panels[node.id] = vulnerabilities_list.cm_code.addPanel(node, {position: where, stable: true});
-                                }
-
-                                var content_bottom = '<span class="v-id">MVE-0001</span>' + '<span class="v-language">PHP</span>';
-                                addPanel('bottom', content_bottom);
-                                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong><img class="icon full-screen" src="/asset/icon/resize-full-screen.png" alt="Full screen">';
-                                addPanel('top', content_top);
-
-                                // full screen
-                                $('.full-screen').click(function () {
-                                    $('.exit-full-screen').show();
-                                    vulnerabilities_list.cm_code.setOption("fullScreen", !vulnerabilities_list.cm_code.getOption("fullScreen"));
-                                });
-                                $('.exit-full-screen').click(function () {
-                                    $('.exit-full-screen').hide();
-                                    if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
-                                });
-
-                                // ESC exit full screen
-                                $('body').on('keydown', function (evt) {
-                                    if (evt.keyCode === 27) {
-                                        if (vulnerabilities_list.cm_code.getOption("fullScreen")) vulnerabilities_list.cm_code.setOption("fullScreen", false);
-                                    }
-                                    evt.stopPropagation();
-                                });
                             }
 
                             // vulnerabilities list detail
