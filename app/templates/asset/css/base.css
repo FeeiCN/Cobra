@@ -3,12 +3,6 @@
 @import url("style.css");																		/* Main theme styles */
 @import url("menu.css");																		/* Menu styles */
 @import url("responsive.css");																/* Responsive */
-@import url("fontello/css/icon_set_1.css");										/* Icon pack */
-@import url("fontello/css/icon_set_2.css");										/* Icon pack */
-@import url("fontello/css/fontello.css");											/* Icon pack */
-@import url("icon_restaurant/css/icon_restaurants.css");			/* Icon pack */
-@import url("magnific-popup.css");													/* Lightbox & dialog script */
-@import url("pop_up.css");																	/* Popup Advertising */
 
 /*
 How to change colors
