@@ -18,6 +18,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_script import Manager, Server
 from flask_sqlalchemy import SQLAlchemy
+from flask_cache import Cache
 
 from utils import config
 
@@ -48,6 +49,10 @@ web.config['UPLOAD_FOLDER'] = upload_directory
 web.config['MAX_CONTENT_LENGTH'] = int(config.Config('upload', 'max_size').value) * 1024 * 1024
 
 db = SQLAlchemy(web)
+
+# Flask-Cache
+cache = Cache(web, config={'CACHE_TYPE': 'simple'})
+
 #
 # # just use the migration script's app context when you import the models
 # # http://stackoverflow.com/questions/33905706/flask-migrate-seemed-to-delete-all-my-database-data

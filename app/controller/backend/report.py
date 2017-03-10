@@ -15,7 +15,7 @@ from flask import render_template
 
 from . import ADMIN_URL
 import os
-from app import web
+from app import web, cache
 from utils.validate import login_required
 from app.models import CobraProjects, CobraResults, CobraRules, CobraVuls
 from pickup.git import Git
@@ -26,6 +26,7 @@ from utils import config, common
 @web.route(ADMIN_URL + '/report/<int:vid>', methods=['GET'], defaults={'start_time': '0', 'end_time': '0'})
 @web.route(ADMIN_URL + '/report/<int:vid>/<start_time>/<end_time>', methods=['GET'])
 @login_required
+@cache.memoize(3600)
 def reports(vid, start_time, end_time):
     projects = CobraProjects.query.order_by(CobraProjects.id.asc()).all()
     rank = []
