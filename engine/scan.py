@@ -20,6 +20,7 @@ from app import db
 from utils import config, decompress
 from utils.log import logging
 from pickup import git
+from pickup.git import NotExistError, AuthError
 from engine import detection
 
 logging = logging.getLogger(__name__)
@@ -98,9 +99,22 @@ class Scan(object):
             repo_name = gg.repo_name
             repo_directory = gg.repo_directory
             # Git Clone Error
-            clone_ret, clone_err = gg.clone()
-            if clone_ret is False:
-                return 4001, 'Clone Failed ({0})'.format(clone_err)
+            try:
+                clone_ret, clone_err = gg.clone()
+                if clone_ret is False:
+                    return 4001, 'Clone Failed ({0})'.format(clone_err)
+            except NotExistError:
+                # update project status
+                p = CobraProjects.query.filter_by(repository=self.target).first()
+                if p is not None:
+                    if p.status == CobraProjects.get_status('on'):
+                        p.status = CobraProjects.get_status('off')
+                        db.session.add(p)
+                        db.session.commit()
+                return 4001, 'Repository Does not exist!'
+            except AuthError:
+                logging.critical('Git Authentication Failed')
+                return 4001, 'Repository Authentication Failed'
         elif 'svn' in self.target:
             # SVN
             repo_name = 'mogujie'

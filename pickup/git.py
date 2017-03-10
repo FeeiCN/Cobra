@@ -67,6 +67,31 @@ print diff_result
 """
 
 
+class GitError(Exception):
+    def __init__(self, message):
+        Exception.__init__(self)
+        self.message = message
+
+    def __str__(self):
+        return repr(self.message)
+
+
+class NotExistError(GitError):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return repr(self.message)
+
+
+class AuthError(GitError):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return repr(self.message)
+
+
 class Git(object):
     """
     A Git class.
@@ -167,11 +192,11 @@ class Git(object):
         logging.info(clone_err)
 
         if 'not found' in clone_err or 'Not found' in clone_err:
-            return False, 'repo doesn\'t exist.'
+            raise NotExistError('Repo doesn\'t exist')
         elif 'already exists' in clone_err:
             return False, 'repo has already cloned.'
         elif 'Authentication failed' in clone_err:
-            return False, 'Authentication failed.'
+            raise NotExistError('Authentication failed')
 
         clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
