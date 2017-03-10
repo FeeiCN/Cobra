@@ -152,6 +152,8 @@ class Git(object):
         logging.info(pull_out)
         logging.info(pull_err)
 
+        self.parse_err(pull_err)
+
         pull_err = pull_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
         # change work directory back.
@@ -191,12 +193,7 @@ class Git(object):
         logging.info(clone_out)
         logging.info(clone_err)
 
-        if 'not found' in clone_err or 'Not found' in clone_err:
-            raise NotExistError('Repo doesn\'t exist')
-        elif 'already exists' in clone_err:
-            return False, 'repo has already cloned.'
-        elif 'Authentication failed' in clone_err:
-            raise NotExistError('Authentication failed')
+        self.parse_err(clone_err)
 
         clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
@@ -311,6 +308,15 @@ class Git(object):
             return self.pull()
         else:
             return self.clone()
+
+    @staticmethod
+    def parse_err(err):
+        if 'not found' in err or 'Not found' in err:
+            raise NotExistError('Repo doesn\'t exist')
+        elif 'already exists' in err:
+            return False, 'repo has already cloned.'
+        elif 'Authentication failed' in err:
+            raise NotExistError('Authentication failed')
 
     @staticmethod
     def committer(file, path, line_number, length=1):
