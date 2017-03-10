@@ -401,7 +401,7 @@
                 }
             ]
         };
-        {% if data.vuls_number.result_number.unrepair_result_number != 0 %}
+        {% if data.vuls_number.result_number.unrepair_result_number != 0 and data.need_scan != False%}
             var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
             vul_distributing.setOption(option);
         {% endif %}
