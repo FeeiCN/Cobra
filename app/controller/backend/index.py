@@ -19,10 +19,15 @@ import calendar
 from flask import redirect, request, session, escape, render_template
 from sqlalchemy.sql import func, and_
 from . import ADMIN_URL
-from app import web, db
+from app import web, db, cache
 from utils.validate import ValidateClass, login_required
 from app.models import CobraAdminUser, CobraResults, CobraProjects, CobraTaskInfo, CobraRules, CobraVuls
 from utils.common import convert_number
+
+
+# Take all parameters as a cache key
+def cache_key():
+    return request.url
 
 
 # login page and index
@@ -64,6 +69,7 @@ def index():
 # main view
 @web.route(ADMIN_URL + '/overview', methods=['GET'])
 @login_required
+@cache.cached(timeout=3600, key_prefix=cache_key)
 def main():
     # is capture
     # True:  nav will hidden
