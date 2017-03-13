@@ -19,6 +19,7 @@ from utils.log import logging
 from utils.config import Config
 
 import smtplib
+from smtplib import SMTPException
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -128,11 +129,15 @@ class Report(object):
         text = MIMEText('<img src="data:image/png;base64,{0}">'.format(encoded_string), 'html')
         msg.attach(text)
 
-        s = smtplib.SMTP(self.host, self.port)
-        s.ehlo()
-        s.starttls()
-        s.ehlo()
-        s.login(self.user, self.password)
-        s.sendmail(self.user, self.to, msg.as_string())
-        s.quit()
-        return True
+        try:
+            s = smtplib.SMTP(self.host, self.port)
+            s.ehlo()
+            s.starttls()
+            s.ehlo()
+            s.login(self.user, self.password)
+            s.sendmail(self.user, self.to, msg.as_string())
+            s.quit()
+            return True
+        except SMTPException:
+            logging.critical('Send mail failed')
+            return False
