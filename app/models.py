@@ -291,6 +291,18 @@ class CobraResults(db.Model):
         return "<CobraResults %r - %r>" % (self.id, self.task_id)
 
     @staticmethod
+    def get_status(status):
+        state_int = {
+            0: 'init',
+            1: 'pushed',
+            2: 'fixed'
+        }
+        if isinstance(status, str):
+            return {v: k for k, v in state_int.items()}[status.lower()]
+        else:
+            return state_int[status]
+
+    @staticmethod
     def count_by_time(start, end):
         count = db.session.query(
             func.count(CobraResults.id).label('count'), CobraResults.status

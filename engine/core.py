@@ -241,7 +241,19 @@ class Core(object):
                 if exist_result is None:
                     self.insert_vulnerabilities()
                 else:
-                    self.log('info', "[RET] This vulnerabilities already exist!")
+                    if exist_result.status == CobraResults.get_status('fixed'):
+                        # update when exist(fixed)
+                        #  1. update status to not fixed(0)
+                        #  2. update repair to init(0)
+                        if self.test is not True:
+                            exist_result.status = CobraResults.get_status('init')
+                            exist_result.repair = self.repair_code_init
+                            db.session.add(exist_result)
+                            db.session.commit()
+                        self.log('info', '[RET] This vulnerabilities already exist(Fixed) and update status(Not Fixed)!')
+                    else:
+                        # continue when exist(not fixed)
+                        self.log('info', "[RET] This vulnerabilities already exist(Not Fixed)!")
         elif self.method == 1:
             """
             On Repair (method=1)
