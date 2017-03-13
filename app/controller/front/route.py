@@ -499,6 +499,7 @@ def vulnerabilities_detail():
             c_author = 'Not support'
             c_time = 'Not support'
 
+        # get code content
         code_content = ''
         fp = open(file_path, 'r')
         block_lines = 50
@@ -508,8 +509,12 @@ def vulnerabilities_detail():
         else:
             block_end = v_detail.line + block_lines
         for i, line in enumerate(fp):
-            if block_start <= i <= block_end:
-                code_content = code_content + line
+            if i == 0 and len(line) > 1024:
+                code_content = '// Compressed file preview is not supported'
+                break
+            else:
+                if block_start <= i <= block_end:
+                    code_content = code_content + line
         fp.close()
 
         line_trigger = v_detail.line - block_start
