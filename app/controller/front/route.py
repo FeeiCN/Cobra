@@ -511,8 +511,9 @@ def vulnerabilities_detail():
         for i, line in enumerate(fp):
             if i == 0 and len(line) > 1024:
                 code_content = '// Compressed file preview is not supported'
-            if block_start <= i <= block_end:
-                code_content = code_content + line
+            else:
+                if block_start <= i <= block_end:
+                    code_content = code_content + line
         fp.close()
 
         line_trigger = v_detail.line - block_start
