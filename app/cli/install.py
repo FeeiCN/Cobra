@@ -40,6 +40,11 @@ class Install(Command):
             sys.exit(0)
         print("Create Structure Success.")
 
+        # table `auth`
+        print('Insert api key...')
+        auth = CobraAuth('manual', common.md5('CobraAuthKey'), 1)
+        db.session.add(auth)
+
         # table `user`
         print('Insert admin user...')
         username = 'admin'
