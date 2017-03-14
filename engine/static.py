@@ -136,7 +136,7 @@ class Static(object):
         explode_dirs = ['.svn', '.cvs', '.hg', '.git', '.bzr']
         self.log('info', '**Rule Scan**\r\n > Global explode directory: `{dirs}`\r\n'.format(dirs=', '.join(explode_dirs)))
         languages = CobraLanguages.query.all()
-        filter_group = (CobraRules.id > 0,)
+        filter_group = (CobraRules.status == 1,)
         if self.rule_id is not None:
             filter_group += (CobraRules.id == self.rule_id,)
         rules = CobraRules.query.filter(*filter_group).all()

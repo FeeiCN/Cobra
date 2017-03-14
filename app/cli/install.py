@@ -16,7 +16,7 @@ import sys
 from sqlalchemy import exc
 from flask_script import Command
 from utils import common
-from app.models import CobraAuth, CobraLanguages, CobraAdminUser, CobraVuls
+from app.models import CobraAuth, CobraAdminUser
 from app import db
 
 
