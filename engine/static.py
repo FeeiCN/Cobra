@@ -138,7 +138,7 @@ class Static(object):
         languages = CobraLanguages.query.all()
         filter_group = (CobraRules.status == 1,)
         if self.rule_id is not None:
-            filter_group += (CobraRules.id == self.rule_id,)
+            filter_group = (CobraRules.id == self.rule_id,)
         rules = CobraRules.query.filter(*filter_group).all()
         extensions = None
         find = tool.find
