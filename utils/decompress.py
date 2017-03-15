@@ -20,21 +20,6 @@ from utils import config
 from utils.log import logging
 
 logging = logging.getLogger(__name__)
-"""example
-
-Decompress a compressed file.
-It will store the file in the "uploads/filename/" directory.
-for example, if there is a file named "111_test.rar" in uploads dir, after decompress,
-it will create a directory named "111_test"
-
-# import class
-from utils.decompress import Decompress
-
-# load an compressed file. only tar.gz, rar, zip supported.
-dc = Decompress('222_test.tar.gz')
-# decompress it. And there will create a directory named "222_test.tar".
-dc.decompress()
-"""
 
 
 class Decompress(object):
