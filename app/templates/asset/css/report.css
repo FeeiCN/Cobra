@@ -165,7 +165,7 @@ ul.v_detail li {
 }
 
 .form_code .CodeMirror {
-    height: 538px;
+    height: 538px !important;
 }
 
 .CodeMirror-activeline-background {
