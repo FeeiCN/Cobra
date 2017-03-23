@@ -43,7 +43,7 @@ def result(pid, page, vt_id, rid):
     results = CobraResults.query.filter(*result_filter).order_by(CobraResults.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
     total = CobraResults.query.filter(*result_filter).count()
     for result in results:
-        result.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(pid) + '?t=vul&sr=' + str(result.rule_id) + '&vid=' + str(result.id)
+        result.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(result.project_id) + '?t=vul&sr=' + str(result.rule_id) + '&vid=' + str(result.id)
 
     # Not fixed vulnerability types
     filter = filter_group + (CobraResults.rule_id == CobraRules.id, CobraVuls.id == CobraRules.vul_id,)
