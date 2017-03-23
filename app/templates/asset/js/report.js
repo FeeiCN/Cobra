@@ -11,8 +11,8 @@ function getParameterByName(name, url) {
 }
 $(function () {
     var current_tab = '';
-    var c_tab = getParameterByName('tab');
-    if (c_tab !== null && c_tab !== '') {
+    var c_tab = getParameterByName('t');
+    if (c_tab !== null && c_tab !== '' && ['inf', 'vul', 'ext'].indexOf(c_tab) >= 0) {
         current_tab = c_tab;
         $(".nav-tabs li").removeClass('active');
         $("a[data-id=" + c_tab + "]").parent('li').addClass('active');
@@ -23,8 +23,9 @@ $(function () {
         page: 1,
         vid: null,
         init: function () {
-            if (getParameterByName('vid') !== null) {
-                vulnerabilities_list.vid = getParameterByName('vid');
+            var vid = getParameterByName('vid');
+            if (vid !== null && vid > 0) {
+                vulnerabilities_list.vid = vid;
             }
             this.get();
             this.listen();
@@ -176,20 +177,25 @@ $(function () {
         },
         filter_url: function () {
             var search_filter_url = '';
-            if ($('#search_vul_type').val() !== 'all') {
-                search_filter_url += '&svt=' + $('#search_vul_type').val();
+            var svt = $('#search_vul_type').val();
+            if (svt !== 'all' && svt > 0) {
+                search_filter_url += '&svt=' + svt;
             }
-            if ($('#search_rule').val() !== 'all') {
-                search_filter_url += '&sr=' + $('#search_rule').val();
+            var sr = $('#search_rule').val();
+            if (sr !== 'all' && sr > 0) {
+                search_filter_url += '&sr=' + sr;
             }
-            if ($('#search_level').val() !== 'all') {
-                search_filter_url += '&sl=' + $('#search_level').val();
+            var sl = $('#search_level').val();
+            if (sl !== 'all' && sl > 0) {
+                search_filter_url += '&sl=' + sl;
             }
-            if ($('#search_task').val() !== 'all') {
-                search_filter_url += '&st=' + $('#search_task').val();
+            var st = $('#search_task').val();
+            if (st !== 'all' && st > 0) {
+                search_filter_url += '&st=' + st;
             }
-            if ($('#search_status').val() !== '0') {
-                search_filter_url += '&ss=' + $('#search_status').val();
+            var ss = $('#search_status').val();
+            if (ss > 0) {
+                search_filter_url += '&ss=' + ss;
             }
             return search_filter_url;
         },
@@ -198,11 +204,17 @@ $(function () {
             if (vulnerabilities_list.vid !== null) {
                 v = '&vid=' + vulnerabilities_list.vid;
             }
-            if (current_tab === '' && v === '' && vulnerabilities_list.filter_url() === '') {
-                console.log('Nothing change');
+            var url = '';
+            if (current_tab === '' || current_tab === 'inf') {
+                url = '?t=' + 'inf';
             } else {
-                window.history.pushState("CobraState", "Cobra", "?tab=" + current_tab + vulnerabilities_list.filter_url() + v);
+                if (current_tab === 'vul') {
+                    url = "?t=" + current_tab + vulnerabilities_list.filter_url() + v;
+                } else {
+                    url = '?t=' + 'ext';
+                }
             }
+            window.history.pushState("CobraState", "Cobra", url);
         },
         get: function (next_page, on_filter) {
             // vulnerabilities code
@@ -268,32 +280,30 @@ $(function () {
                 });
             }
             if ($("input[name=need_scan]").val() !== "False") {
-                // filter on URL
-                var search_filter_url = '';
                 // Search vulnerability type
                 if (on_filter === false || typeof on_filter === 'undefined') {
                     var svt = getParameterByName('svt');
-                    if (svt !== null) {
+                    if (svt !== null && svt > 0) {
                         $('#search_vul_type').val(svt);
                     }
                     // Search rule
                     var sr = getParameterByName('sr');
-                    if (sr !== null) {
+                    if (sr !== null && sr > 0) {
                         $('#search_rule').val(sr);
                     }
                     // Search level
                     var sl = getParameterByName('sl');
-                    if (sl !== null) {
+                    if (sl !== null && sl > 0) {
                         $('#search_level').val(sl);
                     }
                     // Search task
                     var st = getParameterByName('st');
-                    if (st !== null) {
+                    if (st !== null && st > 0) {
                         $('#search_task').val(st);
                     }
                     // Search status
                     var ss = getParameterByName('ss');
-                    if (ss !== null && ss <= 9) {
+                    if (ss !== null && ss > 0) {
                         $('#search_status').val(ss);
                     }
                 }
@@ -339,7 +349,7 @@ $(function () {
 
                             // current vulnerability
                             var vid = getParameterByName('vid');
-                            if (vid !== null) {
+                            if (vid !== null && vid > 0) {
                                 vulnerabilities_list.detail(vid);
                             }
 
