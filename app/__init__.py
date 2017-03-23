@@ -81,4 +81,4 @@ manager.add_command('report', report.Report())
 from app.controller.front import route, api
 
 # Background route
-from app.controller.backend import api, dashboard, index, language, project, rule, task, vulnerability, whitelist, framework, report
+from app.controller.backend import api, dashboard, index, language, project, rule, task, vulnerability, whitelist, framework, report, result
