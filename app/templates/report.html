@@ -34,12 +34,12 @@
             </div>
             <hr>
             <ul class="nav nav-tabs">
-                <li class="active"><a data-id="vul_d" data-toggle="tab">Information</a></li>
-                <li><a data-id="vul_l" data-toggle="tab">Vulnerabilities</a></li>
-                <li><a data-id="ext_d" data-toggle="tab">Extensions</a></li>
+                <li class="active"><a data-id="inf" data-toggle="tab">Information</a></li>
+                <li><a data-id="vul" data-toggle="tab">Vulnerabilities</a></li>
+                <li><a data-id="ext" data-toggle="tab">Extensions</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="vul_d">
+                <div class="tab-pane active" id="inf">
                     <div class="row">
                         <div class="col-md-4 column">
                             <h4>Welcome to Cobra!</h4>
@@ -164,8 +164,7 @@
                         </div>
                     </div><!-- End row -->
                 </div><!-- End rab -->
-
-                <div class="tab-pane" id="vul_l">
+                <div class="tab-pane" id="vul">
                     <div class="row">
                         <div class="col-md-3 p0">
                             <div id="panel-2" class="vl_panel"><strong>Vulnerabilities</strong><a title="Setting vulnerabilities filter" class="cog-panel filter_setting"><img class="icon" src="{{ url_for('static', filename='icon/funnel.png') }}" alt="1"></a></div>
@@ -227,11 +226,11 @@
                         </div>
                         <div class="col-md-9 p0 form_code">
                             <textarea id="code"><?php // This is a demo code</textarea>
-                            <div class="cm-loading" style="display:none;"></div>
+                                <div class="cm-loading" style="display:none;"></div>
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="ext_d">
+                <div class="tab-pane" id="ext">
                     <div class="row">
                         <div class="col-md-12 column">
                             <h4>Extensions distribution statistics</h4>
