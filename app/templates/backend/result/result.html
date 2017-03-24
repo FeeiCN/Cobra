@@ -46,7 +46,7 @@
                 {% endif %}
                 {% for item in data.results %}
                     <tr>
-                        <td><a href="{{ item.report }}" target="_blank">{{ item.id }}</a></td>
+                        <td><a href="http://{{ data.domain }}/report/{{ item.project_id }}?t=vul&sr={{ item.rule_id }}&vid={{ item.id }}" target="_blank">{{ item.id }}</a></td>
                         <td data-id="{{ item.rule_id }}">{{ item.description }}</td>
                         <td style="max-width: 40%;overflow: hidden;">{{ item.file }}:{{ item.line }}</td>
                         <td align="center">
