@@ -22,7 +22,7 @@ from sqlalchemy import func, and_
 
 
 @web.route(ADMIN_URL + '/result/', methods=['GET'], defaults={'pid': 0, 'page': 1, 'vt_id': 0, 'rid': 0})
-@web.route(ADMIN_URL + '/result/<int:page>', methods=['GET'], defaults={'page': 1, 'vt_id': 0, 'rid': 0})
+@web.route(ADMIN_URL + '/result/<int:page>', methods=['GET'], defaults={'pid': 0, 'vt_id': 0, 'rid': 0})
 @web.route(ADMIN_URL + '/result/<int:page>/<int:pid>', methods=['GET'], defaults={'vt_id': 0, 'rid': 0})
 @web.route(ADMIN_URL + '/result/<int:page>/<int:pid>/<int:vt_id>', methods=['GET'], defaults={'rid': 0})
 @web.route(ADMIN_URL + '/result/<int:page>/<int:pid>/<int:vt_id>/<int:rid>', methods=['GET'])
@@ -39,11 +39,20 @@ def result(pid, page, vt_id, rid):
     result_filter = filter_group
     if rid != 0:
         result_filter = result_filter + (CobraResults.rule_id == rid,)
+
+    result_filter = result_filter + (CobraResults.rule_id == CobraRules.id,)
     per_page = 10
-    results = CobraResults.query.filter(*result_filter).order_by(CobraResults.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
+    results = db.session.query(
+        CobraResults.rule_id,
+        CobraResults.status,
+        CobraResults.project_id,
+        CobraResults.updated_at,
+        CobraResults.file,
+        CobraResults.line,
+        CobraResults.id,
+        CobraRules.description
+    ).filter(*result_filter).order_by(CobraResults.id.desc()).limit(per_page).offset((page - 1) * per_page).all()
     total = CobraResults.query.filter(*result_filter).count()
-    for result in results:
-        result.report = 'http://' + config.Config('cobra', 'domain').value + '/report/' + str(result.project_id) + '?t=vul&sr=' + str(result.rule_id) + '&vid=' + str(result.id)
 
     # Not fixed vulnerability types
     filter = filter_group + (CobraResults.rule_id == CobraRules.id, CobraVuls.id == CobraRules.vul_id,)
@@ -92,5 +101,6 @@ def result(pid, page, vt_id, rid):
         'vt_id': vt_id,
         'rid': rid,
         'total': total,
+        'domain': config.Config('cobra', 'domain').value
     }
     return render_template("backend/result/result.html", data=data)
