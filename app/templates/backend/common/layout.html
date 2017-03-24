@@ -117,7 +117,7 @@
         var pp = "<ul class='ow'>";
         pp += "<li><a id='prev' aria-label='Previous' role='button' class='btn' style='outline: none;' " +
             "onclick=prev()>Prev</a></li>";
-        pp += "<li><a class='disabled'>" + current_page + " / " + total_pages + "</a></li>";
+        pp += "<li><a class='disabled'>" + current_page + " / " + total_pages + ' (Count: ' + all_count + ")</a></li>";
         pp += "<li><a id='next' aria-label='Next' role='button' class='btn' style='outline: none;' " +
             "onclick=next(" + total_pages + ")>Next</a></li>";
         pp += "</ul>";
