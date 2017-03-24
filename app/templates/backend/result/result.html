@@ -32,6 +32,7 @@
                 <thead>
                 <tr>
                     <th>VID</th>
+                    <th>Rule</th>
                     <th>File</th>
                     <th>Status</th>
                     <th>Update time</th>
@@ -46,7 +47,8 @@
                 {% for item in data.results %}
                     <tr>
                         <td><a href="{{ item.report }}" target="_blank">{{ item.id }}</a></td>
-                        <td>{{ item.file }}:{{ item.line }}</td>
+                        <td data-id="{{ item.rule_id }}">{{ item.description }}</td>
+                        <td style="max-width: 40%;overflow: hidden;">{{ item.file }}:{{ item.line }}</td>
                         <td align="center">
                             {% if item.status == 0 %}
                                 Not Fixed
@@ -89,7 +91,11 @@
                         vtid = $(this).val();
                         rid = '';
                     }
-                    window.location.href = '/admin/result/{{ data.page }}/' + main.pid + '/' + vtid + '/' + rid;
+                    if (rid === '') {
+                        window.location.href = '/admin/result/{{ data.page }}/' + main.pid + '/' + vtid;
+                    } else {
+                        window.location.href = '/admin/result/{{ data.page }}/' + main.pid + '/' + vtid + '/' + rid;
+                    }
                 });
             }
         };
