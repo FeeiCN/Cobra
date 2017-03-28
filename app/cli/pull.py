@@ -12,12 +12,9 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import os
 import sys
-import time
 from flask_script import Command, Option
 from app.models import CobraProjects
-from app import db
 from utils.log import logging
 from engine import scan
 
