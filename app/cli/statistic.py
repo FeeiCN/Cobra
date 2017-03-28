@@ -21,6 +21,7 @@ from utils.log import logging
 
 logging = logging.getLogger(__name__)
 
+
 class Statistic(Command):
     """
     Statistics code-related information (lines of code / lines of comments / number of blank lines)
