@@ -24,11 +24,11 @@ logging = logging.getLogger(__name__)
 
 class Statistic(Command):
     """
-    Statistics code-related information (lines of code / lines of comments / number of blank lines)
-    Usage:
-        python cobra.py statistic --target=project_directory --tid=task_id
+    Statistics code-related information
     """
     option_list = (
+        # Usage
+        #   python cobra.py statistic --target=project_directory --tid=task_id
         Option('--target', '-t', dest='target', help='directory'),
         Option('--tid', '-i', dest='tid', help='scan task id')
     )

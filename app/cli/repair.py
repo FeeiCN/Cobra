@@ -26,10 +26,10 @@ logging = logging.getLogger(__name__)
 class Repair(Command):
     """
     Detection of existing vulnerabilities to repair the situation
-    Usage:
-        python cobra.py repair --pid=your_project_id
     """
     option_list = (
+        # Usage
+        # python cobra.py repair --pid=your_project_id
         Option('--pid', '-p', dest='pid', help='scan project id'),
     )
 

@@ -26,15 +26,14 @@ logging = logging.getLogger(__name__)
 
 class Scan(Command):
     """
-    Scan for vulnerabilities
-    Usage:
-        # Scan special project
-        python cobra.py scan --target=project_directory --tid=task_id --pid=project_id
-        
-        # Scan all projects
-        python cobra.py scan --all=true
+    Scan vulnerabilities
     """
     option_list = (
+        # Usage
+        # Scan special project
+        #   python cobra.py scan --target=project_directory --tid=task_id --pid=project_id
+        # Scan all projects
+        #   python cobra.py scan --all=true
         Option('--all', '-a', dest='is_all', required=False, help='Scan all projects'),
         Option('--target', '-t', dest='target', required=False, help='scan target(directory/git repository/svn url/file path)'),
         Option('--tid', '-i', dest='tid', required=False, help='scan task id'),

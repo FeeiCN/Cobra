@@ -23,10 +23,10 @@ from app import db
 class Install(Command):
     """
     Initialize the table structure
-    Usage:
-        python cobra.py install
     """
 
+    # Usage
+    # python cobra.py install
     def run(self):
         # create database structure
         print("Start create database structure...")

@@ -23,16 +23,14 @@ logging = logging.getLogger(__name__)
 
 class Pull(Command):
     """
-    Pull code
-    Usage:
-        # pull special project
-        python cobra.py pull --pid=project_id
-
-        # pull all projects
-        python cobra.py scan --all=true
+    Pull project code
     """
     option_list = (
+        # pull special project
+        # python cobra.py pull --pid=project_id
         Option('--all', '-a', dest='is_all', required=False, help='Scan all projects'),
+        # pull all projects
+        # python cobra.py scan --all=true
         Option('--pid', '-p', dest='pid', required=False, help='scan project id'),
     )
 

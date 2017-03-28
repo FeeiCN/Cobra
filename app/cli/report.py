@@ -19,10 +19,10 @@ from scheduler import report
 class Report(Command):
     """
     Send report
-    Usage:
-        python cobra.py report --time=time_time(w/m/q)
     """
     option_list = (
+        # Usage:
+        #   python cobra.py report --time=time_time(w/m/q)
         Option('--time', '-t', dest='t', help='Time e.g. w(weekly)/m(monthly)/q(quarterly)'),
         Option('--month', '-m', dest='m', help='Special month e.g. 1')
     )
