@@ -25,4 +25,5 @@ fc-cache -fv
 # 6:30 PM Friday
 vim /var/spool/cron/root
 1 18 * * 5 /usr/bin/python /path/to/cobra/cobra.py report -t=w > /dev/null
+1 4 * * * /usr/bin/python /path/to/cobra/cobra.py pull --all=true > /dev/null
 ```
