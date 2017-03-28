@@ -68,7 +68,7 @@ port = config.Config('cobra', 'port').value
 port = int(port)
 
 # CLI
-from app.cli import report, repair, install, scan, statistic
+from app.cli import report, repair, install, scan, statistic, pull
 
 manager.add_command('start', Server(host=host, port=port, threaded=True))
 manager.add_command('scan', scan.Scan())
@@ -76,6 +76,7 @@ manager.add_command('statistic', statistic.Statistic())
 manager.add_command('install', install.Install())
 manager.add_command('repair', repair.Repair())
 manager.add_command('report', report.Report())
+manager.add_command('pull', pull.Pull())
 
 # Front route
 from app.controller.front import route, api

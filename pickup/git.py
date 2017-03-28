@@ -127,7 +127,7 @@ class Git(object):
         """
         logging.info('Start Clone Repo...')
         if self.__check_exist():
-            logging.info('Repo Already Exist. Start Poll.')
+            logging.info('Repo Already Exist. Start Pull.')
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
 
