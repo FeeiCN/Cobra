@@ -15,6 +15,7 @@ import os
 import re
 import traceback
 from engine import parse
+from dependency import Dependency
 from pickup.file import File
 from app.models import CobraResults
 from app import db
@@ -44,6 +45,7 @@ class Core(object):
         :param index: vulnerability index
         """
         self.data = []
+        self.result = result
         self.project_id = result['project_id']
         self.project_directory = result['project_directory']
         self.rule_id = result['rule_id']
@@ -345,7 +347,7 @@ class Core(object):
             self.log('info', "[RET] Not found vulnerability\r\n")
             return self.data
 
-    def repair(self):
+    def repair(self, dependencies=None):
         """
         Scan vulnerabilities is repair
         :flow:
@@ -378,6 +380,15 @@ class Core(object):
                 return
             else:
                 return
+
+        # Dependency rule
+        if dependencies is not None:
+            # Dependency rule
+            dependency = Dependency(self.result, dependencies, self.test)
+            if dependency.is_dependency_rule(self.rule_location):
+                self.log('info', 'Is dependency rule')
+                # analysis dependency and compare version
+                dependency.check()
 
         # Not exist file
         if os.path.isfile(self.file_path) is False:

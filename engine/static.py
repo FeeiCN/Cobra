@@ -16,6 +16,7 @@ import time
 import subprocess
 import traceback
 from engine.core import Core
+from engine.dependency import Dependency
 from pickup import directory
 from app.models import CobraRules, CobraLanguages, CobraTaskInfo, CobraWhiteList, CobraProjects, CobraVuls
 from app import db
@@ -155,6 +156,12 @@ class Static(object):
                 'name': v.name,
                 'third_v_id': v.third_v_id
             }
+        # Analysis dependencies
+        self.log('info', 'Analysis dependencies...')
+        dependencies = Dependency(test=test).list(self.directory)
+        self.log('info', 'Dependencies count: {0}'.format(len(dependencies)))
+        for k, d in dependencies.items():
+            self.log('info', ' > {0}:{1} {2}'.format(d['groupId'], d['artifactId'], d['version']))
         for index, rule in enumerate(rules):
             rule.regex_location = rule.regex_location.strip()
             rule.regex_repair = rule.regex_repair.strip()
@@ -198,6 +205,29 @@ class Static(object):
                     # -s suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
                     param = [grep, "-s", "-n", "-r", "-P"] + filters + [rule.regex_location, self.directory]
                 self.log('info', '**Rule Info({index})**\r\n > ID: `{rid}` \r\n > Name: `{name}` \r\n > Language: `{language}`\r\n > Rule mode:`{mode}`\r\n > Location: `{location}` \r\n > Repair: `{repair} `\r\n'.format(index=index, rid=rule.id, name=rule.description, language=extensions, mode=mode, location=rule.regex_location, repair=rule.regex_repair))
+
+                # base info
+                result_info = {
+                    'task_id': self.task_id,
+                    'project_id': self.project_id,
+                    'project_directory': self.directory,
+                    'project_name': self.project_name,
+                    'rule_id': rule.id,
+                    'result_id': None,
+                    'third_party_vulnerabilities_name': vulnerability_types[rule.vul_id]['name'],
+                    'third_party_vulnerabilities_type': vulnerability_types[rule.vul_id]['third_v_id'],
+                    'regex_location': rule.regex_location
+                }
+
+                # Dependency rule
+                dependency = Dependency(result_info, dependencies, test)
+                if dependency.is_dependency_rule(rule.regex_location):
+                    self.log('info', 'Is dependency rule')
+                    # analysis dependency and compare version
+                    self.data += dependency.check()
+                    continue
+
+                # Vulnerability rule
                 p = subprocess.Popen(param, stdout=subprocess.PIPE)
                 result = p.communicate()
 
@@ -212,27 +242,15 @@ class Static(object):
                         # grep result
                         if ':' in line:
                             line_split = line.split(':', 1)
-                            file_path = line_split[0].strip()
-                            code_content = line_split[1].split(':', 1)[1].strip()
-                            line_number = line_split[1].split(':', 1)[0].strip()
+                            result_info['file_path'] = line_split[0].strip()
+                            result_info['line_number'] = line_split[1].split(':', 1)[0].strip()
+                            result_info['code_content'] = line_split[1].split(':', 1)[1].strip()
                         else:
                             # search file
-                            file_path = line
-                            code_content = ''
-                            line_number = 0
+                            result_info['file_path'] = line
+                            result_info['line_number'] = 0
+                            result_info['code_content'] = ''
                         # core rule check
-                        result_info = {
-                            'task_id': self.task_id,
-                            'project_id': self.project_id,
-                            'project_directory': self.directory,
-                            'rule_id': rule.id,
-                            'result_id': None,
-                            'file_path': file_path,
-                            'line_number': line_number,
-                            'code_content': code_content,
-                            'third_party_vulnerabilities_name': vulnerability_types[rule.vul_id]['name'],
-                            'third_party_vulnerabilities_type': vulnerability_types[rule.vul_id]['third_v_id']
-                        }
                         self.data += Core(result_info, rule, self.project_name, white_list, test=test, index=index).scan()
                 else:
                     self.log('info', 'Not Found')

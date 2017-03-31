@@ -17,11 +17,13 @@ from flask_script import Command, Option
 from app.models import CobraProjects, CobraWhiteList
 from app.models import CobraResults, CobraRules, CobraVuls
 from engine.core import Core
+from engine.dependency import Dependency
 from pickup.git import Git
 from app import db
 from utils.log import logging
 
 logging = logging.getLogger(__name__)
+
 
 class Repair(Command):
     """
@@ -53,6 +55,13 @@ class Repair(Command):
             CobraResults.project_id == pid,
             CobraResults.status < 2
         ).all()
+
+        logging.info('Analysis dependencies...')
+        dependencies = Dependency().list(project_directory)
+        logging.info('Dependencies count: {0}'.format(len(dependencies)))
+        for k, d in dependencies.items():
+            logging.info(' > {0}:{1} {2}'.format(d['groupId'], d['artifactId'], d['version']))
+
         for index, (rule, result) in enumerate(result_all):
             # Rule
             result_info = {
@@ -73,4 +82,4 @@ class Repair(Command):
             if ws is not None:
                 for w in ws:
                     white_list.append(w.path)
-            Core(result_info, rule, project_info.name, white_list).repair()
+            Core(result_info, rule, project_info.name, white_list).repair(dependencies)
