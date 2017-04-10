@@ -11,6 +11,8 @@
 
 ---
 
+> ⚠️ At present, there is no scan rule in this version, the scanning rules will be in a recent version of the open source.
+
 ## Introduction
 Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
 
