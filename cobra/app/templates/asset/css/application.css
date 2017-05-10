@@ -1,0 +1,32 @@
+/* global body padding */
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    body {
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+}
+
+/* global spacing overrides */
+h1, h2, h3, h4, h5, h6,
+.a, .b, .c, .d, .e, .f {
+    margin-top: 0;
+}
+
+hr {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.g,
+.h {
+    border-bottom: 0;
+}
+
+.chart {
+    background: transparent !important;
+}

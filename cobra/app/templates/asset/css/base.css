@@ -1,0 +1,17 @@
+@import url("bootstrap.css"); 						        								/* Main Bootstrap */
+@import url("animate.min.css");															/* Animate On Page Scroll */
+@import url("style.css");																		/* Main theme styles */
+@import url("menu.css");																		/* Menu styles */
+@import url("responsive.css");																/* Responsive */
+
+/*
+How to change colors
+1) uncomment one of the color variation below
+2) rename the color variation logo img inside the img folder to match the default logo file name (logo.png/logo_sticky.png), this avoid to change the logo file name in every page.
+
+DONE!
+*/
+
+/* @import url("color-aqua.css");					 	 Color variation aqua */
+/* @import url("color-orange.css");					  Color variation Orange */
+/* @import url("color-green.css");					     Color variation Green */

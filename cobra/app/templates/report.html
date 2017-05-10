@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="ie ie8"> <![endif]-->
+<!--[if IE 9]><html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Cobra is a code static scan system">
+    <meta name="author" content="Feei <feei@feei.cn>">
+    <title>Project({{ data.project_info.name | upper }}) code security report - {{ data.project_id }}</title>
+
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
+
+    <!-- CSS -->
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/report.css') }}" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+      <script src="js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="invoice-title">
+                <h2>Cobra</h2>
+                <h3 class="pull-right">{{ data.project_info.name | upper }} # {{ data.project_id }}</h3>
+            </div>
+            <hr>
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-id="inf" data-toggle="tab">Information</a></li>
+                <li><a data-id="vul" data-toggle="tab">Vulnerabilities</a></li>
+                <li><a data-id="ext" data-toggle="tab">Extensions</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="inf">
+                    <div class="row">
+                        <div class="col-md-4 column">
+                            <h4>Welcome to Cobra!</h4>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <address>
+                                        <h5>Project information</h5>
+                                        <table class="table table-striped table-bordered table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>Name</td>
+                                                <td>{{ data.project_info.name }} (@{{ data.project_info.author }})</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Domain</td>
+                                                <td>{{ data.project_info.url|default('Unknown URL', True) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Framework</td>
+                                                <td>{{ data.project_info.framework|default('Unknown Framework', True) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Repository</td>
+                                                <td>{{ data.project_info.repository }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </address>
+                                </div>
+                                <div class="col-xs-12">
+                                    <address>
+                                        <h5>Scan information</h5>
+                                        <table class="table table-striped table-bordered table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>Report time</td>
+                                                <td>{{ data.task_info.created_at }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Scan time</td>
+                                                <td>{{ data.task_time.time_start }} - {{ data.task_time.time_end }} ({{ data.task_time.time_consume }})</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total number of files</td>
+                                                <td>{{ data.file_count }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total number of codes</td>
+                                                <td>{{ data.code_number }} lines</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </address>
+                                </div>
+                                <div class="col-xs-12">
+                                    <address>
+                                        <h5>Number of vulnerabilities</h5>
+                                        <table class="table table-striped table-bordered table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th>Level</th>
+                                                <th>Not fixed</th>
+                                                <th>Fixed</th>
+                                                <th>Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="n-o-v">
+                                            <tr>
+                                                <td>High</td>
+                                                <td>{{ data.vuls_number.unrepair.high }}</td>
+                                                <td>{{ data.vuls_number.repaired.high }}</td>
+                                                <td>{{ data.vuls_number.total_number.high }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Medium</td>
+                                                <td>{{ data.vuls_number.unrepair.medium }}</td>
+                                                <td>{{ data.vuls_number.repaired.medium }}</td>
+                                                <td>{{ data.vuls_number.total_number.medium }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Low</td>
+                                                <td>{{ data.vuls_number.unrepair.low }}</td>
+                                                <td>{{ data.vuls_number.repaired.low }}</td>
+                                                <td>{{ data.vuls_number.total_number.low }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total</td>
+                                                <td>{{ data.vuls_number.result_number.unrepair_result_number }}</td>
+                                                <td>{{ data.vuls_number.result_number.repaired_result_number }}</td>
+                                                <td>{{ data.vuls_number.result_number.scan_result_number }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </address>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 column">
+                            <h4>Vulnerability distribution statistics</h4>
+                            {% if data.need_scan == False %}
+                                <h3 style="margin: 200px;">The project is deprecated :(</h3>
+                            {% else %}
+                                <div id="vul_distributing" style="height:400px;">
+                                    {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
+                                        <img src="/asset/img/congratulations.jpg" class="congratulations" alt="">
+                                        <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no vulnerability was detected :)</h3>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div><!-- End row -->
+                </div><!-- End rab -->
+                <div class="tab-pane" id="vul">
+                    <div class="row">
+                        <div class="col-md-3 p0">
+                            <div id="panel-2" class="vl_panel"><strong>Vulnerabilities</strong><a title="Setting vulnerabilities filter" class="cog-panel filter_setting"><img class="icon" src="{{ url_for('static', filename='icon/funnel.png') }}" alt="1"></a></div>
+                            <div class="filter">
+                                <div class="col-md-12">
+                                    <label for="search_task" style="color: #aaaaaa;">Scan job</label>
+                                    <select id="search_task" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for t in data.tasks %}
+                                            <option value="{{ t.id }}">{{ t.id }}. {{ t.updated_at }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="search_status" style="color: #aaaaaa;">Status</label>
+                                    <select id="search_status" class="form-control" style="height: 30px;">
+                                        {% for s in data.vuls_status %}
+                                            <option value="{{ s.value }}"
+                                                    {% if s.value == data.search_status_type %}selected{% endif %}>
+                                                {{ s.status }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_vul_type" style="color: #aaaaaa;">Types</label>
+                                    <select id="search_vul_type" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for vul in data.select_vul_type %}
+                                            <option value="{{ vul[1] }}">{{ vul[0] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px">
+                                    <label for="search_rule" style="color: #aaaaaa;">Rule</label>
+                                    <select id="search_rule" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        {% for rule in data.select_rule_type %}
+                                            <option value="{{ rule[1] }}">{{ rule[0] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_level" style="color: #aaaaaa;">Level</label>
+                                    <select id="search_level" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        <option value="3">High</option>
+                                        <option value="2">Medium</option>
+                                        <option value="1">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="padding:20px 30%">
+                                    <button class="btn btn-success filter_btn" style="">Summit filter</button>
+                                </div>
+                            </div>
+                            <ul class="vulnerabilities_list scroll">
+
+                            </ul>
+                        </div>
+                        <div class="col-md-9 p0 form_code">
+                            <textarea id="code"><?php // This is a demo code</textarea>
+                                <div class="cm-loading" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="ext">
+                    <div class="row">
+                        <div class="col-md-12 column">
+                            <h4>Extensions distribution statistics</h4>
+                            <div id="ext_distributing">
+
+                            </div>
+                        </div>
+                    </div><!-- End row -->
+                </div><!-- End rab -->
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- Containers -->
+    <div class="row">
+        <div class="col-md-6">
+            <div>
+                <p style="float:left;">
+                    Copyright &copy; 2017 <a href="https://github.com/wufeifei/cobra" target="_blank">Cobra</a>. All rights reserved
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <p style="float:right;">
+                    <a href="https://github.com/wufeifei/cobra" target="_blank">Github</a> -
+                    <a href="http://cobra-docs.readthedocs.io/" target="_blank">Documents</a> -
+                    <a href="http://cobra.feei.cn/" target="_blank">About</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="project_id" value="{{ data.project_id }}">
+    <input type="hidden" name="task_id" value="{{ data.task_id }}">
+    <input type="hidden" name="need_scan" value="{{ data.need_scan }}">
+    <input type="hidden" name="rule_id" value="">
+    <input type="hidden" name="vid" value="">
+    <input type="hidden" name="vulnerability_path" value="">
+    <div class="widget-list">
+        <ul class="widget-trigger">
+            <li>
+                <img class="icon" src="{{ url_for('static', filename='icon/v-card.png') }}" alt="Commit Author"> <span class="commit-author"></span> <img class="icon" src="{{ url_for('static', filename='icon/calendar.png') }}" alt="Commit Time"> <span class="commit-time"></span>
+            </li>
+            <li>
+                Status: <span class="v-status"></span> (<span class="v-repair"></span>)
+            </li>
+            <li>
+                Level: <span class="v-level"></span> <span class="v-type"></span> - <span class="v-rule"></span> By <span class="v-rule-author"></span>
+            </li>
+            <li>
+                Repair AT: <span class="v-repair-time"></span> Repair: <span class="v-repair-description"></span>
+            </li>
+            <li class="hidden">
+                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank: <span></span> Bounty: <span></span>
+            </li>
+            <li>
+                {% if data.is_login %}
+                    <button class="btn btn-info btn-xs mistake">Mistake</button>
+                    <button class="btn btn-danger btn-xs delete">Delete</button>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+    <img class="icon exit-full-screen" src="{{ url_for('static', filename='icon/resize-100.png') }}" alt="Full screen">
+    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <!-- CodeMirror START -->
+    <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/theme/material.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/dialog/dialog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/search/matchesonscrollbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/scroll/simplescrollbars.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/display/fullscreen.css') }}">
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldcode.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/markdown-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/comment-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/xml-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/brace-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/placeholder.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/fullscreen.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/panel.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/edit/matchbrackets.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/edit/matchtags.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/dialog/dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/searchcursor.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/scroll/annotatescrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/matchesonscrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/jump-to-line.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/match-highlighter.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/scroll/simplescrollbars.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/selection/active-line.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/markdown/markdown.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/yaml/yaml.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/php/php.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/python/python.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/ruby/ruby.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/perl/perl.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/lua/lua.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/go/go.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/cmake/cmake.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/shell/shell.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/sql/sql.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/clike/clike.js') }}"></script>
+    <!-- CodeMirror END -->
+    <script src="{{ url_for('static', filename='js/report.js') }}" charset="utf-8"></script>
+    <script>
+        var types = [];
+        var vuls = [];
+        {% for chart_vuls in data.chart_vuls_number %}
+            types.push('{{ chart_vuls.vuls_name }}');
+            vuls.push({value: {{ chart_vuls.vuls_number }}, name: '{{ chart_vuls.vuls_name }}'});
+        {% endfor %}
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: types
+            },
+            series: [
+                {
+                    name: 'Vulnerability hazard ratio',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    radius: [0, '30%'],
+                    label: {
+                        normal: {
+                            position: 'inner'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: [
+                        {%  if data.vuls_number.total_number.high != 0 %}
+                            {value: {{ data.vuls_number.total_number.high }}, name: 'High', selected: true},
+                        {% endif %}
+                        {%  if data.vuls_number.total_number.medium != 0 %}
+                            {value: {{ data.vuls_number.total_number.medium }}, name: 'Medium'},
+                        {% endif %}
+                        {%  if data.vuls_number.total_number.low != 0 %}
+                            {value: {{ data.vuls_number.total_number.low }}, name: 'Low'},
+                        {% endif %}
+                        {%  if data.vuls_number.total_number.unknown != 0 %}
+                            {value: {{ data.vuls_number.total_number.unknown }}, name: 'Undefined'}
+                        {% endif %}
+                    ]
+                },
+                {
+                    name: 'Vulnerability type accounting',
+                    type: 'pie',
+                    radius: ['40%', '55%'],
+                    data: vuls
+                }
+            ]
+        };
+        {% if data.vuls_number.result_number.unrepair_result_number != 0 and data.need_scan != False%}
+            var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+            vul_distributing.setOption(option);
+        {% endif %}
+    </script>
+</div>
+</body>
+</html>
+

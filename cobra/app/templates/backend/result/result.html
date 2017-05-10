@@ -1,0 +1,106 @@
+{% extends "backend/common/layout.html" %}
+{% block result_active %}active{% endblock %}
+{% block nav_first %}Dashboards{% endblock %}
+{% block nav_second %}Results{% endblock %}
+{% block body %}
+    <div class="akg ue">
+        <div class="akh aki">
+            <div class="tn aol">
+                <select class="form-control" name="projects">
+                    <option value="0">All projects</option>
+                    {% for item in data.projects %}
+                        <option value="{{ item.id }}" {% if data.pid == item.id %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="tn aol">
+                <select class="form-control" name="vulnerabilities_types">
+                    <option value="0">All vulnerability types</option>
+                    {% for vid, item in data.vulnerability_types.items() %}
+                        <option disabled value="{{ vid }}">{{ item.name }} (Count: {{ item.count }})</option>
+                        {% for rule in item.rules %}
+                            <option value="{{ rule.id }}" data-id="{{ vid }}" {% if data.rid == rule.id %}selected{% endif %}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|- {{ rule.name }}</option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="ud">
+        <div class="eg">
+            <table class="cl" data-sort="table">
+                <thead>
+                <tr>
+                    <th>VID</th>
+                    <th>Rule</th>
+                    <th>File</th>
+                    <th>Status</th>
+                    <th>Update time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if data.total == 0 %}
+                    <tr>
+                        <td>No one</td>
+                    </tr>
+                {% endif %}
+                {% for item in data.results %}
+                    <tr>
+                        <td><a href="http://{{ data.domain }}/report/{{ item.project_id }}?t=vul&sr={{ item.rule_id }}&vid={{ item.id }}" target="_blank">{{ item.id }}</a></td>
+                        <td data-id="{{ item.rule_id }}">{{ item.description }}</td>
+                        <td style="max-width: 40%;overflow: hidden;">{{ item.file }}:{{ item.line }}</td>
+                        <td align="center">
+                            {% if item.status == 0 %}
+                                Not Fixed
+                            {% elif item.status == 1 %}
+                                Not Fixed(Pushed)
+                            {% elif item.status == 2 %}
+                                Fixed
+                            {% endif %}
+                        </td>
+                        <td>{{ item.updated_at }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="db" id="paginate"></div>
+    <input type="hidden" name="page" value="{{ data.page }}">
+{% endblock %}
+{% block scripts %}
+    <script>
+        var main = {
+            page: function () {
+                return $('input[name=page]').val();
+            },
+            pid: {{ data.pid }},
+            init: function () {
+                // pagination
+                make_pagination('{{ data.page }}', '{{ data.total }}');
+
+                $("select[name=projects]").on('change', function () {
+                    main.pid = $(this).val();
+                    window.location.href = '/admin/result/{{ data.page }}/' + main.pid;
+                });
+
+                $("select[name=vulnerabilities_types]").on('change', function () {
+                    var rid = $(this).val();
+                    var vtid = $("select[name=vulnerabilities_types] option:selected").attr('data-id');
+                    if (typeof vtid === 'undefined') {
+                        vtid = $(this).val();
+                        rid = '';
+                    }
+                    if (rid === '') {
+                        window.location.href = '/admin/result/{{ data.page }}/' + main.pid + '/' + vtid;
+                    } else {
+                        window.location.href = '/admin/result/{{ data.page }}/' + main.pid + '/' + vtid + '/' + rid;
+                    }
+                });
+            }
+        };
+        $(document).ready(function () {
+            main.init();
+        });
+    </script>
+{% endblock %}
