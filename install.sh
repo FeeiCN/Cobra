@@ -75,6 +75,8 @@ main() {
   export COBRA=$COBRA
   " ~/.cobrarc > ~/.cobrarc-temp
   mv -f ~/.cobrarc-temp ~/.cobrarc
+  # Symbolic link
+  ln -sf $COBRA/cobra.py /usr/loca/bin/cobra
 
   printf "${GREEN}"
   echo 'Successful installation! :-D'
