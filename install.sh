@@ -26,15 +26,8 @@ main() {
   # which may fail on systems lacking tput or terminfo
   set -e
 
-  CHECK_INSTALLED=$(grep /zsh$ /etc/shells | wc -l)
-  if [ ! $CHECK_INSTALLED -ge 1 ]; then
-    printf "${YELLOW}Cobra is not installed!${NORMAL} Please install Cobra first!\n"
-    exit
-  fi
-  unset CHECK_INSTALLED
-
   if [ ! -n "$COBRA" ]; then
-    COBRA=~/.cobra
+    COBRA=/usr/local/bin/cobra
   fi
 
   if [ -d "$COBRA" ]; then
@@ -63,7 +56,7 @@ main() {
       exit 1
     fi
   fi
-  env git clone --depth=1 https://github.com/wufeifei/cobra.git $COBRA || {
+  env git clone --depth=1 -b beta https://github.com/wufeifei/cobra.git $COBRA || {
     printf "Error: git clone of Cobra repo failed\n"
     exit 1
   }
@@ -84,17 +77,16 @@ main() {
   mv -f ~/.cobrarc-temp ~/.cobrarc
 
   printf "${GREEN}"
-
+  echo 'Successful installation! :-D'
   echo ',---.     |              '
   echo '|    ,---.|---.,---.,---.'
   echo '|    |   ||   ||    ,---|'
   echo '`---``---``---``    `---^  v'$VERSION
   echo ''
-  echo ''
-  echo ' Config: ~/.cobrarc'
-  echo ''
-  echo ' Homepage: https://github.com/wufeifei/cobra'
-  echo ''
+  echo ' Config file: ~/.cobrarc'
+  echo ' GitHub Page: https://github.com/wufeifei/cobra'
+  echo ' Documents  : https://cobra-docs.readthedocs.io'
+  echo ' Usage      : cobra --help'
   printf "${NORMAL}"
 }
 
