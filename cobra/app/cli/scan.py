@@ -19,7 +19,7 @@ from flask_script import Command, Option
 from cobra.app.models import CobraTaskInfo
 from cobra.app import db
 from cobra.utils.log import logging
-from scheduler import scan
+from cobra.scheduler import scan
 
 logging = logging.getLogger(__name__)
 

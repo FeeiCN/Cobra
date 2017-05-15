@@ -13,7 +13,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 from flask_script import Command, Option
-from scheduler import report
+from cobra.scheduler import report
 
 
 class Report(Command):
