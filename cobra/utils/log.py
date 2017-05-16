@@ -12,41 +12,37 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import logging.config
-from cobra.utils import config
+import sys
+import logging
+from logging import handlers
 
-logs_directory = config.Config('cobra', 'logs_directory').value
-logs_directory = os.path.join(config.Config().project_directory, logs_directory)
-if os.path.isdir(logs_directory) is not True:
-    os.mkdir(logs_directory)
-filename = os.path.join(logs_directory, 'cobra.log')
-logging.config.dictConfig({
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt': "%Y-%m-%d %H:%M:%S"
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'cloghandler.ConcurrentRotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 10,
-            'backupCount': 50,
-            'delay': True,
-            'filename': filename,
-            'formatter': 'verbose'
-        }
-    },
-    'loggers': {
-        '': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-        },
-    }
-})
+logger = logging.getLogger(__name__)
+
+
+def init_log():
+    logs_directory = os.path.join(os.path.expandvars(os.path.expanduser("~")), ".cobra")
+    if os.path.isdir(logs_directory) is not True:
+        os.mkdir(logs_directory)
+    logfile = os.path.join(logs_directory, 'cobra.log')
+    fh_format = logging.Formatter("[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s")
+    sh_format = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(message)s", "%H:%M:%S")
+
+    # stream handle
+    try:
+        from utils.csh import ColorizingStreamHandler
+
+        sh = ColorizingStreamHandler(sys.stdout)
+        sh.level_map[logging.getLevelName("PAYLOAD")] = (None, "cyan", False)
+        sh.level_map[logging.getLevelName("TRAFFIC OUT")] = (None, "magenta", False)
+        sh.level_map[logging.getLevelName("TRAFFIC IN")] = ("magenta", None, False)
+    except ImportError:
+        sh = logging.StreamHandler(sys.stdout)
+    sh.setFormatter(sh_format)
+    logger.addHandler(sh)
+
+    # file handle
+    fh = handlers.RotatingFileHandler(logfile, maxBytes=(1048576 * 5), backupCount=7)
+    fh.setFormatter(fh_format)
+    logger.addHandler(fh)
+    logger.setLevel(logging.INFO)
+    return logger, logging

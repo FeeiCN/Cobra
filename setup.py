@@ -15,7 +15,6 @@
 import codecs
 import re
 import os
-import setuptools
 import setuptools.command.test
 
 NAME = 'cobra'
