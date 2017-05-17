@@ -2,11 +2,11 @@ import socket
 import errno
 from flask import Flask
 from flask_restful import Api
-from .controller import *
-from utils.log import logger
+from cobra.app.api.controller import *
+from cobra.utils.log import logger
 
 
-def start(debug, host, port):
+def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
     app = Flask(__name__)
     api = Api(app)

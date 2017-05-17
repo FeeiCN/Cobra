@@ -17,9 +17,9 @@ import zipfile
 import tarfile
 import rarfile
 from cobra.utils import config
-from cobra.utils.log import logging
+from cobra.utils.log import logger
 
-logging = logging.getLogger(__name__)
+support_extensions = ['.zip', '.rar', '.tgz', '.tar', '.gz']
 
 
 class Decompress(object):
@@ -81,7 +81,7 @@ class Decompress(object):
         for filename in os.listdir(directory):
             directory_path = os.path.join(directory, filename)
             file_count += 1
-        logging.info("Decompress path count: {0}, directory path: {1}".format(file_count, directory_path))
+        logger.info("Decompress path count: {0}, directory path: {1}".format(file_count, directory_path))
         if file_count == 1 and os.path.isdir(directory_path):
             return directory_path
         else:

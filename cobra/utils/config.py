@@ -15,6 +15,10 @@ import os
 import StringIO
 import ConfigParser
 import traceback
+from cobra.utils.log import logger
+
+home_path = os.path.join(os.path.expandvars(os.path.expanduser("~")), ".cobra")
+config_path = os.path.join(home_path, 'config')
 
 
 class Config(object):
@@ -26,8 +30,7 @@ class Config(object):
             return
         config = ConfigParser.ConfigParser()
 
-        config_file = os.path.join(self.project_directory, 'config')
-        config.read(config_file)
+        config.read(config_path)
         value = None
         try:
             value = config.get(level1, level2)
@@ -36,6 +39,16 @@ class Config(object):
             traceback.print_exc()
             print("./configs file configure failed.\nError: {0}\nSee Help: http://cobra-docs.readthedocs.io/en/latest/configuration/".format(e.message))
         self.value = value
+
+    @staticmethod
+    def initialize():
+        if os.path.isfile(config_path) is not True:
+            logger.info('Not set configuration, setting....')
+            with open('config.template') as f:
+                content = f.readlines()
+            with open(config_path, 'w+') as f:
+                f.writelines(content)
+            logger.info('Config file set success(~/.cobra/config)')
 
 
 def properties(config_path):

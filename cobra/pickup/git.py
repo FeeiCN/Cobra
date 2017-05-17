@@ -17,10 +17,8 @@ import os
 import re
 import subprocess
 from urllib import quote
-from cobra.utils import config
-from cobra.utils.log import logging
-
-logging = logging.getLogger(__name__)
+from cobra.utils.config import home_path, Config
+from cobra.utils.log import logger
 
 
 class GitError(Exception):
@@ -73,7 +71,7 @@ class Git(object):
     def __init__(self, repo_address, branch='master', username=None, password=None):
 
         # get upload directory
-        self.upload_directory = os.path.join(config.Config('upload', 'directory').value, 'versions')
+        self.upload_directory = os.path.join(home_path, 'versions')
         if os.path.isdir(self.upload_directory) is False:
             os.makedirs(self.upload_directory)
 
@@ -88,25 +86,23 @@ class Git(object):
 
         self.repo_directory = os.path.join(os.path.join(self.upload_directory, repo_user), repo_name)
 
-        logging.info('Git class init.')
-
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-        logging.info('Start Pull Repo...')
+        logger.info('pull repository...')
 
         if not self.__check_exist():
             return False, 'No local repo exist. Please clone first.'
 
         # change work directory to the repo
         repo_dir = self.repo_directory
-        logging.debug('cd directory: {0}'.format(repo_dir))
+        logger.debug('cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
         cmd = 'git pull origin master'
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
-        logging.info(pull_out)
-        logging.info(pull_err)
+        logger.info(pull_out)
+        logger.info(pull_err)
 
         self.parse_err(pull_err)
 
@@ -116,7 +112,7 @@ class Git(object):
         os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-            logging.info('Pull done.')
+            logger.info('pull done.')
             return True, None
         else:
             return False, pull_err
@@ -125,9 +121,9 @@ class Git(object):
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-        logging.info('Start Clone Repo...')
+        logger.info('clone repository...')
         if self.__check_exist():
-            logging.info('Repo Already Exist. Start Pull.')
+            logger.info('repository already exist.')
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
 
@@ -146,14 +142,14 @@ class Git(object):
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
-        logging.info(clone_out)
-        logging.info(clone_err)
+        logger.info(clone_out)
+        logger.info(clone_err)
 
         self.parse_err(clone_err)
 
         clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
-        logging.info('clone done. Switching to branch ' + self.repo_branch)
+        logger.info('clone done. Switching to branch ' + self.repo_branch)
         # check out to special branch
         if self.checkout(self.repo_branch):
             return True, None
@@ -169,7 +165,7 @@ class Git(object):
         :return: the diff result in str, raw or formatted.
         """
         if not self.__check_exist():
-            logging.info('No local repo exist. Please clone it first.')
+            logger.info('No local repo exist. Please clone it first.')
             return False
 
         # change the work directory to the repo.
@@ -180,11 +176,11 @@ class Git(object):
         cmd = 'git diff ' + old_version + ' ' + new_version
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
-        logging.info(diff_out)
+        logger.info(diff_out)
 
         # change the work directory back.
         os.chdir(current_dir)
-        logging.info('diff done.')
+        logger.info('diff done.')
         if raw_output:
             return diff_out
         else:
@@ -198,7 +194,7 @@ class Git(object):
                  False-checkout failed. Maybe no branch name.
         """
         if not self.__check_exist():
-            logging.info('No repo directory.')
+            logger.info('No repo directory.')
             return False
 
         current_dir = os.getcwd()
@@ -207,7 +203,7 @@ class Git(object):
         cmd = "git checkout " + branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
-        logging.info(checkout_err)
+        logger.info(checkout_err)
 
         # Already on
         # did not match
@@ -260,7 +256,7 @@ class Git(object):
         :return:
         """
         if self.__check_exist():
-            logging.info('repo already exist. Try to pull the repo')
+            logger.info('repo already exist. Try to pull the repo')
             return self.pull()
         else:
             return self.clone()
@@ -278,7 +274,7 @@ class Git(object):
     def committer(file, path, line_number, length=1):
         """
         git blame -L21,+1 -- git.py
-        362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logging.getLogger(__name__)
+        362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logger.getLogger(__name__)
         (?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})
         group #1: wufeifei
         group #2: 2016-09-10 12:19:44

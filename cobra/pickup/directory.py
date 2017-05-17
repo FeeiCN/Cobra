@@ -13,11 +13,7 @@
 """
 import time
 import os
-from cobra.utils.log import logging
-from cobra.app.models import CobraExt
-from cobra.app import db
-
-logging = logging.getLogger(__name__)
+from cobra.utils.log import logger
 
 
 class Directory(object):
@@ -31,12 +27,12 @@ class Directory(object):
 
     def files(self, directory, level=1):
         if level == 1:
-            logging.debug(directory)
+            logger.debug(directory)
         for filename in os.listdir(directory):
             path = os.path.join(directory, filename)
 
             # Directory Structure
-            # logging.debug('|  ' * (level - 1) + '|--' + filename)
+            # logger.debug('|  ' * (level - 1) + '|--' + filename)
             if os.path.isdir(path):
                 self.files(path, level + 1)
             if os.path.isfile(path):
@@ -47,13 +43,13 @@ class Directory(object):
                 path = path.replace(self.path, '')
                 self.file.append(path)
                 self.file_id += 1
-                logging.debug("{0}, {1}".format(self.file_id, path))
+                logger.debug("{0}, {1}".format(self.file_id, path))
 
     """
     :return {'file_nums': 50, 'collect_time': 2, '.php': {'file_count': 2, 'file_list': ['/path/a.php', '/path/b.php']}}
     """
 
-    def collect_files(self, task_id=None):
+    def collect_files(self):
         t1 = time.clock()
         self.files(self.path)
         self.result['no_extension'] = {'file_count': 0, 'file_list': []}
@@ -61,11 +57,7 @@ class Directory(object):
             extension = extension.strip()
             self.result[extension] = {'file_count': len(values), 'file_list': []}
             # .php : 123
-            logging.debug('{0} : {1}'.format(extension, len(values)))
-            if task_id is not None:
-                # Store
-                ext = CobraExt(task_id, extension, len(values))
-                db.session.add(ext)
+            logger.debug('{0} : {1}'.format(extension, len(values)))
             for f in self.file:
                 es = f.split(os.extsep)
                 if len(es) >= 2:
@@ -77,8 +69,6 @@ class Directory(object):
                     # Didn't have extension
                     self.result['no_extension']['file_count'] = int(self.result['no_extension']['file_count']) + 1
                     self.result['no_extension']['file_list'].append(f)
-        if task_id is not None:
-            db.session.commit()
         t2 = time.clock()
         self.result['file_nums'] = self.file_id
         self.result['collect_time'] = t2 - t1

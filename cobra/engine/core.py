@@ -16,13 +16,8 @@ import re
 import traceback
 from cobra.engine import parse
 from cobra.pickup.file import File
-from cobra.app.models import CobraResults
-from cobra.app import db
-from cobra.utils.queue import Queue
 from cobra.utils.config import Config
-from cobra.utils.log import logging
-
-logging = logging.getLogger(__name__)
+from cobra.utils.log import logger
 
 
 class Core(object):
@@ -90,15 +85,15 @@ class Core(object):
         if test:
             self.data.append('[{0}] {1}'.format(level.upper(), message))
         if level == 'critical':
-            logging.critical(message)
+            logger.critical(message)
         elif level == 'warning':
-            logging.warning(message)
+            logger.warning(message)
         elif level == 'info':
-            logging.info(message)
+            logger.info(message)
         elif level == 'debug':
-            logging.debug(message)
+            logger.debug(message)
         elif level == 'error':
-            logging.error(message)
+            logger.error(message)
 
     def is_white_list(self):
         """
@@ -182,8 +177,9 @@ class Core(object):
         try:
             status = Config('third_party_vulnerabilities', 'status').value
             if int(status):
-                q = Queue(self.project_name, self.third_party_vulnerabilities_name, self.third_party_vulnerabilities_type, self.file_path, self.line_number, self.code_content, vulnerabilities_id)
-                q.push()
+                pass
+                # q = Queue(self.project_name, self.third_party_vulnerabilities_name, self.third_party_vulnerabilities_type, self.file_path, self.line_number, self.code_content, vulnerabilities_id)
+                # q.push()
         except Exception as e:
             traceback.print_exc()
             self.log('critical', e.message)
@@ -367,11 +363,11 @@ class Core(object):
         Their repair method is only one: delete the file
         """
         if self.rule_location == '' or self.line_number == 0:
-            logging.info("Find special files: RID{0}".format(self.rule_id))
+            logger.info("Find special files: RID{0}".format(self.rule_id))
             # Check if the file exists
             if os.path.isfile(self.file_path) is False:
                 # If the file is not found, the vulnerability state is fixed
-                logging.info("Deleted file repair is complete {0}".format(self.file_path))
+                logger.info("Deleted file repair is complete {0}".format(self.file_path))
                 self.status = self.status_fixed
                 self.repair_code = self.repair_code_not_exist_file
                 self.process_vulnerabilities()
@@ -421,7 +417,7 @@ class Core(object):
         # Remove the trigger code (actual file)
         trigger_code = File(self.file_path).lines("{0}p".format(self.line_number))
         if trigger_code is False:
-            logging.critical("Failed to fetch the trigger code {0}".format(self.code_content))
+            logger.critical("Failed to fetch the trigger code {0}".format(self.code_content))
             self.status = self.status_fixed
             self.repair_code = self.repair_code_empty_code
             self.process_vulnerabilities()
@@ -434,7 +430,7 @@ class Core(object):
             self.status = self.status_fixed
             self.repair_code = self.repair_code_whitelist
             self.process_vulnerabilities()
-            logging.info("In white list {0}".format(self.file_path))
+            logger.info("In white list {0}".format(self.file_path))
             return
 
         # Special file
@@ -442,7 +438,7 @@ class Core(object):
             self.status = self.status_fixed
             self.repair_code = self.repair_code_special_file
             self.process_vulnerabilities()
-            logging.info("Special File: {0}".format(self.file_path))
+            logger.info("Special File: {0}".format(self.file_path))
             return
 
         # Annotation
@@ -450,7 +446,7 @@ class Core(object):
             self.status = self.status_fixed
             self.repair_code = self.repair_code_annotation
             self.process_vulnerabilities()
-            logging.info("In Annotation {0}".format(self.code_content))
+            logger.info("In Annotation {0}".format(self.code_content))
             return
 
         # Modify
@@ -466,15 +462,15 @@ class Core(object):
             try:
                 parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                 if parse_instance.is_repair(self.rule_repair, self.block_repair):
-                    logging.info("Static: repaired")
+                    logger.info("Static: repaired")
                     # Fixed
                     self.status = self.status_fixed
                     self.repair_code = self.repair_code_fixed
                     self.process_vulnerabilities()
                     return
                 else:
-                    logging.critical("[repair] not fixed")
+                    logger.critical("[repair] not fixed")
                     return
             except:
-                logging.info(traceback.print_exc())
+                logger.info(traceback.print_exc())
                 return

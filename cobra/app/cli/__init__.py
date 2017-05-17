@@ -1,17 +1,32 @@
+# -*- coding: utf-8 -*-
+
+"""
+    app.cli
+    ~~~~~~~
+
+    Implements app cli
+
+    :author:    Feei <feei@feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 import os
 import re
-from utils.log import logger
+from cobra.utils.log import logger
+from cobra.engine.static import Static
 
 TARGET_MODE_GIT = 'git'
 TARGET_MODE_FILE = 'file'
 TARGET_MODE_FOLDER = 'folder'
+TARGET_MODE_COMPRESS = 'compress'
 
 OUTPUT_MODE_MAIL = 'mail'
 OUTPUT_MODE_API = 'api'
 OUTPUT_MODE_FILE = 'file'
 
 
-def start(target, format, output, rule, exclude, debug):
+def start(target, format, output, rule, exclude):
     """
     Start CLI
     :param target: File, FOLDER, GIT
@@ -19,10 +34,9 @@ def start(target, format, output, rule, exclude, debug):
     :param output:
     :param rule:
     :param exclude:
-    :param debug:
     :return:
     """
-    # target mode
+    # target mode(git/folder/file)
     target_mode = None
     target_git_cases = ['http://', 'https://', 'ssh://']
     for tgc in target_git_cases:
@@ -36,9 +50,9 @@ def start(target, format, output, rule, exclude, debug):
     if target_mode is None:
         logger.critical('<target> not support!')
         exit()
-    logger.info('Mode: {mode}'.format(mode=target_mode))
+    logger.info('Target Mode: {mode}'.format(mode=target_mode))
 
-    # output mode
+    # output mode(api/mail/file)
     output_mode = None
     output_mode_api = ['http', 'https']
     output_mode_mail = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
@@ -53,3 +67,34 @@ def start(target, format, output, rule, exclude, debug):
         logger.critical('<output> not support!')
         exit()
     logger.info('Output Mode: {mode}'.format(mode=output_mode))
+
+    if target_mode == TARGET_MODE_GIT:
+        from cobra.pickup.git import Git, NotExistError, AuthError
+        logger.info('GIT Project')
+        branch = 'master'
+        username = ''
+        password = ''
+        gg = Git(target, branch=branch, username=username, password=password)
+
+        # Git Clone Error
+        try:
+            clone_ret, clone_err = gg.clone()
+            if clone_ret is False:
+                logger.critical(4001, 'Clone Failed ({0})'.format(clone_err), gg)
+                exit()
+        except NotExistError:
+            logger.critical(4001, 'Repository Does not exist!', gg)
+            exit()
+        except AuthError:
+            logger.critical('Git Authentication Failed')
+            exit()
+        directory = gg.repo_directory
+    elif target_mode == TARGET_MODE_COMPRESS:
+        from cobra.pickup.compress import support_extensions, Decompress
+        extension = target.split('.')[-1]
+        if extension not in support_extensions:
+            logger.critical('Not support this compress extension: {extension}'.format(extension=extension))
+        directory = Decompress(target).decompress()
+
+    logger.info('target directory: {directory}'.format(directory=directory))
+

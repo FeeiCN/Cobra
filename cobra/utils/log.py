@@ -14,7 +14,7 @@ sh_format = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(message)s", "%H
 
 # stream handle
 try:
-    from utils.csh import ColorizingStreamHandler
+    from cobra.utils.csh import ColorizingStreamHandler
 
     sh = ColorizingStreamHandler(sys.stdout)
 except ImportError:
