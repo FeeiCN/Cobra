@@ -1,0 +1,306 @@
+{
+    "name": "Cobra Scan Rule File",
+    "url": "https://github.com/wufeifei/cobra",
+    "submit": "https://github.com/wufeifei/cobra/issues/new",
+    "vulnerabilities": {
+        "XSS": {
+            "name": {
+                "en": "Cross Site Scripting",
+                "cn": "跨站脚本"
+            },
+            "rules": [
+                {
+                    "name": "Reflect XSS",
+                    "description": {
+                        "en": "",
+                        "cn": "输出入参造成的反射型XSS"
+                    },
+                    "author": {
+                        "creator": "Feei <feei@feei.cn>",
+                        "contributor": "Lightless <root@lightless.me>"
+                    },
+                    "language": "PHP",
+                    "match": "(echo|print|print_r|exit|die|printf|vprintf).[^?>]*?\/s*(\/$_(?:POST|GET|REQUEST)\/[.*?\/]|SERVER\/[.?(?:REQUEST_URI|QUERY_STRING))",
+                    "repair": "",
+                    "level": "80",
+                    "status": "true",
+                    "test": "",
+                    "code": "filter"
+                }
+            ]
+        },
+        "SSRF": {
+            "name": {
+                "en": "Server Side Request Forge",
+                "cn": "服务端请求伪造"
+            },
+            "rules": [
+            ]
+        }
+    },
+    "languages": {
+        "PHP": {
+            "extensions": [
+                ".php",
+                ".php3",
+                ".php4",
+                ".php5"
+            ],
+            "frameworks": [
+                {
+                    "name": "WordPress",
+                    "code": "https://github.com/WordPress/WordPress",
+                    "rule": {
+                        "file": "wp-cron.php||wp-load.php",
+                        "folder": "wp-admin"
+                    }
+                },
+                {
+                    "name": "Joomla",
+                    "code": "https://github.com/joomla/joomla-cms",
+                    "rule": {
+                        "file": "/images/joomla_black.png",
+                        "folder": "layout/joomla"
+                    }
+                },
+                {
+                    "name": "Drupal",
+                    "code": "https://github.com/drupal/drupal",
+                    "rule": {
+                        "file": "core/lib/Drupal.php||core/scripts/drupal.sh",
+                        "folder": "core/lib/Drupal||core/tests/Drupal"
+                    }
+                },
+                {
+                    "name": "CodeIgniter",
+                    "code": "https://github.com/bcit-ci/CodeIgniter",
+                    "rule": {
+                        "file": "system/core/CodeIgniter.php||test/codeigniter/Setup_test.php||mocks/ci_testcase.php",
+                        "folder": "user_guide_src||tests/codeigniter"
+                    }
+                },
+                {
+                    "name": "ThinkPHP",
+                    "code": "https://github.com/top-think/thinkphp",
+                    "rule": {
+                        "file": "ThinkPHP/ThinkPHP.php",
+                        "folder": "ThinkPHP"
+                    }
+                },
+                {
+                    "name": "Laravel",
+                    "code": "https://github.com/laravel/laravel",
+                    "rule": {
+                        "file": "app/Http/Kernel.php||app/Console/Kernel.php||config/broadcasting.php",
+                        "folder": "database/migrations||storage/framework/testing"
+                    }
+                },
+                {
+                    "name": "Kohana",
+                    "code": "https://github.com/kohana/kohana",
+                    "rule": {
+                        "file": "system/classes/Kohana.php||modules/auth/config/auth.php||modules/codebench/config/codebench.php||modules/cache/config/cache.php",
+                        "folder": "modules/userguide||system/guide/kohanna||system/media/guide/kohana"
+                    }
+                },
+                {
+                    "name": "Yii",
+                    "code": "https://github.com/yiisoft/yii2",
+                    "rule": {
+                        "file": "framework/BaseYii.php||tests/framework/BaseYiiTest.php",
+                        "folder": "contrib/completion/bash||framework/web/migrations"
+                    }
+                },
+                {
+                    "name": "Symfony",
+                    "code": "https://github.com/symfony/symfony",
+                    "rule": {
+                        "file": "PropertyInfo/Type.php||FrameworkBundle/Client.php",
+                        "folder": "WebServerBundle/Command||BrowserKit/Tests||Config/DependencyInjection"
+                    }
+                },
+                {
+                    "name": "Phalcon",
+                    "code": "https://github.com/phalcon/cphalcon",
+                    "rule": {
+                        "file": "tests/_ci/phaIcon.ini||phaIcon/di.zep",
+                        "folder": "tests/_data/di||phaIcon/mvc/collection"
+                    }
+                },
+                {
+                    "name": "Slim",
+                    "code": "https://github.com/slimphp/Slim",
+                    "rule": {
+                        "file": "Exception/SlimException.php||MiddlewareAwareTrait.php",
+                        "folder": "Handlers/Strategies"
+                    }
+                },
+                {
+                    "name": "CakePHP",
+                    "code": "https://github.com/cakephp/cakephp",
+                    "rule": {
+                        "file": "Core/StaticConfigTrait.php||Routing/RequestActionTrait.php",
+                        "folder": "Core/Configure/Engine||Database/Dialect"
+                    }
+                }
+            ]
+        },
+        "JSP": [
+            ".jsp"
+        ],
+        "Java": [
+            ".java"
+        ],
+        "C": [
+            ".h",
+            ".c"
+        ],
+        "Python": [
+            ".py"
+        ],
+        "Ruby": [
+            ".rb"
+        ],
+        "Perl": [
+            ".pl"
+        ],
+        "Lua": [
+            ".lua"
+        ],
+        "Go": [
+            ".go"
+        ],
+        "Swift": [
+            ".swift"
+        ],
+        "C++": [
+            ".c",
+            ".cpp"
+        ],
+        "C#": [
+            ".cs"
+        ],
+        "Objective-C": [
+            ".h",
+            ".m"
+        ],
+        "Scale": [
+            ".sbt",
+            ".scale"
+        ],
+        "Ceylon": [
+            ".ceylon"
+        ],
+        "Kotlin": [
+            ".kt"
+        ],
+        "SHELL": [
+            ".sh"
+        ],
+        "BAT": [
+            ".bat"
+        ],
+        "JavaScript": [
+            ".js"
+        ],
+        "HTML": [
+            ".html",
+            ".htm",
+            ".phps",
+            ".phtml"
+        ],
+        "CSS": [
+            ".css",
+            ".less",
+            ".scss",
+            ".styl"
+        ],
+        "Image": [
+            ".jpg",
+            ".png",
+            ".bmp",
+            ".gif",
+            ".ico",
+            ".cur"
+        ],
+        "Font": [
+            ".eot",
+            ".otf",
+            ".svg",
+            ".ttf",
+            ".woff"
+        ],
+        "Conf": [
+            ".properties",
+            ".ini",
+            ".cfg",
+            ".yml",
+            ".xml",
+            ".iml",
+            ".spf",
+            ".manifest"
+        ],
+        "CMake": [
+            ".cmake",
+            ".cmake.in"
+        ],
+        "SQL": [
+            ".sql"
+        ],
+        "Compress": [
+            ".zip",
+            ".bak",
+            ".tar",
+            ".tar.gz",
+            ".rar"
+        ],
+        "EXE": [
+            ".exe"
+        ],
+        "LOG": [
+            ".log"
+        ],
+        "Text": [
+            ".txt",
+            ".text",
+            ".md",
+            ".rst"
+        ],
+        "Office": [
+            ".doc",
+            ".docx",
+            ".wps",
+            ".rtf",
+            ".csv",
+            ".xls",
+            ".ppt"
+        ],
+        "Media": [
+            ".mp3",
+            ".mp4",
+            ".swf",
+            ".flv"
+        ],
+        "Cert": [
+            ".p12",
+            ".crt",
+            ".key",
+            ".pfx",
+            ".csr"
+        ],
+        "Source": [
+            ".psd",
+            ".ai",
+            ".axure",
+            ".xmind"
+        ],
+        "Thumb": [
+            ".db"
+        ],
+        "GIT": [
+            ".pack",
+            ".idx",
+            ".sample"
+        ]
+    }
+}

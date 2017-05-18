@@ -14,7 +14,6 @@
 import os
 import re
 from cobra.utils.log import logger
-from cobra.engine.static import Static
 
 TARGET_MODE_GIT = 'git'
 TARGET_MODE_FILE = 'file'
@@ -88,13 +87,33 @@ def start(target, format, output, rule, exclude):
         except AuthError:
             logger.critical('Git Authentication Failed')
             exit()
-        directory = gg.repo_directory
+        target_directory = gg.repo_directory
     elif target_mode == TARGET_MODE_COMPRESS:
         from cobra.pickup.compress import support_extensions, Decompress
         extension = target.split('.')[-1]
         if extension not in support_extensions:
             logger.critical('Not support this compress extension: {extension}'.format(extension=extension))
-        directory = Decompress(target).decompress()
+        target_directory = Decompress(target).decompress()
+    elif target_mode == TARGET_MODE_FOLDER:
+        target_directory = target
+    elif target_mode == TARGET_MODE_FILE:
+        target_directory = target
+    else:
+        logger.critical('exception target mode ({mode})'.format(mode=target_mode))
+        exit()
 
-    logger.info('target directory: {directory}'.format(directory=directory))
+    logger.info('target directory: {directory}'.format(directory=target_directory))
+
+    # static analyse
+    from cobra.pickup import directory
+    files, file_count, time_consume = directory.Directory(target_directory).collect_files()
+    logger.info('static analyse\r\n > files count: `{files}`\r\n > time consume: `{consume}s`\r\n'.format(files=file_count, consume=time_consume))
+    from operator import itemgetter
+    files = sorted(files.items(), key=itemgetter(1), reverse=True)
+    for ext, f in files:
+        logger.debug('{ext} : {count}'.format(ext=ext, count=f['count']))
+        print(f['list'])
+    logger.debug('extensions count: {count}'.format(count=len(files)))
+
+    # main language
 

@@ -12,20 +12,22 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
+import json
 import StringIO
 import ConfigParser
 import traceback
 from cobra.utils.log import logger
 
 home_path = os.path.join(os.path.expandvars(os.path.expanduser("~")), ".cobra")
-config_path = os.path.join(home_path, 'config')
+config_path = os.path.join(home_path, 'config.cobra')
+rule_path = os.path.join(home_path, 'rule.cobra')
 
 
 class Config(object):
     def __init__(self, level1=None, level2=None):
         self.level1 = level1
         self.level2 = level2
-        self.project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+        self.project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
         if level1 is None and level2 is None:
             return
         config = ConfigParser.ConfigParser()
@@ -41,14 +43,35 @@ class Config(object):
         self.value = value
 
     @staticmethod
-    def initialize():
-        if os.path.isfile(config_path) is not True:
+    def copy(source, destination):
+        if os.path.isfile(destination) is not True:
             logger.info('Not set configuration, setting....')
-            with open('config.template') as f:
+            with open(source) as f:
                 content = f.readlines()
-            with open(config_path, 'w+') as f:
+            with open(destination, 'w+') as f:
                 f.writelines(content)
-            logger.info('Config file set success(~/.cobra/config)')
+            logger.info('Config file set success(~/.cobra/{source})'.format(source=source))
+        return
+
+    def initialize(self):
+        # ~/.cobra/config.cobra
+        source_config = os.path.join(self.project_directory, 'config.cobra')
+        self.copy(source_config, config_path)
+
+        # ~/.cobra/rule.cobra
+        destination_rule = os.path.join(self.project_directory, 'rule.cobra')
+        self.copy(destination_rule, rule_path)
+        return
+
+    def rule(self):
+        self.initialize()
+        try:
+            with open(rule_path) as f:
+                rules = json.load(f)
+            return rules
+        except Exception, v:
+            logger.critical(v.message)
+            return []
 
 
 def properties(config_path):

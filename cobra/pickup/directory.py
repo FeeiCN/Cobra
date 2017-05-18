@@ -46,16 +46,16 @@ class Directory(object):
                 logger.debug("{0}, {1}".format(self.file_id, path))
 
     """
-    :return {'file_nums': 50, 'collect_time': 2, '.php': {'file_count': 2, 'file_list': ['/path/a.php', '/path/b.php']}}
+    :return {'file_nums': 50, 'collect_time': 2, '.php': {'count': 2, 'list': ['/path/a.php', '/path/b.php']}}
     """
 
     def collect_files(self):
         t1 = time.clock()
         self.files(self.path)
-        self.result['no_extension'] = {'file_count': 0, 'file_list': []}
+        self.result['no_extension'] = {'count': 0, 'list': []}
         for extension, values in self.type_nums.items():
             extension = extension.strip()
-            self.result[extension] = {'file_count': len(values), 'file_list': []}
+            self.result[extension] = {'count': len(values), 'list': []}
             # .php : 123
             logger.debug('{0} : {1}'.format(extension, len(values)))
             for f in self.file:
@@ -64,12 +64,10 @@ class Directory(object):
                     # Exists Extension
                     # os.extsep + es[len(es) - 1]
                     if f.endswith(extension):
-                        self.result[extension]['file_list'].append(f)
+                        self.result[extension]['list'].append(f)
                 else:
                     # Didn't have extension
-                    self.result['no_extension']['file_count'] = int(self.result['no_extension']['file_count']) + 1
-                    self.result['no_extension']['file_list'].append(f)
+                    self.result['no_extension']['count'] = int(self.result['no_extension']['count']) + 1
+                    self.result['no_extension']['list'].append(f)
         t2 = time.clock()
-        self.result['file_nums'] = self.file_id
-        self.result['collect_time'] = t2 - t1
-        return self.result
+        return self.result, self.file_id, t2 - t1
