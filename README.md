@@ -51,7 +51,11 @@ White Hat can be customized private Cobra scanning rules, open source project co
 
 ## Test
 ```
+# TestCase Test
 $ pytest -v
+
+# TestCase Coverage
+$ py.test --cov cobra cobra/tests
 ```
 
 ## Beta version

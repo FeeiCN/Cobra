@@ -19,6 +19,18 @@ def test_read_exception():
     assert value is None
 
 
+def test_read():
+    pass
+
+
+def test_copy():
+    pass
+
+
+def test_initialize():
+    pass
+
+
 def test_read_normal():
     value = Config('upload', 'extensions').value
     assert 'rar' in value

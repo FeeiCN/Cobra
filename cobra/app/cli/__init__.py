@@ -67,6 +67,7 @@ def start(target, format, output, rule, exclude):
         exit()
     logger.info('Output Mode: {mode}'.format(mode=output_mode))
 
+    target_directory = None
     if target_mode == TARGET_MODE_GIT:
         from cobra.pickup.git import Git, NotExistError, AuthError
         logger.info('GIT Project')
@@ -116,4 +117,3 @@ def start(target, format, output, rule, exclude):
     logger.debug('extensions count: {count}'.format(count=len(files)))
 
     # main language
-

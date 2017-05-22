@@ -51,7 +51,8 @@ class Config(object):
             with open(destination, 'w+') as f:
                 f.writelines(content)
             logger.info('Config file set success(~/.cobra/{source})'.format(source=source))
-        return
+        else:
+            return
 
     def initialize(self):
         # ~/.cobra/config.cobra
