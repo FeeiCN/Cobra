@@ -12,116 +12,46 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
+from cobra.utils.config import Config
 from cobra.utils.log import logger
+from pip.req import parse_requirements
 
 
 class Framework(object):
-    def __init__(self, project_directory=None):
-        self.project_directory = project_directory
-        self.rules = [
-            {
-                'name': 'Kohana',
-                'language': 'PHP',
-                'site': 'http://kohanaframework.org/',
-                'source': 'https://github.com/kohana/kohana',
-                'rules': {
-                    'directory': 'system/guide/kohana',
-                    'file': 'system/config/userguide.php',
-                },
-                'public': '/public'
-            },
-            {
-                'name': 'Laravel',
-                'language': 'PHP',
-                'site': 'http://laravel.com/',
-                'source': 'https://github.com/laravel/laravel',
-                'rules': {
-                    'file': '/artisan'
-                }
-            },
-            {
-                'name': 'ThinkPHP',
-                'language': 'PHP',
-                'site': 'http://www.thinkphp.cn/',
-                'source': 'https://github.com/top-think/thinkphp',
-                'rules': {
-                    'file': '/ThinkPHP/ThinkPHP.php'
-                }
-            },
-            {
-                'name': 'CodeIgniter',
-                'language': 'PHP',
-                'site': 'https://codeigniter.com/',
-                'source': 'https://github.com/bcit-ci/CodeIgniter',
-                'rules': {
-                    'file': '/system/core/CodeIgniter.php'
-                }
-            },
-            {
-                'name': 'Tesla/MWP',
-                'language': 'Java',
-                'site': 'http://www.mogujie.com/',
-                'source': 'http://www.mogujie.com/',
-                'rules': {
-                    'file': '/pom.xml'
-                }
-            },
-            {
-                'name': 'Drupal',
-                'language': 'PHP',
-                'site': 'https://drupal.org/project/drupal',
-                'source': 'https://github.com/drupal/drupal',
-                'rules': {
-                    'file': '/core/misc/drupal.js'
-                }
-            },
-            {
-                'name': 'Joomla',
-                'language': 'PHP',
-                'site': 'https://www.joomla.org/',
-                'source': 'https://github.com/joomla/joomla-cms',
-                'rules': {
-                    'file': '/media/system/js/validate.js'
-                }
-            },
-            {
-                'name': 'Wordpress',
-                'language': 'PHP',
-                'site': 'http://wordpress.org/',
-                'source': 'https://github.com/WordPress/WordPress',
-                'rules': {
-                    'file': '/wp-admin/wp-admin.css',
-                    'file2': 'wp-includes/js/tinymce/tiny_mce_popup.js'
-                }
-            },
-        ]
+    def __init__(self, directory, language):
+        self.directory = os.path.abspath(directory)
+        self.language = language
 
-    def framework(self):
-        """
-        Detection framework for project
-        :param: framework | language
-        :return: self.rules['name']
-        """
-        for rule in self.rules:
-            rules_types = ['file', 'directory']
-            rules_count = len(rule['rules'])
-            rules_completed = 0
-            logging.info("------ {0} (C: {1})".format(rule['name'], rules_count))
-            for rule_type in rules_types:
-                if rule_type in rule['rules']:
-                    target = os.path.join(self.project_directory, rule['rules'][rule_type])
-                    logging.debug('{0}: {1}'.format(rule_type, target))
-                    if rule_type == 'file':
-                        if os.path.isfile(target):
-                            rules_completed += 1
-                    elif rule_type == 'directory':
-                        if os.path.isdir(target):
-                            rules_completed += 1
-            if rules_completed == rules_count:
-                logging.info("Framework: {0}".format(rule['name']))
-                return rule['name'], rule['language']
-        return '', ''
+        self.requirements = None
 
+    def get_framework(self):
+        if self.language is None:
+            return 'Unknown'
+        # initialize requirements data
+        self._requirements()
+        frameworks = Config().rule()['languages'][self.language]['frameworks']
+        for framework in frameworks:
+            # single framework
+            logger.debug('{frame} - {code}'.format(frame=framework['name'], code=framework['code']))
+            for method, rule in framework['rules'].items():
+                rule = rule.strip().lower()
+                # single rule
+                if method == 'requirements':
+                    logger.debug(' - requirements: {module}'.format(module=rule))
+                    if rule in self.requirements:
+                        return framework['name']
+                elif method == 'file':
+                    pass
+                elif method == 'folder':
+                    pass
 
-if __name__ == '__main__':
-    Detection('/tmp/cobra/versions/mogujie').framework()
+    def _requirements(self):
+        requirements_txt = os.path.join(self.directory, 'requirements.txt')
+        logger.debug(requirements_txt)
+        if os.path.isfile(requirements_txt):
+            requirements = parse_requirements(requirements_txt, session=False)
+            self.requirements = [req.name.strip().lower() for req in requirements]
+            logger.debug('requirements modules count: {count} ({modules})'.format(count=len(self.requirements), modules=','.join(self.requirements)))
+        else:
+            logger.debug('requirements.txt not found!')
+            self.requirements = []

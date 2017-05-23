@@ -13,6 +13,7 @@
 """
 import time
 import os
+from operator import itemgetter
 from cobra.utils.log import logger
 
 
@@ -52,6 +53,8 @@ class Directory(object):
         if self.result['no_extension']['count'] == 0:
             del self.result['no_extension']
         t2 = time.clock()
+        # reverse list count
+        self.result = sorted(self.result.items(), key=itemgetter(1), reverse=False)
         return self.result, self.file_sum, t2 - t1
 
     def files(self, absolute_path, level=1):
