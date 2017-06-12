@@ -56,7 +56,7 @@ def main():
     parser_group_scan = parser.add_argument_group('Scan')
     parser_group_scan.add_argument('-t', '--target', dest='target', action='store', default='', metavar='<target>', help='file, folder, compress, or repository address')
     parser_group_scan.add_argument('-f', '--format', dest='format', action='store', default='json', metavar='<format>', choices=['html', 'json', 'csv', 'xml'], help='vulnerability output format (formats: %(choices)s)')
-    parser_group_scan.add_argument('-o', '--output', dest='output', action='store', default='', metavar='<output>', help='vulnerability output FILE, HTTP API URL, MAIL')
+    parser_group_scan.add_argument('-o', '--output', dest='output', action='store', default='', metavar='<output>', help='vulnerability output STREAM, FILE, HTTP API URL, MAIL')
     parser_group_scan.add_argument('-r', '--rule', dest='rule', action='store', default='', metavar='<rule_file>', help='specifies the rule configuration file')
     parser_group_scan.add_argument('-e', '--exclude', dest='exclude', action='store', default='', metavar='<file_or_dir>', help='exclude file or folder')
     parser_group_scan.add_argument('-d', '--debug', dest='debug', action='store_true', default=False, help='open debug mode')

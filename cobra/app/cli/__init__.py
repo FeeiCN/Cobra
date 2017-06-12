@@ -24,6 +24,7 @@ TARGET_MODE_COMPRESS = 'compress'
 OUTPUT_MODE_MAIL = 'mail'
 OUTPUT_MODE_API = 'api'
 OUTPUT_MODE_FILE = 'file'
+OUTPUT_MODE_STREAM = 'stream'
 
 
 def start(target, format, output, rule, exclude):
@@ -52,7 +53,7 @@ def start(target, format, output, rule, exclude):
         exit()
     logger.info('Target Mode: {mode}'.format(mode=target_mode))
 
-    # output mode(api/mail/file)
+    # output mode(api/mail/file/stream)
     output_mode = None
     output_mode_api = ['http', 'https']
     output_mode_mail = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
@@ -64,8 +65,7 @@ def start(target, format, output, rule, exclude):
     if os.path.isdir(os.path.dirname(output)):
         output_mode = OUTPUT_MODE_FILE
     if output_mode is None:
-        logger.critical('[-o <output>] can\'t empty!')
-        exit()
+        output_mode = OUTPUT_MODE_STREAM
     logger.info('Output Mode: {mode}'.format(mode=output_mode))
 
     target_directory = None
