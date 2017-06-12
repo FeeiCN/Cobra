@@ -53,17 +53,17 @@ def main():
     # arg parse
     parser = argparse.ArgumentParser(prog=__program__, description=__description__, epilog=__epilog__, version=__version__, formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser_scan_group = parser.add_argument_group('Scan')
-    parser_scan_group.add_argument('-t', '--target', dest='target', action='store', default='', metavar='<target>', help='file, folder, compress, or repository address')
-    parser_scan_group.add_argument('-f', '--format', dest='format', action='store', default='json', metavar='<format>', choices=['html', 'json', 'csv', 'xml'], help='vulnerability output format (formats: %(choices)s)')
-    parser_scan_group.add_argument('-o', '--output', dest='output', action='store', default='', metavar='<output>', help='vulnerability output FILE, HTTP API URL, MAIL')
-    parser_scan_group.add_argument('-r', '--rule', dest='rule', action='store', default='', metavar='<rule_file>', help='specifies the rule configuration file')
-    parser_scan_group.add_argument('-e', '--exclude', dest='exclude', action='store', default='', metavar='<file_or_dir>', help='exclude file or folder')
-    parser_scan_group.add_argument('-d', '--debug', dest='debug', action='store_true', default=False, help='open debug mode')
+    parser_group_scan = parser.add_argument_group('Scan')
+    parser_group_scan.add_argument('-t', '--target', dest='target', action='store', default='', metavar='<target>', help='file, folder, compress, or repository address')
+    parser_group_scan.add_argument('-f', '--format', dest='format', action='store', default='json', metavar='<format>', choices=['html', 'json', 'csv', 'xml'], help='vulnerability output format (formats: %(choices)s)')
+    parser_group_scan.add_argument('-o', '--output', dest='output', action='store', default='', metavar='<output>', help='vulnerability output FILE, HTTP API URL, MAIL')
+    parser_group_scan.add_argument('-r', '--rule', dest='rule', action='store', default='', metavar='<rule_file>', help='specifies the rule configuration file')
+    parser_group_scan.add_argument('-e', '--exclude', dest='exclude', action='store', default='', metavar='<file_or_dir>', help='exclude file or folder')
+    parser_group_scan.add_argument('-d', '--debug', dest='debug', action='store_true', default=False, help='open debug mode')
 
-    parser_server_group = parser.add_argument_group('RESTful')
-    parser_server_group.add_argument('-H', '--host', dest='host', action='store', default=None, metavar='<host>', help='REST-JSON API Service Host')
-    parser_server_group.add_argument('-P', '--port', dest='port', action='store', default=None, metavar='<port>', help='REST-JSON API Service Port')
+    parser_group_server = parser.add_argument_group('RESTful')
+    parser_group_server.add_argument('-H', '--host', dest='host', action='store', default=None, metavar='<host>', help='REST-JSON API Service Host')
+    parser_group_server.add_argument('-P', '--port', dest='port', action='store', default=None, metavar='<port>', help='REST-JSON API Service Port')
 
     args = parser.parse_args()
 
