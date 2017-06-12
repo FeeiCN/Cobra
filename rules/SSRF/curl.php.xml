@@ -1,0 +1,35 @@
+<rule>
+    <name>SSRF cURL</name>
+    <description>cURL SSRF Vulnerability</description>
+    <author>
+        <name>Feei</name>
+        <email>feei@feei.cn</email>
+    </author>
+    <language>PHP</language>
+    <rule>
+        <match>
+            (\bfile_get_contents\s*\(\s*\$\w+\s*\))
+        </match>
+        <repair>
+            ssl
+        </repair>
+    </rule>
+    <level>80</level>
+    <example>
+        function curl($url){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_exec($ch);
+        curl_close($ch);
+        }
+
+        $url = $_GET['url'];
+        curl($url);
+    </example>
+    <repair>
+        1. 删除
+        2. 修复
+    </repair>
+    <status>true</status>
+</rule>

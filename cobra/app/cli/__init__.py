@@ -15,6 +15,7 @@ import os
 import re
 from cobra.utils.config import Config
 from cobra.utils.log import logger
+from cobra.exceptions import PickupException, NotExistException, AuthFailedException
 
 TARGET_MODE_GIT = 'git'
 TARGET_MODE_FILE = 'file'
@@ -68,6 +69,7 @@ def start(target, format, output, rule, exclude):
         output_mode = OUTPUT_MODE_STREAM
     logger.info('Output Mode: {mode}'.format(mode=output_mode))
 
+    # target directory
     target_directory = None
     if target_mode == TARGET_MODE_GIT:
         from cobra.pickup.git import Git, NotExistError, AuthError
@@ -81,14 +83,11 @@ def start(target, format, output, rule, exclude):
         try:
             clone_ret, clone_err = gg.clone()
             if clone_ret is False:
-                logger.critical(4001, 'Clone Failed ({0})'.format(clone_err), gg)
-                exit()
+                raise PickupException('Clone Failed ({0})'.format(clone_err), gg)
         except NotExistError:
-            logger.critical(4001, 'Repository Does not exist!', gg)
-            exit()
+            raise NotExistException(4001, 'Repository Does not exist!', gg)
         except AuthError:
-            logger.critical('Git Authentication Failed')
-            exit()
+            raise AuthFailedException('Git Authentication Failed')
         target_directory = gg.repo_directory
     elif target_mode == TARGET_MODE_COMPRESS:
         from cobra.pickup.compress import support_extensions, Decompress
@@ -106,11 +105,11 @@ def start(target, format, output, rule, exclude):
 
     logger.info('target directory: {directory}'.format(directory=target_directory))
 
-    # static analyse
+    # static analyse files info
     from cobra.pickup import directory
     files, file_count, time_consume = directory.Directory(target_directory).collect_files()
 
-    # main language
+    # detection main language
     main_language = None
     tmp_language = None
     for ext, ext_info in files:
@@ -129,7 +128,7 @@ def start(target, format, output, rule, exclude):
             main_language = tmp_language
     logger.debug('main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language, main_language=main_language))
 
-    # main framework
+    # detection main framework
     from cobra.engine.detection import Framework
     main_framework = Framework(target_directory, main_language).get_framework()
 

@@ -101,6 +101,3 @@ class Match(object):
                 self.data += Core(result_info, rule, self.project_name, white_list, test=test, index=index).scan()
         else:
             logger.info('Not Found')
-        except Exception as e:
-        traceback.print_exc()
-        logger.critical('Error calling grep: ' + str(e))

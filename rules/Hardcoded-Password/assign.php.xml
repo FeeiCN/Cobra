@@ -1,0 +1,29 @@
+<rule>
+    <author>
+        <name>Feei</name>
+        <email>feei@feei.cn</email>
+    </author>
+    <vid>C00001</vid>
+    <name lang="en">Assign Hardcoded Password</name>
+    <name lang="zh-cn">赋值型的硬编码密码</name>
+    <rule>
+        <match>
+            (\$\w+(?:\[.+?\])?\[['"](?:passwd|password|pwd)['"]\]\s*(?:=|=>|->)\s*['"].+?['"])
+        </match>
+        <test>
+            <case assert="true">
+                $pass = "your_password";
+            </case>
+            <case assert="true">
+                $password = "your_password";
+            </case>
+            <case assert="true">
+                $pwd = "your_password";
+            </case>
+            <case assert="false">
+                $pwd = "";
+            </case>
+        </test>
+    </rule>
+    <status>true</status>
+</rule>
