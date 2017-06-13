@@ -67,8 +67,8 @@ def start(target, formatter, output, rule, exclude):
         framework=main_framework,
         files=file_count,
         consume=time_consume,
-        ec=len(files))
-    )
+        ec=len(files)
+    ))
 
     # scan
     pass
