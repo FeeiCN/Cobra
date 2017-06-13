@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra/wiki/languages">
+    <language value="PHP" chiefly="true">
+        <extension value=".php"/>
+        <extension value=".php3"/>
+        <extension value=".php4"/>
+        <extension value=".php5"/>
+    </language>
+    <language value="Java" chiefly="true">
+        <extension value=".java"/>
+    </language>
+    <language value="Python" chiefly="true">
+        <extension value=".py"/>
+    </language>
+    <language value="JSP">
+        <extension value=".jsp"/>
+    </language>
+    <language value="C">
+        <extension value=".h"/>
+        <extension value=".c"/>
+    </language>
+    <language value="Ruby">
+        <extension value=".rb"/>
+    </language>
+    <language value="Perl">
+        <extension value=".pl"/>
+    </language>
+    <language value="Lua">
+        <extension value=".lua"/>
+    </language>
+    <language value="Go">
+        <extension value=".go"/>
+    </language>
+    <language value="Swift">
+        <extension value=".swift"/>
+    </language>
+    <language value="C++">
+        <extension value=".c"/>
+        <extension value=".cpp"/>
+    </language>
+    <language value="C#">
+        <extension value=".cs"/>
+    </language>
+    <language value="Objective-C">
+        <extension value=".h"/>
+        <extension value=".m"/>
+    </language>
+    <language value="Scale">
+        <extension value=".sbt"/>
+        <extension value=".scale"/>
+    </language>
+    <language value="Ceylon">
+        <extension value=".ceylon"/>
+    </language>
+    <language value="Kotlin">
+        <extension value=".kt"/>
+    </language>
+    <language value="Shell">
+        <extension value=".sh"/>
+    </language>
+    <language value="Bat">
+        <extension value=".bat"/>
+    </language>
+    <language value="JavaScript">
+        <extension value=".js"/>
+    </language>
+    <language value="HTML">
+        <extension value=".html"/>
+        <extension value=".htm"/>
+        <extension value=".phtml"/>
+    </language>
+    <language value="CSS">
+        <extension value=".css"/>
+        <extension value=".less"/>
+        <extension value=".scss"/>
+        <extension value=".styl"/>
+    </language>
+    <language value="Image">
+        <extension value=".jpg"/>
+        <extension value=".png"/>
+        <extension value=".bmp"/>
+        <extension value=".gif"/>
+        <extension value=".ico"/>
+        <extension value=".cur"/>
+    </language>
+    <language value="Font">
+        <extension value=".eot"/>
+        <extension value=".otf"/>
+        <extension value=".svg"/>
+        <extension value=".ttf"/>
+        <extension value=".woff"/>
+    </language>
+    <language value="Conf">
+        <extension value=".properties"/>
+        <extension value=".ini"/>
+        <extension value=".cfg"/>
+        <extension value=".yml"/>
+        <extension value=".xml"/>
+        <extension value=".iml"/>
+        <extension value=".spf"/>
+        <extension value=".manifest"/>
+    </language>
+    <language value="CMake">
+        <extension value=".cmake"/>
+        <extension value=".cmake.in"/>
+    </language>
+    <language value="SQL">
+        <extension value=".sql"/>
+    </language>
+    <language value="Compression">
+        <extension value=".zip"/>
+        <extension value=".tar"/>
+        <extension value=".tar.gz"/>
+        <extension value=".rar"/>
+    </language>
+    <language value="Executable">
+        <extension value=".exe"/>
+    </language>
+    <language value="Log">
+        <extension value=".log"/>
+    </language>
+    <language value="Text">
+        <extension value=".txt"/>
+        <extension value=".text"/>
+        <extension value=".md"/>
+        <extension value=".rst"/>
+        <extension value=".csv"/>
+    </language>
+    <language value="Office">
+        <extension value=".doc"/>
+        <extension value=".docx"/>
+        <extension value=".wps"/>
+        <extension value=".rtf"/>
+        <extension value=".xls"/>
+        <extension value=".ppt"/>
+    </language>
+    <language value="Media">
+        <extension value=".mp3"/>
+        <extension value=".mp4"/>
+        <extension value=".swf"/>
+        <extension value=".flv"/>
+    </language>
+    <language value="Certificate">
+        <extension value=".p12"/>
+        <extension value=".crt"/>
+        <extension value=".key"/>
+        <extension value=".pfx"/>
+        <extension value=".csr"/>
+    </language>
+    <language value="Source">
+        <extension value=".psd"/>
+        <extension value=".ai"/>
+        <extension value=".axure"/>
+        <extension value=".xmind"/>
+        <extension value=".plan"/>
+    </language>
+    <language value="Thumb">
+        <extension value=".db"/>
+    </language>
+    <language value="Git">
+        <extension value=".pack"/>
+        <extension value=".idx"/>
+        <extension value=".sample"/>
+    </language>
+</cobra>

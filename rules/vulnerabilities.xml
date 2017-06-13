@@ -1,5 +1,7 @@
-<vulnerabilities>
-    <vulnerability vid="C0010">
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra/wiki/vulnerabilities">
+    <vulnerability vid="10010">
         <name lang="en">Hardcoded Password</name>
         <name lang="zh-cn">硬编码密码</name>
         <repair lang="zh-cn">
@@ -7,7 +9,7 @@
             2. 修复步骤2
         </repair>
     </vulnerability>
-    <vulnerability vid="C0020">
+    <vulnerability vid="10020">
         <name lang="en">SSRF</name>
         <name lang="zh-cn">跨站请求伪造</name>
         <repair lang="zh-cn">
@@ -15,5 +17,4 @@
             2. 修复步骤2
         </repair>
     </vulnerability>
-
-</vulnerabilities>
+</cobra>

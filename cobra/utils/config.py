@@ -18,6 +18,7 @@ import ConfigParser
 import traceback
 from cobra.utils.log import logger
 
+project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 home_path = os.path.join(os.path.expandvars(os.path.expanduser("~")), ".cobra")
 config_path = os.path.join(home_path, 'config.cobra')
 rule_path = os.path.join(home_path, 'rule.cobra')
@@ -27,7 +28,6 @@ class Config(object):
     def __init__(self, level1=None, level2=None):
         self.level1 = level1
         self.level2 = level2
-        self.project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
         if level1 is None and level2 is None:
             return
         config = ConfigParser.ConfigParser()
@@ -56,11 +56,11 @@ class Config(object):
 
     def initialize(self):
         # ~/.cobra/config.cobra
-        source_config = os.path.join(self.project_directory, 'config.cobra')
+        source_config = os.path.join(project_directory, 'config.cobra')
         self.copy(source_config, config_path)
 
         # ~/.cobra/rule.cobra
-        destination_rule = os.path.join(self.project_directory, 'rule.cobra')
+        destination_rule = os.path.join(project_directory, 'rule.cobra')
         self.copy(destination_rule, rule_path)
         return
 

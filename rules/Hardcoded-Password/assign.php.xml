@@ -1,24 +1,40 @@
-<rule>
-    <author>
-        <name>Feei</name>
-        <email>feei@feei.cn</email>
-    </author>
-    <vid>C00001</vid>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra source="https://github.com/wufeifei/cobra">
+    <vid>10010</vid>
     <name lang="en">Assign Hardcoded Password</name>
     <name lang="zh-cn">赋值型的硬编码密码</name>
     <rule>
         <match>
-            (\$\w+(?:\[.+?\])?\[['"](?:passwd|password|pwd)['"]\]\s*(?:=|=>|->)\s*['"].+?['"])
+            ((?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"])
         </match>
         <test>
             <case assert="true">
-                $pass = "your_password";
+                private $password = "test"
             </case>
             <case assert="true">
-                $password = "your_password";
+                private static $password = "test"
             </case>
             <case assert="true">
-                $pwd = "your_password";
+                public $pwd = "test"
+            </case>
+            <case assert="true">
+                protected $passwd = "test"
+            </case>
+            <case assert="true">
+                protected $except_password = md5("test")
+            </case>
+            <case assert="true">
+                protected $password_except = sha1("test")
+            </case>
+            <case assert="true">
+                $password = "test"
+            </case>
+            <case assert="true">
+                $passwd = "test"
+            </case>
+            <case assert="true">
+                $pwd = "test"
             </case>
             <case assert="false">
                 $pwd = "";
@@ -26,4 +42,8 @@
         </test>
     </rule>
     <status>true</status>
-</rule>
+    <author>
+        <name>Feei</name>
+        <email>feei@feei.cn</email>
+    </author>
+</cobra>
