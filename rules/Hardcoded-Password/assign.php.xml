@@ -1,49 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra source="https://github.com/wufeifei/cobra">
-    <vid>10010</vid>
+<cobra document="https://github.com/wufeifei/cobra">
+    <vid value="10010"/>
     <name lang="en">Assign Hardcoded Password</name>
     <name lang="zh-cn">赋值型的硬编码密码</name>
-    <rule>
-        <match>
-            ((?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"])
-        </match>
-        <test>
-            <case assert="true">
-                private $password = "test"
-            </case>
-            <case assert="true">
-                private static $password = "test"
-            </case>
-            <case assert="true">
-                public $pwd = "test"
-            </case>
-            <case assert="true">
-                protected $passwd = "test"
-            </case>
-            <case assert="true">
-                protected $except_password = md5("test")
-            </case>
-            <case assert="true">
-                protected $password_except = sha1("test")
-            </case>
-            <case assert="true">
-                $password = "test"
-            </case>
-            <case assert="true">
-                $passwd = "test"
-            </case>
-            <case assert="true">
-                $pwd = "test"
-            </case>
-            <case assert="false">
-                $pwd = "";
-            </case>
-        </test>
-    </rule>
-    <status>true</status>
-    <author>
-        <name>Feei</name>
-        <email>feei@feei.cn</email>
-    </author>
+    <match><![CDATA[
+        ((?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"])
+    ]]></match>
+    <test>
+        <case assert="true"><![CDATA[
+            private $password = "test"
+        ]]></case>
+        <case assert="true"><![CDATA[
+            private static $password = "test"
+        ]]></case>
+        <case assert="true"><![CDATA[
+            public $pwd = "test"
+        ]]></case>
+        <case assert="true"><![CDATA[
+            protected $passwd = "test"
+        ]]></case>
+        <case assert="true"><![CDATA[
+            protected $except_password = md5("test")
+        ]]></case>
+        <case assert="true"><![CDATA[
+            protected $password_except = sha1("test")
+        ]]></case>
+        <case assert="true"><![CDATA[
+            $password = "test"
+        ]]></case>
+        <case assert="true"><![CDATA[
+            $passwd = "test"
+        ]]></case>
+        <case assert="true"><![CDATA[
+            $pwd = "test"
+        ]]></case>
+        <case assert="false"><![CDATA[
+            $pwd = "";
+        ]]></case>
+    </test>
+    <status value="true"/>
+    <author name="Feei" email="feei@feei.cn"/>
 </cobra>

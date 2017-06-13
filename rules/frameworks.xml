@@ -72,12 +72,12 @@
         <folder value="Database/Dialect"/>
     </framework>
     <framework name="Django" language="python" code="https://github.com/django/django">
-        <dependency>django</dependency>
+        <dependency value="django"/>
     </framework>
     <framework name="Flask" language="python" code="https://github.com/pallets/flask">
-        <dependency>flask</dependency>
+        <dependency value="flask"/>
     </framework>
     <framework name="Spring" language="java">
-        <dependency>org.springframework</dependency>
+        <dependency value="org.springframework"/>
     </framework>
 </cobra>

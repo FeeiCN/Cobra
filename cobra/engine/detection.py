@@ -17,19 +17,41 @@ from cobra.utils.log import logger
 from pip.req import parse_requirements
 
 
-class Framework(object):
-    def __init__(self, directory, language):
-        self.directory = os.path.abspath(directory)
-        self.language = language
-
+class Detection(object):
+    def __init__(self, target_directory, files):
+        self.target_directory = target_directory
+        self.directory = os.path.abspath(self.target_directory)
+        self.files = files
+        self.lang = None
         self.requirements = None
 
-    def get_framework(self):
-        if self.language is None:
-            return 'Unknown'
+    @property
+    def language(self):
+        tmp_language = None
+        for ext, ext_info in self.files:
+            logger.info("{ext} {count}".format(ext=ext, count=ext_info['count']))
+            rules = Config().rule()
+            for language, language_info in rules['languages'].items():
+                if ext in language_info['extensions']:
+                    if 'chiefly' in language_info and language_info['chiefly'].lower() == 'true':
+                        logger.debug('found the chiefly language({language}), maybe have largest, continue...'.format(language=language))
+                        self.lang = language
+                    else:
+                        logger.debug('not chiefly, continue...'.format(language=language))
+                        tmp_language = language
+            if self.lang is None:
+                logger.debug('not found chiefly language, use the largest language(language) replace'.format(language=tmp_language))
+                self.lang = tmp_language
+        logger.debug('main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language, main_language=self.lang))
+        return self.lang
+
+    @property
+    def framework(self):
         # initialize requirements data
         self._requirements()
-        frameworks = Config().rule()['languages'][self.language]['frameworks']
+        # TODO
+        return 'Unknown Framework'
+        frameworks = Config().rule()['languages'][self.lang]['frameworks']
         for framework in frameworks:
             # single framework
             logger.debug('{frame} - {code}'.format(frame=framework['name'], code=framework['code']))
@@ -44,6 +66,7 @@ class Framework(object):
                     pass
                 elif method == 'folder':
                     pass
+        return 'Unknown Framework'
 
     def _requirements(self):
         requirements_txt = os.path.join(self.directory, 'requirements.txt')

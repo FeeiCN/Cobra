@@ -1,46 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra source="https://github.com/wufeifei/cobra">
+<cobra document="https://github.com/wufeifei/cobra">
     <vid>10010</vid>
     <name lang="en">Token/Key</name>
     <name lang="zh-cn">Token/Key</name>
-    <rule>
-        <match>
-            (?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})
-        </match>
-        <test>
-            <case assert="true">
-                # sha1
-                "41a6bc4d9a033e1627f448f0b9593f9316d071c1"
-            </case>
-            <case assert="true">
-                # md5 lower
-                "d042343e49e40f16cb61bd203b0ce756"
-            </case>
-            <case assert="true">
-                # md5 upper
-                C787AFE9D9E86A6A6C78ACE99CA778EE
-            </case>
-            <case assert="false">
-                please like and subscribe to my
-            </case>
-            <case assert="false">
-                A32efC32c79823a2123AA8cbDDd3231c
-            </case>
-            <case assert="false">
-                ffffffffffffffffffffffffffffffff
-            </case>
-            <case assert="false">
-                01110101001110011101011010101001
-            </case>
-            <case assert="false">
-                00000000000000000000000000000000
-            </case>
-        </test>
-    </rule>
-    <status>true</status>
-    <author>
-        <name>Feei</name>
-        <email>feei@feei.cn</email>
-    </author>
+    <match><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
+    <test>
+        <case assert="true" remark="sha1"><![CDATA["41a6bc4d9a033e1627f448f0b9593f9316d071c1"]]></case>
+        <case assert="true" remark="md5 lower"><![CDATA["d042343e49e40f16cb61bd203b0ce756"]]></case>
+        <case assert="true" remark="md5 upper"><![CDATA[C787AFE9D9E86A6A6C78ACE99CA778EE]]></case>
+        <case assert="false"><![CDATA[please like and subscribe to my]]></case>
+        <case assert="false"><![CDATA[A32efC32c79823a2123AA8cbDDd3231c]]></case>
+        <case assert="false"><![CDATA[ffffffffffffffffffffffffffffffff]]></case>
+        <case assert="false"><![CDATA[01110101001110011101011010101001]]></case>
+        <case assert="false"><![CDATA[00000000000000000000000000000000]]></case>
+    </test>
+    <status value="true"/>
+    <author name="Feei" email="feei@feei.cn"/>
 </cobra>
