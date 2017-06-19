@@ -14,6 +14,14 @@ class Rules(object):
         """
         Read all language extensions
         :return:
+        {
+            'pph':[
+                '.php',
+                '.php3',
+                '.php4',
+                '.php5'
+            ]
+        }
         """
         language_extensions = {}
         xml_languages = self._read_xml('languages.xml')
@@ -82,12 +90,45 @@ class Rules(object):
 
     @property
     def rules(self):
-        vulnerabilities = {}
+        """
+        Get all rules
+        :return:
+         {
+            'XSS': [
+                {
+                    'status': True,
+                    'name': {
+                        'zh-cn': "FanShe XSS",
+                        'en': "Reflect XSS"
+                    },
+                    'vid': '10010',
+                    'author': 'Feei <feei@feei.cn>',
+                    'file': 'reflect.php.xml',
+                    'test': {
+                        'false': [
+                            'code test case1',
+                            'code test case2'
+                        ],
+                        'true': [
+                            'code test case 1',
+                            'code test case 2'
+                        ]
+                    },
+                    'rule': [
+                        'match regex 1',
+                        'match regex 2',
+                        'repair regex 3'
+                    ],
+                    'language': 'php'
+                }
+            ]
+         }
+        """
+        vulnerabilities = []
         for vulnerability_name in os.listdir(self.rules_path):
             v_path = os.path.join(self.rules_path, vulnerability_name)
             if os.path.isfile(v_path):
                 continue
-            vulnerabilities[vulnerability_name] = []
             for rule_filename in os.listdir(v_path):
                 v_rule_path = os.path.join(v_path, rule_filename)
                 if os.path.isfile(v_rule_path) is not True:
@@ -98,7 +139,8 @@ class Rules(object):
                     'test': {
                         'true': [],
                         'false': []
-                    }
+                    },
+                    'language': rule_filename.split('.xml')[0].split('.')[1]
                 }
                 rule_path = os.path.join(vulnerability_name, rule_filename)
                 xml_rule = self._read_xml(rule_path)
@@ -110,7 +152,7 @@ class Rules(object):
                         rule_info['vid'] = x.get('value')
                     if x.tag == 'name':
                         lang = x.get('lang').lower()
-                        rule_info['name'] = {lang: x.text}
+                        rule_info['name'] = {lang: x.text.strip()}
                     if x.tag == 'status':
                         rule_info['status'] = to_bool(x.get('value'))
                     if x.tag == 'author':
@@ -118,14 +160,14 @@ class Rules(object):
                         email = x.get('email')
                         rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
                     if x.tag in ['match', 'repair']:
-                        rule_info[x.tag] = x.text
+                        rule_info[x.tag] = x.text.strip()
                     if x.tag == 'test':
                         for case in x:
                             case_ret = case.get('assert').lower()
-                            case_test = case.text
+                            case_test = case.text.strip()
                             if case_ret in ['true', 'false']:
                                 rule_info['test'][case_ret].append(case_test)
-                vulnerabilities[vulnerability_name].append(rule_info)
+                vulnerabilities.append(rule_info)
         return vulnerabilities
 
     def _read_xml(self, filename):

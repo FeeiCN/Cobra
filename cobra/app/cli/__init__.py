@@ -14,7 +14,7 @@
 from cobra.pickup import directory
 from cobra.app.cli.parseargs import ParseArgs
 from cobra.engine.detection import Detection
-from cobra.engine.rules import Rules
+from cobra.engine.scans import scan
 from cobra.utils.log import logger
 
 
@@ -35,13 +35,6 @@ def start(target, formatter, output, rule, exclude):
 
     # target directory
     target_directory = pa.target_directory(target_mode)
-
-    # init rules data
-    r = Rules()
-    vulnerabilities = r.vulnerabilities
-    languages = r.languages
-    frameworks = r.frameworks
-    rules = r.rules
 
     # static analyse files info
     files, file_count, time_consume = directory.Directory(target_directory).collect_files()
@@ -71,4 +64,4 @@ def start(target, formatter, output, rule, exclude):
     ))
 
     # scan
-    pass
+    scan(target_directory)

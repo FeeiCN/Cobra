@@ -8,36 +8,16 @@
         ((?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"])
     ]]></match>
     <test>
-        <case assert="true"><![CDATA[
-            private $password = "test"
-        ]]></case>
-        <case assert="true"><![CDATA[
-            private static $password = "test"
-        ]]></case>
-        <case assert="true"><![CDATA[
-            public $pwd = "test"
-        ]]></case>
-        <case assert="true"><![CDATA[
-            protected $passwd = "test"
-        ]]></case>
-        <case assert="true"><![CDATA[
-            protected $except_password = md5("test")
-        ]]></case>
-        <case assert="true"><![CDATA[
-            protected $password_except = sha1("test")
-        ]]></case>
-        <case assert="true"><![CDATA[
-            $password = "test"
-        ]]></case>
-        <case assert="true"><![CDATA[
-            $passwd = "test"
-        ]]></case>
-        <case assert="true"><![CDATA[
-            $pwd = "test"
-        ]]></case>
-        <case assert="false"><![CDATA[
-            $pwd = "";
-        ]]></case>
+        <case assert="true"><![CDATA[private $password = "test"]]></case>
+        <case assert="true"><![CDATA[private static $password = "test"]]></case>
+        <case assert="true"><![CDATA[public $pwd = "test"]]></case>
+        <case assert="true"><![CDATA[protected $passwd = 'test']]></case>
+        <case assert="true"><![CDATA[protected $except_password = md5("test")]]></case>
+        <case assert="true"><![CDATA[protected $password_except = sha1("test")]]></case>
+        <case assert="true"><![CDATA[$password = "test"]]></case>
+        <case assert="true"><![CDATA[$passwd = "test"]]></case>
+        <case assert="true"><![CDATA[$pwd = "test"]]></case>
+        <case assert="false"><![CDATA[$pwd = "";]]></case>
     </test>
     <status value="true"/>
     <author name="Feei" email="feei@feei.cn"/>

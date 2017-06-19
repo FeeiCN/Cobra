@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cobra document="https://github.com/wufeifei/cobra/wiki/languages">
+    <language name="Any">
+        <extension value=".*"/>
+    </language>
     <language name="PHP" chiefly="true">
         <extension value=".php"/>
         <extension value=".php3"/>
