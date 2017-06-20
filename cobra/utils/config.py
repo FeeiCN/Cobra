@@ -19,6 +19,9 @@ import traceback
 from cobra.utils.log import logger
 
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+core_path = os.path.join(project_directory, 'cobra')
+tests_path = os.path.join(core_path, 'tests')
+examples_path = os.path.join(tests_path, 'examples')
 rules_path = os.path.join(project_directory, 'rules')
 home_path = os.path.join(os.path.expandvars(os.path.expanduser("~")), ".cobra")
 config_path = os.path.join(home_path, 'config.cobra')

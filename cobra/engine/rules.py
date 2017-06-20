@@ -135,6 +135,7 @@ class Rules(object):
                     continue
                 # rule information
                 rule_info = {
+                    'name': {},
                     'file': rule_filename,
                     'test': {
                         'true': [],
@@ -152,7 +153,7 @@ class Rules(object):
                         rule_info['vid'] = x.get('value')
                     if x.tag == 'name':
                         lang = x.get('lang').lower()
-                        rule_info['name'] = {lang: x.text.strip()}
+                        rule_info['name'][lang] = x.text.strip()
                     if x.tag == 'status':
                         rule_info['status'] = to_bool(x.get('value'))
                     if x.tag == 'author':

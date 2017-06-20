@@ -12,9 +12,9 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import re
+import traceback
 import subprocess
-from cobra.pickup.file import File
-from cobra.utils.config import Config
+from cobra.engine.core import Core
 from cobra.utils.log import logger
 from cobra.utils import tool
 
@@ -24,8 +24,9 @@ class Match(object):
         self.directory = target_directory
         self.find = tool.find
         self.grep = tool.grep
+        self.data = []
 
-    def single(self, rule):
+    def get(self, rule):
         if rule['match'] == "":
             mode = 'Find'
             filters = []
@@ -49,28 +50,40 @@ class Match(object):
 
             # -s suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
             param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [rule['match'], self.directory]
-        print(' '.join(param))
+        logger.debug(' '.join(param))
         try:
             p = subprocess.Popen(param, stdout=subprocess.PIPE)
-            result = p.communicate()
+            result, error = p.communicate()
         except Exception as e:
             print(e)
-
+            logger.critical('match exception ({e})'.format(e=e.message))
+            return None
+        if error is not None:
+            logger.critical(error)
         # exists result
-        print(result)
-        if len(result[0]):
-            lines = str(result[0]).strip().split("\n")
+        if len(result):
+            lines = str(result).strip().split("\n")
             logger.info('**Founded Vulnerability**\r\n > Vulnerability Count: `{count}`\r\n'.format(count=len(lines)))
             for index, line in enumerate(lines):
                 line = line.strip()
+                logger.info('Found: {line}'.format(line=line))
                 if line == '':
                     continue
                 # grep result
                 if ':' in line:
-                    line_split = line.split(':', 1)
-                    file_path = line_split[0].strip()
-                    code_content = line_split[1].split(':', 1)[1].strip()
-                    line_number = line_split[1].split(':', 1)[0].strip()
+                    #
+                    # Rules
+                    #
+                    # Projects/cobra/cobra/tests/examples/vulnerabilities.php:2:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+                    # Projects/cobra/cobra/tests/examples/vulnerabilities.php:211:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+                    # Projects/cobra/cobra/tests/examples/vulnerabilities.php:2134:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+                    # Projects/cobra/cobra/tests/examples/vulnerabilities.php:21111:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+                    # Projects/cobra/cobra/tests/examples/vulnerabilities.php:212344:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+                    try:
+                        file_path, line_number, code_content = re.findall(r'(.*):(\d+):(.*)', line)[0]
+                    except Exception as e:
+                        logger.warning('match line parse exception')
+                        continue
                 else:
                     # search file
                     file_path = line
@@ -78,14 +91,22 @@ class Match(object):
                     line_number = 0
                 # core rule check
                 result_info = {
+                    'project_id': None,
                     'project_directory': self.directory,
-                    'rule_id': rule.id,
+                    'rule_id': None,
+                    'task_id': None,
                     'result_id': None,
                     'file_path': file_path,
                     'line_number': line_number,
                     'code_content': code_content,
                 }
-                print(result_info)
-                self.data += Core(result_info, rule, self.project_name, white_list, test=test, index=index).scan()
+                logger.info(result_info)
+                is_test = False
+                try:
+                    self.data += Core(result_info, rule, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+                except Exception as e:
+                    traceback.print_exc()
+            return self.data
         else:
             logger.info('Not Found')
+            return None

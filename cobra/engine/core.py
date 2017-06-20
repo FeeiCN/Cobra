@@ -45,9 +45,6 @@ class Core(object):
         self.task_id = result['task_id']
         self.result_id = result['result_id']
 
-        self.third_party_vulnerabilities_name = result['third_party_vulnerabilities_name']
-        self.third_party_vulnerabilities_type = result['third_party_vulnerabilities_type']
-
         self.file_path = result['file_path'].strip()
         self.line_number = result['line_number']
         self.code_content = result['code_content'].strip()
@@ -284,23 +281,23 @@ class Core(object):
         """
         self.method = 0
         if self.is_white_list():
-            self.log('info', "[RET] Whitelist\r\n")
-            return self.data
+            logger.info("[RET] Whitelist")
+            return 5001
 
         if self.is_special_file():
-            self.log('info', "[RET] Special File\r\n")
-            return self.data
+            logger.info("[RET] Special File")
+            return 5002
 
         if self.is_test_file():
-            self.log('info', "[RET] Test File\r\n")
-            return self.data
+            logger.info("[RET] Test File")
+            return 5003
 
         if self.is_annotation():
-            self.log('info', "[RET] Annotation\r\n")
-            return self.data
+            logger.info("[RET] Annotation")
+            return 5004
 
         if self.is_match_only_rule():
-            self.log('info', "Only Rule: {0}".format(self.rule_location))
+            logger.info("Only Rule: {0}".format(self.rule_location))
             found_vul = True
         else:
             found_vul = False
@@ -310,24 +307,21 @@ class Core(object):
                     parse_instance = parse.Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                     param_is_controllable, data = parse_instance.is_controllable_param()
                     if param_is_controllable:
-                        self.data += data
-                        self.log('info', '[RET] Param is controllable\r\n')
+                        logger.info('[RET] Param is controllable')
                         is_repair, data = parse_instance.is_repair(self.rule_repair, self.block_repair)
-                        self.data += data
                         if is_repair:
                             # fixed
-                            self.log('info', '[RET] Vulnerability Fixed\r\n')
-                            return self.data
+                            logger.info('[RET] Vulnerability Fixed')
+                            return 1002
                         else:
-                            self.log('info', 'Repair: Not fixed')
+                            logger.info('Repair: Not fixed')
                             found_vul = True
                     else:
-                        self.data += data
-                        self.log('info', '[RET] Param Not Controllable\r\n')
-                        return self.data
+                        logger.info('[RET] Param Not Controllable')
+                        return 4002
                 except:
                     traceback.print_exc()
-                    return self.data
+                    return 4004
 
         if found_vul:
             self.code_content = self.code_content.encode('unicode_escape')
@@ -336,10 +330,10 @@ class Core(object):
             self.status = self.status_init
             self.repair_code = self.repair_code_init
             self.process_vulnerabilities()
-            return self.data
+            return 1001
         else:
-            self.log('info', "[RET] Not found vulnerability\r\n")
-            return self.data
+            logger.info("[RET] Not found vulnerability")
+            return 4002
 
     def repair(self):
         """
