@@ -14,7 +14,7 @@
 from cobra.pickup import directory
 from cobra.app.cli.parseargs import ParseArgs
 from cobra.engine.detection import Detection
-from cobra.engine.scans import scan
+from cobra.engine.scan import scan
 from cobra.utils.log import logger
 
 

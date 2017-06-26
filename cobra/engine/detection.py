@@ -29,7 +29,7 @@ class Detection(object):
     def language(self):
         tmp_language = None
         for ext, ext_info in self.files:
-            logger.info("{ext} {count}".format(ext=ext, count=ext_info['count']))
+            logger.debug("{ext} {count}".format(ext=ext, count=ext_info['count']))
             rules = Config().rule()
             for language, language_info in rules['languages'].items():
                 if ext in language_info['extensions']:

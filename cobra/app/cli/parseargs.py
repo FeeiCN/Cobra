@@ -41,7 +41,7 @@ class ParseArgs(object):
         if target_mode is None:
             logger.critical('[-t <target>] can\'t empty!')
             exit()
-        logger.info('Target Mode: {mode}'.format(mode=target_mode))
+        logger.debug('Target Mode: {mode}'.format(mode=target_mode))
         return target_mode
 
     @property
@@ -62,14 +62,14 @@ class ParseArgs(object):
             output_mode = OUTPUT_MODE_FILE
         if output_mode is None:
             output_mode = OUTPUT_MODE_STREAM
-        logger.info('Output Mode: {mode}'.format(mode=output_mode))
+        logger.debug('Output Mode: {mode}'.format(mode=output_mode))
         return output_mode
 
     def target_directory(self, target_mode):
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             from cobra.pickup.git import Git, NotExistError, AuthError
-            logger.info('GIT Project')
+            logger.debug('GIT Project')
             branch = 'master'
             username = ''
             password = ''
@@ -99,5 +99,5 @@ class ParseArgs(object):
             logger.critical('exception target mode ({mode})'.format(mode=target_mode))
             exit()
 
-        logger.info('target directory: {directory}'.format(directory=target_directory))
+        logger.debug('target directory: {directory}'.format(directory=target_directory))
         return target_directory

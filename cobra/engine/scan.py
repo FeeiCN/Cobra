@@ -11,177 +11,69 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import os
-import time
-import subprocess
-import getpass
-from cobra.app.models import CobraProjects, CobraTaskInfo
-from cobra.app import db
-from cobra.utils import config, decompress
-from cobra.utils.log import logging
-from cobra.pickup import git
-from cobra.pickup.git import NotExistError, AuthError
-from cobra.engine import detection
+import multiprocessing
+from cobra.engine.sr import SingleRule
+from cobra.engine.rules import Rules
+from cobra.utils.log import logger
 
-logging = logging.getLogger(__name__)
+r = Rules()
+vulnerabilities = r.vulnerabilities
+languages = r.languages
+frameworks = r.frameworks
+rules = r.rules
+
+"""
+{
+    'hcp': {
+        'rule1': [vr1, vr2]
+    },
+    'xss': {
+        'rule2': [vr3, vr4]
+    }
+}
+"""
+find_vulnerabilities = []
 
 
-class Scan(object):
-    def __init__(self, target):
-        """
-        Set target
-        :param target: compress(filename) version(repository)
-        """
-        self.target = target.strip()
+def scan_single(target_directory, single_rule):
+    return SingleRule(target_directory, single_rule).process()
 
-    def compress(self):
-        dc = decompress.Decompress(self.target)
-        ret, result_d = dc.decompress()
-        if ret is False:
-            return 1002, result_d
+
+def store(result):
+    find_vulnerabilities.append(result)
+
+
+def scan(target_directory):
+    pool = multiprocessing.Pool()
+    if len(rules) == 0:
+        logger.critical('no rules!')
+        return False
+    for idx, single_rule in enumerate(rules):
+        # SR(Single Rule)
+        logger.info("""Push Rule
+                     > index: {idx}
+                     > name: {name}
+                     > status: {status}
+                     > language: {language}
+                     > vid: {vid}""".format(
+            idx=idx,
+            name=single_rule['name']['en'],
+            status=single_rule['status'],
+            language=single_rule['language'],
+            vid=single_rule['vid'],
+            match=single_rule['match']
+        ))
+        if single_rule['status'] is False:
+            logger.info('rule disabled, continue...')
+            continue
+        if single_rule['language'] in languages:
+            single_rule['extensions'] = languages[single_rule['language']]
+            pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
         else:
-            directory = result_d
-        logging.info("Scan directory: {0}".format(directory))
-        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
+            logger.critical('unset language, continue...')
+            continue
+    pool.close()
+    pool.join()
 
-        p = CobraProjects.query.filter_by(repository=directory).first()
 
-        # detection framework for project
-        framework, language = detection.Detection(directory).framework()
-        if framework != '' or language != '':
-            project_framework = '{0} ({1})'.format(framework, language)
-        else:
-            project_framework = ''
-        if not p:
-            # insert into project table.
-            repo_name = directory.split('/')[-1]
-            project = CobraProjects(directory, '', repo_name, 'Upload', project_framework, '', '', 1, current_time)
-            db.session.add(project)
-            db.session.commit()
-            project_id = project.id
-        else:
-            project_id = p.id
-            # update project's framework
-            p.framework = project_framework
-            db.session.add(p)
-
-        task = CobraTaskInfo(directory, '', 3, '', '', 0, 0, 0, 1, 0, 0, current_time, current_time)
-        db.session.add(task)
-        db.session.commit()
-        cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
-        if os.path.isfile(cobra_path) is not True:
-            return 1004, 'Cobra Not Found'
-        # 扫描漏洞
-        subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", directory])
-        # 统计代码行数
-        subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", directory])
-        # 检测漏洞修复状况
-        subprocess.Popen(['python', cobra_path, "repair", "-p", str(project_id)])
-        result = dict()
-        result['scan_id'] = task.id
-        result['project_id'] = project_id
-        result['msg'] = u'success'
-        return 1001, result
-
-    def pull_code(self, branch='master'):
-        logging.info('Gitlab project')
-        # Git
-        if 'gitlab' in self.target:
-            username = config.Config('git', 'username').value
-            password = config.Config('git', 'password').value
-        else:
-            username = None
-            password = None
-        gg = git.Git(self.target, branch=branch, username=username, password=password)
-
-        # Git Clone Error
-        try:
-            clone_ret, clone_err = gg.clone()
-            if clone_ret is False:
-                return 4001, 'Clone Failed ({0})'.format(clone_err), gg
-        except NotExistError:
-            # update project status
-            p = CobraProjects.query.filter_by(repository=self.target).first()
-            if p is not None:
-                if p.status == CobraProjects.get_status('on'):
-                    p.status = CobraProjects.get_status('off')
-                    db.session.add(p)
-                    db.session.commit()
-            return 4001, 'Repository Does not exist!', gg
-        except AuthError:
-            logging.critical('Git Authentication Failed')
-            return 4001, 'Repository Authentication Failed', gg
-        return 1001, 'Success', gg
-
-    def version(self, branch=None, new_version=None, old_version=None):
-        # Gitlab
-        if '.git' in self.target:
-            ret, desc, gg = self.pull_code(branch)
-            if ret == 1001:
-                repo_author = gg.repo_author
-                repo_name = gg.repo_name
-                repo_directory = gg.repo_directory
-            else:
-                return ret, desc
-        elif 'svn' in self.target:
-            # SVN
-            repo_name = 'mogujie'
-            repo_author = 'all'
-            repo_directory = config.Config('upload', 'directory').value
-        else:
-            repo_name = 'Local Project'
-            repo_author = getpass.getuser()
-            repo_directory = self.target
-            if not os.path.exists(repo_directory):
-                return 1004, 'repo directory not exist ({0})'.format(repo_directory)
-
-        if new_version == "" or old_version == "":
-            scan_way = 1
-        else:
-            scan_way = 2
-        current_time = time.strftime('%Y-%m-%d %X', time.localtime())
-        # insert into task info table.
-        task = CobraTaskInfo(self.target, branch, scan_way, new_version, old_version, 0, 0, 0, 1, 0, 0, current_time, current_time)
-
-        p = CobraProjects.query.filter_by(repository=self.target).first()
-        project = None
-
-        # detection framework for project
-        framework, language = detection.Detection(repo_directory).framework()
-        if framework != '' or language != '':
-            project_framework = '{0} ({1})'.format(framework, language)
-        else:
-            project_framework = ''
-        project_id = 0
-        if not p:
-            # insert into project table.
-            project = CobraProjects(self.target, '', repo_name, repo_author, project_framework, '', '', 1, current_time)
-        else:
-            project_id = p.id
-            # update project's framework
-            p.framework = project_framework
-            db.session.add(p)
-        try:
-            db.session.add(task)
-            if not p:
-                db.session.add(project)
-            db.session.commit()
-            if not p:
-                project_id = project.id
-            cobra_path = os.path.join(config.Config().project_directory, 'cobra.py')
-
-            if os.path.isfile(cobra_path) is not True:
-                return 1004, 'cobra.py not found'
-            # scan vulnerability
-            subprocess.Popen(['python', cobra_path, "scan", "-p", str(project_id), "-i", str(task.id), "-t", repo_directory])
-            # statistic code
-            subprocess.Popen(['python', cobra_path, "statistic", "-i", str(task.id), "-t", repo_directory])
-            # check repair
-            subprocess.Popen(['python', cobra_path, "repair", "-p", str(project_id)])
-            result = dict()
-            result['scan_id'] = task.id
-            result['project_id'] = project_id
-            result['msg'] = u'success'
-            return 1001, result
-        except Exception as e:
-            return 1004, 'Unknown error, try again later?' + e.message
+print('Vulnerabilities', find_vulnerabilities)

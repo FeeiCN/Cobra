@@ -95,6 +95,7 @@ class Rules(object):
         :return:
          {
             'XSS': [
+                # single rule
                 {
                     'status': True,
                     'name': {
@@ -141,7 +142,9 @@ class Rules(object):
                         'true': [],
                         'false': []
                     },
-                    'language': rule_filename.split('.xml')[0].split('.')[1]
+                    'language': rule_filename.split('.xml')[0].split('.')[1],
+                    'block': '',
+                    'repair': '',
                 }
                 rule_path = os.path.join(vulnerability_name, rule_filename)
                 xml_rule = self._read_xml(rule_path)

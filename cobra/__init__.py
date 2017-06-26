@@ -76,10 +76,10 @@ def main():
         exit()
 
     if args.host is not None and args.port is not None:
-        logger.info('start RESTful Server...')
+        logger.debug('start RESTful Server...')
         api.start(args.host, args.port, args.debug)
     else:
-        logger.info('start scanning...')
+        logger.debug('start scanning...')
         cli.start(args.target, args.format, args.output, args.rule, args.exclude)
 
 
