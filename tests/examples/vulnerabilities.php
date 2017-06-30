@@ -1,0 +1,2 @@
+<?php
+$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
