@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-    utils.third_party
-    ~~~~~~~~~~~~~~~~~
+    third_party
+    ~~~~~~~~~~~
 
     Implement Third-party Vulnerability Manage Push
 
@@ -13,19 +13,15 @@
 """
 import json
 import requests
-from cobra.utils import config
-from cobra.app.models import CobraResults
-from cobra.app import db
-from cobra.utils.log import logging
-
-logging = logging.getLogger(__name__)
+from .config import Config
+from .log import logger
 
 
 class Vulnerabilities(object):
     def __init__(self):
-        self.status = config.Config('third_party_vulnerabilities', 'status').value
-        self.api = config.Config('third_party_vulnerabilities', 'api').value
-        self.key = config.Config('third_party_vulnerabilities', 'key').value
+        self.status = Config('third_party_vulnerabilities', 'status').value
+        self.api = Config('third_party_vulnerabilities', 'api').value
+        self.key = Config('third_party_vulnerabilities', 'key').value
 
         self.vulnerabilities = []
         self.vuln_id = []
@@ -39,12 +35,12 @@ class Vulnerabilities(object):
             # 为杜绝前面环节问题导致输出重复,所以推送前先检查是否已经推送过
             exist_vuln = CobraResults.query.filter_by(id=self.vuln_id, status=2).count()
             if exist_vuln == 0:
-                logging.info("已经推送过")
+                logger.info("已经推送过")
                 return False
             vulns = {'info': json.dumps(self.vulnerabilities)}
             response = requests.post(self.api, data=vulns)
             if response.text == 'done':
-                logging.info('推送漏洞到第三方漏洞管理平台成功')
+                logger.info('推送漏洞到第三方漏洞管理平台成功')
                 """
                 更新漏洞状态
                 1. 漏洞状态是初始化(0) -> 更新(1)
@@ -52,7 +48,7 @@ class Vulnerabilities(object):
                 3. 漏洞状态是已修复(2) -> 不更新
                 """
                 if self.vuln_id is None:
-                    logging.warning("漏洞ID不能为空")
+                    logger.warning("漏洞ID不能为空")
                 else:
                     vuln = CobraResults.query.filter_by(id=self.vuln_id).first()
                     if vuln.status == 0:
@@ -61,8 +57,8 @@ class Vulnerabilities(object):
                         db.session.commit()
                 return True
             else:
-                logging.critical('推送第三方漏洞管理平台失败 \r\n{0}'.format(response.text))
+                logger.critical('推送第三方漏洞管理平台失败 \r\n{0}'.format(response.text))
                 return False
         except (requests.ConnectionError, requests.HTTPError) as e:
-            logging.warning("推送第三方漏洞管理平台出现异常: {0}".format(e))
+            logger.warning("推送第三方漏洞管理平台出现异常: {0}".format(e))
             return False

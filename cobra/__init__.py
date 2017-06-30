@@ -14,44 +14,21 @@
 """
 import argparse
 import logging
-from cobra.utils.log import logger
-from cobra.utils.config import Config
-from cobra.app import cli, api
+from .log import logger
+from .config import Config
+from . import cli, api
 
-# meta
-__program__ = 'cobra'
-__version__ = '1.2.3'
-__author__ = 'Feei'
-__contact__ = 'feei@feei.cn'
-__homepage__ = 'https://github.com/wufeifei/cobra'
-__description__ = """
-    ,---.     |
-    |    ,---.|---.,---.,---.
-    |    |   ||   ||    ,---|
-    `---``---``---``    `---^ v{version}
+from .__version__ import __title__, __introduction__, __url__, __version__
+from .__version__ import __build__, __author__, __author_email__, __license__
+from .__version__ import __copyright__, __epilog__
 
-GitHub: https://github.com/wufeifei/cobra
-
-Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.""".format(version=__version__)
-__keywords__ = 'cobra, code security'
-__epilog__ = """Usage:
-  cobra -t /tmp/your_project_path
-  cobra -r /tmp/rule.fei -t /tmp/your_project_path
-  cobra -f json -o /tmp/report.json -t /tmp/project_path
-  cobra -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
-  cobra -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
-  cobra -H 127.0.0.1 -P 80
-"""
-
-
-# - END META -
 
 def main():
     # configuration
     Config().initialize()
 
     # arg parse
-    parser = argparse.ArgumentParser(prog=__program__, description=__description__, epilog=__epilog__, version=__version__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(prog=__title__, description=__introduction__, epilog=__epilog__, version=__version__, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser_group_scan = parser.add_argument_group('Scan')
     parser_group_scan.add_argument('-t', '--target', dest='target', action='store', default='', metavar='<target>', help='file, folder, compress, or repository address')

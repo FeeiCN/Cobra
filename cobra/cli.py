@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 """
-    app.cli
-    ~~~~~~~
+    cli
+    ~~~
 
-    Implements app cli
+    Implements CLI mode
 
     :author:    Feei <feei@feei.cn>
     :homepage:  https://github.com/wufeifei/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-from cobra.pickup import directory
-from cobra.app.cli.parseargs import ParseArgs
-from cobra.engine.detection import Detection
-from cobra.engine.scan import scan
-from cobra.utils.log import logger
+from .pickup import Directory
+from .utils import ParseArgs
+from .engine import Detection
+from .engine import scan
+from .log import logger
 
 
 def start(target, formatter, output, rule, exclude):
@@ -37,7 +37,7 @@ def start(target, formatter, output, rule, exclude):
     target_directory = pa.target_directory(target_mode)
 
     # static analyse files info
-    files, file_count, time_consume = directory.Directory(target_directory).collect_files()
+    files, file_count, time_consume = Directory(target_directory).collect_files()
 
     # detection main language and framework
     dt = Detection(target_directory, files)

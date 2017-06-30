@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-    utils.queue
-    ~~~~~~~~~~~
+    queue
+    ~~~~~
 
     Implement Vulnerability Push Queue
 
@@ -13,7 +13,7 @@
 """
 import time
 from daemon import push_vulnerabilities, error_handler
-from cobra.utils.third_party import Vulnerabilities
+from .third_party import Vulnerabilities
 
 
 class Queue(object):

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-    engine.rule
-    ~~~~~~~~~~~
+    rule
+    ~~~~
 
     Implements rule test
 
