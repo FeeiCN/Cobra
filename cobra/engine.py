@@ -60,7 +60,7 @@ def scan(target_directory):
         return False
     for idx, single_rule in enumerate(rules):
         # SR(Single Rule)
-        logger.info("""Push Rule
+        logger.debug("""Push Rule
                      > index: {idx}
                      > name: {name}
                      > status: {status}
@@ -82,6 +82,7 @@ def scan(target_directory):
         else:
             logger.critical('unset language, continue...')
             continue
+    logger.info('> Rules: {rc}'.format(rc=len(rules)))
     pool.close()
     pool.join()
 
@@ -147,27 +148,28 @@ class SingleRule(object):
         origin_results = self.origin_results()
         # exists result
         if origin_results == '' or origin_results is None:
-            logger.info('Not found any match...')
+            logger.debug('Not found any match...')
             return None
 
         origin_vulnerabilities = str(origin_results).strip().split("\n")
-        logger.info(' > Vulnerabilities Count: `{count}`\r\n'.format(count=len(origin_vulnerabilities)))
         for index, origin_vulnerability in enumerate(origin_vulnerabilities):
             origin_vulnerability = origin_vulnerability.strip()
-            logger.debug('Found: {line}'.format(line=origin_vulnerability))
+            logger.debug(' > origin: {line}'.format(line=origin_vulnerability))
             if origin_vulnerability == '':
+                logger.debug(' > continue...')
                 continue
             vulnerability = self.parse_match(origin_vulnerability)
             is_test = False
             try:
-                is_vulnerability, code = Core(self.directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+                is_vulnerability, status_code = Core(self.directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
                 if is_vulnerability:
-                    logger.info('Found {code}'.format(code=code))
+                    logger.debug('Found {code}'.format(code=status_code))
                     self.rule_vulnerabilities.append(vulnerability)
                 else:
-                    logger.info('Not vulnerability: {code}'.format(code=code))
+                    logger.debug('Not vulnerability: {code}'.format(code=status_code))
             except Exception as e:
                 traceback.print_exc()
+        logger.info('  > RID: {rid}({vn}) Vulnerabilities: {count}'.format(rid=self.sr['vid'], vn=self.sr['name']['en'], count=len(self.rule_vulnerabilities)))
         return self.rule_vulnerabilities
 
     def parse_match(self, single_match):
@@ -190,7 +192,7 @@ class SingleRule(object):
                 mr.code_content = ''
                 mr.line_number = 0
         else:
-            # search file
+            # find result
             mr.file_path = single_match
             mr.code_content = ''
             mr.line_number = 0
@@ -301,21 +303,7 @@ class Parse(object):
                 'assign_out_input': r'({0}\s?=\s?.*\$_[GET|POST|REQUEST|SERVER|COOKIE]+(?:\[))'
             }
         }
-        self.log('debug', "Language: `{language}`".format(language=self.language))
-
-    def log(self, level, message, test=True):
-        if test:
-            self.data.append('[{0}] {1}'.format(level.upper(), message))
-        if level == 'critical':
-            logger.critical(message)
-        elif level == 'warning':
-            logger.warning(message)
-        elif level == 'info':
-            logger.info(message)
-        elif level == 'debug':
-            logger.debug(message)
-        elif level == 'error':
-            logger.error(message)
+        logger.debug("Language: `{language}`".format(language=self.language))
 
     def functions(self):
         """
@@ -324,7 +312,7 @@ class Parse(object):
         """
         grep = Tool().grep
         if self.language not in self.regex:
-            self.log('info', "Undefined language's functions regex {0}".format(self.language))
+            logger.info("Undefined language's functions regex {0}".format(self.language))
             return False
         regex_functions = self.regex[self.language]['functions']
         param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
@@ -337,16 +325,16 @@ class Parse(object):
             for index, line in enumerate(lines):
                 line = line.strip()
                 if line == '':
-                    self.log('info', 'Empty')
+                    logger.info('Empty')
                     continue
                 function = line.split(':')
                 if len(function) < 2:
-                    self.log('info', "Not found(:)")
+                    logger.info("Not found(:)")
 
                 regex_annotation = self.regex[self.language]['annotation']
                 string = re.findall(regex_annotation, function[1].strip())
                 if len(string) >= 1 and string[0] != '':
-                    self.log('info', logger.info("This function is annotation"))
+                    logger.info(logger.info("This function is annotation"))
 
                 function_name = re.findall(regex_functions, function[1].strip())
                 if len(function_name) == 1:
@@ -359,7 +347,7 @@ class Parse(object):
                         'end': None  # next function's start
                     }
                 else:
-                    self.log('info', "Can't get function name: {0}".format(line))
+                    logger.info("Can't get function name: {0}".format(line))
             end = sum(1 for l in open(self.file_path))
             for name, value in functions.items():
                 if value['end'] is None:
@@ -379,7 +367,7 @@ class Parse(object):
         """
         if block_position == 2:
             if self.line is None or self.line == 0:
-                self.log('critical', "Line exception: {0}".format(self.line))
+                logger.critical("Line exception: {0}".format(self.line))
                 return False
             line_rule = '{0}p'.format(self.line)
             code = File(self.file_path).lines(line_rule)
@@ -399,7 +387,7 @@ class Parse(object):
                         elif block_position == 1:
                             block_start = int(self.line)
                             block_end = int(function_value['end']) - 1
-                        self.log('debug', "Trigger line's function name: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
+                        logger.debug("Trigger line's function name: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
             else:
                 if block_position == 0:
                     block_start = 1
@@ -407,11 +395,11 @@ class Parse(object):
                 elif block_position == 1:
                     block_start = int(self.line) + 1
                     block_end = sum(1 for l in open(self.file_path))
-                self.log('debug', "Not function anything `function`, will split file")
+                logger.debug("Not function anything `function`, will split file")
             # get param block code
             line_rule = "{0},{1}p".format(block_start, block_end)
             code = File(self.file_path).lines(line_rule)
-            self.log('info', 'Get code: {0} - {1}p'.format(block_start, block_end))
+            logger.info('Get code: {0} - {1}p'.format(block_start, block_end))
             return code
 
     def is_controllable_param(self):
@@ -419,12 +407,12 @@ class Parse(object):
         is controllable param
         :return:
         """
-        self.log('info', '**Is controllable param**')
+        logger.debug('Is controllable param')
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
             self.param_name = param_name
-            self.log('debug', 'Param: `{0}`'.format(param_name))
+            logger.debug('Param: `{0}`'.format(param_name))
             # all is string
             regex_string = self.regex[self.language]['string']
             string = re.findall(regex_string, param_name)
@@ -436,84 +424,85 @@ class Parse(object):
                     # 'ping $v1 $v2'
                     # foreach $vn
                     param_name = regex_get_variable_result[0]
-                    self.log('info', "String's variables: `{variables}`".format(variables=','.join(regex_get_variable_result)))
+                    logger.info("String's variables: `{variables}`".format(variables=','.join(regex_get_variable_result)))
                 else:
-                    self.log('debug', "String have variables: `No`")
+                    logger.debug("String have variables: `No`")
                     return False, self.data
-            self.log('debug', "String have variables: `Yes`")
+            logger.debug("String have variables: `Yes`")
 
             # variable
             if param_name[:1] == '$':
-                self.log('debug', "Is variable: `Yes`")
+                logger.debug("Is variable: `Yes`")
 
                 # Get assign code block
                 param_block_code = self.block_code(0)
                 if param_block_code is False:
-                    self.log('debug', "Can't get assign code block")
+                    logger.debug("Can't get assign code block")
                     return True, self.data
-                self.log('debug', 'Code assign code block: ```{language}\r\n{block}```'.format(language=self.language, block=param_block_code))
+                logger.debug('Code assign code block: ```{language}\r\n{block}```'.format(language=self.language, block=param_block_code))
 
                 # Is assign out input
                 regex_get_param = self.regex[self.language]['assign_out_input'].format(re.escape(param_name))
                 regex_get_param_result = re.findall(regex_get_param, param_block_code)
                 if len(regex_get_param_result) >= 1:
                     self.param_value = regex_get_param_result[0]
-                    self.log('debug', "Is assign out input: `Yes`")
+                    logger.debug("Is assign out input: `Yes`")
                     return True, self.data
-                self.log('debug', "Is assign out input: `No`")
+                logger.debug("Is assign out input: `No`")
 
                 # Is function's param
                 regex_function_param = r'(function\s*\w+\s*\(.*{0})'.format(re.escape(param_name))
                 regex_function_param_result = re.findall(regex_function_param, param_block_code)
                 if len(regex_function_param_result) >= 1:
                     self.param_value = regex_function_param_result[0]
-                    self.log('debug', "Is function's param: `Yes`")
+                    logger.debug("Is function's param: `Yes`")
                     return True, self.data
-                self.log('debug', "Is function's param: `No`")
+                logger.debug("Is function's param: `No`")
 
                 # Is assign CONST
                 uc_rule = r'{0}\s?=\s?([A-Z_]*)'.format(re.escape(param_name))
                 uc_rule_result = re.findall(uc_rule, param_block_code)
                 if len(uc_rule_result) >= 1:
-                    self.log('debug', "Is assign CONST: Yes `{0} = {1}`".format(param_name, uc_rule_result[0]))
+                    logger.debug("Is assign CONST: Yes `{0} = {1}`".format(param_name, uc_rule_result[0]))
                     return False, self.data
-                self.log('debug', "Is assign CONST: `No`")
+                logger.debug("Is assign CONST: `No`")
 
                 # Is assign string
                 regex_assign_string = self.regex[self.language]['assign_string'].format(re.escape(param_name))
                 string = re.findall(regex_assign_string, param_block_code)
                 if len(string) >= 1 and string[0] != '':
-                    self.log('debug', "Is assign string: `Yes`")
+                    logger.debug("Is assign string: `Yes`")
                     return False, self.data
-                self.log('debug', "Is assign string: `No`")
+                logger.debug("Is assign string: `No`")
                 return True, self.data
             else:
                 if self.language == 'java':
                     # Java variable didn't have `$`
                     param_block_code = self.block_code(0)
                     if param_block_code is False:
-                        self.log('debug', "Can't get block code")
+                        logger.debug("Can't get block code")
                         return True, self.data
-                    self.log('debug', "Block code: ```{language}\r\n{code}```".format(language=self.language, code=param_block_code))
+                    logger.debug("Block code: ```{language}\r\n{code}```".format(language=self.language, code=param_block_code))
                     regex_assign_string = self.regex[self.language]['assign_string'].format(re.escape(param_name))
                     string = re.findall(regex_assign_string, param_block_code)
                     if len(string) >= 1 and string[0] != '':
-                        self.log('debug', "Is assign string: `Yes`")
+                        logger.debug("Is assign string: `Yes`")
                         return False, self.data
-                    self.log('debug', "Is assign string: `No`")
+                    logger.debug("Is assign string: `No`")
 
                     # Is assign out data
                     regex_get_param = r'String\s{0}\s=\s\w+\.getParameter(.*)'.format(re.escape(param_name))
                     get_param = re.findall(regex_get_param, param_block_code)
                     if len(get_param) >= 1 and get_param[0] != '':
-                        self.log('debug', "Is assign out data: `Yes`")
+                        logger.debug("Is assign out data: `Yes`")
                         return False, self.data
-                    self.log('debug', "Is assign out data: `No`")
+                    logger.debug("Is assign out data: `No`")
                     return True, self.data
-                self.log('info', "Not Java/PHP, can't parse")
+                logger.info("Not Java/PHP, can't parse")
                 return False, self.data
         else:
-            self.log('warning', "Can't get `param`, check built-in rule")
+            logger.warning("Can't get `param`, check built-in rule")
+            return False, self.data
 
     def is_repair(self, repair_rule, block_repair):
         """
@@ -523,23 +512,23 @@ class Parse(object):
         :return:
         """
         self.data = []
-        self.log('info', '**Is Repair**')
+        logger.info('**Is Repair**')
         block_repair_desc = {
             0: 'UP',
             1: 'DOWN',
             2: 'CURRENT'
         }
-        self.log('debug', 'Block code: {block}'.format(block=block_repair_desc[block_repair]))
+        logger.debug('Block code: {block}'.format(block=block_repair_desc[block_repair]))
         code = self.block_code(block_repair)
         if code is False:
-            self.log('debug', "Can't get repair block code")
+            logger.debug("Can't get repair block code")
             return False, self.data
         # replace repair {{PARAM}} const
         if '{{PARAM}}' in repair_rule:
             repair_rule = repair_rule.replace('{{PARAM}}', self.param_name)
-        self.log('debug', "Block code: {code}".format(code=code))
+        logger.debug("Block code: {code}".format(code=code))
         repair_result = re.findall(repair_rule, code)
-        self.log('debug', "Repair code: {0}".format(repair_result))
+        logger.debug("Repair code: {0}".format(repair_result))
         if len(repair_result) >= 1:
             return True, self.data
         else:
@@ -593,7 +582,7 @@ class Core(object):
         self.repair_code_third_party = 4008
 
         self.method = None
-        logger.info("""**Vulnerability({index})**
+        logger.debug("""Vulnerability({index})
         > File: `{file}:{line}`
         > Code: `{code}`
         > Repair Code: `{repair}`""".format(
@@ -705,7 +694,7 @@ class Core(object):
             return False, 5004
 
         if self.is_match_only_rule():
-            logger.info("Only Rule: {0}".format(self.rule_location))
+            logger.debug("Only Rule: {0}".format(self.rule_location))
             found_vul = True
         else:
             found_vul = False
@@ -725,7 +714,7 @@ class Core(object):
                             logger.info('Repair: Not fixed')
                             found_vul = True
                     else:
-                        logger.info('[RET] Param Not Controllable')
+                        logger.debug('[RET] Param Not Controllable')
                         return False, 4002
                 except:
                     traceback.print_exc()
@@ -739,7 +728,7 @@ class Core(object):
             self.repair_code = self.repair_code_init
             return True, 1001
         else:
-            logger.info("[RET] Not found vulnerability")
+            logger.debug("[RET] Not found vulnerability")
             return False, 4002
 
     def repair(self):
