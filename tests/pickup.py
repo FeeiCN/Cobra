@@ -15,16 +15,8 @@ import os
 import re
 import sys
 import time
-import shutil
-import zipfile
-import tarfile
-import rarfile
-import subprocess
-from operator import itemgetter
-from .utils import config
-from .log import logger
-from urllib import quote
-from .utils.config import home_path, Config
+
+
 
 support_extensions = ['.zip', '.rar', '.tgz', '.tar', '.gz']
 

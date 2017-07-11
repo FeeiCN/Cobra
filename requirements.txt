@@ -23,4 +23,3 @@ Werkzeug==0.11.9
 ConcurrentLogHandler==0.9.1
 celery==3.1.23
 pytest==3.0.6
-pip=9.0.1
