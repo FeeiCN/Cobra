@@ -2,7 +2,7 @@ import os
 import sys
 import re
 import hashlib
-from . import config
+# from . import config
 from .log import logger
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, support_extensions, Decompress
@@ -158,17 +158,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
 
 
-def to_bool(value):
-    """
-       Converts 'something' to boolean. Raises exception for invalid formats
-           Possible True  values: 1, True, "1", "TRue", "yes", "y", "t"
-           Possible False values: 0, False, None, [], {}, "", "0", "faLse", "no", "n", "f", 0.0, ...
-    """
-    if str(value).lower() in ("yes", "y", "true", "t", "1"):
-        return True
-    if str(value).lower() in ("no", "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"):
-        return False
-    raise Exception('Invalid value for boolean conversion: ' + str(value))
+
 
 
 def path_to_short(path, max_length=36):

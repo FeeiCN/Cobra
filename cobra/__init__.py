@@ -15,8 +15,7 @@
 import argparse
 import logging
 from .log import logger
-from .config import Config
-from . import cli, api
+from . import cli, api, config
 
 from .__version__ import __title__, __introduction__, __url__, __version__
 from .__version__ import __build__, __author__, __author_email__, __license__
@@ -25,7 +24,7 @@ from .__version__ import __copyright__, __epilog__
 
 def main():
     # configuration
-    Config().initialize()
+    config.Config().initialize()
 
     # arg parse
     parser = argparse.ArgumentParser(prog=__title__, description=__introduction__, epilog=__epilog__, version=__version__, formatter_class=argparse.RawDescriptionHelpFormatter)
