@@ -6,6 +6,9 @@ class VulnerabilityResult:
         self.match_result = None
         self.author = None
         self.timestamp = None
+        self.id = None
+        self.mode = None
+        self.type = None
 
     def convert_to_dict(self):
         _dict = {}
