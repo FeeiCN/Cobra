@@ -13,6 +13,34 @@ def to_bool(value):
     raise Exception('Invalid value for boolean conversion: ' + str(value))
 
 
+def block(index):
+    default_index_reverse = 'in-function'
+    default_index = 0
+    blocks = {
+        'in-function-up': 0,
+        'in-function-down': 1,
+        'in-current-line': 2,
+        'in-function': 3,
+        'in-class': 4,
+        'in-class-up': 5,
+        'in-class-down': 6,
+        'in-file': 7,
+        'in-file-up': 8,
+        'in-file-down': 9
+    }
+    if isinstance(index, int):
+        blocks_reverse = dict((v, k) for k, v in blocks.iteritems())
+        if index in blocks_reverse:
+            return blocks_reverse[index]
+        else:
+            return default_index_reverse
+    else:
+        if index in blocks:
+            return blocks[index]
+        else:
+            return default_index
+
+
 class Rule(object):
     def __init__(self):
         self.rules_path = rules_path
@@ -174,6 +202,8 @@ class Rule(object):
                         rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
                     if x.tag in ['match', 'repair']:
                         rule_info[x.tag] = x.text.strip()
+                        if x.tag == 'repair':
+                            rule_info['block'] = block(x.get('block'))
                     if x.tag == 'test':
                         for case in x:
                             case_ret = case.get('assert').lower()

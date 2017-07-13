@@ -17,7 +17,7 @@ import time
 import traceback
 import subprocess
 import multiprocessing
-from .rule import Rule
+from .rule import Rule, block
 from .utils import Tool
 from .log import logger
 from .result import VulnerabilityResult
@@ -309,7 +309,8 @@ class Parse(object):
         :param block_position:
                 0:up
                 1:down
-                2:location_line
+                2:line
+                3:in-function
         :return:
         """
         if block_position == 2:
@@ -342,11 +343,14 @@ class Parse(object):
                 elif block_position == 1:
                     block_start = int(self.line) + 1
                     block_end = sum(1 for l in open(self.file_path))
+                elif block_position == 3:
+                    block_start = 1
+                    block_end = sum(1 for l in open(self.file_path))
                 logger.debug("Not function anything `function`, will split file")
             # get param block code
             line_rule = "{0},{1}p".format(block_start, block_end)
             code = File(self.file_path).lines(line_rule)
-            logger.info('Get code: {0} - {1}p'.format(block_start, block_end))
+            logger.debug('Get code: {0} - {1}p'.format(block_start, block_end))
             return code
 
     def is_controllable_param(self):
@@ -459,13 +463,8 @@ class Parse(object):
         :return:
         """
         self.data = []
-        logger.info('**Is Repair**')
-        block_repair_desc = {
-            0: 'UP',
-            1: 'DOWN',
-            2: 'CURRENT'
-        }
-        logger.debug('Block code: {block}'.format(block=block_repair_desc[block_repair]))
+        logger.debug('**Is Repair**')
+        logger.debug('Block code: {block}'.format(block=block(block_repair)))
         code = self.block_code(block_repair)
         if code is False:
             logger.debug("Can't get repair block code")
