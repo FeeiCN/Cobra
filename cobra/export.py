@@ -2,7 +2,7 @@
 import json
 import csv
 from .log import logger
-from .tabulate import tabulate
+from prettytable import PrettyTable
 
 try:
     # python 3
@@ -257,13 +257,12 @@ def dict_to_pretty_table(vul_list):
     :param vul_list:
     :return: Pretty Table Format String
     """
-    row_list = []
-    row_headers = ["ID", "Vulnerability", "Target", "Discover Time", "Author"]
+    row_list = PrettyTable()
+    row_list.field_names = ["ID", "Vulnerability", "Target", "Discover Time", "Author"]
     for vul in vul_list:
-        row = [vul["id"], vul["type"], vul["file_path"] + ": " + str(vul["line_number"]), vul["timestamp"],
-               vul["author"]]
-        row_list.append(row)
-    return tabulate(row_list, headers=row_headers, tablefmt="psql", numalign="center", stralign="center")
+        row_list.add_row([vul["id"], vul["type"], vul["file_path"] + ": " + str(vul["line_number"]), vul["timestamp"],
+                          vul["author"]])
+    return row_list
 
 
 def flatten(input_list):
@@ -314,7 +313,7 @@ def write_to_file(find_vuls, output_format="", filename=""):
     write_obj = {"Vuls": vul_list}
 
     if output_format == "":
-        logger.info("Vulnerabilites\n" + dict_to_pretty_table(vul_list))
+        logger.info("Vulnerabilites\n" + str(dict_to_pretty_table(vul_list)))
 
     elif output_format == "json" or output_format == "JSON":
         with open(filename, "w") as f:
