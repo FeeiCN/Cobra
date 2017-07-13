@@ -13,7 +13,7 @@
 """
 from .pickup import Directory
 from .utils import ParseArgs
-from .engine import Detection
+from .detection import Detection
 from .engine import scan
 from .log import logger
 

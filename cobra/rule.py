@@ -41,7 +41,7 @@ class Rule(object):
             return None
         for language in xml_languages:
             l_name = language.get('name').lower()
-            l_chiefly = False
+            l_chiefly = 'false'
             if language.get('chiefly') is not None:
                 l_chiefly = language.get('chiefly')
             language_extensions[l_name] = {
@@ -128,11 +128,8 @@ class Rule(object):
                         'code test case 2'
                     ]
                 },
-                'rule': [
-                    'match regex 1',
-                    'match regex 2',
-                    'repair regex 3'
-                ],
+                'match': '',
+                'repair': '',
                 'language': 'php'
             }
          ]
@@ -148,7 +145,7 @@ class Rule(object):
                     continue
                 # rule information
                 rule_info = {
-                    'name': {},
+                    'name': '',
                     'file': rule_filename,
                     'vulnerability': vulnerability_name,
                     'test': {

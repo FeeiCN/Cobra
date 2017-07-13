@@ -4,13 +4,13 @@
     <language name="Any">
         <extension value=".*"/>
     </language>
-    <language name="PHP" chiefly="true">
+    <language name="PHP" chiefly="True">
         <extension value=".php"/>
         <extension value=".php3"/>
         <extension value=".php4"/>
         <extension value=".php5"/>
     </language>
-    <language name="Java" chiefly="true">
+    <language name="Java" chiefly="True">
         <extension value=".java"/>
     </language>
     <language name="Python" chiefly="true">

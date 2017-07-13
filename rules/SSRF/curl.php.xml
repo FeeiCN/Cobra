@@ -3,9 +3,8 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <vid value="10010"/>
     <name value="Base cURL SSRF"/>
-    <match><![CDATA[Aasdfasdfasf]]></match>
-    <match block="in-function-up"><![CDATA[Casdfasdfsadf]]></match>
-    <repair block="in-function"><![CDATA[B]]></repair>
+    <match><![CDATA[curl_setopt\s*\(.*,\s*CURLOPT_URL\s*,(.*)\)]]></match>
+    <repair block="in-function"><![CDATA[curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)]]></repair>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>
         <case assert="true"><![CDATA[private static $password = "test"]]></case>
