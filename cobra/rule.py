@@ -141,7 +141,6 @@ class Rule(object):
          [
             {
                 'name': "Reflect XSS",
-                'vid': '10010',
                 'status': True,
                 'vulnerability': 'XSS',
                 'author': 'Feei <feei@feei.cn>',
@@ -190,8 +189,6 @@ class Rule(object):
                     logger.critical('rule read failed!!! ({file})'.format(file=rule_path))
                     continue
                 for x in xml_rule:
-                    if x.tag == 'vid':
-                        rule_info['vid'] = x.get('value')
                     if x.tag == 'name':
                         rule_info['name'] = x.get('value')
                     if x.tag == 'status':

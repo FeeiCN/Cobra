@@ -57,11 +57,10 @@ def scan(target_directory):
             logger.debug('rule off, continue...')
             continue
         # SR(Single Rule)
-        logger.info(""" > Push {idx}.{vid}-{name}({language})""".format(
+        logger.info(""" > Push {idx}.{name}({language})""".format(
             idx=idx,
             name=single_rule['name'],
-            language=single_rule['language'],
-            vid=single_rule['vid'],
+            language=single_rule['language']
         ))
         if single_rule['language'] in languages:
             single_rule['extensions'] = languages[single_rule['language']]['extensions']
@@ -71,12 +70,12 @@ def scan(target_directory):
             continue
     pool.close()
     pool.join()
-    table = PrettyTable(["ID", "Vulnerability", 'Rule', "Target", 'Discover Time', 'Commit Information'])
+    table = PrettyTable(["ID", "VUL", 'Rule', "Target", 'Discover Time', 'Commit Information'])
     for idx, x in enumerate(find_vulnerabilities):
-        rule = '{rn}({vid})'.format(v=x.vulnerability, rn=x.rule_name, vid=x.vid)
+        rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         discover_time = x.discover_time
-        commit = '{author}({time})'.format(author=x.commit_author, time=x.commit_time)
+        commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
         row = [idx, x.vulnerability, rule, trigger, discover_time, commit]
         table.add_row(row)
     vn = len(find_vulnerabilities)
@@ -165,7 +164,7 @@ class SingleRule(object):
                     logger.debug('Not vulnerability: {code}'.format(code=status_code))
             except Exception as e:
                 traceback.print_exc()
-        logger.info('  > RID: {rid}({vn}) Vulnerabilities: {count}'.format(rid=self.sr['vid'], vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
+        logger.info('  > RID: {vn} Vulnerabilities: {count}'.format(vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
         return self.rule_vulnerabilities
 
     def parse_match(self, single_match):
@@ -193,7 +192,6 @@ class SingleRule(object):
             mr.code_content = ''
             mr.line_number = 0
         # vulnerability information
-        mr.vid = self.sr['vid']
         mr.rule_name = self.sr['name']
         mr.vulnerability = self.sr['vulnerability']
 

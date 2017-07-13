@@ -1,6 +1,5 @@
 class VulnerabilityResult:
     def __init__(self):
-        self.vid = 0
         self.vulnerability = ''
         self.rule_name = ''
         self.file_path = None

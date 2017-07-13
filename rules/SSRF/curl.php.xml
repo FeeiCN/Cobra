@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cobra document="https://github.com/wufeifei/cobra">
-    <vid value="10010"/>
     <name value="Base cURL SSRF"/>
     <match><![CDATA[curl_setopt\s*\(.*,\s*CURLOPT_URL\s*,(.*)\)]]></match>
     <repair block="in-function"><![CDATA[curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)]]></repair>
