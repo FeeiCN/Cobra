@@ -12,6 +12,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import time
 import argparse
 import logging
 from .log import logger
@@ -23,10 +24,8 @@ from .__version__ import __copyright__, __epilog__
 
 
 def main():
-    # configuration
-    config.Config().initialize()
-
     # arg parse
+    t1 = time.clock()
     parser = argparse.ArgumentParser(prog=__title__, description=__introduction__, epilog=__epilog__, version=__version__, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser_group_scan = parser.add_argument_group('Scan')
@@ -57,6 +56,8 @@ def main():
     else:
         logger.debug('start scanning...')
         cli.start(args.target, args.format, args.output, args.rule, args.exclude)
+    t2 = time.clock()
+    logger.info('Done! TC:{TC}s'.format(TC=t2 - t1))
 
 
 if __name__ == '__main__':

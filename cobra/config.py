@@ -12,7 +12,6 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import json
 import StringIO
 import ConfigParser
 import traceback
@@ -24,20 +23,15 @@ core_path = os.path.join(project_directory, 'cobra')
 tests_path = os.path.join(core_path, 'tests')
 examples_path = os.path.join(tests_path, 'examples')
 rules_path = os.path.join(project_directory, 'rules')
-home_path = os.path.join(os.path.expandvars(os.path.expanduser("~")), ".cobra")
-config_path = os.path.join(home_path, 'config.cobra')
-rule_path = os.path.join(home_path, 'rule.cobra')
+config_path = os.path.join(project_directory, 'config.cobra')
+rule_path = os.path.join(project_directory, 'rule.cobra')
 
 
 def to_bool(value):
-    """
-       Converts 'something' to boolean. Raises exception for invalid formats
-           Possible True  values: 1, True, "1", "TRue", "yes", "y", "t"
-           Possible False values: 0, False, None, [], {}, "", "0", "faLse", "no", "n", "f", 0.0, ...
-    """
-    if str(value).lower() in ("yes", "y", "true", "t", "1"):
+    """Converts 'something' to boolean. Raises exception for invalid formats"""
+    if str(value).lower() in ("on", "yes", "y", "true", "t", "1"):
         return True
-    if str(value).lower() in ("no", "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"):
+    if str(value).lower() in ("off", "no", "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"):
         return False
     raise Exception('Invalid value for boolean conversion: ' + str(value))
 
@@ -72,26 +66,6 @@ class Config(object):
         else:
             return
 
-    def initialize(self):
-        # ~/.cobra/config.cobra
-        source_config = os.path.join(project_directory, 'config.cobra')
-        self.copy(source_config, config_path)
-
-        # ~/.cobra/rule.cobra
-        destination_rule = os.path.join(project_directory, 'rule.cobra')
-        self.copy(destination_rule, rule_path)
-        return
-
-    def rule(self):
-        self.initialize()
-        try:
-            with open(rule_path) as f:
-                rules = json.load(f)
-            return rules
-        except Exception, v:
-            logger.critical(v.message)
-            return []
-
 
 def properties(config_path):
     if os.path.isfile(config_path) is not True:
@@ -108,22 +82,25 @@ def properties(config_path):
         return dict(cp.items('dummy_section'))
 
 
-class Rules(object):
+class Rule(object):
     def __init__(self):
         self.rules_path = rules_path
 
     @property
     def languages(self):
         """
-        Read all language extensions
+        Get all languages
         :return:
         {
-            'pph':[
-                '.php',
-                '.php3',
-                '.php4',
-                '.php5'
-            ]
+            'php':{
+                'chiefly': 'true',
+                'extensions':[
+                    '.php',
+                    '.php3',
+                    '.php4',
+                    '.php5'
+                ]
+            }
         }
         """
         language_extensions = {}
@@ -133,10 +110,16 @@ class Rules(object):
             return None
         for language in xml_languages:
             l_name = language.get('name').lower()
-            language_extensions[l_name] = []
+            l_chiefly = False
+            if language.get('chiefly') is not None:
+                l_chiefly = language.get('chiefly')
+            language_extensions[l_name] = {
+                'chiefly': l_chiefly,
+                'extensions': []
+            }
             for lang in language:
                 l_ext = lang.get('value').lower()
-                language_extensions[l_name].append(l_ext)
+                language_extensions[l_name]['extensions'].append(l_ext)
         return language_extensions
 
     @property

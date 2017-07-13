@@ -24,7 +24,7 @@ from operator import itemgetter
 from . import config
 from .log import logger
 from urllib import quote
-from .config import home_path, Config
+from .config import project_directory, Config
 
 support_extensions = ['.zip', '.rar', '.tgz', '.tar', '.gz']
 
@@ -292,7 +292,7 @@ class Git(object):
     def __init__(self, repo_address, branch='master', username=None, password=None):
 
         # get upload directory
-        self.upload_directory = os.path.join(home_path, 'versions')
+        self.upload_directory = os.path.join(project_directory, 'versions')
         if os.path.isdir(self.upload_directory) is False:
             os.makedirs(self.upload_directory)
 

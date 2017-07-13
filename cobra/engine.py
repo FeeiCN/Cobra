@@ -16,12 +16,13 @@ import re
 import traceback
 import subprocess
 import multiprocessing
-from .config import Config, Rules
+from .config import Config, Rule
 from pip.req import parse_requirements
 from .utils import Tool
 from .log import logger
 from .result import VulnerabilityResult
 from .pickup import File
+from prettytable import PrettyTable
 
 
 def scan_single(target_directory, single_rule):
@@ -29,22 +30,11 @@ def scan_single(target_directory, single_rule):
 
 
 def scan(target_directory):
-    r = Rules()
+    r = Rule()
     vulnerabilities = r.vulnerabilities
     languages = r.languages
     frameworks = r.frameworks
     rules = r.rules
-
-    """
-    {
-        'hcp': {
-            'rule1': [vr1, vr2]
-        },
-        'xss': {
-            'rule2': [vr3, vr4]
-        }
-    }
-    """
     find_vulnerabilities = []
 
     def store(result):
@@ -58,36 +48,33 @@ def scan(target_directory):
     if len(rules) == 0:
         logger.critical('no rules!')
         return False
+    logger.info('Push Rules ({rc})'.format(rc=len(rules)))
     for idx, single_rule in enumerate(rules):
+        if single_rule['status'] is False:
+            logger.debug('rule off, continue...')
+            continue
         # SR(Single Rule)
-        logger.debug("""Push Rule
-                     > index: {idx}
-                     > name: {name}
-                     > status: {status}
-                     > language: {language}
-                     > vid: {vid}""".format(
+        logger.info(""" > Push {idx}.{vid}-{name}({language})""".format(
             idx=idx,
             name=single_rule['name']['en'],
-            status=single_rule['status'],
             language=single_rule['language'],
             vid=single_rule['vid'],
-            match=single_rule['match']
         ))
-        if single_rule['status'] is False:
-            logger.info('rule disabled, continue...')
-            continue
         if single_rule['language'] in languages:
-            single_rule['extensions'] = languages[single_rule['language']]
+            single_rule['extensions'] = languages[single_rule['language']]['extensions']
             pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
         else:
             logger.critical('unset language, continue...')
             continue
-    logger.info('> Rules: {rc}'.format(rc=len(rules)))
     pool.close()
     pool.join()
-
+    table = PrettyTable(["ID", "Vulnerability", "Target", 'Discover Time', 'Author'])
     for x in find_vulnerabilities:
-        print(x)
+        vulnerability = '{v}>{rn}(vid)'.format(v=x.vulnerability, rn=x.rule_name, vid=x.vid)
+        trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
+        discover_time = x.timestamp
+        table.add_row([x.id, vulnerability, trigger, discover_time, x.author])
+    logger.info("Vulnerabilities\r\n{table}".format(table=table))
 
 
 class SingleRule(object):
@@ -209,11 +196,12 @@ class Detection(object):
 
     @property
     def language(self):
+        """Detection main language"""
+        languages = Rule().languages
         tmp_language = None
         for ext, ext_info in self.files:
             logger.debug("{ext} {count}".format(ext=ext, count=ext_info['count']))
-            rules = Config().rule()
-            for language, language_info in rules['languages'].items():
+            for language, language_info in languages.items():
                 if ext in language_info['extensions']:
                     if 'chiefly' in language_info and language_info['chiefly'].lower() == 'true':
                         logger.debug('found the chiefly language({language}), maybe have largest, continue...'.format(language=language))
@@ -498,7 +486,7 @@ class Parse(object):
                         return False, self.data
                     logger.debug("Is assign out data: `No`")
                     return True, self.data
-                logger.info("Not Java/PHP, can't parse")
+                logger.critical("Not Java/PHP, can't parse")
                 return False, self.data
         else:
             logger.warning("Can't get `param`, check built-in rule")
@@ -678,19 +666,19 @@ class Core(object):
         """
         self.method = 0
         if self.is_white_list():
-            logger.info("[RET] Whitelist")
+            logger.debug("[RET] Whitelist")
             return False, 5001
 
         if self.is_special_file():
-            logger.info("[RET] Special File")
+            logger.debug("[RET] Special File")
             return False, 5002
 
         if self.is_test_file():
-            logger.info("[RET] Test File")
+            logger.debug("[RET] Test File")
             return True, 5003
 
         if self.is_annotation():
-            logger.info("[RET] Annotation")
+            logger.debug("[RET] Annotation")
             return False, 5004
 
         if self.is_match_only_rule():
@@ -704,14 +692,14 @@ class Core(object):
                     parse_instance = Parse(self.rule_location, self.file_path, self.line_number, self.code_content)
                     param_is_controllable, data = parse_instance.is_controllable_param()
                     if param_is_controllable:
-                        logger.info('[RET] Param is controllable')
+                        logger.debug('[RET] Param is controllable')
                         is_repair, data = parse_instance.is_repair(self.rule_repair, self.block_repair)
                         if is_repair:
                             # fixed
-                            logger.info('[RET] Vulnerability Fixed')
+                            logger.debug('[RET] Vulnerability Fixed')
                             return False, 1002
                         else:
-                            logger.info('Repair: Not fixed')
+                            logger.debug('Repair: Not fixed')
                             found_vul = True
                     else:
                         logger.debug('[RET] Param Not Controllable')

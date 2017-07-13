@@ -44,11 +44,11 @@ def start(target, formatter, output, rule, exclude):
     main_language = dt.language
     main_framework = dt.framework
 
-    logger.info('> Static analysis')
-    logger.info('  > Target: {tm}, Output: {om}'.format(tm=target_mode, om=output_mode))
-    logger.info('  > {d}'.format(d=target_directory))
-    logger.info('  > Language: {l}, Framework: {f}'.format(l=main_language, f=main_framework))
-    logger.info('  > Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
+    logger.info('Static analysis')
+    logger.info(' > Target: {tm}, Output: {om}'.format(tm=target_mode, om=output_mode))
+    logger.info(' > {d}'.format(d=target_directory))
+    logger.info(' > Language: {l}, Framework: {f}'.format(l=main_language, f=main_framework))
+    logger.info(' > Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
 
     # scan
     scan(target_directory)

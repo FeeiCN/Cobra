@@ -17,6 +17,6 @@
         <case assert="true"><![CDATA[$pwd = "test"]]></case>
         <case assert="false"><![CDATA[$pwd = "";]]></case>
     </test>
-    <status value="true"/>
+    <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>

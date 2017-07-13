@@ -4,9 +4,9 @@
     <vid value="10010"/>
     <name lang="en">Base cURL SSRF</name>
     <name lang="zh-cn">基于cURL的SSRF</name>
-    <mode value="only-match"/>
     <match><![CDATA[A]]></match>
-    <repair block="in-function" ret="found-is-vulnerability"><![CDATA[B]]></repair>
+    <match block="in-function-up"><![CDATA[C]]></match>
+    <repair block="in-function"><![CDATA[B]]></repair>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>
         <case assert="true"><![CDATA[private static $password = "test"]]></case>
@@ -19,6 +19,6 @@
         <case assert="true"><![CDATA[$pwd = "test"]]></case>
         <case assert="false"><![CDATA[$pwd = "";]]></case>
     </test>
-    <status value="true"/>
+    <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>
