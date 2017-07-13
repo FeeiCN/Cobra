@@ -1,6 +1,8 @@
 # coding=utf-8
 import json
 import csv
+from .log import logger
+from .tabulate import tabulate
 
 try:
     # python 3
@@ -192,7 +194,7 @@ def dict_to_html(vul_list):
                         </ul>
                     </div>
                     <div class='col-md-9 p0 form_code'>
-                        <textarea id='code'><?php // This is a demo code</textarea>
+                        <textarea id='code'>// This is a demo code</textarea>
                         <div class='cm-loading' style='display:none;'></div>
                     </div>
                 </div>
@@ -239,6 +241,7 @@ def dict_to_html(vul_list):
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>"""
     result_list.append(report_js)
@@ -246,6 +249,21 @@ def dict_to_html(vul_list):
     result_list.append(html_footer)
 
     return "\n".join(result_list)
+
+
+def dict_to_pretty_table(vul_list):
+    """
+    Pretty print vul_list in console.
+    :param vul_list:
+    :return: Pretty Table Format String
+    """
+    row_list = []
+    row_headers = ["ID", "Vulnerability", "Target", "Discover Time", "Author"]
+    for vul in vul_list:
+        row = [vul["id"], vul["type"], vul["file_path"] + ": " + str(vul["line_number"]), vul["timestamp"],
+               vul["author"]]
+        row_list.append(row)
+    return tabulate(row_list, headers=row_headers, tablefmt="psql", numalign="center", stralign="center")
 
 
 def flatten(input_list):
@@ -269,7 +287,7 @@ def flatten(input_list):
     return output_list
 
 
-def write_to_file(find_vuls, output_format, filename):
+def write_to_file(find_vuls, output_format="", filename=""):
     """
     Export scan result to file.
     :param find_vuls: list of scan result
@@ -285,26 +303,34 @@ def write_to_file(find_vuls, output_format, filename):
         [mr, mr, mr],
         [mr, mr, mr]
     ]
-    
+
     where
     mr = {"file_path": "xxxx", "code_content": "<?php phpinfo();?>"}, which is a dict.
     """
 
     vul_list = flatten(find_vuls)
+    # 按 ID 排序
+    vul_list = sorted(vul_list, key=lambda k: k["id"])
     write_obj = {"Vuls": vul_list}
 
-    if output_format == "json":
+    if output_format == "":
+        logger.info("Vulnerabilites\n" + dict_to_pretty_table(vul_list))
+
+    elif output_format == "json" or output_format == "JSON":
         with open(filename, "w") as f:
             f.write(dict_to_json(write_obj))
 
-    elif output_format == "xml":
+    elif output_format == "xml" or output_format == "XML":
         with open(filename, "w") as f:
             f.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
             f.write(dict_to_xml(write_obj))
 
-    elif output_format == "csv":
+    elif output_format == "csv" or output_format == "CSV":
         dict_to_csv(vul_list, filename)
 
-    elif output_format == "html":
+    elif output_format == "html" or output_format == "HTML":
         with open(filename, "w") as f:
             f.write(dict_to_html(vul_list))
+
+    else:
+        raise ValueError("Unknown output format!")

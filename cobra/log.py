@@ -51,7 +51,7 @@ def stdoutencode(data):
         else:
             retVal = data.encode(sys.stdout.encoding)
     except:
-        retVal = data.encode(UNICODE_ENCODING) if isinstance(data, unicode) else data
+        retVal = data.encode(UNICODE_ENCODING) if isinstance(data, str) else data       # Python 3 中没有 unicode
 
     return retVal
 
