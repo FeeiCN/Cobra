@@ -14,8 +14,8 @@ def dict_to_xml(dict_obj, line_padding=""):
     """
     Convert a dict object to XML string.
     :param dict_obj:
-    :param line_padding:indent
-    :return: XML string
+    :param line_padding:
+    :return: XML String
     """
     result_list = []
 
@@ -45,7 +45,7 @@ def dict_to_json(dict_obj):
     """
     Convert a dict object to JSON string.
     :param dict_obj:
-    :return: JSON string
+    :return: JSON String
     """
     return json.dumps(dict_obj)
 
@@ -70,30 +70,182 @@ def dict_to_html(vul_list):
     :return: HTML String
     """
     result_list = []
+    with open("report.js", "r") as f:
+        report_js = "<script>\n" + f.read() + "</script>"
     html_header = """<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Vulnerabilities List</title>
+    <link rel="stylesheet" href="./templates/asset/css/base.css">
+    <link rel="stylesheet" href="./templates/asset/css/report.css">
+    <script src="./templates/asset/js/jquery-1.11.2.min.js"></script>
+    <script src="./templates/asset/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="./templates/asset/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="./templates/asset/codemirror/theme/material.css">
+    <link rel="stylesheet" href="./templates/asset/codemirror/addon/fold/foldgutter.css">
+    <link rel="stylesheet" href="./templates/asset/codemirror/addon/dialog/dialog.css">
+    <link rel="stylesheet" href="./templates/asset/codemirror/addon/search/matchesonscrollbar.css">
+    <link rel="stylesheet" href="./templates/asset/codemirror/addon/scroll/simplescrollbars.css">
+    <link rel="stylesheet" href="./templates/asset/codemirror/addon/display/fullscreen.css">
+    <script src="./templates/asset/codemirror/addon/fold/foldcode.js"></script>
+    <script src="./templates/asset/codemirror/addon/fold/foldgutter.js"></script>
+    <script src="./templates/asset/codemirror/addon/fold/markdown-fold.js"></script>
+    <script src="./templates/asset/codemirror/addon/fold/comment-fold.js"></script>
+    <script src="./templates/asset/codemirror/addon/fold/xml-fold.js"></script>
+    <script src="./templates/asset/codemirror/addon/fold/brace-fold.js"></script>
+    <script src="./templates/asset/codemirror/addon/display/placeholder.js"></script>
+    <script src="./templates/asset/codemirror/addon/display/fullscreen.js"></script>
+    <script src="./templates/asset/codemirror/addon/display/panel.js"></script>
+    <script src="./templates/asset/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="./templates/asset/codemirror/addon/edit/matchtags.js"></script>
+    <script src="./templates/asset/codemirror/addon/dialog/dialog.js"></script>
+    <script src="./templates/asset/codemirror/addon/search/searchcursor.js"></script>
+    <script src="./templates/asset/codemirror/addon/search/search.js"></script>
+    <script src="./templates/asset/codemirror/addon/scroll/annotatescrollbar.js"></script>
+    <script src="./templates/asset/codemirror/addon/search/matchesonscrollbar.js"></script>
+    <script src="./templates/asset/codemirror/addon/search/jump-to-line.js"></script>
+    <script src="./templates/asset/codemirror/addon/search/match-highlighter.js"></script>
+    <script src="./templates/asset/codemirror/addon/scroll/simplescrollbars.js"></script>
+    <script src="./templates/asset/codemirror/addon/selection/active-line.js"></script>
+    <script src="./templates/asset/codemirror/mode/markdown/markdown.js"></script>
+    <script src="./templates/asset/codemirror/mode/javascript/javascript.js"></script>
+    <script src="./templates/asset/codemirror/mode/css/css.js"></script>
+    <script src="./templates/asset/codemirror/mode/xml/xml.js"></script>
+    <script src="./templates/asset/codemirror/mode/yaml/yaml.js"></script>
+    <script src="./templates/asset/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="./templates/asset/codemirror/mode/php/php.js"></script>
+    <script src="./templates/asset/codemirror/mode/python/python.js"></script>
+    <script src="./templates/asset/codemirror/mode/ruby/ruby.js"></script>
+    <script src="./templates/asset/codemirror/mode/perl/perl.js"></script>
+    <script src="./templates/asset/codemirror/mode/lua/lua.js"></script>
+    <script src="./templates/asset/codemirror/mode/go/go.js"></script>
+    <script src="./templates/asset/codemirror/mode/cmake/cmake.js"></script>
+    <script src="./templates/asset/codemirror/mode/shell/shell.js"></script>
+    <script src="./templates/asset/codemirror/mode/sql/sql.js"></script>
+    <script src="./templates/asset/codemirror/mode/clike/clike.js"></script>
 </head>
-<body>\n"""
+<body>"""
     result_list.append(html_header)
-    result_list.append("<ul>\n")
-    for list_id, dict_obj in enumerate(vul_list):
-        result_list.append(" " * 4 + "<li>Vulnerability - " + str(list_id + 1) + "\n")
-        result_list.append(" " * 4 * 2 + "<ul>\n")
-        for k, v in dict_obj.items():
-            result_list.append(" " * 4 * 3 + "<li>" + html.escape(str(k)) + ": ")
-            result_list.append(html.escape(str(v)))
-            result_list.append("</li>\n")
-        result_list.append(" " * 4 * 2 + "</ul>\n")
-        result_list.append(" " * 4 * 1 + "</li>\n")
-    result_list.append(" " * 4 + "</ul>\n")
-    html_footer = """</body>
+
+    # 原始数据写入 JS 变量
+    result_list.append("<script>\nvar vul_list_origin=" + html.escape(str(vul_list)) + ";")
+
+    # 计算 vid 对应的数组偏移，统计 vul_list 中的 mode，type
+    mode_filter, type_filter = set(), set()
+    vid_list = dict()
+    for index, value in enumerate(vul_list):
+        vid_list[value["id"]] = index
+        mode_filter.add(value["mode"])
+        type_filter.add(value["type"])
+    result_list.append("var vid_list=" + html.escape(str(vid_list)) + ";")
+    result_list.append("var mode_filter=" + html.escape(str(list(mode_filter))) + ";")
+    result_list.append("var type_filter=" + html.escape(str(list(type_filter))) + ";\n</script>")
+
+    html_vul_list = """<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="invoice-title">
+                <h2>Cobra</h2>
+            </div>
+            <hr>
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-id="vul" data-toggle="tab">Vulnerabilities</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="vul">
+                    <div class="row">
+                        <div class='col-md-3 p0'>
+                        <div id="panel-2" class="vl_panel"><strong>Vulnerabilities</strong><a title="Setting vulnerabilities filter" class="cog-panel filter_setting"><img class="icon" src="./templates/asset/icon/funnel.png" alt="1"></a></div>
+                        <div class="filter">
+                            <div class="col-md-12" style="margin-top: 10px;">
+                                <label for="search_vul_type" style="color: #aaaaaa;">Types</label>
+                                <select id="search_vul_type" class="form-control" style="height: 30px;">
+                                    <option value="all">All</option>\n"""
+
+    for type in type_filter:
+        html_vul_list += " " * 4 * 9 + "<option value=\"" + type + "\">" + type + "</option>\n"
+    html_vul_list += """                                </select>
+                            </div>
+                            <div class="col-md-12" style="margin-top: 10px">
+                                <label for="search_rule" style="color: #aaaaaa;">Mode</label>
+                                <select id="search_rule" class="form-control" style="height: 30px;">
+                                    <option value="all">All</option>\n"""
+    for mode in mode_filter:
+        html_vul_list += " " * 4 * 9 + "<option value=\"" + mode + "\">" + mode + "</option>\n"
+    html_vul_list += """                                </select>
+                            </div>
+                            <div class="col-md-12" style="margin-top: 10px;">
+                                <label for="search_level" style="color: #aaaaaa;">Level</label>
+                                <select id="search_level" class="form-control" style="height: 30px;">
+                                    <option value="all">All</option>
+                                    <option value="3">High</option>
+                                    <option value="2">Medium</option>
+                                    <option value="1">Low</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12" style="padding:20px 30%">
+                                <button class="btn btn-success filter_btn" style="">Summit filter</button>
+                            </div>
+                        </div>
+                        <ul class='vulnerabilities_list scroll'>
+                        </ul>
+                    </div>
+                    <div class='col-md-9 p0 form_code'>
+                        <textarea id='code'><?php // This is a demo code</textarea>
+                        <div class='cm-loading' style='display:none;'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="widget-list">
+        <ul class="widget-trigger">
+            <li>
+                <img class="icon" src="./templates/asset/icon/v-card.png" alt="Commit Author"> <span class="commit-author"></span> <img class="icon" src="./templates/asset/icon/calendar.png" alt="Commit Time"> <span class="commit-time"></span>
+            </li>
+            <li>
+                Status: <span class="v-status"></span> (<span class="v-repair"></span>)
+            </li>
+            <li>
+                Level: <span class="v-level"></span> <span class="v-type"></span> - <span class="v-rule"></span> By <span class="v-rule-author"></span>
+            </li>
+            <li>
+                Repair AT: <span class="v-repair-time"></span> Repair: <span class="v-repair-description"></span>
+            </li>
+            <li class="hidden">
+                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank: <span></span> Bounty: <span></span>
+            </li>
+        </ul>
+    </div>
+"""
+    result_list.append(html_vul_list)
+    html_footer = """    <div class="row">
+        <div class="col-md-6">
+            <div>
+                <p style="float:left;">
+                    Copyright &copy; 2017 <a href="https://github.com/wufeifei/cobra" target="_blank">Cobra</a>. All rights reserved
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <p style="float:right;">
+                    <a href="https://github.com/wufeifei/cobra" target="_blank">Github</a> -
+                    <a href="http://cobra-docs.readthedocs.io/" target="_blank">Documents</a> -
+                    <a href="http://cobra.feei.cn/" target="_blank">About</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
 </html>"""
+    result_list.append(report_js)
+
     result_list.append(html_footer)
 
-    return "".join(result_list)
+    return "\n".join(result_list)
 
 
 def flatten(input_list):
@@ -120,9 +272,9 @@ def flatten(input_list):
 def write_to_file(find_vuls, output_format, filename):
     """
     Export scan result to file.
-    :param find_vuls: 扫描结果的 list
-    :param output_format: 输出格式
-    :param filename: 保存的文件名
+    :param find_vuls: list of scan result
+    :param output_format: output format
+    :param filename: filename to save
     :return:
     """
 
