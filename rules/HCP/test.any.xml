@@ -2,8 +2,7 @@
 
 <cobra document="https://github.com/wufeifei/cobra">
     <vid value="10010"/>
-    <name lang="en">Test</name>
-    <name lang="zh-cn">Test</name>
+    <name value="Test"/>
     <match><![CDATA[(acdscasd)]]></match>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>

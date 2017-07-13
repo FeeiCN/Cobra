@@ -13,10 +13,12 @@
 """
 import os
 import re
+import time
 import traceback
 import subprocess
 import multiprocessing
-from .config import Config, Rule
+from .config import Config
+from .rule import Rule
 from pip.req import parse_requirements
 from .utils import Tool
 from .log import logger
@@ -26,7 +28,10 @@ from prettytable import PrettyTable
 
 
 def scan_single(target_directory, single_rule):
-    return SingleRule(target_directory, single_rule).process()
+    try:
+        return SingleRule(target_directory, single_rule).process()
+    except Exception as e:
+        traceback.print_exc()
 
 
 def scan(target_directory):
@@ -56,7 +61,7 @@ def scan(target_directory):
         # SR(Single Rule)
         logger.info(""" > Push {idx}.{vid}-{name}({language})""".format(
             idx=idx,
-            name=single_rule['name']['en'],
+            name=single_rule['name'],
             language=single_rule['language'],
             vid=single_rule['vid'],
         ))
@@ -68,13 +73,19 @@ def scan(target_directory):
             continue
     pool.close()
     pool.join()
-    table = PrettyTable(["ID", "Vulnerability", "Target", 'Discover Time', 'Author'])
-    for x in find_vulnerabilities:
-        vulnerability = '{v}>{rn}(vid)'.format(v=x.vulnerability, rn=x.rule_name, vid=x.vid)
+    table = PrettyTable(["ID", "Vulnerability", "Target", 'Discover Time', 'Commit Information'])
+    for idx, x in enumerate(find_vulnerabilities):
+        vulnerability = '{v} -> {rn}({vid})'.format(v=x.vulnerability, rn=x.rule_name, vid=x.vid)
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
-        discover_time = x.timestamp
-        table.add_row([x.id, vulnerability, trigger, discover_time, x.author])
-    logger.info("Vulnerabilities\r\n{table}".format(table=table))
+        discover_time = x.discover_time
+        commit = '{author}({time})'.format(author=x.commit_author, time=x.commit_time)
+        row = [idx, vulnerability, trigger, discover_time, commit]
+        table.add_row(row)
+    vn = len(find_vulnerabilities)
+    if vn == 0:
+        logger.info('Not found vulnerability!')
+    else:
+        logger.info("Vulnerabilities ({vn})\r\n{table}".format(vn=len(find_vulnerabilities), table=table))
 
 
 class SingleRule(object):
@@ -156,7 +167,7 @@ class SingleRule(object):
                     logger.debug('Not vulnerability: {code}'.format(code=status_code))
             except Exception as e:
                 traceback.print_exc()
-        logger.info('  > RID: {rid}({vn}) Vulnerabilities: {count}'.format(rid=self.sr['vid'], vn=self.sr['name']['en'], count=len(self.rule_vulnerabilities)))
+        logger.info('  > RID: {rid}({vn}) Vulnerabilities: {count}'.format(rid=self.sr['vid'], vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
         return self.rule_vulnerabilities
 
     def parse_match(self, single_match):
@@ -183,6 +194,20 @@ class SingleRule(object):
             mr.file_path = single_match
             mr.code_content = ''
             mr.line_number = 0
+        # vulnerability information
+        mr.vid = self.sr['vid']
+        mr.rule_name = self.sr['name']
+        mr.vulnerability = self.sr['vulnerability']
+
+        # discover time
+        mr.discover_time = time.strftime('%Y-%m-%d %X', time.localtime())
+
+        # committer
+        from .pickup import Git
+        c_ret, c_author, c_time = Git.committer(mr.file_path, mr.line_number)
+        if c_ret:
+            mr.commit_author = c_author
+            mr.commit_time = c_time
         return mr
 
 
@@ -685,6 +710,7 @@ class Core(object):
             logger.debug("Only Rule: {0}".format(self.rule_location))
             found_vul = True
         else:
+            logger.debug('Not only match {r}'.format(r=self.rule_location))
             found_vul = False
             # parameter is controllable
             if self.is_can_parse() and self.rule_repair.strip() != '':

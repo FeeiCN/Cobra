@@ -2,10 +2,9 @@
 
 <cobra document="https://github.com/wufeifei/cobra">
     <vid value="10010"/>
-    <name lang="en">Base cURL SSRF</name>
-    <name lang="zh-cn">基于cURL的SSRF</name>
-    <match><![CDATA[A]]></match>
-    <match block="in-function-up"><![CDATA[C]]></match>
+    <name value="Base cURL SSRF"/>
+    <match><![CDATA[Aasdfasdfasf]]></match>
+    <match block="in-function-up"><![CDATA[Casdfasdfsadf]]></match>
     <repair block="in-function"><![CDATA[B]]></repair>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>

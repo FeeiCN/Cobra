@@ -492,7 +492,7 @@ class Git(object):
             raise NotExistError('Authentication failed')
 
     @staticmethod
-    def committer(file, path, line_number, length=1):
+    def committer(file, line_number, length=1):
         """
         git blame -L21,+1 -- git.py
         362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logger.getLogger(__name__)
@@ -505,7 +505,7 @@ class Git(object):
         :param length:
         :return: group#1, group#2
         """
-        os.chdir(path)
+        # os.chdir(path)
         cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file)
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
