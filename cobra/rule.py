@@ -1,3 +1,16 @@
+# -*- coding: utf-8 -*-
+
+"""
+    rule
+    ~~~~
+
+    Implements rule(languages/frameworks/vulnerabilities/rules)
+
+    :author:    Feei <feei@feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 import os
 from .config import rules_path
 from .log import logger
@@ -156,7 +169,10 @@ class Rule(object):
                     ]
                 },
                 'match': '',
+                'match2': '',
+                'match2-block': '',
                 'repair': '',
+                'repair-block': '',
                 'language': 'php'
             }
          ]
@@ -172,7 +188,7 @@ class Rule(object):
                     continue
                 # rule information
                 rule_info = {
-                    'name': '',
+                    'name': None,
                     'file': rule_filename,
                     'vulnerability': vulnerability_name,
                     'test': {
@@ -180,8 +196,11 @@ class Rule(object):
                         'false': []
                     },
                     'language': rule_filename.split('.xml')[0].split('.')[1],
-                    'block': '',
-                    'repair': '',
+                    'match': None,
+                    'match2': None,
+                    'match2-block': None,
+                    'repair': None,
+                    'repair-block': None,
                 }
                 rule_path = os.path.join(vulnerability_name, rule_filename)
                 xml_rule = self._read_xml(rule_path)
@@ -197,10 +216,12 @@ class Rule(object):
                         name = x.get('name')
                         email = x.get('email')
                         rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
-                    if x.tag in ['match', 'repair']:
+                    if x.tag in ['match', 'match2', 'repair']:
                         rule_info[x.tag] = x.text.strip()
                         if x.tag == 'repair':
-                            rule_info['block'] = block(x.get('block'))
+                            rule_info['repair-block'] = block(x.get('block'))
+                        elif x.tag == 'match2':
+                            rule_info['match2-block'] = block(x.get('block'))
                     if x.tag == 'test':
                         for case in x:
                             case_ret = case.get('assert').lower()

@@ -1,9 +1,22 @@
+# -*- coding: utf-8 -*-
+
+"""
+    utils
+    ~~~~~
+
+    Implements utils
+
+    :author:    Feei <feei@feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 import os
 import sys
 import re
 import hashlib
-# from . import config
 from .log import logger
+from .config import Config
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, support_extensions, Decompress
 
@@ -150,15 +163,12 @@ def allowed_file(filename):
     :param filename:
     :return:
     """
-    config_extension = config.Config('upload', 'extensions').value
+    config_extension = Config('upload', 'extensions').value
     if config_extension == '':
         logger.critical('Please set config file upload->directory')
         sys.exit(0)
     allowed_extensions = config_extension.split('|')
     return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
-
-
-
 
 
 def path_to_short(path, max_length=36):

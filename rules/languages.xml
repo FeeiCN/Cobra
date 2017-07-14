@@ -45,8 +45,10 @@
     <language name="C#">
         <extension value=".cs"/>
     </language>
-    <language name="Objective-C">
+    <language name="Header">
         <extension value=".h"/>
+    </language>
+    <language name="Objective-C">
         <extension value=".m"/>
     </language>
     <language name="Scale">

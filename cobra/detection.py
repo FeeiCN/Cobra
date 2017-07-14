@@ -1,3 +1,16 @@
+# -*- coding: utf-8 -*-
+
+"""
+    detection
+    ~~~~~~~~~
+
+    Implements detection language/framework
+
+    :author:    Feei <feei@feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 import os
 from .rule import Rule
 from .log import logger

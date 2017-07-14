@@ -1,3 +1,16 @@
+# -*- coding: utf-8 -*-
+
+"""
+    log
+    ~~~
+
+    Implements color logger
+
+    :author:    Feei <feei@feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 import os
 import sys
 import re
@@ -27,9 +40,7 @@ def single_time_warn_message(message):  # Cross-linked function
     sys.stdout.flush()
 
 
-def stdoutencode(data):
-    retVal = None
-
+def stdout_encode(data):
     try:
         data = data or ""
 
@@ -38,22 +49,22 @@ def stdoutencode(data):
             output = data.encode(sys.stdout.encoding, "replace")
 
             if '?' in output and '?' not in data:
-                warnMsg = "cannot properly display Unicode characters "
-                warnMsg += "inside Windows OS command prompt "
-                warnMsg += "(http://bugs.python.org/issue1602). All "
-                warnMsg += "unhandled occurances will result in "
-                warnMsg += "replacement with '?' character. Please, find "
-                warnMsg += "proper character representation inside "
-                warnMsg += "corresponding output files. "
-                single_time_warn_message(warnMsg)
+                warn = "cannot properly display Unicode characters "
+                warn += "inside Windows OS command prompt "
+                warn += "(http://bugs.python.org/issue1602). All "
+                warn += "unhandled occurances will result in "
+                warn += "replacement with '?' character. Please, find "
+                warn += "proper character representation inside "
+                warn += "corresponding output files. "
+                single_time_warn_message(warn)
 
-            retVal = output
+            ret = output
         else:
-            retVal = data.encode(sys.stdout.encoding)
-    except:
-        retVal = data.encode(UNICODE_ENCODING) if isinstance(data, unicode) else data
+            ret = data.encode(sys.stdout.encoding)
+    except Exception as e:
+        ret = data.encode(UNICODE_ENCODING) if isinstance(data, unicode) else data
 
-    return retVal
+    return ret
 
 
 if subprocess.mswindows:
@@ -99,7 +110,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
 
     def emit(self, record):
         try:
-            message = stdoutencode(self.format(record))
+            message = stdout_encode(self.format(record))
             stream = self.stream
 
             if not self.is_tty:
@@ -115,7 +126,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
             raise
         except IOError:
             pass
-        except:
+        except Exception as e:
             self.handleError(record)
 
     if not subprocess.mswindows:

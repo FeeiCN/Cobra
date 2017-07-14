@@ -1,3 +1,16 @@
+# -*- coding: utf-8 -*-
+
+"""
+    api
+    ~~~
+
+    Implements API Server and Interface
+
+    :author:    Feei <feei@feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 import socket
 import errno
 from flask import Flask, request
