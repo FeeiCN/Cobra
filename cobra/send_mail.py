@@ -38,11 +38,16 @@ def send_mail(filename):
         server.sendmail(from_addr=sender, to_addrs=receiver, msg=msg.as_string())
         server.quit()
         logger.info("邮件推送成功")
+        return True
     except smtplib.SMTPRecipientsRefused:
         logger.critical("邮件被拒收")
+        return False
     except smtplib.SMTPAuthenticationError:
         logger.critical("邮件认证失败")
+        return False
     except smtplib.SMTPSenderRefused:
         logger.critical("发件人被拒绝")
+        return False
     except smtplib.SMTPException, error:
         logger.critical(error)
+        return False

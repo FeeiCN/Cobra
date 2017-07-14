@@ -1,6 +1,8 @@
 from cobra import export
 from cobra.result import VulnerabilityResult
 import random
+from cobra.send_mail import send_mail
+from cobra.push_to_api import PushToHades
 
 
 def test_export():
@@ -21,3 +23,7 @@ def test_export():
             srv.append(mr)
         find_vul.append(srv)
     export.write_to_file(find_vul, 'html', 'examples/test.html')
+    send_mail(filename="examples/test.html")
+    pusher = PushToHades()
+    pusher.add_data(find_vul=find_vul)
+    pusher.push()
