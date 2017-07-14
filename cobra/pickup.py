@@ -4,7 +4,7 @@
     pickup
     ~~~~~~
 
-    Implements pickup
+    Implements pickup git/compress file
 
     :author:    Feei <feei@feei.cn>
     :homepage:  https://github.com/wufeifei/cobra
@@ -21,10 +21,10 @@ import tarfile
 import rarfile
 import subprocess
 from operator import itemgetter
-from .utils import config
+from . import config
 from .log import logger
 from urllib import quote
-from .utils.config import home_path, Config
+from .config import project_directory
 
 support_extensions = ['.zip', '.rar', '.tgz', '.tar', '.gz']
 
@@ -292,7 +292,7 @@ class Git(object):
     def __init__(self, repo_address, branch='master', username=None, password=None):
 
         # get upload directory
-        self.upload_directory = os.path.join(home_path, 'versions')
+        self.upload_directory = os.path.join(project_directory, 'versions')
         if os.path.isdir(self.upload_directory) is False:
             os.makedirs(self.upload_directory)
 
@@ -447,7 +447,8 @@ class Git(object):
         else:
             return False
 
-    def __parse_diff_result(self, content):
+    @staticmethod
+    def __parse_diff_result(content):
         """parse git diff output, return the format result
         :return: a dict, each key is the filename which has changed.
                  each value is a list store every changes.
@@ -492,21 +493,20 @@ class Git(object):
             raise NotExistError('Authentication failed')
 
     @staticmethod
-    def committer(file, path, line_number, length=1):
+    def committer(file_path, line_number, length=1):
         """
         git blame -L21,+1 -- git.py
         362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logger.getLogger(__name__)
         (?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})
         group #1: wufeifei
         group #2: 2016-09-10 12:19:44
-        :param file:
-        :param path:
+        :param file_path:
         :param line_number:
         :param length:
         :return: group#1, group#2
         """
-        os.chdir(path)
-        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file)
+        # os.chdir(path)
+        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path)
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
         if len(checkout_out) != 0:
@@ -540,12 +540,12 @@ class Subversion(object):
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
         if len(diff_err) == 0:
-            logging.debug("svn diff success")
+            logger.debug("svn diff success")
         elif 'authorization failed' in diff_err:
-            logging.warning("svn diff auth failed")
+            logger.warning("svn diff auth failed")
             sys.exit(1)
         elif 'Not a valid URL' in diff_err:
-            logging.warning("svn diff url not a valid")
+            logger.warning("svn diff url not a valid")
             sys.exit(1)
 
     def log(self):
