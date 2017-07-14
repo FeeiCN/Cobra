@@ -19,7 +19,7 @@ from .log import logger
 
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 core_path = os.path.join(project_directory, 'cobra')
-tests_path = os.path.join(core_path, 'tests')
+tests_path = os.path.join(project_directory, 'tests')
 examples_path = os.path.join(tests_path, 'examples')
 rules_path = os.path.join(project_directory, 'rules')
 config_path = os.path.join(project_directory, 'config.cobra')

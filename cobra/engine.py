@@ -80,6 +80,7 @@ def scan(target_directory):
         logger.info('Not found vulnerability!')
     else:
         logger.info("Vulnerabilities ({vn})\r\n{table}".format(vn=len(find_vulnerabilities), table=table))
+    return True
 
 
 class SingleRule(object):

@@ -14,16 +14,8 @@
 import os
 from .config import rules_path
 from .log import logger
+from .utils import to_bool
 from xml.etree import ElementTree
-
-
-def to_bool(value):
-    """Converts 'something' to boolean. Raises exception for invalid formats"""
-    if str(value).lower() in ("on", "yes", "y", "true", "t", "1"):
-        return True
-    if str(value).lower() in ("off", "no", "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"):
-        return False
-    raise Exception('Invalid value for boolean conversion: ' + str(value))
 
 
 def block(index):
