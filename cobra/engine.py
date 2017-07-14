@@ -333,6 +333,9 @@ class Parse(object):
                         elif block_position == 1:
                             block_start = int(self.line)
                             block_end = int(function_value['end']) - 1
+                        elif block_position == 3:
+                            block_start = function_value['start']
+                            block_end = function_value['end']
                         logger.debug("Trigger line's function name: {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
             else:
                 if block_position == 0:
