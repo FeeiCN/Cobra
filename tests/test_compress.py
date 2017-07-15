@@ -12,7 +12,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import pytest
-from cobra.pickup.compress import Decompress
+from cobra.pickup import Decompress
 
 
 def test_not_support_extension():

@@ -12,22 +12,22 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-from cobra.utils.config import Config
-from cobra.pickup.directory import Directory
+from cobra.config import project_directory
+from cobra.pickup import Directory
 
 
 def test_file():
-    absolute_path = os.path.join(Config().project_directory, 'setup.py')
+    absolute_path = os.path.join(project_directory, 'setup.py')
     files, file_sum, time_consume = Directory(absolute_path).collect_files()
-    assert '.py' in files
-    assert 1 == files['.py']['count']
-    assert 'setup.py' == files['.py']['list'][0]
+    ext, ext_info = files[0]
+    assert '.py' == ext
+    assert 1 == ext_info['count']
+    assert 'setup.py' in ext_info['list']
     assert 1 == file_sum
     assert time_consume < 1
 
 
 def test_directory():
-    absolute_path = Config().project_directory
+    absolute_path = project_directory
     files, file_sum, time_consume = Directory(absolute_path).collect_files()
-    assert '.yml' in files
-    assert len(files) == 31
+    assert len(files) > 1
