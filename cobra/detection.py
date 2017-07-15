@@ -11,12 +11,12 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import os
 import re
+import os
 from .rule import Rule
 from log import logger
-from prettytable import PrettyTable
 from pip.req import parse_requirements
+from prettytable import PrettyTable
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
