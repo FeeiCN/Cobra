@@ -25,6 +25,8 @@ except ImportError:
 extension = ['js', 'py', 'php', 'java', 'xml', 'css', 'html', 'md', 'm']
 file_type = []
 
+
+
 class Detection(object):
     def __init__(self, target_directory, files):
         self.target_directory = target_directory
@@ -60,6 +62,7 @@ class Detection(object):
 
     @property
     def framework(self):
+
         tree = self.rule()
         root = tree.getroot()
         frame_data, language_data = self.parseXml(root, self.frame_data, self.language_data)
@@ -83,6 +86,7 @@ class Detection(object):
         else:
             logger.debug('requirements.txt not found!')
             self.requirements = []
+
 
     def parseXml(self, root, frame_data, language_data):
         if len(root) != 0:
@@ -353,3 +357,4 @@ class Detection(object):
             x.add_row([lang, type_num[lang]['files'], type_num[lang]['blank'], type_num[lang]['pound'], type_num[lang]['code']])
         x.add_row(["SUM", totalFile, totalBlankLine, totalPoundLine, totalCodeLine])
         logger.info('\n'+str(x))
+
