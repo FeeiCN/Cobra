@@ -18,6 +18,7 @@ import traceback
 from .log import logger
 
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+code_path = '/tmp'
 core_path = os.path.join(project_directory, 'cobra')
 tests_path = os.path.join(project_directory, 'tests')
 examples_path = os.path.join(tests_path, 'examples')

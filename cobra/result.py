@@ -21,5 +21,11 @@ class VulnerabilityResult:
         self.line_number = None
         self.code_content = None
         self.match_result = None
-        self.commit_time = None
+        self.score = None
+        self.commit_time = 'Unknown'
         self.commit_author = 'Unknown'
+
+    def convert_to_dict(self):
+        _dict = {}
+        _dict.update(self.__dict__)
+        return _dict

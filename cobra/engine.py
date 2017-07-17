@@ -41,6 +41,7 @@ def scan(target_directory):
     def store(result):
         if result is not None and isinstance(result, list) is True:
             for res in result:
+                res.file_path = res.file_path.replace(target_directory, '')
                 find_vulnerabilities.append(res)
         else:
             logger.debug('Not found vulnerabilities on this rule!')
@@ -68,12 +69,12 @@ def scan(target_directory):
             continue
     pool.close()
     pool.join()
-    table = PrettyTable(["ID", "VUL", 'Rule', "Target", 'Commit Information'])
+    table = PrettyTable(["ID", "VUL", 'Rule', "Target", 'Commit Information', 'Code Content'])
     for idx, x in enumerate(find_vulnerabilities):
         rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
-        row = [idx, x.vulnerability, rule, trigger, commit]
+        row = [idx, x.vulnerability, rule, trigger, commit, x.code_content]
         table.add_row(row)
     vn = len(find_vulnerabilities)
     if vn == 0:
@@ -85,7 +86,7 @@ def scan(target_directory):
 
 class SingleRule(object):
     def __init__(self, target_directory, single_rule):
-        self.directory = target_directory
+        self.target_directory = target_directory
         self.find = Tool().find
         self.grep = Tool().grep
         self.sr = single_rule
@@ -107,7 +108,7 @@ class SingleRule(object):
                 filters.append('-name')
                 filters.append('*' + e)
             # Find Special Ext Files
-            param = [self.find, self.directory, "-type", "f"] + filters
+            param = [self.find, self.target_directory, "-type", "f"] + filters
         else:
             # grep
             filters = []
@@ -120,7 +121,7 @@ class SingleRule(object):
                 filters.append('--exclude-dir={0}'.format(explode_dir))
 
             # -s suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
-            param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [self.sr['match'], self.directory]
+            param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [self.sr['match'], self.target_directory]
         try:
             p = subprocess.Popen(param, stdout=subprocess.PIPE)
             result, error = p.communicate()
@@ -151,9 +152,12 @@ class SingleRule(object):
                 logger.debug(' > continue...')
                 continue
             vulnerability = self.parse_match(origin_vulnerability)
+            if vulnerability is None:
+                logger.debug('Not vulnerability, continue...')
+                continue
             is_test = False
             try:
-                is_vulnerability, status_code = Core(self.directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+                is_vulnerability, status_code = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
                 if is_vulnerability:
                     logger.debug('Found {code}'.format(code=status_code))
                     self.rule_vulnerabilities.append(vulnerability)
@@ -184,10 +188,13 @@ class SingleRule(object):
                 mr.code_content = ''
                 mr.line_number = 0
         else:
-            # find result
-            mr.file_path = single_match
-            mr.code_content = ''
-            mr.line_number = 0
+            if 'Binary file' in single_match:
+                return None
+            else:
+                # find result
+                mr.file_path = single_match
+                mr.code_content = ''
+                mr.line_number = 0
         # vulnerability information
         mr.rule_name = self.sr['name']
         mr.vulnerability = self.sr['vulnerability']
