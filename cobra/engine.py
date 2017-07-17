@@ -151,6 +151,9 @@ class SingleRule(object):
                 logger.debug(' > continue...')
                 continue
             vulnerability = self.parse_match(origin_vulnerability)
+            if vulnerability is None:
+                logger.debug('Not vulnerability, continue...')
+                continue
             is_test = False
             try:
                 is_vulnerability, status_code = Core(self.directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
@@ -184,10 +187,13 @@ class SingleRule(object):
                 mr.code_content = ''
                 mr.line_number = 0
         else:
-            # find result
-            mr.file_path = single_match
-            mr.code_content = ''
-            mr.line_number = 0
+            if 'Binary file' in single_match:
+                return None
+            else:
+                # find result
+                mr.file_path = single_match
+                mr.code_content = ''
+                mr.line_number = 0
         # vulnerability information
         mr.rule_name = self.sr['name']
         mr.vulnerability = self.sr['vulnerability']

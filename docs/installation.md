@@ -6,5 +6,9 @@ python setup.py install
 
 # Usage
 ```
-cobra -t tests/examples/
+# Scan Directory
+python cobra.py -t tests/examples/
+
+# Scan Git
+python cobra.py -t https://github.com/wufeifei/cobra.git
 ```

@@ -21,5 +21,5 @@ class VulnerabilityResult:
         self.line_number = None
         self.code_content = None
         self.match_result = None
-        self.commit_time = None
+        self.commit_time = 'Unknown'
         self.commit_author = 'Unknown'
