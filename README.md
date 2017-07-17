@@ -49,6 +49,15 @@ White Hat can be customized private Cobra scanning rules, open source project co
 ![Cobra manage overview](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
 ![Cobra manage rule](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/manage_rule.png)
 
+## Test
+```
+# TestCase Test
+$ pytest -v
+
+# TestCase Coverage
+$ py.test --cov cobra cobra/tests
+```
+
 ## Beta version
 Cobra is currently a beta version, there are some imperfections and bugs, so we need your contribution, whether it is testing, development, vulnerability scanning rules or advice.
 
