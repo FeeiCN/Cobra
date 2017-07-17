@@ -46,7 +46,7 @@ class Decompress(object):
         """
         :param filename: a file name without path.
         """
-        self.upload_directory = os.path.join(config.Config('upload', 'directory').value, 'uploads')
+        self.upload_directory = os.path.join(code_path, 'upload')
         self.filename = filename
         self.filepath = os.path.join(self.upload_directory, filename)
         self.dir_name = os.path.splitext(self.filename)[0]
