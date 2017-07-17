@@ -42,7 +42,7 @@ $(function () {
             $('li[data-id=' + vid + ']').addClass('active');
             // hide loading
             $('.CodeMirror .cm-loading').hide();
-            var data = vul_list_origin[vid_list[vid]];
+            var data = vul_list_origin[vid];
             $('#code').val(data.code_content);
             // Highlighting param
             vulnerabilities_list.cm_code.setOption("mode", data.mode);
@@ -53,17 +53,17 @@ $(function () {
             vulnerabilities_list.cm_code.operation(function () {
                 // panel
                 $('.v-path').text(data.file_path + ':' + data.line_number);
-                $('.v-id').text('MVE-' + data.id);
-                $('.v-language').text(data.mode);
+                $('.v-id').text('MVE-' + vid);
+                $('.v-language').text(data.vulnerability);
                 // widget
                 function init_widget() {
                     var lis = $('.widget-trigger li');
-                    $('.commit-author').text('@' + data.author);
-                    $('.commit-time').text('@' + data.timestamp);
+                    $('.commit-author').text('@' + data.commit_author);
+                    $('.commit-time').text('@' + data.commit_time);
                     // $('.v-level').text(data.rule.level);
-                    $('.v-type').text(data.type);
+                    $('.v-type').text(data.vulnerability);
                     $('.v-rule').text(data.match_result);
-                    $('.v-rule-author').text('@' + data.author);
+                    // $('.v-rule-author').text('@' + data.commit_author);
                 }
 
                 init_widget();
@@ -233,11 +233,11 @@ $(function () {
                         if (list[i].line_number != 0) {
                             line = ':' + list[i].line_number;
                         }
-                        list_html = list_html + '<li data-id="' + list[i].id + '" class=" " data-start="1" data-line="1">' +
-                            '<strong>MVE-' + list[i].id + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
+                        list_html = list_html + '<li data-id="' + (i+1) + '" class=" " data-start="1" data-line="1">' +
+                            '<strong>MVE-' + (i+1) + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
                             '<span class="issue-information">' +
                             '<small>' +
-                            list[i].match_result + ' => ' + list[i].timestamp +
+                            list[i].match_result + ' => ' + list[i].commit_time +
                             '</small>' +
                             '</span>' +
                             '</li>';

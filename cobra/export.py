@@ -72,7 +72,7 @@ def dict_to_html(vul_list):
     :return: HTML String
     """
     result_list = []
-    with open("report.js", "r") as f:
+    with open("templates/asset/js/report.js", "r") as f:
         report_js = "<script>\n" + f.read() + "</script>"
     html_header = """<!doctype html>
 <html>
@@ -131,18 +131,15 @@ def dict_to_html(vul_list):
     result_list.append(html_header)
 
     # 原始数据写入 JS 变量
-    result_list.append("<script>\nvar vul_list_origin=" + html.escape(str(vul_list)) + ";")
+    result_list.append("<script>\nvar vul_list_origin=" + html.escape(json.dumps(vul_list)) + ";")
 
     # 计算 vid 对应的数组偏移，统计 vul_list 中的 mode，type
-    mode_filter, type_filter = set(), set()
-    vid_list = dict()
+    rule_filter, type_filter = set(), set()
     for index, value in enumerate(vul_list):
-        vid_list[value["id"]] = index
-        mode_filter.add(value["mode"])
-        type_filter.add(value["type"])
-    result_list.append("var vid_list=" + html.escape(str(vid_list)) + ";")
-    result_list.append("var mode_filter=" + html.escape(str(list(mode_filter))) + ";")
-    result_list.append("var type_filter=" + html.escape(str(list(type_filter))) + ";\n</script>")
+        rule_filter.add(value.get("rule_name"))
+        type_filter.add(value.get("vulnerability"))
+    result_list.append("var rule_filter=" + html.escape(json.dumps(list(rule_filter))) + ";")
+    result_list.append("var type_filter=" + html.escape(json.dumps(list(type_filter))) + ";\n</script>")
 
     html_vul_list = """<div class="container-fluid">
     <div class="row">
@@ -173,8 +170,8 @@ def dict_to_html(vul_list):
                                 <label for="search_rule" style="color: #aaaaaa;">Mode</label>
                                 <select id="search_rule" class="form-control" style="height: 30px;">
                                     <option value="all">All</option>\n"""
-    for mode in mode_filter:
-        html_vul_list += " " * 4 * 9 + "<option value=\"" + mode + "\">" + mode + "</option>\n"
+    for rule in rule_filter:
+        html_vul_list += " " * 4 * 9 + "<option value=\"" + rule + "\">" + rule + "</option>\n"
     html_vul_list += """                                </select>
                             </div>
                             <div class="col-md-12" style="margin-top: 10px;">
@@ -308,8 +305,6 @@ def write_to_file(find_vuls, output_format="", filename=""):
     """
 
     vul_list = flatten(find_vuls)
-    # 按 ID 排序
-    vul_list = sorted(vul_list, key=lambda k: k["id"])
     write_obj = {"Vuls": vul_list}
 
     if output_format == "":
