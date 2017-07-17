@@ -175,8 +175,12 @@ class Rule(object):
             if os.path.isfile(v_path):
                 continue
             for rule_filename in os.listdir(v_path):
+                if '.xml' not in rule_filename:
+                    logger.debug('Not rule file {f}'.format(f=rule_filename))
+                    continue
                 v_rule_path = os.path.join(v_path, rule_filename)
                 if os.path.isfile(v_rule_path) is not True:
+                    logger.debug('not file {f}'.format(f=v_rule_path))
                     continue
                 # rule information
                 rule_info = {

@@ -1,10 +1,16 @@
 # Installation
 ```
-wget https://github.com/wufeifei/cobra/archive/beta.zip & unzip beta.zip & cd cobra-beta
+git clone https://github.com/wufeifei/cobra.git
+git checkout -b beta
+cd cobra
 python setup.py install
 ```
 
 # Usage
 ```
-cobra -t tests/examples/
+# Scan Directory
+python cobra.py -t tests/examples/
+
+# Scan Git
+python cobra.py -t https://github.com/wufeifei/cobra.git
 ```
