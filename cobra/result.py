@@ -24,3 +24,8 @@ class VulnerabilityResult:
         self.score = None
         self.commit_time = 'Unknown'
         self.commit_author = 'Unknown'
+
+    def convert_to_dict(self):
+        _dict = {}
+        _dict.update(self.__dict__)
+        return _dict

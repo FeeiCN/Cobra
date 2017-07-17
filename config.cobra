@@ -39,10 +39,16 @@ backend:redis://:password@127.0.0.1:7890/4
 mysql: mysql+mysqldb://root:@127.0.0.1:3306/cobra
 
 [email]
+# SMTP Host
 host:
+# SMTP Port
 port:
-user:
+username:
 password:
+sender:
+receiver:
+# use ssl, True / False
+ssl:
 
 [report]
 to:
