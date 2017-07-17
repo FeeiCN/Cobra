@@ -1,15 +1,18 @@
-from cobra.engine.rules import Rules
+from cobra.rule import Rule
 
 
 def test_languages():
-    languages = Rules().languages
+    languages = Rule().languages
     assert isinstance(languages, dict)
     assert 'php' in languages
-    assert '.php' in languages['php']
+    assert 'chiefly' in languages['php']
+    assert 'extensions' in languages['php']
+    assert 'True' in languages['php']['chiefly']
+    assert '.php' in languages['php']['extensions']
 
 
 def test_frameworks():
-    frameworks = Rules().frameworks
+    frameworks = Rule().frameworks
     assert isinstance(frameworks, dict)
     assert 'python' in frameworks
     assert 'flask' in frameworks['python']
@@ -19,7 +22,7 @@ def test_frameworks():
 
 
 def test_vulnerabilities():
-    vulnerabilities = Rules().vulnerabilities
+    vulnerabilities = Rule().vulnerabilities
     assert isinstance(vulnerabilities, dict)
     assert '10010' in vulnerabilities
     assert 'name' in vulnerabilities['10010']
@@ -29,13 +32,20 @@ def test_vulnerabilities():
 
 
 def test_rules():
-    rules = Rules().rules
-    assert isinstance(rules, dict)
-    rule_name = 'Hardcoded-Password'
-    assert rule_name in rules
-    assert 'status' in rules[rule_name][0]
-    assert 'name' in rules[rule_name][0]
-    assert 'vid' in rules[rule_name][0]
-    assert 'author' in rules[rule_name][0]
-    assert 'test' in rules[rule_name][0]
-    assert 'match' in rules[rule_name][0]
+    rules = Rule().rules
+    assert isinstance(rules, list)
+    assert len(rules) > 1
+    assert 'name' in rules[0]
+    assert 'status' in rules[0]
+    assert 'vulnerability' in rules[0]
+    assert 'author' in rules[0]
+    assert 'file' in rules[0]
+    assert 'test' in rules[0]
+    assert 'true' in rules[0]['test']
+    assert 'false' in rules[0]['test']
+    assert 'match' in rules[0]
+    assert 'match2' in rules[0]
+    assert 'match2-block' in rules[0]
+    assert 'repair' in rules[0]
+    assert 'repair-block' in rules[0]
+    assert 'language' in rules[0]

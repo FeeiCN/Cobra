@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cobra document="https://github.com/wufeifei/cobra">
-    <vid value="10010"/>
-    <name lang="en">Assign Hardcoded Password</name>
-    <name lang="zh-cn">赋值型的硬编码密码</name>
+    <name value="Assign Hardcoded Password"/>
     <match><![CDATA[((?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"])]]></match>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>
@@ -17,6 +15,6 @@
         <case assert="true"><![CDATA[$pwd = "test"]]></case>
         <case assert="false"><![CDATA[$pwd = "";]]></case>
     </test>
-    <status value="true"/>
+    <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>

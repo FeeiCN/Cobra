@@ -1,9 +1,22 @@
+# -*- coding: utf-8 -*-
+
+"""
+    utils
+    ~~~~~
+
+    Implements utils
+
+    :author:    Feei <feei@feei.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 import os
 import sys
 import re
 import hashlib
-from . import config
 from .log import logger
+from .config import Config
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, support_extensions, Decompress
 
@@ -105,6 +118,15 @@ class ParseArgs(object):
         return target_directory
 
 
+def to_bool(value):
+    """Converts 'something' to boolean. Raises exception for invalid formats"""
+    if str(value).lower() in ("on", "yes", "y", "true", "t", "1"):
+        return True
+    if str(value).lower() in ("off", "no", "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"):
+        return False
+    raise Exception('Invalid value for boolean conversion: ' + str(value))
+
+
 def convert_time(seconds):
     """
     Seconds to minute/second
@@ -150,25 +172,12 @@ def allowed_file(filename):
     :param filename:
     :return:
     """
-    config_extension = config.Config('upload', 'extensions').value
+    config_extension = Config('upload', 'extensions').value
     if config_extension == '':
         logger.critical('Please set config file upload->directory')
         sys.exit(0)
     allowed_extensions = config_extension.split('|')
     return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
-
-
-def to_bool(value):
-    """
-       Converts 'something' to boolean. Raises exception for invalid formats
-           Possible True  values: 1, True, "1", "TRue", "yes", "y", "t"
-           Possible False values: 0, False, None, [], {}, "", "0", "faLse", "no", "n", "f", 0.0, ...
-    """
-    if str(value).lower() in ("yes", "y", "true", "t", "1"):
-        return True
-    if str(value).lower() in ("no", "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"):
-        return False
-    raise Exception('Invalid value for boolean conversion: ' + str(value))
 
 
 def path_to_short(path, max_length=36):

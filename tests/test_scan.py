@@ -1,9 +1,8 @@
-from cobra.engine.scans import scan
-from cobra.utils.config import examples_path
-from cobra.utils.log import logger
+from cobra.engine import scan
+from cobra.config import examples_path
+from cobra.log import logger
 
 
 def test_scan():
     logger.info('Examples Path: {path}'.format(path=examples_path))
-    scan(examples_path)
-    assert False
+    assert scan(examples_path)

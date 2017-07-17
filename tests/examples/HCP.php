@@ -1,0 +1,3 @@
+<?php
+$appKey = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+$password = "34b9a295d037d47eec3952e9dcdb6b2b";

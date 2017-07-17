@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cobra document="https://github.com/wufeifei/cobra">
-    <vid value="10010"/>
-    <name lang="en">Base cURL SSRF</name>
-    <name lang="zh-cn">基于cURL的SSRF</name>
-    <mode value="only-match"/>
-    <match><![CDATA[A]]></match>
-    <repair block="in-function" ret="found-is-vulnerability"><![CDATA[B]]></repair>
+    <name value="Base cURL SSRF"/>
+    <match><![CDATA[curl_setopt\s*\(.*,\s*CURLOPT_URL\s*,(.*)\)]]></match>
+    <repair block="in-function"><![CDATA[curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)]]></repair>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>
         <case assert="true"><![CDATA[private static $password = "test"]]></case>
@@ -19,6 +16,6 @@
         <case assert="true"><![CDATA[$pwd = "test"]]></case>
         <case assert="false"><![CDATA[$pwd = "";]]></case>
     </test>
-    <status value="true"/>
+    <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>
