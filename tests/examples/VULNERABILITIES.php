@@ -1,10 +1,7 @@
 <?php
-/**
- * Request service(Base cURL)
- *
- * @author Feei <feei@feei.cn>
- * @link   http://blog.feei.cn/ssrf
- */
+echo ($_GET['test']);
+
+
 function curl($url){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -15,3 +12,7 @@ function curl($url){
 
 $url = $_GET['url'];
 curl($url);
+
+
+$appKey = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+$password = "34b9a295d037d47eec3952e9dcdb6b2b";

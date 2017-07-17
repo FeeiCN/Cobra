@@ -69,12 +69,12 @@ def scan(target_directory):
             continue
     pool.close()
     pool.join()
-    table = PrettyTable(["ID", "VUL", 'Rule', "Target", 'Commit Information'])
+    table = PrettyTable(["ID", "VUL", 'Rule', "Target", 'Commit Information', 'Code Content'])
     for idx, x in enumerate(find_vulnerabilities):
         rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
-        row = [idx, x.vulnerability, rule, trigger, commit]
+        row = [idx, x.vulnerability, rule, trigger, commit, x.code_content]
         table.add_row(row)
     vn = len(find_vulnerabilities)
     if vn == 0:
