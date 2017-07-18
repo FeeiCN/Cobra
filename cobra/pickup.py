@@ -157,7 +157,7 @@ class Directory(object):
         t1 = time.clock()
         self.files(self.absolute_path)
         self.result['no_extension'] = {'count': 0, 'list': []}
-        for extension, values in self.type_nums.c:
+        for extension, values in self.type_nums.items():
             extension = extension.strip()
             self.result[extension] = {'count': len(values), 'list': []}
             # .php : 123
