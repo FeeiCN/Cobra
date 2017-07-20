@@ -42,7 +42,7 @@ $(function () {
             $('li[data-id=' + vid + ']').addClass('active');
             // hide loading
             $('.CodeMirror .cm-loading').hide();
-            var data = vul_list_origin[vid];
+            var data = vul_list_origin[vid - 1];
             $('#code').val(data.code_content);
             // Highlighting param
             vulnerabilities_list.cm_code.setOption("mode", data.mode);

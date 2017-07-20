@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from .config import Config
 from .log import logger
+import os
 
 
 def send_mail(filename):
@@ -30,7 +31,7 @@ def send_mail(filename):
 
     with open(filename, "rb") as f:
         attachment = MIMEApplication(f.read())
-        attachment.add_header("Content-Disposition", "attachment", filename=filename)
+        attachment.add_header("Content-Disposition", "attachment", filename=os.path.split(filename)[1])
         msg.attach(attachment)
 
     try:
