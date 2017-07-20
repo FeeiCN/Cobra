@@ -1,4 +1,16 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
+
+"""
+    push_to_api
+    ~~~~~~~~~~~~~~~~~~~
+
+    Export scan result to files or console
+
+    :author:    40huo <git@40huo.cn>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 from config import Config
 from log import logger
 from export import flatten
@@ -13,9 +25,7 @@ class PushBase(object):
         logger.info("Start pushing to third party API: {0}".format(self.api))
 
 
-class PushToHades(PushBase):
-    """Push vulnerabilities to Hades."""
-
+class PushToThird(PushBase):
     def __init__(self):
         PushBase.__init__(self)
         self.post_data = None
@@ -25,7 +35,7 @@ class PushToHades(PushBase):
         for vul in flatten(find_vul):
             self.post_data.append({
                 "name": "MVE-" + str(vul.get("id")),
-                "time": vul.get("timestamp"),
+                "time": vul.get("commit_time"),
                 "vuln_type": vul.get("type"),
                 "summitid": self.token,
                 "signid": vul.get("id"),
@@ -34,8 +44,7 @@ class PushToHades(PushBase):
 
     def push(self):
         """
-        Push data tu API.
-        :param find_vul: scan result, need to be flattened first
+        Push data to API.
         :return: push success or not
         """
 
