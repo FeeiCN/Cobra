@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra/wiki/frameworks">
+    <framework name="WordPress" language="php" code="https://github.com/WordPress/WordPress">
+        <file value="wp-cron.php"/>
+        <file value="wp-load.php"/>
+        <folder value="wp-admin"/>
+    </framework>
+    <framework name="Joomla" language="php" code="https://github.com/joomla/joomla-cms">
+        <file value="images/joomla_black.png"/>
+        <folder value="layout/joomla"/>
+    </framework>
+    <framework name="Drupal" language="php" code="https://github.com/drupal/drupal">
+        <file value="core/lib/Drupal.php"/>
+        <file value="core/scripts/drupal.sh"/>
+        <folder value="core/lib/Drupal"/>
+        <folder value="core/tests/Drupal"/>
+    </framework>
+    <framework name="CodeIgniter" language="php" code="https://github.com/bcit-ci/CodeIgniter">
+        <file value="system/core/CodeIgniter.php"/>
+        <file value="test/codeigniter/Setup_test.php"/>
+        <file value="mocks/ci_testcase.php"/>
+        <folder value="user_guide_src"/>
+        <folder value="tests/codeigniter"/>
+    </framework>
+    <framework name="ThinkPHP" language="php" code="https://github.com/top-think/thinkphp">
+        <file value="ThinkPHP/ThinkPHP.php"/>
+        <folder value="ThinkPHP"/>
+    </framework>
+    <framework name="Laravel" language="php" code="https://github.com/laravel/laravel">
+        <file value="app/Http/Kernel.php"/>
+        <file value="app/Console/Kernel.php"/>
+        <file value="config/broadcasting.php"/>
+        <folder value="database/migrations"/>
+        <folder value="storage/framework/testing"/>
+    </framework>
+    <framework name="Kohana" language="php" code="https://github.com/kohana/kohana">
+        <file value="system/classes/Kohana.php"/>
+        <file value="modules/auth/config/auth.php"/>
+        <file value="modules/cache/config/cache.php"/>
+        <folder value="modules/userguide"/>
+        <folder value="system/guide/kohanna"/>
+    </framework>
+    <framework name="Yii" language="php" code="https://github.com/yiisoft/yii2">
+        <file value="framework/BaseYii.php"/>
+        <file value="tests/framework/BaseYiiTest.php"/>
+        <folder value="contrib/completion/bash"/>
+        <folder value="framework/web/migrations"/>
+    </framework>
+    <framework name="Symfony" language="php" code="https://github.com/symfony/symfony">
+        <file value="PropertyInfo/Type.php"/>
+        <file value="FrameworkBundle/Client.php"/>
+        <folder value="WebServerBundle/Command"/>
+        <folder value="BrowserKit/Tests"/>
+        <folder value="Config/DependencyInjection"/>
+    </framework>
+    <framework name="Phalcon" language="php" code="https://github.com/phalcon/cphalcon">
+        <file value="tests/_ci/phaIcon.ini"/>
+        <file value="phaIcon/di.zep"/>
+        <folder value="tests/_data/di"/>
+        <folder value="phaIcon/mvc/collection"/>
+    </framework>
+    <framework name="Slim" language="php" code="https://github.com/slimphp/Slim">
+        <file value="Exception/SlimException.php"/>
+        <file value="MiddlewareAwareTrait.php"/>
+        <folder value="Handlers/Strategies"/>
+    </framework>
+    <framework name="CakePHP" language="php" code="https://github.com/cakephp/cakephp">
+        <file value="Core/StaticConfigTrait.php"/>
+        <file value="Routing/RequestActionTrait.php"/>
+        <folder value="Core/Configure/Engine"/>
+        <folder value="Database/Dialect"/>
+    </framework>
+    <framework name="Django" language="python" code="https://github.com/django/django">
+        <dependency value="django"/>
+    </framework>
+    <framework name="Flask" language="python" code="https://github.com/pallets/flask">
+        <dependency value="flask"/>
+    </framework>
+    <framework name="Spring" language="java">
+        <dependency value="org.springframework"/>
+    </framework>
+</cobra>
