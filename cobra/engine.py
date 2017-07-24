@@ -330,7 +330,7 @@ class Core(object):
                - Java:
         :return: boolean
         """
-        match_result = re.findall(r"(#|\\\*|\/\/|\*)+", self.code_content)
+        match_result = re.findall(r"(#|\\\*|\/\/)+", self.code_content)
         # Skip detection only on match
         if self.is_match_only_rule():
             return False
