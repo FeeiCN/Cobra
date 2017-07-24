@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cobra document="https://github.com/wufeifei/cobra">
-    <name value="Base cURL SSRF"/>
-    <match><![CDATA[curl_setopt\s*\(.*,\s*CURLOPT_URL\s*,(.*)\)]]></match>
-    <repair block="in-function"><![CDATA[curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)]]></repair>
+    <name value="Assign Hardcoded Password"/>
+    <language value="php"/>
+    <match><![CDATA[((?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"])]]></match>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>
         <case assert="true"><![CDATA[private static $password = "test"]]></case>

@@ -2,6 +2,7 @@
 
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="LOG Sensitive Information"/>
+    <language value="java"/>
     <match><![CDATA[(log(ger)?\..*?\(.*(([^a-z]ssn[^a-z])|getssn|ssn\(|socialsecurity|taxid|email|e_mail|emailaddress|pass|amount|account|acct|address|phone|phonenumber|zip|postal))]]></match>
     <repair>
         Possibly logging sensitive information.

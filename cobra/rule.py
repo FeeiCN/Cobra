@@ -142,89 +142,65 @@ class Rule(object):
     def rules(self):
         """
         Get all rules
-        :return:
-         [
-            {
-                'name': "Reflect XSS",
-                'status': True,
-                'vulnerability': 'XSS',
-                'author': 'Feei <feei@feei.cn>',
-                'file': 'reflect.php.xml',
-                'test': {
-                    'false': [
-                        'code test case1',
-                        'code test case2'
-                    ],
-                    'true': [
-                        'code test case 1',
-                        'code test case 2'
-                    ]
-                },
-                'match': '',
-                'match2': '',
-                'match2-block': '',
-                'repair': '',
-                'repair-block': '',
-                'language': 'php'
-            }
-         ]
+        :return: dict
         """
         vulnerabilities = []
         for vulnerability_name in os.listdir(self.rules_path):
             v_path = os.path.join(self.rules_path, vulnerability_name)
-            if os.path.isfile(v_path):
+            if os.path.isfile(v_path) is not True or 'cvi-template' in v_path.lower():
                 continue
-            for rule_filename in os.listdir(v_path):
-                if '.xml' not in rule_filename:
-                    logger.debug('Not rule file {f}'.format(f=rule_filename))
-                    continue
-                v_rule_path = os.path.join(v_path, rule_filename)
-                if os.path.isfile(v_rule_path) is not True:
-                    logger.debug('not file {f}'.format(f=v_rule_path))
-                    continue
-                # rule information
-                rule_info = {
-                    'name': None,
-                    'file': rule_filename,
-                    'vulnerability': vulnerability_name,
-                    'test': {
-                        'true': [],
-                        'false': []
-                    },
-                    'language': rule_filename.split('.xml')[0].split('.')[1],
-                    'match': None,
-                    'match2': None,
-                    'match2-block': None,
-                    'repair': None,
-                    'repair-block': None,
-                }
-                rule_path = os.path.join(vulnerability_name, rule_filename)
-                xml_rule = self._read_xml(rule_path)
-                if xml_rule is None:
-                    logger.critical('rule read failed!!! ({file})'.format(file=rule_path))
-                    continue
-                for x in xml_rule:
-                    if x.tag == 'name':
-                        rule_info['name'] = x.get('value')
-                    if x.tag == 'status':
-                        rule_info['status'] = to_bool(x.get('value'))
-                    if x.tag == 'author':
-                        name = x.get('name')
-                        email = x.get('email')
-                        rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
-                    if x.tag in ['match', 'match2', 'repair']:
-                        rule_info[x.tag] = x.text.strip()
-                        if x.tag == 'repair':
-                            rule_info['repair-block'] = block(x.get('block'))
-                        elif x.tag == 'match2':
-                            rule_info['match2-block'] = block(x.get('block'))
-                    if x.tag == 'test':
-                        for case in x:
-                            case_ret = case.get('assert').lower()
-                            case_test = case.text.strip()
-                            if case_ret in ['true', 'false']:
-                                rule_info['test'][case_ret].append(case_test)
-                vulnerabilities.append(rule_info)
+            if 'cvi' not in v_path.lower() or '.xml' not in v_path.lower():
+                logger.debug('Not rule file {f}'.format(f=v_path))
+                continue
+
+            # rule information
+            rule_info = {
+                'name': None,
+                'file': v_path,
+                'label': None,
+                'language': None,
+                'match': None,
+                'match2': None,
+                'match2-block': None,
+                'repair': None,
+                'repair-block': None,
+                'test': {
+                    'true': [],
+                    'false': []
+                },
+                'status': False,
+                'author': None
+            }
+            xml_rule = self._read_xml(v_path)
+            if xml_rule is None:
+                logger.critical('rule read failed!!! ({file})'.format(file=v_path))
+                continue
+            cvi = v_path.lower().split('cvi-')[1][:3]
+            rule_info['label'] = cvi
+            for x in xml_rule:
+                if x.tag == 'name':
+                    rule_info['name'] = x.get('value')
+                if x.tag == 'language':
+                    rule_info['language'] = x.get('value')
+                if x.tag == 'status':
+                    rule_info['status'] = to_bool(x.get('value'))
+                if x.tag == 'author':
+                    name = x.get('name')
+                    email = x.get('email')
+                    rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
+                if x.tag in ['match', 'match2', 'repair']:
+                    rule_info[x.tag] = x.text.strip()
+                    if x.tag == 'repair':
+                        rule_info['repair-block'] = block(x.get('block'))
+                    elif x.tag == 'match2':
+                        rule_info['match2-block'] = block(x.get('block'))
+                if x.tag == 'test':
+                    for case in x:
+                        case_ret = case.get('assert').lower()
+                        case_test = case.text.strip()
+                        if case_ret in ['true', 'false']:
+                            rule_info['test'][case_ret].append(case_test)
+            vulnerabilities.append(rule_info)
         return vulnerabilities
 
     def _read_xml(self, filename):

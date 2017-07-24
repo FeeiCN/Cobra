@@ -25,7 +25,7 @@ for i in range(4):
         mr.code_content = "<script>alert(document.cookie)</script>"
         mr.match_result = "pregex"
         mr.commit_time = "2017-04-04"
-        mr.vulnerability = "xss"
+        mr.label = "xss"
         mr.rule_name = "Reflected XSS"
         srv.append(mr)
     find_vul.append(srv)

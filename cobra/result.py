@@ -15,7 +15,8 @@
 
 class VulnerabilityResult:
     def __init__(self):
-        self.vulnerability = ''
+        self.label = ''
+        self.language = ''
         self.rule_name = ''
         self.file_path = None
         self.line_number = None

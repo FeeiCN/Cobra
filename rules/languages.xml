@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cobra document="https://github.com/wufeifei/cobra/wiki/languages">
-    <language name="Any">
+    <language name="*">
         <extension value=".*"/>
     </language>
     <language name="PHP" chiefly="True">
