@@ -4,9 +4,9 @@
     <name value="ECB Mode"/>
     <language value="java"/>
     <match><![CDATA[(Cipher.newInstance\\s?\\(\\s?\\\"DES|Cipher.getInstance\\s?\\(\\s?\\\"DES)]]></match>
-    <repair>
+    <solution>
         The DES algorithm is no longer considered secure and a safe alternative such as AES should be used instead.
-    </repair>
+    </solution>
     <test>
         <case assert="true"><![CDATA[Test Code]]></case>
         <case assert="true"><![CDATA[Test Code2]]></case>

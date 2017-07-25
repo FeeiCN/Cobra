@@ -4,9 +4,9 @@
     <name value="ECB Mode"/>
     <language value="java"/>
     <match><![CDATA[(Cipher....Instance\\s?\\(\\s?\\\".*ECB)]]></match>
-    <repair>
+    <solution>
         ECB is not always secure and resident properties of the plaintext may be visible in the ciphertext. An attacker may be able to analyze patterns in order to deduce properties that the encryption is intended to hide.
-    </repair>
+    </solution>
     <test>
         <case assert="true"><![CDATA[Test Code]]></case>
         <case assert="true"><![CDATA[Test Code2]]></case>

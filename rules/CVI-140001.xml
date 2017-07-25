@@ -4,9 +4,9 @@
     <name value="local file inclusion"/>
     <language value="jsp"/>
     <match><![CDATA[((input.*type=(\"|\')?hidden.*=.*request\.get(Parameter|QueryString))]]></match>
-    <repair>
-        User controlled input direct to output, possible cross-site scripting.
-    </repair>
+    <solution>
+        表单值直接取入参会导致XSS
+    </solution>
     <test>
         <case assert="true"><![CDATA[input type="hidden" value="request.getParameter("test")"]]></case>
     </test>

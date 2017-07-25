@@ -4,9 +4,9 @@
     <name value="Insecure Certificate CWE-295"/>
     <language value="java"/>
     <match><![CDATA[(X509Certificate\[\s?\\]\s*getAcceptedIssuers\(\s?\))]]></match>
-    <repair>
+    <solution>
         Possibly disabling certificate validation, ensure not returning null.\r\n\r\nhttp:\/\/docs.oracle.com\/javase\/8\/docs\/api\/javax\/net\/ssl\/X509TrustManager.html\r\n\r\nBad advice here: http:\/\/www.nakov.com\/blog\/2009\/07\/16\/disable-certificate-validation-in-java-ssl-connections\/
-    </repair>
+    </solution>
     <test>
         <case assert="true"><![CDATA[Test Code]]></case>
         <case assert="true"><![CDATA[Test Code2]]></case>

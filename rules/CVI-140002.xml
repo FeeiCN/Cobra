@@ -4,12 +4,11 @@
     <name value="Print Param"/>
     <language value="java"/>
     <match><![CDATA[(out\.println\s*\(\s*request\.get(Parameter|QueryString)\s*\(\s*\")]]></match>
-    <repair>
-        User controlled input direct to output, possible cross-site scripting.
-    </repair>
+    <solution>
+        输出入参会导致XSS
+    </solution>
     <test>
         <case assert="true"><![CDATA[out.println(request.getParameter("test"))]]></case>
-        <case assert="true"><![CDATA[Test Code2]]></case>
     </test>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>

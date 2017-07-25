@@ -4,9 +4,9 @@
     <name value="Print Param"/>
     <language value="php"/>
     <match><![CDATA[((echo(\s*\()?|(print(_r)?|exit|die|printf|vprintf|trigger_error|user_error|odbc_result_all|ovrimos_result_all|ifx_htmltbl_result)\s*\()\s*[^;]*\$_(GET|POST|REQUEST|SERVER|COOKIE))]]></match>
-    <repair>
-        Sinks taken from RIPS
-    </repair>
+    <solution>
+        输出入参会导致XSS
+    </solution>
     <test>
         <case assert="true"><![CDATA[echo ($_GET['test']);]]></case>
         <case assert="true"><![CDATA[echo $_GET['test'];]]></case>

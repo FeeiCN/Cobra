@@ -14,6 +14,9 @@
         <case assert="false"><![CDATA[01110101001110011101011010101001]]></case>
         <case assert="false"><![CDATA[00000000000000000000000000000000]]></case>
     </test>
+    <solution>
+        硬编码密码
+    </solution>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>

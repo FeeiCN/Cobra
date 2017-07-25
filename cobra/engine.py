@@ -199,6 +199,7 @@ class SingleRule(object):
         mr.rule_name = self.sr['name']
         mr.label = self.sr['label']
         mr.language = self.sr['language']
+        mr.solution = self.sr['solution']
 
         # committer
         from .pickup import Git

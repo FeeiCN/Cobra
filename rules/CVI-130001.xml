@@ -16,6 +16,9 @@
         <case assert="true"><![CDATA[$pwd = "test"]]></case>
         <case assert="false"><![CDATA[$pwd = "";]]></case>
     </test>
+    <solution>
+        硬编码密码
+    </solution>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>

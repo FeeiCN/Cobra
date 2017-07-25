@@ -164,6 +164,7 @@ class Rule(object):
                 'match2-block': None,
                 'repair': None,
                 'repair-block': None,
+                'solution': None,
                 'test': {
                     'true': [],
                     'false': []
@@ -194,6 +195,8 @@ class Rule(object):
                         rule_info['repair-block'] = block(x.get('block'))
                     elif x.tag == 'match2':
                         rule_info['match2-block'] = block(x.get('block'))
+                if x.tag == 'solution':
+                    rule_info['solution'] = x.text.strip()
                 if x.tag == 'test':
                     for case in x:
                         case_ret = case.get('assert').lower()

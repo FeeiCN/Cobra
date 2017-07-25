@@ -4,13 +4,13 @@
     <name value="local file inclusion"/>
     <language value="jsp"/>
     <match><![CDATA[(<jsp:include[^>]*request\\.)]]></match>
-    <repair>
+    <solution>
         Arbitrary Local File Disclosure
-    </repair>
+    </solution>
     <test>
         <case assert="true"><![CDATA[Test Code]]></case>
         <case assert="true"><![CDATA[Test Code2]]></case>
     </test>
-    <status value="on"/>
+    <status value="off"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>
