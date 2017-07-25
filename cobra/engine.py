@@ -11,16 +11,51 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import os
 import re
+import json
 import traceback
 import subprocess
 import multiprocessing
 from .rule import Rule
 from .utils import Tool
 from .log import logger
+from .config import running_path
 from .result import VulnerabilityResult
 from .ast import AST
 from prettytable import PrettyTable
+
+
+class Running:
+    def __init__(self, sid):
+        self.sid = sid
+        self.running_path = os.path.join(running_path, sid)
+
+    def init(self):
+        data = {
+            'status': 'running',
+            'report': ''
+        }
+        data = json.dumps(data)
+        with open(self.running_path, 'w') as f:
+            f.writelines(data)
+
+    def completed(self, report):
+        data = {
+            'status': 'done',
+            'report': report
+        }
+        data = json.dumps(data)
+        with open(self.running_path, 'w+') as f:
+            f.writelines(data)
+
+    def get(self):
+        with open(self.running_path) as f:
+            result = f.readline()
+        return json.loads(result)
+
+    def is_file(self):
+        return os.path.isfile(self.running_path)
 
 
 def scan_single(target_directory, single_rule):
@@ -30,7 +65,7 @@ def scan_single(target_directory, single_rule):
         traceback.print_exc()
 
 
-def scan(target_directory):
+def scan(target_directory, sid=None):
     r = Rule()
     vulnerabilities = r.vulnerabilities
     languages = r.languages
@@ -81,6 +116,12 @@ def scan(target_directory):
         logger.info('Not found vulnerability!')
     else:
         logger.info("Vulnerabilities ({vn})\r\n{table}".format(vn=len(find_vulnerabilities), table=table))
+
+    # completed running data
+    if sid is not None:
+        report = 'http://xxx.test.com'
+        running = Running(sid)
+        running.completed(report)
     return True
 
 

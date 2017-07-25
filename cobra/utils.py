@@ -14,6 +14,9 @@
 import os
 import sys
 import re
+import time
+import string
+import random
 import hashlib
 from .log import logger
 from .config import Config
@@ -32,12 +35,12 @@ OUTPUT_MODE_STREAM = 'stream'
 
 
 class ParseArgs(object):
-    def __init__(self, target, formatter, output, rule, exclude):
+    def __init__(self, target, formatter, output, rule, sid):
         self.target = target
         self.formatter = formatter
         self.output = output
         self.rule = rule
-        self.exclude = exclude
+        self.sid = sid
 
     @property
     def target_mode(self):
@@ -241,6 +244,11 @@ def percent(part, whole, need_per=True):
     return '{0}{1}'.format(100 * float(part) / float(whole), per)
 
 
+def timestamp():
+    """Get timestamp"""
+    return int(time.time())
+
+
 def format_gmt(time_gmt, time_format=None):
     """
     Format GMT time
@@ -249,11 +257,14 @@ def format_gmt(time_gmt, time_format=None):
     :param time_format:
     :return:
     """
-    import time
     if time_format is None:
         time_format = '%Y-%m-%d %X'
     t = time.strptime(time_gmt, "%a, %d %b %Y %H:%M:%S GMT")
     return time.strftime(time_format, t)
+
+
+def random_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 
 class Tool:

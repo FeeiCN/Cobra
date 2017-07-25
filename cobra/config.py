@@ -12,18 +12,24 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import StringIO
 import ConfigParser
 import traceback
 from .log import logger
 
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-code_path = '/tmp'
+code_path = '/tmp/cobra'
+if os.path.isdir(code_path) is not True:
+    os.mkdir(code_path)
+running_path = os.path.join(code_path, 'running')
+if os.path.isdir(running_path) is not True:
+    os.mkdir(running_path)
+
+cobra_main = os.path.join(project_directory, 'cobra.py')
 core_path = os.path.join(project_directory, 'cobra')
 tests_path = os.path.join(project_directory, 'tests')
 examples_path = os.path.join(tests_path, 'examples')
 rules_path = os.path.join(project_directory, 'rules')
-config_path = os.path.join(project_directory, 'config.cobra')
+config_path = os.path.join(project_directory, 'config')
 rule_path = os.path.join(project_directory, 'rule.cobra')
 
 
@@ -56,21 +62,6 @@ class Config(object):
             logger.info('Config file set success(~/.cobra/{source})'.format(source=source))
         else:
             return
-
-
-def properties(config_path):
-    if os.path.isfile(config_path) is not True:
-        return dict()
-    with open(config_path) as f:
-        config = StringIO.StringIO()
-        config.write('[dummy_section]\n')
-        config.write(f.read().replace('%', '%%'))
-        config.seek(0, os.SEEK_SET)
-
-        cp = ConfigParser.SafeConfigParser()
-        cp.readfp(config)
-
-        return dict(cp.items('dummy_section'))
 
 
 class Vulnerabilities(object):

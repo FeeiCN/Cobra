@@ -14,24 +14,29 @@
 from .pickup import Directory
 from .utils import ParseArgs
 from .detection import Detection
-from .engine import scan
+from .engine import scan, Running
 from .log import logger
 
 
-def start(target, formatter, output, rule, exclude):
+def start(target, formatter, output, rule, sid):
     """
     Start CLI
     :param target: File, FOLDER, GIT
     :param formatter:
     :param output:
     :param rule:
-    :param exclude:
+    :param sid:
     :return:
     """
     # parse target mode and output mode
-    pa = ParseArgs(target, formatter, output, rule, exclude)
+    pa = ParseArgs(target, formatter, output, rule, sid)
     target_mode = pa.target_mode
     output_mode = pa.output_mode
+
+    # init running data
+    if sid is not None:
+        running = Running(sid)
+        running.init()
 
     # target directory
     target_directory = pa.target_directory(target_mode)
@@ -51,4 +56,4 @@ def start(target, formatter, output, rule, exclude):
     logger.info(' > Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
 
     # scan
-    scan(target_directory)
+    scan(target_directory, sid)
