@@ -56,7 +56,7 @@ def scan(target_directory):
             logger.debug('[RULE] OFF, CONTINUE...')
             continue
         # SR(Single Rule)
-        logger.info(""" > Push {idx}.{name}({language})""".format(
+        logger.debug(""" > Push {idx}.{name}({language})""".format(
             idx=idx,
             name=single_rule['name'],
             language=single_rule['language']
@@ -165,7 +165,7 @@ class SingleRule(object):
                     logger.debug('Not vulnerability: {code}'.format(code=status_code))
             except Exception as e:
                 traceback.print_exc()
-        logger.info('   > RID: {vn} Vulnerabilities: {count}'.format(vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
+        logger.debug('   > RID: {vn} Vulnerabilities: {count}'.format(vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
         return self.rule_vulnerabilities
 
     def parse_match(self, single_match):
