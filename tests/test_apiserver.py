@@ -49,7 +49,6 @@ def test_job_status():
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    print re.content
     assert "1001" in re.content
     assert "msg" in re.content
     assert "scan_id" in re.content
