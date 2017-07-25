@@ -19,20 +19,18 @@ from .log import logger
 from .config import Config
 
 
-key = Config(level1="cobra", level2="secret_key").value
-
-
 class AddJob(Resource):
     def post(self):
         data = request.json
         if not data or data == "":
             return {"code": 1003, "result": "Only support json, please post json data."}
 
+        key = Config(level1="cobra", level2="secret_key").value
         _key = data.get("key")
         target = data.get("target")
         branch = data.get("branch")
-        new_version = data.get(k="new_version", default="")
-        old_version = data.get(k="old_version", default="")
+        new_version = data.get("new_version", "")
+        old_version = data.get("old_version", "")
 
         if not _key or _key == "":
             return {"code": 1002, "result": "Key cannot be empty."}
@@ -46,11 +44,14 @@ class AddJob(Resource):
             return {"code": 1002, "result": "Branch cannot be empty."}
 
         # TODO begin scan...
+        return {"code": 1001, "result": "Add scan job successfully."}
 
 
 class JobStatus(Resource):
     def post(self):
         scan_id = request.json.get("scan_id")
+
+        key = Config(level1="cobra", level2="secret_key").value
         _key = request.json.get("key")
 
         if not _key or _key == "":
@@ -64,7 +65,7 @@ class JobStatus(Resource):
             2: "done",
             3: "error",
         }
-        return {"scan_id": scan_id, "status": "running"}
+        return {"code": 1001, "scan_id": scan_id, "status": "running"}
 
 
 def start(host, port, debug):
