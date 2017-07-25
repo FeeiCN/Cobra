@@ -1,0 +1,23 @@
+# Uncomment this line to define a global platform for your project
+platform :ios, '7.0'
+# Uncomment this line if you're using Swift
+# use_frameworks!
+
+target 'ChatKit' do
+
+  pod  "AVOSCloud" , "~> 3.4.0-beta.2"
+  pod  "AVOSCloudIM", "~> 3.4.0-beta.2"
+  pod  "MJRefresh" , "~> 3.1.9"
+  pod  "Masonry" , "~> 1.0.1"
+  pod  "SDWebImage" , "~> 3.8.0"
+  pod  "FMDB" , "~> 2.6.2"
+  pod  "pop", "~> 1.0.9"
+  pod  "UITableView+FDTemplateLayoutCell" , "~> 1.5.beta"
+  pod  "FDStackView" , "~> 1.0"
+  pod  "DACircularProgress" , "~> 2.3.1"
+  pod  "MLLabel" , "~> 1.9.2"
+  pod  "MWPhotoBrowser", "2.1.2"
+  pod  "MWPhotoBrowser"
+
+
+end
