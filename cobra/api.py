@@ -73,7 +73,7 @@ class JobStatus(Resource):
         scan_id = str(data.get("scan_id"))  # 需要拼接入路径，转为字符串
 
         key = Config(level1="cobra", level2="secret_key").value
-        _key = request.json.get("key")
+        _key = data.get("key")
 
         if not _key or _key == "":
             return {"code": 1002, "result": "Key cannot be empty."}
