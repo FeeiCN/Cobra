@@ -53,7 +53,9 @@ class AddJob(Resource):
 
         # Scan
         sid = get_sid(target)
-        subprocess.Popen(['python', cobra_main, "-t", str(target), "-f", str(formatter), "-o", str(output), '-r', str(rule), '-sid', str(sid)])
+        subprocess.Popen(
+            ['python', cobra_main, "-t", str(target), "-f", str(formatter), "-o", str(output), '-r', str(rule), '-sid',
+             str(sid)])
         result = {
             'msg': 'Add scan job successfully',
             'scan_id': sid
@@ -64,7 +66,11 @@ class AddJob(Resource):
 class JobStatus(Resource):
     @staticmethod
     def post():
-        scan_id = request.json.get("scan_id")
+        data = request.json
+        if not data or data == "":
+            return {"code": 1003, "result": "Only support json, please post json data."}
+
+        scan_id = str(data.get("scan_id"))  # 需要拼接入路径，转为字符串
 
         key = Config(level1="cobra", level2="secret_key").value
         _key = request.json.get("key")
