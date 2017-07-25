@@ -7,8 +7,8 @@ from cobra.detection import Detection
 class TestDetection(unittest.TestCase):
     def test_framework(self):
         detection = Detection('./examples', '.')
-        frame = detection.framework()
-        self.assertIs(frame, None)
+        frame = detection.framework
+        self.assertEqual(frame, 'WordPress')
 
     def test_param_xml(self):
         detection = Detection('./examples', '.')
