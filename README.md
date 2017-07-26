@@ -15,7 +15,54 @@ Cobra是一款**源码审计工具**，支持检测源代码中的数十种漏�
 - API（提供API接口，方便和其它系统对接扩展）
 
 ## Installation（安装）
-```
+```bash
 pip install https://github.com/wufeifei/cobra.git
 cobra --help
+```
+
+## Usage（使用）
+```bash
+➜  cobra git:(master) ✗ python cobra.py --help
+usage: cobra [-h] [-v] [-t <target>] [-f <format>] [-o <output>]
+             [-r <rule_id>] [-d] [-sid SID] [-H <host>] [-P <port>]
+
+    ,---.     |
+    |    ,---.|---.,---.,---.
+    |    |   ||   ||    ,---|
+    `---``---``---``    `---^ v1.2.3
+
+GitHub: https://github.com/wufeifei/cobra
+
+Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+
+Scan:
+  -t <target>, --target <target>
+                        file, folder, compress, or repository address
+  -f <format>, --format <format>
+                        vulnerability output format (formats: html, json, csv,
+                        xml)
+  -o <output>, --output <output>
+                        vulnerability output STREAM, FILE, HTTP API URL, MAIL
+  -r <rule_id>, --rule <rule_id>
+                        specifies rule id e.g: CVI-100001
+  -d, --debug           open debug mode
+  -sid SID, --sid SID   scan id(API)
+
+RESTful:
+  -H <host>, --host <host>
+                        REST-JSON API Service Host
+  -P <port>, --port <port>
+                        REST-JSON API Service Port
+
+Usage:
+  cobra -t /tmp/your_project_path
+  cobra -r /tmp/rule.fei -t /tmp/your_project_path
+  cobra -f json -o /tmp/report.json -t /tmp/project_path
+  cobra -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
+  cobra -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
+  cobra -H 127.0.0.1 -P 80
 ```
