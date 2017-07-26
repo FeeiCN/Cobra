@@ -61,6 +61,7 @@ class Detection(object):
                                                                                            main_language=self.lang))
         return self.lang
 
+    @property
     def framework(self):
         tree = self.rule()
         root = tree.getroot()
@@ -71,8 +72,8 @@ class Detection(object):
             for rule_name in frame_data[frame_name]:
                 for project_data in projects_data:
                     if rule_name in project_data:
-                        result = logger.info("Find the project's framework may be:" + frame_name)
-                        return result
+                        logger.info("Find the project's framework may be:" + frame_name)
+                        return frame_name
         logger.info('Unknown Framework')
         return 'Unknown Framework'
 
