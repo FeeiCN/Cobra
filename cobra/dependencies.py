@@ -10,6 +10,7 @@ class Dependencies(object):
         """
         self.directory = os.path.abspath(target_directory)
         self._result = {}
+        self.dependencies()
 
     def dependencies(self):
         file_path, flag = self.find_file()
@@ -77,7 +78,7 @@ class Dependencies(object):
             group_id = child.getchildren()[0].text
             artifact_id = child.getchildren()[1].text
             version = child.getchildren()[2].text
-            module_ = group_id + '/' + artifact_id
+            module_ = artifact_id
             self._result[module_] = version
 
     def find_oc_pods(self, file_path):
