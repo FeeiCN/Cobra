@@ -163,8 +163,3 @@ class CveParse(object):
 
     def get_scan_result(self):
         return self._scan_result
-
-# a = CveParse('/Users/blbana/Downloads/CVE漏洞/nvdcve-2.0-2017.xml', '/Users/blbana/Croba/cobra/tests/examples/pom.xml')
-a = CveParse('../tests/examples/cve.xml', '/Users/blbana/Croba/cobra/tests/examples/pom.xml')
-a.rule_xml()
-a.scan_cve()
