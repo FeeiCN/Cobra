@@ -13,7 +13,8 @@ Cobra是一款**源码审计工具**，支持检测源代码中的数十种漏�
     - Java
     - Objective-C
 - Supported Multi-Vulnerabilities（支持多种漏洞）
-    - 依赖
+    - 数千条依赖规则
+    - 数十条代码规则
 - API（提供API接口，方便和其它系统对接扩展）
 
 ## Installation（安装）
