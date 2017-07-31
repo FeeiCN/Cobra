@@ -50,7 +50,7 @@ Scan:
   -o <output>, --output <output>
                         vulnerability output STREAM, FILE, HTTP API URL, MAIL
   -r <rule_id>, --rule <rule_id>
-                        specifies rule id e.g: CVI-100001
+                        specifies rules e.g: CVI-100001,cvi-190001
   -d, --debug           open debug mode
   -sid SID, --sid SID   scan id(API)
 
@@ -61,10 +61,11 @@ RESTful:
                         REST-JSON API Service Port
 
 Usage:
-  cobra -t /tmp/your_project_path
-  cobra -r /tmp/rule.fei -t /tmp/your_project_path
-  cobra -f json -o /tmp/report.json -t /tmp/project_path
+  cobra -t tests/examples
+  cobra -t tests/examples -r cvi-190001,cvi-190002
+  cobra -f json -o /tmp/report.json -t tests/examples
   cobra -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
   cobra -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
   cobra -H 127.0.0.1 -P 80
+
 ```
