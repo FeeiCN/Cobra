@@ -6,6 +6,12 @@
     <match><![CDATA[Location Rule]]></match>
     <match2 block="in-function"><![CDATA[Location Rule2]]></match2>
     <repair block="in-function"><![CDATA[Repair Rule]]></repair>
+    <level value="1-9"/>
+    <solution>
+        ## 安全风险
+
+        ## 修复方案
+    </solution>
     <test>
         <case assert="true"><![CDATA[Test Code]]></case>
         <case assert="true"><![CDATA[Test Code2]]></case>
