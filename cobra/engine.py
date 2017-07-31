@@ -85,7 +85,7 @@ def scan(target_directory, sid=None, special_rules=None):
     if len(rules) == 0:
         logger.critical('no rules!')
         return False
-    logger.info('Push Rules ({rc})'.format(rc=len(rules)))
+    logger.info(' > Push Rules ({rc})'.format(rc=len(rules)))
     for idx, single_rule in enumerate(rules):
         if single_rule['status'] is False:
             logger.debug('[RULE] OFF, CONTINUE...')
@@ -104,18 +104,18 @@ def scan(target_directory, sid=None, special_rules=None):
             continue
     pool.close()
     pool.join()
-    table = PrettyTable(["ID", "Label", 'Rule', 'Language', "Target", 'Commit Information', 'Code Content'])
+    table = PrettyTable(['ID', 'Label', 'Rule', 'Language', 'Level', 'Target', 'Commit Information', 'Code Content'])
     for idx, x in enumerate(find_vulnerabilities):
         rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
-        row = [idx, x.label, rule, x.language, trigger, commit, x.code_content]
+        row = [idx, x.label, rule, x.language, x.level, trigger, commit, x.code_content]
         table.add_row(row)
     vn = len(find_vulnerabilities)
     if vn == 0:
         logger.info('Not found vulnerability!')
     else:
-        logger.info("Vulnerabilities ({vn})\r\n{table}".format(vn=len(find_vulnerabilities), table=table))
+        logger.info(" > Vulnerabilities ({vn})\r\n{table}".format(vn=len(find_vulnerabilities), table=table))
 
     # completed running data
     if sid is not None:
@@ -241,6 +241,7 @@ class SingleRule(object):
         mr.label = self.sr['label']
         mr.language = self.sr['language']
         mr.solution = self.sr['solution']
+        mr.level = self.sr['level']
 
         # committer
         from .pickup import Git

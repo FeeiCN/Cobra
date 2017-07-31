@@ -4,12 +4,25 @@
     <name value="ECB Mode"/>
     <language value="java"/>
     <match><![CDATA[(Cipher....Instance\s?\(\s?\".*ECB)]]></match>
+    <level value="2"/>
     <solution>
-        ECB is not always secure and resident properties of the plaintext may be visible in the ciphertext. An attacker may be able to analyze patterns in order to deduce properties that the encryption is intended to hide.
+        ## 安全风险
+        ECB模式是不安全的
+
+        ## 修复方案
+        建议使用GCM模式
     </solution>
     <test>
-        <case assert="true"><![CDATA[Test Code]]></case>
-        <case assert="true"><![CDATA[Test Code2]]></case>
+        <case assert="true"><![CDATA[
+Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
+c.init(Cipher.ENCRYPT_MODE, k, iv);
+byte[] cipherText = c.doFinal(plainText);
+]]></case>
+        <case assert="false"><![CDATA[
+Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
+c.init(Cipher.ENCRYPT_MODE, k, iv);
+byte[] cipherText = c.doFinal(plainText);
+]]></case>
     </test>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>

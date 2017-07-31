@@ -4,6 +4,7 @@
     <name value="Token/Key"/>
     <language value="*"/>
     <match><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
+    <level value="2"/>
     <test>
         <case assert="true" remark="sha1"><![CDATA["41a6bc4d9a033e1627f448f0b9593f9316d071c1"]]></case>
         <case assert="true" remark="md5 lower"><![CDATA["d042343e49e40f16cb61bd203b0ce756"]]></case>
@@ -15,7 +16,11 @@
         <case assert="false"><![CDATA[00000000000000000000000000000000]]></case>
     </test>
     <solution>
+        ## 安全风险
         硬编码密码
+
+        ## 修复方案
+        将密码抽出统一放在配置文件中，配置文件不放在git中
     </solution>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>

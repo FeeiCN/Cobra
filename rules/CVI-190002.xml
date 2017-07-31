@@ -4,8 +4,13 @@
     <name value="Strack Trace"/>
     <language value="java"/>
     <match><![CDATA[(printStackTrace\s*\()]]></match>
+    <level value="2"/>
     <solution>
+        ## 安全风险
         堆栈信息不要直接暴露给客户端
+
+        ## 修复方案
+        可将错误信息打印在logger内
     </solution>
     <test>
         <case assert="true"><![CDATA[e.printStackTrace();]]></case>

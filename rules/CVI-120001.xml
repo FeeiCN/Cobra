@@ -5,20 +5,28 @@
     <language value="php"/>
     <match><![CDATA[curl_setopt\s*\(.*,\s*CURLOPT_URL\s*,(.*)\)]]></match>
     <repair block="in-function"><![CDATA[curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)]]></repair>
+    <level value="6"/>
     <test>
-        <case assert="true"><![CDATA[private $password = "test"]]></case>
-        <case assert="true"><![CDATA[private static $password = "test"]]></case>
-        <case assert="true"><![CDATA[public $pwd = "test"]]></case>
-        <case assert="true"><![CDATA[protected $passwd = 'test']]></case>
-        <case assert="true"><![CDATA[protected $except_password = md5("test")]]></case>
-        <case assert="true"><![CDATA[protected $password_except = sha1("test")]]></case>
-        <case assert="true"><![CDATA[$password = "test"]]></case>
-        <case assert="true"><![CDATA[$passwd = "test"]]></case>
-        <case assert="true"><![CDATA[$pwd = "test"]]></case>
-        <case assert="false"><![CDATA[$pwd = "";]]></case>
+        <case assert="true"><![CDATA[
+function curl($url){
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_exec($ch);
+    curl_close($ch);
+}
+$url = $_GET['url'];
+curl($url);
+]]></case>
     </test>
     <solution>
+        ## 安全风险
         SSRF漏洞
+
+        ## 修复方案
+        1. 禁止使用除HTTP/HTTPS以外的协议
+        2. 限制请求域名白名单
+        3. 限制301跟随
     </solution>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>

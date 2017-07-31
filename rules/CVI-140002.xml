@@ -4,8 +4,13 @@
     <name value="Print Param"/>
     <language value="java"/>
     <match><![CDATA[(out\.println\s*\(\s*request\.get(Parameter|QueryString)\s*\(\s*\")]]></match>
+    <level value="4"/>
     <solution>
+        ## 安全风险
         输出入参会导致XSS
+
+        ## 修复方案
+        使用Begis对参数进行过滤后再输出
     </solution>
     <test>
         <case assert="true"><![CDATA[out.println(request.getParameter("test"))]]></case>

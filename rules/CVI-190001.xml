@@ -4,8 +4,13 @@
     <name value="LOG Sensitive Information"/>
     <language value="java"/>
     <match><![CDATA[(log(ger)?\..*?\(.*(([^a-z]ssn[^a-z])|getssn|ssn\(|socialsecurity|taxid|email|e_mail|emailaddress|pass|amount|account|acct|address|phone|phonenumber|zip|postal))]]></match>
+    <level value="2"/>
     <solution>
+        ## 安全风险
         日志内记录了敏感信息
+
+        ## 修复方案
+        删除该代码
     </solution>
     <test>
         <case assert="true"><![CDATA[log.debug("email: feei@feei.cn");]]></case>

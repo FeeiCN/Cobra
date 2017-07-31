@@ -4,6 +4,7 @@
     <name value="Assign Hardcoded Password"/>
     <language value="php"/>
     <match><![CDATA[((?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"])]]></match>
+    <level value="2"/>
     <test>
         <case assert="true"><![CDATA[private $password = "test"]]></case>
         <case assert="true"><![CDATA[private static $password = "test"]]></case>
@@ -17,7 +18,11 @@
         <case assert="false"><![CDATA[$pwd = "";]]></case>
     </test>
     <solution>
+        ## 安全风险
         硬编码密码
+
+        ## 修复方案
+        将密码抽出统一放在配置文件中，配置文件不放在git中
     </solution>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
