@@ -12,6 +12,8 @@ Cobra是一款**源码审计工具**，支持检测源代码中的数十种漏�
     - PHP
     - Java
     - Objective-C
+- Supported Multi-Vulnerabilities（支持多种漏洞）
+    - 依赖
 - API（提供API接口，方便和其它系统对接扩展）
 
 ## Installation（安装）

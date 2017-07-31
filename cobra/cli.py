@@ -18,7 +18,7 @@ from .engine import scan, Running
 from .log import logger
 
 
-def start(target, formatter, output, rule, sid):
+def start(target, formatter, output, rule, sid=None):
     """
     Start CLI
     :param target: File, FOLDER, GIT
@@ -29,7 +29,7 @@ def start(target, formatter, output, rule, sid):
     :return:
     """
     # parse target mode and output mode
-    pa = ParseArgs(target, formatter, output, rule, sid)
+    pa = ParseArgs(target, formatter, output, rule, sid=None)
     target_mode = pa.target_mode
     output_mode = pa.output_mode
 
