@@ -24,48 +24,30 @@ cobra --help
 
 ## Usage（使用）
 ```bash
-➜  cobra git:(master) ✗ python cobra.py --help
-usage: cobra [-h] [-v] [-t <target>] [-f <format>] [-o <output>]
-             [-r <rule_id>] [-d] [-sid SID] [-H <host>] [-P <port>]
+# 扫描一个文件夹的代码
+$ ./cobra.py -t tests/examples
 
-    ,---.     |
-    |    ,---.|---.,---.,---.
-    |    |   ||   ||    ,---|
-    `---``---``---``    `---^ v1.2.3
+# 扫描一个Git项目代码
+$ ./cobra.py -t https://github.com/wufeifei/grw.git
 
-GitHub: https://github.com/wufeifei/cobra
+# 扫描一个文件夹，并将扫描结果导出为JSON文件
+$ ./cobra.py -t tests/examples -f json -o /tmp/report.json
 
-Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
+# 扫描一个Git项目，并将扫描结果JSON文件推送到API上
+$ ./cobra.py -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -v, --version         show program's version number and exit
+# 扫描一个Git项目，并将扫描结果JSON文件发送到邮箱中
+$ ./cobra.py -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
 
-Scan:
-  -t <target>, --target <target>
-                        file, folder, compress, or repository address
-  -f <format>, --format <format>
-                        vulnerability output format (formats: html, json, csv,
-                        xml)
-  -o <output>, --output <output>
-                        vulnerability output STREAM, FILE, HTTP API URL, MAIL
-  -r <rule_id>, --rule <rule_id>
-                        specifies rules e.g: CVI-100001,cvi-190001
-  -d, --debug           open debug mode
-  -sid SID, --sid SID   scan id(API)
+# 扫描一个文件夹代码的某两种漏洞
+$ ./cobra.py -t tests/examples -r cvi-190001,cvi-190002
 
-RESTful:
-  -H <host>, --host <host>
-                        REST-JSON API Service Host
-  -P <port>, --port <port>
-                        REST-JSON API Service Port
+# 开启一个Cobra HTTP Server，然后可以使用API接口来添加扫描任务
+$ ./cobra.py -H 127.0.0.1 -P 80
 
-Usage:
-  cobra -t tests/examples
-  cobra -t tests/examples -r cvi-190001,cvi-190002
-  cobra -f json -o /tmp/report.json -t tests/examples
-  cobra -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
-  cobra -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
-  cobra -H 127.0.0.1 -P 80
+# 查看版本
+$ ./cobra.py --version
 
+# 查看帮助
+$ ./cobra.py --help
 ```
