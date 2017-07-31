@@ -65,12 +65,12 @@ def scan_single(target_directory, single_rule):
         traceback.print_exc()
 
 
-def scan(target_directory, sid=None):
+def scan(target_directory, sid=None, special_rules=None):
     r = Rule()
     vulnerabilities = r.vulnerabilities
     languages = r.languages
     frameworks = r.frameworks
-    rules = r.rules
+    rules = r.rules(special_rules)
     find_vulnerabilities = []
 
     def store(result):

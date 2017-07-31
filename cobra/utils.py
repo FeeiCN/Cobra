@@ -35,12 +35,35 @@ OUTPUT_MODE_STREAM = 'stream'
 
 
 class ParseArgs(object):
-    def __init__(self, target, formatter, output, rule, sid):
+    def __init__(self, target, formatter, output, special_rules=None, sid=None):
         self.target = target
         self.formatter = formatter
         self.output = output
-        self.rule = rule
+        if special_rules is not None:
+            self.special_rules = []
+            extension = '.xml'
+            if ',' in special_rules:
+                # check rule name
+                s_rules = special_rules.split(',')
+                for sr in s_rules:
+                    if self._check_rule_name(sr):
+                        if extension not in sr:
+                            sr += extension
+                        self.special_rules.append(sr)
+                    else:
+                        logger.warning('Exception rule name: {sr}'.format(sr=sr))
+            else:
+                if self._check_rule_name(special_rules):
+                    if extension not in special_rules:
+                        special_rules += extension
+                    self.special_rules = [special_rules]
+        else:
+            self.special_rules = None
         self.sid = sid
+
+    @staticmethod
+    def _check_rule_name(name):
+        return re.match(r'^(cvi|CVI)-\d{6}(\.xml)?', name.strip()) is not None
 
     @property
     def target_mode(self):

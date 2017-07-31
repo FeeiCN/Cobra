@@ -138,14 +138,18 @@ class Rule(object):
             }
         return vulnerabilities_info
 
-    @property
-    def rules(self):
+    def rules(self, rules=None):
         """
         Get all rules
         :return: dict
         """
         vulnerabilities = []
-        for vulnerability_name in os.listdir(self.rules_path):
+        if rules is not None:
+            files = rules
+        else:
+            files = os.listdir(self.rules_path)
+        for vulnerability_name in files:
+            # VN: CVI-190001.xml
             v_path = os.path.join(self.rules_path, vulnerability_name)
             if os.path.isfile(v_path) is not True or 'cvi-template' in v_path.lower():
                 continue

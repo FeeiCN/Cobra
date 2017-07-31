@@ -18,18 +18,18 @@ from .engine import scan, Running
 from .log import logger
 
 
-def start(target, formatter, output, rule, sid=None):
+def start(target, formatter, output, special_rules, sid=None):
     """
     Start CLI
     :param target: File, FOLDER, GIT
     :param formatter:
     :param output:
-    :param rule:
+    :param special_rules:
     :param sid:
     :return:
     """
     # parse target mode and output mode
-    pa = ParseArgs(target, formatter, output, rule, sid=None)
+    pa = ParseArgs(target, formatter, output, special_rules, sid=None)
     target_mode = pa.target_mode
     output_mode = pa.output_mode
 
@@ -55,5 +55,8 @@ def start(target, formatter, output, rule, sid=None):
     logger.info(' > Language: {l}, Framework: {f}'.format(l=main_language, f=main_framework))
     logger.info(' > Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
 
+    if pa.special_rules is not None:
+        logger.info(' > Special Rules: {r}'.format(r=','.join(pa.special_rules)))
+
     # scan
-    scan(target_directory, sid)
+    scan(target_directory, sid, pa.special_rules)

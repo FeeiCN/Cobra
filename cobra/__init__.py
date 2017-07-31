@@ -32,7 +32,7 @@ def main():
     parser_group_scan.add_argument('-t', '--target', dest='target', action='store', default='', metavar='<target>', help='file, folder, compress, or repository address')
     parser_group_scan.add_argument('-f', '--format', dest='format', action='store', default='json', metavar='<format>', choices=['html', 'json', 'csv', 'xml'], help='vulnerability output format (formats: %(choices)s)')
     parser_group_scan.add_argument('-o', '--output', dest='output', action='store', default='', metavar='<output>', help='vulnerability output STREAM, FILE, HTTP API URL, MAIL')
-    parser_group_scan.add_argument('-r', '--rule', dest='rule', action='store', default='', metavar='<rule_id>', help='specifies rule id e.g: CVI-100001')
+    parser_group_scan.add_argument('-r', '--rule', dest='special_rules', action='store', default=None, metavar='<rule_id>', help='specifies rules e.g: CVI-100001,cvi-190001')
     parser_group_scan.add_argument('-d', '--debug', dest='debug', action='store_true', default=False, help='open debug mode')
     parser_group_scan.add_argument('-sid', '--sid', dest='sid', action='store', default=None, help='scan id(API)')
 
@@ -55,7 +55,7 @@ def main():
         api.start(args.host, args.port, args.debug)
     else:
         logger.debug('start scanning...')
-        cli.start(args.target, args.format, args.output, args.rule, args.sid)
+        cli.start(args.target, args.format, args.output, args.special_rules, args.sid)
     t2 = time.clock()
     logger.info('Done! TC:{TC}s'.format(TC=t2 - t1))
 
