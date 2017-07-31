@@ -17,10 +17,10 @@ GitHub: https://github.com/wufeifei/cobra
 
 Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.""".format(version=__version__)
 __epilog__ = """Usage:
-  cobra -t tests/examples
-  cobra -t tests/examples -r cvi-190001,cvi-190002
-  cobra -f json -o /tmp/report.json -t /tmp/project_path
+  cobra -t {td}
+  cobra -t {td} -r cvi-190001,cvi-190002
+  cobra -f json -o /tmp/report.json -t {td}
   cobra -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
   cobra -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
   cobra -H 127.0.0.1 -P 80
-"""
+""".format(td='tests/examples')
