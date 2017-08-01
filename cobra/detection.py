@@ -15,8 +15,10 @@ import os
 from prettytable import PrettyTable
 import xml.etree.ElementTree as eT
 from .rule import Rule
+from .dependencies import Dependencies
 from log import logger
 from pip.req import parse_requirements
+
 
 file_type = []
 
@@ -67,6 +69,9 @@ class Detection(object):
         root = tree.getroot()
         frame_data, language_data = self.parse_xml(root, self.frame_data, self.language_data)
         projects_data = self.project_information(self.target_directory, False)
+        frame_name = self.dependency_scan(root)  # Based on the dependency analysis framework type
+        if frame_name is not None:
+            return frame_name
         frames_name = frame_data.keys()
         for frame_name in frames_name:
             for rule_name in frame_data[frame_name]:
@@ -76,6 +81,31 @@ class Detection(object):
                         return frame_name
         logger.info('Unknown Framework')
         return 'Unknown Framework'
+
+    def dependency_scan(self, root):
+        framework_infos = self.dependency_framework(root)
+        dependencies = Dependencies(self.directory)
+        dependencies_info = dependencies.get_result
+        for frame_name in framework_infos:
+            for rule in framework_infos[frame_name]['rule']:
+                if rule in dependencies_info.keys():
+                    return frame_name
+        return None
+
+    @staticmethod
+    def dependency_framework(root):
+        framework_infos = {}
+        for framework in root:
+            rule_info = {
+                'rule': []
+            }
+            frame = framework.get('name')
+            for rule in framework:
+                if rule.tag == 'dependency':
+                    rule_info['rule'].append(rule.get('value'))
+            if len(rule_info['rule']) != 0:
+                framework_infos[frame] = rule_info
+        return framework_infos
 
     def _requirements(self):
         requirements_txt = os.path.join(self.directory, 'requirements.txt')
@@ -92,19 +122,15 @@ class Detection(object):
     def parse_xml(self, root, frame_data, language_data, frame_name=None):
         language_name = ''
         if len(root) != 0:
-            try:
+            if root.tag != 'cobra':
                 frame_name = root.attrib['name']
                 language_name = root.attrib['language']
                 frame_data.setdefault(frame_name, [])
-            except KeyError:
-                logger.warning('This Element is the root')
             for child_of_root in root:
                 frame_data, language_data = self.parse_xml(child_of_root, frame_data, language_data, frame_name)
                 language_data.setdefault(language_name, {})
-            try:
+            if frame_name is not None:
                 language_data[language_name].setdefault(frame_name, frame_data[frame_name])
-            except KeyError:
-                logger.warning('This Element is the root')
             return frame_data, language_data
         else:
             try:

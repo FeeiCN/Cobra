@@ -42,6 +42,7 @@ class CveParse(object):
         cve_info = {}
         products = entry.iter('%sproduct' % self.VULN)
         access_complexity = entry.find('.//%saccess-complexity' % self.CVSS)
+        summary = entry.find('.//%ssummary' % self.VULN)
         for product in products:
             module_version = product.text.split(':')
             if len(module_version) > 4:
@@ -54,6 +55,10 @@ class CveParse(object):
             cve_info['access-complexity'] = 'unknown'
         else:
             cve_info['access-complexity'] = access_complexity.text
+        if summary is None:
+            cve_info['summary'] = 'unknown'
+        else:
+            cve_info['summary'] = summary.text
         return cve_info
 
     @staticmethod
@@ -77,20 +82,24 @@ class CveParse(object):
         cobra = eT.Element('cobra')  # root Ele
         cobra.set('document', 'https://github.com/wufeifei/cobra')
         for cve_id in self._result.keys():
-            cve = eT.Element('cve')  # cve Ele
-            cve.set('id', cve_id)
+            cve_child = eT.Element('cve')  # cve Ele
+            cve_child.set('id', cve_id)
             if 'access-complexity' in self._result[cve_id]:
                 level = eT.Element('level')
                 level.text = self._result[cve_id]['access-complexity']
-                cve.append(level)  # level in cve
+                cve_child.append(level)  # level in cve
             products = eT.Element('products')
             if 'cpe' in self._result[cve_id]:
                 for product_ in self._result[cve_id]['cpe']:
                     product = eT.Element('product')
                     product.text = product_
                     products.append(product)  # product in products
-                cve.append(products)  # products in cve
-            cobra.append(cve)  # cve in cobra
+                cve_child.append(products)  # products in cve
+            if 'summary' in self._result[cve_id]:
+                summary = eT.Element('summary')
+                summary.text = self._result[cve_id]['summary']
+                cve_child.append(summary)
+            cobra.append(cve_child)  # cve in cobra
         self.pretty(cobra)
         tree = eT.ElementTree(cobra)
         tree.write(self.rule_file)
@@ -112,51 +121,72 @@ class CveParse(object):
 
     def rule_parse(self):
         """
-        :return: rules from cve_rule.xml
+        :return: rules from CVE_Rule.xml
         """
         tree = self.parse_xml(self.rule_file)
         root = tree.getroot()
         cves = root.iter('cve')
-        for cve in cves:
-            cve_id = cve.attrib['id']
-            rule_info = self.rule_info(cve)
+        for cve_child in cves:
+            cve_id = cve_child.attrib['id']
+            rule_info = self.rule_info(cve_child)
             self._rule[cve_id] = rule_info
 
     @staticmethod
-    def rule_info(cve):
+    def rule_info(cve_child):
         rule_info = {}
         cpe_list = []
-        level = cve.find('.//level')
+        level = cve_child.find('.//level')
         rule_info['level'] = level.text
-        products = cve.iter('product')
+        products = cve_child.iter('product')
         for product in products:
             cpe_list.append(product.text)
         rule_info['cpe'] = cpe_list
+        summary = cve_child.find('.//summary')
+        rule_info['summary'] = summary.text
         return rule_info
 
     def get_rule(self):
+        """
+        :return: The rule from CVE_Rule.xml
+        """
         return self._rule
 
     def scan_cve(self):
+        """
+        :return:Analytical dependency，Match the rules and get the result
+        """
         self.rule_parse()
         cves = self.get_rule()
         dependeny = Dependencies(self.pro_file)
         pro_infos = dependeny.get_result
         for pro_info in pro_infos:
-            module_version = pro_info+':'+pro_infos[pro_info]
-            scan_cves = {}
-            for cve in cves:
-                if module_version in cves[cve]['cpe']:
-                    scan_cves[cve] = cves[cve]['level']
-            if len(scan_cves):
-                self._scan_result[module_version] = scan_cves
+            if isinstance(pro_infos[pro_info], list):  # if it is list, get all of the version
+                for version in pro_infos[pro_info]:
+                    module_version = pro_info+':'+str(version).strip()
+                    self.set_scan_result(cves, module_version)
+            else:
+                module_version = pro_info+':'+pro_infos[pro_info]
+                self.set_scan_result(cves, module_version)
         self.log_result()
+
+    def set_scan_result(self, cves, module_version):
+        """
+        :param cves:
+        :param module_version:
+        :return:set the scan result
+        """
+        scan_cves = {}
+        for cve_child in cves:
+            if module_version in cves[cve_child]['cpe']:
+                scan_cves[cve_child] = cves[cve_child]['level']
+        if len(scan_cves):
+            self._scan_result[module_version] = scan_cves
 
     def log_result(self):
         for module_ in self._scan_result:
-            for cve in self._scan_result[module_]:
-                cve_id = cve
-                cve_level = self._scan_result[module_][cve]
+            for cve_child in self._scan_result[module_]:
+                cve_id = cve_child
+                cve_level = self._scan_result[module_][cve_child]
                 logger.warning('Find the module ' + module_ + ' have ' + cve_id + ' and level is ' + cve_level)
             count = len(self._scan_result[module_])
             logger.warning('The ' + module_ + ' module have ' + str(count) + ' CVE Vul')

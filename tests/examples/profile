@@ -12,14 +12,14 @@ target 'ChatKit' do
   pod 'Alamofire3', :git => 'https://github.com/Alamofire/Alamofire.git', :branch => 'dev'
   pod 'Alamofire4', :git => 'https://github.com/Alamofire/Alamofire.git', :tag => '3.1.1'
   pod 'Alamofire5', :git => 'https://github.com/Alamofire/Alamofire.git', :commit => '0f506b1c45'
-  pod  "AVOSCloud" , "~> 3.4.0-beta.2"
-  pod  "AVOSCloudIM", "~> 3.4.0-beta.2"
+  pod  "AVOSCloud" , "~> 3.4.0"
+  pod  "AVOSCloudIM", "~> 3.4.1"
   pod  "MJRefresh" , "~> 3.1.9"
   pod  "Masonry" , "~> 1.0.1"
   pod  "SDWebImage" , "~> 3.8.0"
   pod  "FMDB" , "~> 2.6.2"
   pod  "pop", "~> 1.0.9"
-  pod  "UITableView+FDTemplateLayoutCell" , "~> 1.5.beta"
+  pod  "UITableView+FDTemplateLayoutCell" , "~> 1.5"
   pod  "FDStackView" , "~> 1.0"
   pod  "DACircularProgress" , "~> 2.3.1"
   pod  "MLLabel" , "~> 1.9.2"

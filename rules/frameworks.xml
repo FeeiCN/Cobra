@@ -75,7 +75,7 @@
         <dependency value="django"/>
     </framework>
     <framework name="Flask" language="python" code="https://github.com/pallets/flask">
-        <dependency value="flask"/>
+        <dependency value="Flask"/>
     </framework>
     <framework name="Spring" language="java">
         <dependency value="org.springframework"/>

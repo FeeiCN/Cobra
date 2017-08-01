@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import xml.etree.ElementTree as eT
+from .log import logger
 
 
 class Dependencies(object):
@@ -14,6 +15,8 @@ class Dependencies(object):
 
     def dependencies(self):
         file_path, flag = self.find_file()
+        if flag == 0:  # flag == 0
+            logger.warning('Dependency analysis cannot be done without finding dependency files')
         if flag == 1:
             self.find_python_pip(file_path)
         if flag == 2:
@@ -25,6 +28,8 @@ class Dependencies(object):
         """
         :return:flag:{1:'python', 2:'java', 3:'oc'}
         """
+        flag = 0
+        file_path = ''
         if os.path.isdir(self.directory):
             for root, dirs, filenames in os.walk(self.directory):
                 for filename in filenames:
@@ -36,10 +41,11 @@ class Dependencies(object):
                         file_path = self.get_path(root, filename)
                         flag = 2
                         return file_path, flag
-                    if filename == 'profile':
+                    if filename == 'Podfile':
                         file_path = self.get_path(root, filename)
                         flag = 3
                         return file_path, flag
+            return file_path, flag
         else:
             file_path = os.path.basename(self.directory)
             if file_path == 'requirements.txt':
@@ -48,10 +54,10 @@ class Dependencies(object):
             if file_path == 'pom.xml':
                 flag = 2
                 return self.directory, flag
-            if file_path == 'profile':
+            if file_path == 'Podfile':
                 flag = 3
                 return self.directory, flag
-
+            return file_path, flag
     @staticmethod
     def get_path(root, filename):
         """
@@ -96,24 +102,39 @@ class Dependencies(object):
             version = 'The latest version'
         if len(info) == 2:  # module from pods, version is old
             version = self.remove_quotes(info[1])
+            if "~>" in version:
+                version = self.pods_range_version(version)
         if len(info) == 2 and info[1].find('path') != -1:  # module from local
             index = info[1].find('=>')
             version = self.remove_quotes(info[1][index+2:])
         if len(info) >= 2 and info[1].find('git') != -1:  # module from git
             if len(info) == 2:
-                version = {'branch': 'master'}  # branch is master
+                version = 'master'  # branch is master
             else:
                 version = self.pods_version(info[2])  # branch is other or tag or commit version
         self._result[module_] = version
+
+    @staticmethod
+    def pods_range_version(info):
+        version = []
+        info = info.lstrip("~>")
+        info = info.split('.')
+        if len(info) == 3:
+            for i in range(int(info[2]), 10):
+                version.append(info[0]+'.'+info[1]+'.'+str(i))
+        if len(info) == 2:
+            for i in range(int(info[1]), 10):
+                version.append(info[0]+'.'+str(i))
+        return version
 
     def pods_version(self, info):
         """
         :param info:
         :return: dict example {'branch':'dev'} {'commit':'*******'} {'tag':'3.1.1'} from git information
         """
-        version = {}
         tag = info.split('=>')
-        version[tag[0].strip().lstrip(':')] = self.remove_quotes(tag[1])
+        # version[tag[0].strip().lstrip(':')] = self.remove_quotes(tag[1])
+        version = self.remove_quotes(tag[1])
         return version
 
     @staticmethod
