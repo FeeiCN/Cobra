@@ -109,7 +109,7 @@ def scan(target_directory, sid=None, special_rules=None):
         rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
-        row = [idx, x.label, rule, x.language, x.level, trigger, commit, x.code_content]
+        row = [idx + 1, x.label, rule, x.language, x.level, trigger, commit, x.code_content]
         table.add_row(row)
     vn = len(find_vulnerabilities)
     if vn == 0:
