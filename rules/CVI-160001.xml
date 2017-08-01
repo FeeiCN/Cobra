@@ -17,5 +17,5 @@
         <case assert="true"><![CDATA[String hql = "select max(detailLineNo) from TWmsSoreturnAsnDetailEntity where isDel = 0 and asnId="+headId;]]></case>
     </test>
     <status value="on"/>
-    <author name="JoyChou" email="xingge@meili-inc.com"/>
+    <author name="JoyChou" email="viarus@qq.com"/>
 </cobra>
