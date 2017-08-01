@@ -11,6 +11,16 @@ $callback = $_POST['callback'];
 
 print($callback);
 
+# CVI-220001
+if (isset($_GET['url']) {
+    header("Location: ".$_GET["url"]);
+}
+
+# CVI-230001
+if (isset($_GET['sid']) {
+    setcookie("PHPSESSID", $_GET["sid"]);
+}
+
 # CVI-190003
 phpinfo();
 
@@ -27,7 +37,7 @@ $url = $_GET['url'];
 curl($url);
 
 # CVI-140003
-echo ($_GET['test']);
+echo ("Hello " . $_GET['name']);
 
 # CVI-200002
 $unique = uniqid();

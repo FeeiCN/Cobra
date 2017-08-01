@@ -10,11 +10,16 @@
         输出入参会导致XSS
 
         ## 修复方案
-        使用Begis对参数进行过滤后使用
+        使用`htmlentities`函数进行转义
+        ```php
+        print("Hello " . htmlentities($_GET["name"], ENT_QUOTES, "utf-8");
+        ```
+        或使用Begis安全组件对参数进行过滤后使用
     </solution>
     <test>
         <case assert="true"><![CDATA[echo ($_GET['test']);]]></case>
         <case assert="true"><![CDATA[echo $_GET['test'];]]></case>
+        <case assert="true"><![CDATA[print("Hello " . $_GET["name"]);]]></case>
     </test>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>

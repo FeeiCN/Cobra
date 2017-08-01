@@ -12,4 +12,6 @@
     <vulnerability name="SIL" vid="190"/>
     <vulnerability name="PPH" vid="200"/>
     <vulnerability name="UR" vid="210"/>
+    <vulnerability name="HRS" vid="220"/>
+    <vulnerability name="SF" vid="230"/>
 </cobra>
