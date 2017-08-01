@@ -46,6 +46,7 @@
 | 210 | UR | Unvalidated Redirect | 未经验证的任意链接跳转 |
 | 220 | HRS | HTTP Response Splitting | HTTP响应拆分 |
 | 230 | SF | Session Fixation | SESSION固定 |
+| 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
 
 ## Level(危害等级)
 

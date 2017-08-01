@@ -14,4 +14,5 @@
     <vulnerability name="UR" vid="210"/>
     <vulnerability name="HRS" vid="220"/>
     <vulnerability name="SF" vid="230"/>
+    <vulnerability name="IC" vid="999"/>
 </cobra>
