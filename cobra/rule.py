@@ -185,13 +185,13 @@ class Rule(object):
             rule_info['label'] = cvi
             for x in xml_rule:
                 if x.tag == 'name':
-                    rule_info['name'] = x.get('value')
+                    rule_info['name'] = x.get('value').encode('utf-8')
                 if x.tag == 'language':
                     rule_info['language'] = x.get('value')
                 if x.tag == 'status':
                     rule_info['status'] = to_bool(x.get('value'))
                 if x.tag == 'author':
-                    name = x.get('name')
+                    name = x.get('name').encode('utf-8')
                     email = x.get('email')
                     rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
                 if x.tag in ['match', 'match2', 'repair']:
@@ -203,7 +203,7 @@ class Rule(object):
                 if x.tag == 'level':
                     rule_info['level'] = x.get('value')
                 if x.tag == 'solution':
-                    rule_info['solution'] = x.text.strip()
+                    rule_info['solution'] = x.text.strip().encode('utf-8')
                 if x.tag == 'test':
                     for case in x:
                         case_ret = case.get('assert').lower()

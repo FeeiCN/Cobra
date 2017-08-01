@@ -4,7 +4,7 @@
     <name value="拼接SQL注入"/>
     <language value="java"/>
     <match><![CDATA[((?:select|update)\s+.*(?:from|set).*where\s+\w+\s*=[^"']*(?:"|').*(?:\+|\%s))]]></match>
-    <level value="1-9"/>
+    <level value="8"/>
     <solution>
         ## 安全风险
         拼接SQL语句存在SQL注入风险
