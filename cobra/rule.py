@@ -126,16 +126,8 @@ class Rule(object):
             return None
         for vulnerability in xml_vulnerabilities:
             v_id = int(vulnerability.get('vid'))
-            v_name = vulnerability.get('name').lower()
-            v_level = int(vulnerability.get('level'))
-            v_description = vulnerability[0].text.strip()
-            v_repair = vulnerability[1].text.strip()
-            vulnerabilities_info[str(v_id)] = {
-                'name': v_name,
-                'description': v_description,
-                'level': v_level,
-                'repair': v_repair,
-            }
+            v_name = vulnerability.get('name').upper()
+            vulnerabilities_info[str(v_id)] = v_name
         return vulnerabilities_info
 
     def rules(self, rules=None):

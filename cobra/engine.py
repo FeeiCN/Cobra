@@ -73,7 +73,7 @@ def score2level(score):
     if level is None:
         return 'Unknown'
     else:
-        return '{l}-{s}: {ast}'.format(l=level[:1], s=score, ast='*' * score)
+        return '{l}-{s}: {ast}'.format(l=level[:1], s=score, ast='☆' * score)
 
 
 def scan_single(target_directory, single_rule):
@@ -124,15 +124,22 @@ def scan(target_directory, sid=None, special_rules=None):
     pool.join()
 
     # print
-    table = PrettyTable(['#', 'CVI', 'Rule Name', 'Lang', 'Level-Score', 'Target File:line-number', 'Commit Information', 'Source Code Content'])
+    table = PrettyTable(['#', 'CVI', 'Rule(ID/Name)', 'Lang', 'Level-Score', 'Target-file:Line-number', 'Commit(Author/Time)', 'Source Code Content'])
     table.align = 'l'
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
-        rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
-        commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
+        commit = '@{author},{time}'.format(author=x.commit_author, time=x.commit_time)
         level = score2level(x.level)
-        row = [idx + 1, x.id, rule, x.language, level, trigger, commit, x.code_content[:100].strip()]
+        cvi = x.id[0:3]
+        rule_id = x.id[3:6]
+        if cvi in vulnerabilities:
+            cvn = vulnerabilities[cvi]
+        else:
+            cvn = 'Unknown'
+        cvi = '{cvi}: {cvn}'.format(cvi=cvi, cvn=cvn)
+        rule = '{id}: {rn}'.format(id=rule_id, rn=x.rule_name)
+        row = [idx + 1, cvi, rule, x.language, level, trigger, commit, x.code_content[:100].strip()]
         table.add_row(row)
         if x.id not in trigger_rules:
             logger.debug(' > trigger rule: {tr}'.format(tr=x.id))
