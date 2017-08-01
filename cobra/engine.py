@@ -58,6 +58,24 @@ class Running:
         return os.path.isfile(self.running_path)
 
 
+def score2level(score):
+    level_score = {
+        'CRITICAL': [9, 10],
+        'HIGH': [6, 7, 8],
+        'MEDIUM': [3, 4, 5],
+        'LOW': [1, 2]
+    }
+    score = int(score)
+    level = None
+    for l in level_score:
+        if score in level_score[l]:
+            level = l
+    if level is None:
+        return 'Unknown'
+    else:
+        return '{l}-{s}: {ast}'.format(l=level[:1], s=score, ast='*' * score)
+
+
 def scan_single(target_directory, single_rule):
     try:
         return SingleRule(target_directory, single_rule).process()
@@ -104,13 +122,17 @@ def scan(target_directory, sid=None, special_rules=None):
             continue
     pool.close()
     pool.join()
+
+    # print
     table = PrettyTable(['#', 'CVI', 'Rule Name', 'Language', 'Level', 'Target', 'Commit Information', 'Code Content'])
+    table.align = 'l'
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
         rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
-        row = [idx + 1, x.id, rule, x.language, x.level, trigger, commit, x.code_content[:100]]
+        level = score2level(x.level)
+        row = [idx + 1, x.id, rule, x.language, level, trigger, commit, x.code_content[:100].strip()]
         table.add_row(row)
         if x.id not in trigger_rules:
             logger.debug(' > trigger rule: {tr}'.format(tr=x.id))
