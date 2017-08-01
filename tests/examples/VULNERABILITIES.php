@@ -11,6 +11,9 @@ $callback = $_POST['callback'];
 
 print($callback);
 
+# CVI-190003
+phpinfo();
+
 # CVI-120001
 function curl($url){
     $ch = curl_init();
