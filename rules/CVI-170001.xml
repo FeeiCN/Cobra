@@ -3,7 +3,7 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="LFI"/>
     <language value="jsp"/>
-    <match><![CDATA[(<jsp:include[^>]*request\.)]]></match>
+    <match><![CDATA[(include[^>]*request\.)]]></match>
     <level value="5"/>
     <solution>
         ## 安全风险
