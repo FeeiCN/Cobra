@@ -31,8 +31,8 @@
 ```
 
 ## Labels（标签）
-| ID | Label | Description(EN) | Description(CN) |  |
-| --- | --- | --- | --- | ---|
+| ID | Label | Description(EN) | Description(CN) |
+| --- | --- | --- | --- |
 | 110 | MS | Misconfiguration | 错误的配置 |
 | 120 | SSRF | Server-Side Forge | 服务端伪造 |
 | 130 | HCP | Hard-coded Password | 硬编码密码 |
