@@ -10,6 +10,8 @@ $password = $_POST['password'];
 $callback = $_POST['callback'];
 
 print($callback);
+
+# CVI-120001
 function curl($url){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -21,7 +23,14 @@ function curl($url){
 $url = $_GET['url'];
 curl($url);
 
+# CVI-140003
+echo ($_GET['test']);
+
+# CVI-200002
 $unique = uniqid();
 
+# CVI-130002
 $appKey = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+
+# CVI-130001
 $password = "cobra123456!@#";
