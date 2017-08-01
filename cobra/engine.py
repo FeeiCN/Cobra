@@ -104,12 +104,12 @@ def scan(target_directory, sid=None, special_rules=None):
             continue
     pool.close()
     pool.join()
-    table = PrettyTable(['ID', 'Label', 'Rule', 'Language', 'Level', 'Target', 'Commit Information', 'Code Content'])
+    table = PrettyTable(['#', 'ID', 'Rule', 'Language', 'Level', 'Target', 'Commit Information', 'Code Content'])
     for idx, x in enumerate(find_vulnerabilities):
         rule = x.rule_name
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         commit = '@{author}({time})'.format(author=x.commit_author, time=x.commit_time)
-        row = [idx + 1, x.label, rule, x.language, x.level, trigger, commit, x.code_content[:100]]
+        row = [idx + 1, x.id, rule, x.language, x.level, trigger, commit, x.code_content[:100]]
         table.add_row(row)
     vn = len(find_vulnerabilities)
     if vn == 0:
@@ -238,7 +238,7 @@ class SingleRule(object):
                 mr.line_number = 0
         # vulnerability information
         mr.rule_name = self.sr['name']
-        mr.label = self.sr['label']
+        mr.id = self.sr['id']
         mr.language = self.sr['language']
         mr.solution = self.sr['solution']
         mr.level = self.sr['level']

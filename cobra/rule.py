@@ -161,7 +161,7 @@ class Rule(object):
             rule_info = {
                 'name': None,
                 'file': v_path,
-                'label': None,
+                'id': None,
                 'language': None,
                 'match': None,
                 'match2': None,
@@ -181,8 +181,8 @@ class Rule(object):
             if xml_rule is None:
                 logger.critical('rule read failed!!! ({file})'.format(file=v_path))
                 continue
-            cvi = v_path.lower().split('cvi-')[1][:3]
-            rule_info['label'] = cvi
+            cvi = v_path.lower().split('cvi-')[1][:6]
+            rule_info['id'] = cvi
             for x in xml_rule:
                 if x.tag == 'name':
                     rule_info['name'] = x.get('value').encode('utf-8')
