@@ -124,7 +124,7 @@ def scan(target_directory, sid=None, special_rules=None):
     pool.join()
 
     # print
-    table = PrettyTable(['#', 'CVI', 'Rule Name', 'Language', 'Level', 'Target', 'Commit Information', 'Code Content'])
+    table = PrettyTable(['#', 'CVI', 'Rule Name', 'Lang', 'Level-Score', 'Target File:line-number', 'Commit Information', 'Source Code Content'])
     table.align = 'l'
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
