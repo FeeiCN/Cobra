@@ -249,11 +249,11 @@ class SingleRule(object):
             #
             # Rules
             #
-            # Projects/cobra/cobra/tests/examples/vulnerabilities.php:2:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # Projects/cobra/cobra/tests/examples/vulnerabilities.php:211:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # Projects/cobra/cobra/tests/examples/vulnerabilities.php:2134:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # Projects/cobra/cobra/tests/examples/vulnerabilities.php:21111:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # Projects/cobra/cobra/tests/examples/vulnerabilities.php:212344:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+            # v.php:2:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+            # v.php:211:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+            # v.php:2134:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+            # v.php:21111:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+            # v.php:212344:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
             try:
                 mr.file_path, mr.line_number, mr.code_content = re.findall(r'(.*):(\d+):(.*)', single_match)[0]
             except Exception as e:
