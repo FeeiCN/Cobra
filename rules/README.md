@@ -1,4 +1,4 @@
-# Introduction
+# Rule（规则开发规范）
 
 ## 一、Rule Template（规则模板）
 ```xml
