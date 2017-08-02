@@ -6,22 +6,41 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
 
 ## Introduction（介绍）
-Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的数百种漏洞和风险点。
+Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的数十种漏洞和风险点。
 
 ## Features（特点）
-- Multi-language support（支持多种开发语言）
-    - PHP
-    - Java
-    - Objective-C
-- Supported Multi-Vulnerabilities（支持多种漏洞）
-    - 数千条依赖规则
-    - 数十条代码规则
-- API（提供API接口，方便和其它系统对接扩展）
+#### Multi-language support（支持多种开发语言）
+> 支持PHP、Java、Objective-C等开发语言，并支持数十种文件格式。
+
+#### Supported Multi-Vulnerabilities（支持多种漏洞）
+> 首批开放数千条依赖检查规则和数十条无误报的代码扫描规则，后续将持续开放更多扫描规则。
+
+#### CLI、API（命令行模式和API模式）
+> 提供本地Server服务，可支持本地API接口，方便和其它系统（发布系统、CI等）对接扩展
 
 ## Installation（安装）
 ```bash
-pip install https://github.com/wufeifei/cobra.git
-cobra --help
+git clone https://github.com/wufeifei/cobra.git && cd cobra
+pip install -r requirements.txt
+./cobra.py --help
+```
+
+## Config（配置）
+> 若用到以下功能，则需要配置config文件，否则无需变动。
+
+```bash
+cp config.template config
+```
+
+- 将扫描结果发送到指定邮箱
+- 扫描私有GIT项目
+- 变更API Server端口域名
+
+## Upgrade（升级框架和规则）
+> 规则文件夹(Rules)也在开源代码中，所以只需要更新代码即可。
+
+```bash
+git pull origin master
 ```
 
 ## Usage（使用）
