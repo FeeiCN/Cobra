@@ -41,6 +41,7 @@
 | 160 | SQLI | SQL Injection | SQL注入 |
 | 170 | RFI | Remote File inclusion | 远程文件引用 |
 | 180 | RCE | Remote Code Execution | 远程代码执行 |
+| 181 | RCE | Remote Command Execution | 远程命令执行 |
 | 190 | SIL | Sensitive Information Leak | 敏感信息泄露 |
 | 200 | PPG | Predictable Pseudorandom Generator | 可预测的伪随机数生成器 |
 | 210 | UR | Unvalidated Redirect | 未经验证的任意链接跳转 |

