@@ -15,7 +15,7 @@ class CveParse(object):
         self._result = {}  # {'cve_id':{'access-complexity':xxx, 'cpe':[]}} access-complexity and cpe may be None
         self._rule = {}
         self._scan_result = {}
-        self.rule_file = "../rules/CVE_Rule.xml"
+        self.rule_file = "../rules/CVI-999999.xml"
         self.CVSS = "{http://scap.nist.gov/schema/cvss-v2/0.2}"
         self.VULN = "{http://scap.nist.gov/schema/vulnerability/0.4}"
         self.NS = "{http://scap.nist.gov/schema/feed/vulnerability/2.0}"
@@ -46,7 +46,7 @@ class CveParse(object):
         for product in products:
             module_version = product.text.split(':')
             if len(module_version) > 4:
-                module_ = module_version[3]+':'+module_version[4]
+                module_ = module_version[3] + ':' + module_version[4]
             else:
                 module_ = module_version[3]
             cpe_list.append(module_)
@@ -162,10 +162,10 @@ class CveParse(object):
         for pro_info in pro_infos:
             if isinstance(pro_infos[pro_info], list):  # if it is list, get all of the version
                 for version in pro_infos[pro_info]:
-                    module_version = pro_info+':'+str(version).strip()
+                    module_version = pro_info + ':' + str(version).strip()
                     self.set_scan_result(cves, module_version)
             else:
-                module_version = pro_info+':'+pro_infos[pro_info]
+                module_version = pro_info + ':' + pro_infos[pro_info]
                 self.set_scan_result(cves, module_version)
         self.log_result()
 
