@@ -26,6 +26,7 @@
 			<product>ffmpeg:3.0.7</product>
 			<product>ffmpeg:2.8.11</product>
 		</products>
+		<summary>libavcodec/webp.c in FFmpeg before 2.8.12, 3.0.x before 3.0.8, 3.1.x before 3.1.8, 3.2.x before 3.2.5, and 3.3.x before 3.3.1 does not ensure that pix_fmt is set, which allows remote attackers to cause a denial of service (heap-based buffer overflow and application crash) or possibly have unspecified other impact via a crafted file, related to the vp8_decode_mb_row_no_filter and pred8x8_128_dc_8_c functions.</summary>
 	</cve>
 	<cve id="CVE-2017-5645">
 		<level>unknown</level>
@@ -58,9 +59,11 @@
 			<product>log4j:2.0</product>
 			<product>log4j:2.0</product>
 		</products>
+		<summary>In Apache Log4j 2.x before 2.8.2, when using the TCP socket server or UDP socket server to receive serialized log events from another application, a specially crafted binary payload can be sent that, when deserialized, can execute arbitrary code.</summary>
 	</cve>
 	<cve id="CVE-2017-5338">
 		<level>unknown</level>
+		<summary>** REJECT **  DO NOT USE THIS CANDIDATE NUMBER. ConsultIDs: none. Reason: This candidate was withdrawn by its CNA. Further investigation showed that it was not a security issue. Notes: none.</summary>
 	</cve>
 	<cve id="CVE-2017-8564">
 		<level>LOW</level>
@@ -78,5 +81,15 @@
 			<product>windows_server_2016</product>
 			<product>windows_server_2012:r2</product>
 		</products>
+		<summary>Windows kernel in Microsoft Windows Server 2008 SP2 and R2 SP1, Windows 7 SP1, Windows 8.1, Windows Server 2012 Gold and R2, Windows RT 8.1, Windows 10 Gold, 1511, 1607, and 1703, and Windows Server 2016 allows an information disclosure vulnerability when it fails to properly initialize a memory address, aka "Windows Kernel Information Disclosure Vulnerability".</summary>
+	</cve>
+    <cve id="CVE-2017-533123">
+		<level>unknown</level>
+        <products>
+            <product>FMDB:~> 2.6.2</product>
+            <product>Flask:0.10.1</product>
+            <product>AVOSCloud:3.4.5</product>
+        </products>
+		<summary>** REJECT **  DO NOT USE THIS CANDIDATE NUMBER. ConsultIDs: none. Reason: This candidate was withdrawn by its CNA. Further investigation showed that it was not a security issue. Notes: none.</summary>
 	</cve>
 </cobra>
