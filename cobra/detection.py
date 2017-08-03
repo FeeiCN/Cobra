@@ -85,11 +85,14 @@ class Detection(object):
     def dependency_scan(self, root):
         framework_infos = self.dependency_framework(root)
         dependencies = Dependencies(self.directory)
-        dependencies_info = dependencies.get_result
+        dependencies_info = dependencies.get_framework
+        dependencies_info = list(set(dependencies_info))
         for frame_name in framework_infos:
             for rule in framework_infos[frame_name]['rule']:
-                if rule in dependencies_info.keys():
-                    return frame_name
+                for dependency in dependencies_info:
+                    if rule in dependency:
+                        logger.info("Find the project's framework may be:" + frame_name)
+                        return frame_name
         return None
 
     @staticmethod
