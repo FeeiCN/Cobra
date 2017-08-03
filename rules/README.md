@@ -44,27 +44,27 @@
 |---|---|---|---|---|---|
 |`name`|规则名称|是|`string`|描述规则名称|`<name value="Logger敏感信息" />`|
 |`language`|规则语言|是|`string`|设置规则针对的开发语言，参见`rules/languages.xml`|`<language value="php" />`|
-|`match`|匹配规则1|是|`string`|匹配规则1|`<match mode="regex"><![CDATA[regex content]]></match>`|
-|`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 mode="regex" block="in-function-up"><![CDATA[regex content]]></match>`|
-|`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair mode="regex"><![CDATA[regex content]]></match>`|
+|`match`|匹配规则1|是|`string`|匹配规则1|`<match mode="regex-only-match"><![CDATA[regex content]]></match>`|
+|`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 mode="regex-only-match" block="in-function-up"><![CDATA[regex content]]></match>`|
+|`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair mode="regex-only-match"><![CDATA[regex content]]></match>`|
 |`level`|影响等级|是|`integer`|标记该规则扫到的漏洞危害等级，使用数字1-10。|`<level value="3" />`|
 |`solution`|修复方案|是|`string`|该规则扫描的漏洞对应的**安全风险**和**修复方案**|`<solution>详细的安全风险和修复方案</solution>`|
 |`test`|测试用例|是|`case`|该规则对应的测试用例|`<test><case assert="true"><![CDATA[测试存在漏洞的代码]]></case><case assert="false"><![CDATA[测试不存在漏洞的代码]]></case></test>`|
 |`status`|是否开启|是|`boolean`|是否开启该规则的扫描，使用`on`/`off`来标记|`<status value="1" />`|
 |`author`|规则作者|是|`attr`|规则作者的姓名和邮箱|`<author name="Feei" email="feei@feei.cn" />`|
 
-## 四、`match`/`match2`/`repair`编写规范
+## 四、`<match>`/`<match2>`/`<repair>`编写规范
 
-#### Mode（规则模式）
-> 规则内容是什么类型的
+#### `<match>` Mode（`<match>`的规则模式）
+> 用来描述规则类型，只能用在`<match>`中。
 
 |Mode|类型|描述|
 |---|---|---|
-|regex|正则|默认不配置就为正则模式，以正则的方式进行匹配|
-|function-param-controllable|函数|内容写函数名，将以函数的形式进行匹配，并判断参数是否外部用户可控|
+|regex-only-match|正则仅匹配|默认不配置就为正则模式，以正则的方式进行匹配|
+|function-param-controllable|函数参数可控|内容写函数名，将以函数的形式进行匹配，并判断参数是否外部用户可控|
 
-#### Block(匹配区块)
-> 存在`match2`或`repair`规则时使用匹配区块（`block`）来标记`match2`或`repair`需要匹配的位置。
+#### `<match2>`/`<repair>` Block（`<match2>`/`<repair>`的匹配区块）
+> 用来描述需要匹配的代码区块位置，只能用在`<match2>`或`<repair>`中。
 
 |区块|描述|
 |---|---|
@@ -90,7 +90,7 @@ Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
 
 可以通过配置一条match规则，规则mode设置为`regex`(仅匹配，通过正则模式匹配，匹配到则算作漏洞)，即可扫描这类问题。
 ```xml
-<match><![CDATA[(Cipher....Instance\s?\(\s?\".*ECB)]]></match>
+<match mode="regex-only-match"><![CDATA[Cipher....Instance\s?\(\s?\".*ECB]]></match>
 ```
 #### 2. 多次匹配：需要进行多次匹配
 **例子：不安全的随机数（首先需要匹配到生成了随机数`new Random`，然后要确保随机数是系统的随机数而非自定义函数）**
@@ -102,8 +102,8 @@ Random r = new Random();
 
 先配置一条`match`规则来匹配`new Random`，再配置一条`match`来匹配`import util.random`。
 ```xml
-<match><![CDATA[new Random\s*\(|Random\.next]]></match>
-<match2 block="in-file-up"><![CDATA[(java|scala)\.util\.Random]]></match2>
+<match mode="regex-only-match"><![CDATA[new Random\s*\(|Random\.next]]></match>
+<match2 block="in-file-up"><![CDATA[java|scala)\.util\.Random]]></match2>
 ```
 
 #### 3. 参数可控：只要判定参数是用户可控的则算作漏洞

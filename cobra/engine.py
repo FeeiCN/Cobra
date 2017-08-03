@@ -490,7 +490,7 @@ class Core(object):
                     return False, 4004
 
         if found_vul:
-            self.code_content = self.code_content.encode('unicode_escape')
+            self.code_content = self.code_content.encode('utf-8')
             if len(self.code_content) > 512:
                 self.code_content = self.code_content[:500]
             self.status = self.status_init
