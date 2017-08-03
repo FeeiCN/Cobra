@@ -9,6 +9,7 @@
     <vulnerability name="SQLI" vid="160"/>
     <vulnerability name="RFI" vid="170"/>
     <vulnerability name="RCE" vid="180"/>
+    <vulnerability name="RCE" vid="181"/>
     <vulnerability name="SIL" vid="190"/>
     <vulnerability name="PPH" vid="200"/>
     <vulnerability name="UR" vid="210"/>

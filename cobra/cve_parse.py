@@ -15,7 +15,9 @@ class CveParse(object):
         self._result = {}  # {'cve_id':{'access-complexity':xxx, 'cpe':[]}} access-complexity and cpe may be None
         self._rule = {}
         self._scan_result = {}
-        self.rule_file = "../rules/CVE_Rule.xml"
+        self.rule_file = "../rules/CVI-999999.xml"
+        self.rule_files = ["../rules/CVI-999999.xml",
+                           "../rules/CVI-Rule.xml"]  # CVI-999999.xml is cve rule, CVI-Rule.xml is custom rule
         self.CVSS = "{http://scap.nist.gov/schema/cvss-v2/0.2}"
         self.VULN = "{http://scap.nist.gov/schema/vulnerability/0.4}"
         self.NS = "{http://scap.nist.gov/schema/feed/vulnerability/2.0}"
@@ -46,7 +48,7 @@ class CveParse(object):
         for product in products:
             module_version = product.text.split(':')
             if len(module_version) > 4:
-                module_ = module_version[3]+':'+module_version[4]
+                module_ = module_version[3] + ':' + module_version[4]
             else:
                 module_ = module_version[3]
             cpe_list.append(module_)
@@ -121,15 +123,16 @@ class CveParse(object):
 
     def rule_parse(self):
         """
-        :return: rules from CVE_Rule.xml
+        :return: rules from CVI-Rule.xml and CVI-999999.xml
         """
-        tree = self.parse_xml(self.rule_file)
-        root = tree.getroot()
-        cves = root.iter('cve')
-        for cve_child in cves:
-            cve_id = cve_child.attrib['id']
-            rule_info = self.rule_info(cve_child)
-            self._rule[cve_id] = rule_info
+        for rule_file in self.rule_files:
+            tree = self.parse_xml(rule_file)
+            root = tree.getroot()
+            cves = root.iter('cve')
+            for cve_child in cves:
+                cve_id = cve_child.attrib['id']
+                rule_info = self.rule_info(cve_child)
+                self._rule[cve_id] = rule_info
 
     @staticmethod
     def rule_info(cve_child):
@@ -147,7 +150,7 @@ class CveParse(object):
 
     def get_rule(self):
         """
-        :return: The rule from CVE_Rule.xml
+        :return: The rule from CVI-999999.xml and CVI-Rule.xml
         """
         return self._rule
 
@@ -156,17 +159,12 @@ class CveParse(object):
         :return:Analytical dependency，Match the rules and get the result
         """
         self.rule_parse()
-        cves = self.get_rule()
-        dependeny = Dependencies(self.pro_file)
-        pro_infos = dependeny.get_result
-        for pro_info in pro_infos:
-            if isinstance(pro_infos[pro_info], list):  # if it is list, get all of the version
-                for version in pro_infos[pro_info]:
-                    module_version = pro_info+':'+str(version).strip()
-                    self.set_scan_result(cves, module_version)
-            else:
-                module_version = pro_info+':'+pro_infos[pro_info]
-                self.set_scan_result(cves, module_version)
+        cve = self.get_rule()
+        dependency = Dependencies(self.pro_file)
+        project_info = dependency.get_result
+        for pro_info in project_info:
+            module_version = pro_info + ':' + project_info[pro_info]
+            self.set_scan_result(cve, module_version)
         self.log_result()
 
     def set_scan_result(self, cves, module_version):

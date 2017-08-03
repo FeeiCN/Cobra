@@ -4,7 +4,7 @@
     <name value="不安全的随机数"/>
     <language value="java"/>
     <match><![CDATA[(new Random\s*\(|Random\.next)]]></match>
-    <match2><![CDATA[((java|scala)\.util\.Random)]]></match2>
+    <match2 block="in-file-up"><![CDATA[((java|scala)\.util\.Random)]]></match2>
     <level value="2"/>
     <solution><![CDATA[
         ## 安全风险

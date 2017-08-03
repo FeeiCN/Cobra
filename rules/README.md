@@ -1,63 +1,70 @@
-# Introduction
+# Rule（规则开发规范）
 
-## Rule Template（规则模板）
-规则命名规范：
-`CVI-100001.xml`
-- 大写字母CVI（Cobra Vulnerability ID）开头，横杠（-）分割
-- 六位数字组成，前三位为Label ID，后三位为自增ID
-- 结尾以小写.xml结束
+## 一、Rule Template（规则模板）
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cobra document="https://github.com/wufeifei/cobra">
-    <name value="必填，股则名称"/>
-    <language value="必填，小写字符串，规则针对的语言，参见rules/languages.xml"/>
-    <match><![CDATA[必填，一次匹配规则：规则使用正则编写，若为匹配到就算作漏洞的话在规则前后加上括号即可。]]></match>
-    <match2 block="block表示修复规则匹配的区块位置，具体参见Block"><![CDATA[可选，二次匹配规则：当完成一次匹配规则后，若需要再次匹配可再次填写。block表示二次规则匹配的区块位置，具体参见rules/README.md]]></match2>
-    <repair block="block表示修复规则匹配的区块位置，具体参见Block"><![CDATA[可选，修复规则：若匹配到此规则则不算做漏洞。]]></repair>
-    <level value="必填，漏洞危害等级，使用数字1-9来表示"/>
+    <name value="硬编码Token/Key"/>
+    <language value="*"/>
+    <match><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
+    <level value="2"/>
+    <test>
+        <case assert="true" remark="sha1"><![CDATA["41a6bc4d9a033e1627f448f0b9593f9316d071c1"]]></case>
+        <case assert="true" remark="md5 lower"><![CDATA["d042343e49e40f16cb61bd203b0ce756"]]></case>
+        <case assert="true" remark="md5 upper"><![CDATA[C787AFE9D9E86A6A6C78ACE99CA778EE]]></case>
+        <case assert="false"><![CDATA[please like and subscribe to my]]></case>
+        <case assert="false"><![CDATA[A32efC32c79823a2123AA8cbDDd3231c]]></case>
+        <case assert="false"><![CDATA[ffffffffffffffffffffffffffffffff]]></case>
+        <case assert="false"><![CDATA[01110101001110011101011010101001]]></case>
+        <case assert="false"><![CDATA[00000000000000000000000000000000]]></case>
+    </test>
     <solution>
-        必填，安全风险和修复方案
         ## 安全风险
+        硬编码密码
 
         ## 修复方案
+        将密码抽出统一放在配置文件中，配置文件不放在git中
     </solution>
-    <test>
-        <case assert="必填，是否为漏洞，使用true和false来表示"><![CDATA[必填，规则测试代码，可以多行。]]></case>
-    </test>
-    <status value="必填，规则状态，用on和off来表示开启和关闭"/>
-    <author name="必填，规则作者姓名" email="必填，规则作者邮箱"/>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
 </cobra>
 ```
 
-## Labels（标签）
-| ID | Label | Description(EN) | Description(CN) |
-| --- | --- | --- | --- |
-| 110 | MS | Misconfiguration | 错误的配置 |
-| 120 | SSRF | Server-Side Forge | 服务端伪造 |
-| 130 | HCP | Hard-coded Password | 硬编码密码 |
-| 140 | XSS | Cross-Site Script | 跨站脚本 |
-| 150 | CSRF | Cross-Site Request Forge | 跨站请求伪造 |
-| 160 | SQLI | SQL Injection | SQL注入 |
-| 170 | RFI | Remote File inclusion | 远程文件引用 |
-| 180 | RCE | Remote Code Execution | 远程代码执行 |
-| 190 | SIL | Sensitive Information Leak | 敏感信息泄露 |
-| 200 | PPG | Predictable Pseudorandom Generator | 可预测的伪随机数生成器 |
-| 210 | UR | Unvalidated Redirect | 未经验证的任意链接跳转 |
-| 220 | HRS | HTTP Response Splitting | HTTP响应拆分 |
-| 230 | SF | Session Fixation | SESSION固定 |
-| 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
+## 二、规则文件命名规范
+`rules/CVI-100001.xml`
+- 统一存放在`rules`目录
+- 大写字母CVI（Cobra Vulnerability ID）开头，横杠（-）分割
+- 六位数字组成，前三位为Label ID，后三位为自增ID
+- 结尾以小写.xml结束
 
-## Level(危害等级)
+## 三、规则编写规范
 
-| 等级 | 分值 | 描述 |
+|字段（英文）|字段（中文）|是否必填|类型|描述|例子|
+|---|---|---|---|---|---|
+|`name`|规则名称|是|`string`|描述规则名称|`<name value="Logger敏感信息" />`|
+|`language`|规则语言|是|`string`|设置规则针对的开发语言，参见`rules/languages.xml`|`<language value="php" />`|
+|`match`|匹配规则1|是|`string`|匹配规则1|`<match mode="regex"><![CDATA[regex content]]></match>`|
+|`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 mode="regex" block="in-function-up"><![CDATA[regex content]]></match>`|
+|`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair mode="regex"><![CDATA[regex content]]></match>`|
+|`level`|影响等级|是|`integer`|标记该规则扫到的漏洞危害等级，使用数字1-10。|`<level value="3" />`|
+|`solution`|修复方案|是|`string`|该规则扫描的漏洞对应的**安全风险**和**修复方案**|`<solution>详细的安全风险和修复方案</solution>`|
+|`test`|测试用例|是|`case`|该规则对应的测试用例|`<test><case assert="true"><![CDATA[测试存在漏洞的代码]]></case><case assert="false"><![CDATA[测试不存在漏洞的代码]]></case></test>`|
+|`status`|是否开启|是|`boolean`|是否开启该规则的扫描，使用`on`/`off`来标记|`<status value="1" />`|
+|`author`|规则作者|是|`attr`|规则作者的姓名和邮箱|`<author name="Feei" email="feei@feei.cn" />`|
+
+## 四、`match`/`match2`/`repair`编写规范
+
+#### Mode（规则模式）
+> 规则内容是什么类型的
+
+|Mode|类型|描述|
 |---|---|---|
-| 严重 | 9-10 | 1.可获取服务器权限; 2.严重信息泄露; |
-| 高危 | 6-8 | 1.敏感信息泄露; 2.越权; 3.任意文件读取; 4.SQL注入; 5.git/svn泄露; 6.SSRF;|
-| 中危 | 3-5 | 1.XSS; 2.URL跳转; 3.CRLF; 4.LFI;|
-| 低危 | 1-2 | 1.CSRF; 2.JSONP劫持; 3.异常堆栈信息; 3.PHPINFO; 4.路径泄露; 5.硬编码密码; 6.硬编码内网IP域名; 7.不安全的加密方法; 8.不安全的随机数; 9.日志敏感记录;|
+|regex|正则|默认不配置就为正则模式，以正则的方式进行匹配|
+|function-param-controllable|函数|内容写函数名，将以函数的形式进行匹配，并判断参数是否外部用户可控|
 
-## Block(匹配区块)
+#### Block(匹配区块)
+> 存在`match2`或`repair`规则时使用匹配区块（`block`）来标记`match2`或`repair`需要匹配的位置。
 
 |区块|描述|
 |---|---|
@@ -68,3 +75,77 @@
 | in-file | 由第一条规则触发的文件内 |
 | in-file-up | 由第一条规则触发的所在行之上，所在文件之内 |
 | in-file-down | 由第一条规则触发的所在行之下，所在文件之内 |
+
+
+## 五、Demo（例子）
+> 把常见漏洞划分为四大类
+
+#### 1. 单一匹配: 仅匹配单次
+**例子：错误的配置(使用了ECB模式)**
+```java
+Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
+```
+
+**Solution(规则写法)**
+
+可以通过配置一条match规则，规则mode设置为`regex`(仅匹配，通过正则模式匹配，匹配到则算作漏洞)，即可扫描这类问题。
+```xml
+<match><![CDATA[(Cipher....Instance\s?\(\s?\".*ECB)]]></match>
+```
+#### 2. 多次匹配：需要进行多次匹配
+**例子：不安全的随机数（首先需要匹配到生成了随机数`new Random`，然后要确保随机数是系统的随机数而非自定义函数）**
+```java
+import util.random;
+Random r = new Random();
+```
+**Solution(规则写法)**
+
+先配置一条`match`规则来匹配`new Random`，再配置一条`match`来匹配`import util.random`。
+```xml
+<match><![CDATA[new Random\s*\(|Random\.next]]></match>
+<match2 block="in-file-up"><![CDATA[(java|scala)\.util\.Random]]></match2>
+```
+
+#### 3. 参数可控：只要判定参数是用户可控的则算作漏洞
+**例子：反射型XSS（直接输出入参）**
+```php
+$content = $_GET['content'];
+print("Text: " + $content);
+```
+
+**Solution(规则写法)**
+
+```xml
+<match mode="function-param-controllable"><![CDATA[print]]></match>
+```
+
+### 4. 依赖安全：当依赖了某个不安全版本的三方组件
+
+
+## 六、Labels（标签）
+| ID | Label | Description(EN) | Description(CN) |
+| --- | --- | --- | --- |
+| 110 | MS | Misconfiguration | 错误的配置 |
+| 120 | SSRF | Server-Side Forge | 服务端伪造 |
+| 130 | HCP | Hard-coded Password | 硬编码密码 |
+| 140 | XSS | Cross-Site Script | 跨站脚本 |
+| 150 | CSRF | Cross-Site Request Forge | 跨站请求伪造 |
+| 160 | SQLI | SQL Injection | SQL注入 |
+| 170 | RFI | Remote File inclusion | 远程文件引用 |
+| 180 | RCE | Remote Code Execution | 远程代码执行 |
+| 181 | RCE | Remote Command Execution | 远程命令执行 |
+| 190 | SIL | Sensitive Information Leak | 敏感信息泄露 |
+| 200 | PPG | Predictable Pseudorandom Generator | 可预测的伪随机数生成器 |
+| 210 | UR | Unvalidated Redirect | 未经验证的任意链接跳转 |
+| 220 | HRS | HTTP Response Splitting | HTTP响应拆分 |
+| 230 | SF | Session Fixation | SESSION固定 |
+| 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
+
+## 七、Level（危害等级）
+
+| 等级 | 分值 | 描述 |
+|---|---|---|
+| 严重 | 9-10 | 1.可获取服务器权限; 2.严重信息泄露; |
+| 高危 | 6-8 | 1.敏感信息泄露; 2.越权; 3.任意文件读取; 4.SQL注入; 5.git/svn泄露; 6.SSRF;|
+| 中危 | 3-5 | 1.XSS; 2.URL跳转; 3.CRLF; 4.LFI;|
+| 低危 | 1-2 | 1.CSRF; 2.JSONP劫持; 3.异常堆栈信息; 3.PHPINFO; 4.路径泄露; 5.硬编码密码; 6.硬编码内网IP域名; 7.不安全的加密方法; 8.不安全的随机数; 9.日志敏感记录;|

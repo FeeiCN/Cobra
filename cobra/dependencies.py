@@ -11,6 +11,7 @@ class Dependencies(object):
         """
         self.directory = os.path.abspath(target_directory)
         self._result = {}
+        self._framework = []
         self.dependencies()
 
     def dependencies(self):
@@ -21,43 +22,35 @@ class Dependencies(object):
             self.find_python_pip(file_path)
         if flag == 2:
             self.find_java_mvn(file_path)
-        if flag == 3:
-            self.find_oc_pods(file_path)
 
     def find_file(self):
         """
         :return:flag:{1:'python', 2:'java', 3:'oc'}
         """
         flag = 0
-        file_path = ''
+        file_path = []
         if os.path.isdir(self.directory):
             for root, dirs, filenames in os.walk(self.directory):
                 for filename in filenames:
                     if filename == 'requirements.txt':
-                        file_path = self.get_path(root, filename)
+                        file_path.append(self.get_path(root, filename))
                         flag = 1
-                        return file_path, flag
                     if filename == 'pom.xml':
-                        file_path = self.get_path(root, filename)
+                        file_path.append(self.get_path(root, filename))
                         flag = 2
-                        return file_path, flag
-                    if filename == 'Podfile':
-                        file_path = self.get_path(root, filename)
-                        flag = 3
-                        return file_path, flag
             return file_path, flag
         else:
-            file_path = os.path.basename(self.directory)
-            if file_path == 'requirements.txt':
+            filename = os.path.basename(self.directory)
+            if filename == 'requirements.txt':
                 flag = 1
-                return self.directory, flag
-            if file_path == 'pom.xml':
+                file_path.append(self.directory)
+                return file_path, flag
+            if filename == 'pom.xml':
                 flag = 2
-                return self.directory, flag
-            if file_path == 'Podfile':
-                flag = 3
-                return self.directory, flag
+                file_path.append(self.directory)
+                return file_path, flag
             return file_path, flag
+
     @staticmethod
     def get_path(root, filename):
         """
@@ -68,78 +61,32 @@ class Dependencies(object):
         return os.path.join(root, filename)
 
     def find_python_pip(self, file_path):
-        with open(file_path) as fi:
-            for line in fi.readlines():
-                flag = line.index("==")
-                module_ = line[:flag]
-                version = line[flag+2:].strip()
-                self._result[module_] = version
+        for requirement in file_path:
+            with open(requirement) as fi:
+                for line in fi.readlines():
+                    flag = line.index("==")
+                    module_ = line[:flag]
+                    version = line[flag+2:].strip()
+                    self._framework.append(module_)
+                    self._result[module_] = version
 
     def find_java_mvn(self, file_path):
         pom_ns = "{http://maven.apache.org/POM/4.0.0}"
-        tree = self.parse_xml(file_path)
-        root = tree.getroot()
-        childs = root.iter('%sdependency' % pom_ns)
-        for child in childs:
-            group_id = child.getchildren()[0].text
-            artifact_id = child.getchildren()[1].text
-            version = child.getchildren()[2].text
-            module_ = artifact_id
-            self._result[module_] = version
-
-    def find_oc_pods(self, file_path):
-        with open(file_path) as fi:
-            for line in fi.readlines():
-                line = line.strip()
-                if line.startswith('pod'):
-                    info = line[3:].split(',')
-                    self.pods_statistical(info)
-
-    def pods_statistical(self, info):
-        version = ""
-        module_ = self.remove_quotes(info[0])
-        if len(info) == 1:  # moule from pods, version is the latest version
-            version = 'The latest version'
-        if len(info) == 2:  # module from pods, version is old
-            version = self.remove_quotes(info[1])
-            if "~>" in version:
-                version = self.pods_range_version(version)
-        if len(info) == 2 and info[1].find('path') != -1:  # module from local
-            index = info[1].find('=>')
-            version = self.remove_quotes(info[1][index+2:])
-        if len(info) >= 2 and info[1].find('git') != -1:  # module from git
-            if len(info) == 2:
-                version = 'master'  # branch is master
-            else:
-                version = self.pods_version(info[2])  # branch is other or tag or commit version
-        self._result[module_] = version
-
-    @staticmethod
-    def pods_range_version(info):
-        version = []
-        info = info.lstrip("~>")
-        info = info.split('.')
-        if len(info) == 3:
-            for i in range(int(info[2]), 10):
-                version.append(info[0]+'.'+info[1]+'.'+str(i))
-        if len(info) == 2:
-            for i in range(int(info[1]), 10):
-                version.append(info[0]+'.'+str(i))
-        return version
-
-    def pods_version(self, info):
-        """
-        :param info:
-        :return: dict example {'branch':'dev'} {'commit':'*******'} {'tag':'3.1.1'} from git information
-        """
-        tag = info.split('=>')
-        # version[tag[0].strip().lstrip(':')] = self.remove_quotes(tag[1])
-        version = self.remove_quotes(tag[1])
-        return version
-
-    @staticmethod
-    def remove_quotes(info):
-        return info.strip().strip('"').strip("'")
+        for pom in file_path:
+            tree = self.parse_xml(pom)
+            root = tree.getroot()
+            childs = root.iter('%sdependency' % pom_ns)
+            for child in childs:
+                group_id = child.getchildren()[0].text
+                artifact_id = child.getchildren()[1].text
+                if len(child.getchildren()) > 2:
+                    version = child.getchildren()[2].text
+                else:
+                    version = 'The latest version'
+                module_ = artifact_id
+                self._framework.append(group_id)
+                self._framework.append(artifact_id)
+                self._result[module_] = version
 
     @staticmethod
     def parse_xml(file_path):
@@ -151,3 +98,7 @@ class Dependencies(object):
     @property
     def get_result(self):
         return self._result
+
+    @property
+    def get_framework(self):
+        return self._framework
