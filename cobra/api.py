@@ -55,7 +55,7 @@ class AddJob(Resource):
             sids = list()
             for t in target:
                 # Scan
-                sid = get_sid(target)
+                sid = get_sid(t)
                 sids.append(sid)
                 subprocess.Popen(
                     ['python', cobra_main, "-t", str(t), "-f", str(formatter), "-o", str(output), '-r', str(rule),
@@ -86,7 +86,7 @@ class JobStatus(Resource):
         if not data or data == "":
             return {"code": 1003, "result": "Only support json, please post json data."}
 
-        scan_id = str(data.get("scan_id"))  # 需要拼接入路径，转为字符串
+        sid = str(data.get("sid"))  # 需要拼接入路径，转为字符串
 
         key = Config(level1="cobra", level2="secret_key").value
         _key = data.get("key")
@@ -96,13 +96,13 @@ class JobStatus(Resource):
         elif not _key == key:
             return {"code": 4002, "result": "Key verify failed."}
 
-        running = Running(scan_id)
+        running = Running(sid)
         if running.is_file() is not True:
             data = {
                 'code': 1001,
                 'msg': 'scan id not exist!',
-                'scan_id': scan_id,
-                'status': 'done',
+                'sid': sid,
+                'status': 'no such scan',
                 'report': ''
             }
         else:
@@ -110,7 +110,7 @@ class JobStatus(Resource):
             data = {
                 'code': 1001,
                 'msg': 'success',
-                'scan_id': scan_id,
+                'sid': sid,
                 'status': result['status'],
                 'report': result['report']
             }
