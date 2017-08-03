@@ -51,15 +51,31 @@ class AddJob(Resource):
         if not rule or rule == '':
             rule = ''
 
-        # Scan
-        sid = get_sid(target)
-        subprocess.Popen(
-            ['python', cobra_main, "-t", str(target), "-f", str(formatter), "-o", str(output), '-r', str(rule), '-sid',
-             str(sid)])
-        result = {
-            'msg': 'Add scan job successfully',
-            'scan_id': sid
-        }
+        if isinstance(target, list):
+            sids = list()
+            for t in target:
+                # Scan
+                sid = get_sid(target)
+                sids.append(sid)
+                subprocess.Popen(
+                    ['python', cobra_main, "-t", str(t), "-f", str(formatter), "-o", str(output), '-r', str(rule),
+                     '-sid', str(sid)]
+                )
+
+            result = {
+                "msg": "Add scan job successfully.",
+                "sid": sids,
+            }
+        else:
+            sid = get_sid(target)
+            subprocess.Popen(
+                ["python", cobra_main, "-t", str(target), "-f", str(formatter), "-o", str(output), "-r", str(rule),
+                 "-sid", str(sid)]
+            )
+            result = {
+                "msg": "Add scan job successfully.",
+                "sid": sid,
+            }
         return {"code": 1001, "result": result}
 
 
