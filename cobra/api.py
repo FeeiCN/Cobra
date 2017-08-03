@@ -96,6 +96,9 @@ class JobStatus(Resource):
         elif not _key == key:
             return {"code": 4002, "result": "Key verify failed."}
 
+        if not sid or sid == "":
+            return {"code": 1002, "result": "sid is required."}
+
         running = Running(sid)
         if running.is_file() is not True:
             data = {
