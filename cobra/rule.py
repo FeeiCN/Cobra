@@ -136,10 +136,11 @@ class Rule(object):
         :return: dict
         """
         vulnerabilities = []
-        if rules is not None:
+        if rules is not None and len(rules) > 0:
             files = rules
         else:
             files = os.listdir(self.rules_path)
+        print(files)
         for vulnerability_name in files:
             # VN: CVI-190001.xml
             v_path = os.path.join(self.rules_path, vulnerability_name)
