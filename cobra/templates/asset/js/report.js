@@ -42,7 +42,13 @@ $(function () {
             $('li[data-id=' + vid + ']').addClass('active');
             // hide loading
             $('.CodeMirror .cm-loading').hide();
-            var data = vul_list_origin[vid - 1];
+            for (var i = 0; i < vul_list_origin.length; i++) {
+                for (var j = 0; j < vul_list_origin[i].vulnerabilities.length; j++) {
+                    if (vul_list_origin[i].vulnerabilities[j].id === vid) {
+                        var data = vul_list_origin[i].vulnerabilities[j];
+                    }
+                }
+            }
             $('#code').val(data.code_content);
             // Highlighting param
             vulnerabilities_list.cm_code.setOption("mode", data.mode);
@@ -54,16 +60,15 @@ $(function () {
                 // panel
                 $('.v-path').text(data.file_path + ':' + data.line_number);
                 $('.v-id').text('MVE-' + vid);
-                $('.v-language').text(data.vulnerability);
+                $('.v-language').text(data.lang);
                 // widget
                 function init_widget() {
                     var lis = $('.widget-trigger li');
                     $('.commit-author').text('@' + data.commit_author);
                     $('.commit-time').text('@' + data.commit_time);
-                    // $('.v-level').text(data.rule.level);
-                    $('.v-type').text(data.vulnerability);
+                    $('.v-level').text(data.level);
+                    $('.v-type').text(data.rule_name);
                     $('.v-rule').text(data.match_result);
-                    // $('.v-rule-author').text('@' + data.commit_author);
                 }
 
                 init_widget();
@@ -123,7 +128,7 @@ $(function () {
                 v = '&vid=' + vulnerabilities_list.vid;
             }
             var url = '';
-            current_tab = 'vul';
+            var current_tab = 'vul';
             url = "?t=" + current_tab + vulnerabilities_list.filter_url() + v;
             window.history.pushState("CobraState", "Cobra", url);
         },
@@ -206,7 +211,7 @@ $(function () {
                     if (sl !== null && sl > 0) {
                         $('#search_level').val(sl);
                     }
-                    // Search task
+                    // Search target
                     var st = getParameterByName('st');
                     if (st !== null && st > 0) {
                         $('#search_task').val(st);
@@ -229,18 +234,20 @@ $(function () {
                     var list_html = '';
 
                     for (var i = 0; i < list.length; i++) {
-                        var line = '';
-                        if (list[i].line_number != 0) {
-                            line = ':' + list[i].line_number;
+                        for (var j = 0; j < list[i].vulnerabilities.length; j++) {
+                            var line = '';
+                            if (list[i].vulnerabilities[j].line_number !== 0) {
+                                line = ':' + list[i].vulnerabilities[j].line_number;
+                            }
+                            list_html = list_html + '<li data-id="' + list[i].vulnerabilities[j].id + '" class=" " data-start="1" data-line="1">' +
+                                '<strong>MVE-' + list[i].vulnerabilities[j].id + '</strong><br><span>' + list[i].vulnerabilities[j].file_path + line + '</span><br>' +
+                                '<span class="issue-information">' +
+                                '<small>' +
+                                list[i].vulnerabilities[j].match_result + ' => ' + list[i].vulnerabilities[j].commit_time +
+                                '</small>' +
+                                '</span>' +
+                                '</li>';
                         }
-                        list_html = list_html + '<li data-id="' + (i+1) + '" class=" " data-start="1" data-line="1">' +
-                            '<strong>MVE-' + (i+1) + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
-                            '<span class="issue-information">' +
-                            '<small>' +
-                            list[i].match_result + ' => ' + list[i].commit_time +
-                            '</small>' +
-                            '</span>' +
-                            '</li>';
                     }
 
                     $('.vulnerabilities_list').html(list_html);

@@ -14,29 +14,37 @@
 from cobra import export
 from cobra.result import VulnerabilityResult
 import json
+import random
 
 find_vul = []
 for i in range(4):
     srv = []
     for j in range(3):
         mr = VulnerabilityResult()
-        mr.file_path = "/etc/passwd"
+        mr.id = str(random.randint(1000, 9999))
+        mr.language = 'php'
+        mr.rule_name = random.choice(("xss", "sqli", "csrf"))
+        mr.file_path = '/etc/passwd'
         mr.line_number = 182
-        mr.commit_author = "author"
-        mr.code_content = "<script>alert(document.cookie)</script>"
-        mr.match_result = "pregex"
-        mr.commit_time = "2017-04-04"
-        mr.label = "xss"
-        mr.rule_name = "Reflected XSS"
+        mr.code_content = '<script>alert(document.cookie)</script>'
+        mr.match_result = 'pregex'
+        mr.level = 'High'
+        mr.commit_time = '2017-04-04'
+        mr.commit_author = 'test'
         srv.append(mr)
     find_vul.append(srv)
 
 vul_list = export.flatten(find_vul)
-write_obj = {"Vuls": vul_list}
+target = "https://github.com/test/test.git"
+write_obj = {
+    "target": target,
+    "vulnerabilities": vul_list,
+}
 
 
 def test_export_to_html():
-    html_string = export.dict_to_html(vul_list)
+    html_obj = [write_obj]
+    html_string = export.dict_to_html(html_obj)
     # HTML header
     assert "<!DOCTYPE html>" in html_string
     # code_content
@@ -51,10 +59,8 @@ def test_export_to_html():
     assert "pregex" in html_string
     # commit_time
     assert "2017-04-04" in html_string
-    # vulnerability
-    assert "xss" in html_string
     # rule_name
-    assert "Reflected XSS" in html_string
+    assert "xss" in html_string or "sqli" in html_string or "csrf" in html_string
 
 
 def test_export_to_json():
@@ -73,10 +79,8 @@ def test_export_to_json():
     assert "pregex" in json_string
     # commit_time
     assert "2017-04-04" in json_string
-    # vulnerability
-    assert "xss" in json_string
     # rule_name
-    assert "Reflected XSS" in json_string
+    assert "xss" in json_string
 
 
 def test_export_to_xml():
@@ -95,10 +99,8 @@ def test_export_to_xml():
     assert "pregex" in xml_string
     # commit_time
     assert "2017-04-04" in xml_string
-    # vulnerability
-    assert "xss" in xml_string
     # rule_name
-    assert "Reflected XSS" in xml_string
+    assert "xss" in xml_string
 
 
 def test_export_to_pretty_table():
@@ -114,7 +116,7 @@ def test_export_to_pretty_table():
     # line_number
     assert "182" in table_string
     # commit_author
-    assert "author" in table_string
+    assert "Author" in table_string
     # commit_time
     assert "2017-04-04" in table_string
     # vulnerability

@@ -12,6 +12,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import json
+import re
 import os
 import csv
 from .log import logger
@@ -37,9 +38,9 @@ def dict_to_xml(dict_obj, line_padding=""):
 
     if isinstance(dict_obj, list):
         for list_id, sub_elem in enumerate(dict_obj):
-            result_list.append(" " * 4 + "<Vulnerability-" + str(list_id) + ">")
+            result_list.append(" " * 4 + "<vulnerability>")
             result_list.append(dict_to_xml(sub_elem, line_padding))
-            result_list.append(" " * 4 + "</Vulnerability-" + str(list_id) + ">")
+            result_list.append(" " * 4 + "</vulnerability>")
 
         return "\n".join(result_list)
 
@@ -60,10 +61,10 @@ def dict_to_xml(dict_obj, line_padding=""):
 def dict_to_json(dict_obj):
     """
     Convert scan result to JSON string.
-    :param dict_obj:a dict object
+    :param dict_obj: a dict object
     :return: JSON String
     """
-    return json.dumps(dict_obj)
+    return json.dumps(dict_obj, indent=4, sort_keys=True, ensure_ascii=False)
 
 
 def dict_to_csv(vul_list, filename):
@@ -73,37 +74,48 @@ def dict_to_csv(vul_list, filename):
     :param filename:
     :return:
     """
-    with open(filename, "w") as f:
-        csv_writer = csv.DictWriter(f, vul_list[0].keys())
-        csv_writer.writeheader()
-        csv_writer.writerows(vul_list)
+    # 将 target 调整到第一列
+    header = vul_list[0].keys()
+    header.remove("target")
+    header.insert(0, "target")
+
+    if not os.path.exists(filename):
+        with open(filename, "w") as f:
+            csv_writer = csv.DictWriter(f, header)
+            csv_writer.writeheader()
+            csv_writer.writerows(vul_list)
+    else:
+        with open(filename, "a") as f:
+            csv_writer = csv.DictWriter(f, header)
+            csv_writer.writerows(vul_list)
 
 
-def dict_to_html(vul_list):
+def dict_to_html(html_obj):
     """
     Convert scan result to HTML string.
-    :param vul_list:a list which contains dicts
+    :param html_obj: a list contains write_obj
     :return: HTML String
     """
-    print os.path.dirname(__file__)
     with open(os.path.join(os.path.dirname(__file__), "templates/asset/js/report.js"), "r") as f:
         report_js = f.read()
 
-    # 计算 vid 对应的数组偏移，统计 vul_list 中的 mode，type
-    rule_filter, type_filter = set(), set()
-    for index, value in enumerate(vul_list):
-        rule_filter.add(value.get("rule_name"))
-        type_filter.add(value.get("vulnerability"))
+    # 计算 vid 对应的数组偏移，统计 vul_list 中的 rule target
+    rule_filter, target_filter = set(), set()
+    for result in html_obj:
+        for value in result.get("vulnerabilities"):
+            rule_filter.add(value.get("rule_name"))
+
+        target_filter.add(result.get("target"))
 
     with open(os.path.join(os.path.dirname(__file__), "templates/export.html"), "r") as f:
         template = f.read()
 
     templite = Templite(template)
     html_content = templite.render({
-        "vul_list": html.escape(json.dumps(vul_list)),
+        "vul_list": html.escape(json.dumps(html_obj, ensure_ascii=False)),
         "rule_filter": list(rule_filter),
-        "type_filter": list(type_filter),
-        "report_js": report_js
+        "target_filter": list(target_filter),
+        "report_js": report_js,
     })
     return html_content
 
@@ -118,9 +130,9 @@ def dict_to_pretty_table(vul_list):
     row_list.field_names = ["ID", "Vulnerability", "Target", "Discover Time", "Author"]
     for vul in vul_list:
         row_list.add_row(
-            [vul.get("id"), vul.get("vulnerability"), vul.get("file_path") + ": " + str(vul.get("line_number")),
-             vul.get("commit_time"),
-             vul.get("commit_author")])
+            [vul.get("id"), vul.get("rule_name"), vul.get("file_path") + ": " + str(vul.get("line_number")),
+             vul.get("commit_time"), vul.get("commit_author")]
+        )
     return row_list
 
 
@@ -145,9 +157,10 @@ def flatten(input_list):
     return output_list
 
 
-def write_to_file(find_vuls, output_format="", filename=""):
+def write_to_file(target, find_vuls, output_format="", filename=""):
     """
     Export scan result to file.
+    :param target: target URL
     :param find_vuls: list of scan result
     :param output_format: output format
     :param filename: filename to save
@@ -167,26 +180,67 @@ def write_to_file(find_vuls, output_format="", filename=""):
     """
 
     vul_list = flatten(find_vuls)
-    write_obj = {"Vuls": vul_list}
+    write_obj = {
+        "target": target,
+        "vulnerabilities": vul_list,
+    }
 
     if output_format == "":
-        logger.info("Vulnerabilites\n" + str(dict_to_pretty_table(vul_list)))
+        logger.info("Vulnerabilities\n" + str(dict_to_pretty_table(vul_list)))
 
     elif output_format == "json" or output_format == "JSON":
-        with open(filename, "w") as f:
-            f.write(dict_to_json(write_obj))
+        if not os.path.exists(filename):
+            with open(filename, "w") as f:
+                f.write("""{"results":[\n""")
+                f.write(dict_to_json(write_obj))
+                f.write("\n]}")
+        else:
+            # 在倒数第二行插入
+            with open(filename, "r") as f:
+                results = f.readlines()
+                results.insert(len(results) - 1, ",\n" + dict_to_json(write_obj) + "\n")
+            with open(filename, "w") as f:
+                f.writelines(results)
 
     elif output_format == "xml" or output_format == "XML":
-        with open(filename, "w") as f:
-            f.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
-            f.write(dict_to_xml(write_obj))
+        xml_obj = {
+            "result": write_obj,
+        }
+        if not os.path.exists(filename):
+            with open(filename, "w") as f:
+                f.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
+                f.write("""<results>\n""")
+                f.write(dict_to_xml(xml_obj))
+                f.write("""\n</results>\n""")
+        else:
+            # 在倒数第二行插入
+            with open(filename, "r") as f:
+                results = f.readlines()
+                results.insert(len(results) - 1, "\n" + dict_to_xml(xml_obj) + "\n")
+            with open(filename, "w") as f:
+                f.writelines(results)
 
     elif output_format == "csv" or output_format == "CSV":
+        for vul in vul_list:
+            vul["target"] = target
         dict_to_csv(vul_list, filename)
 
     elif output_format == "html" or output_format == "HTML":
-        with open(filename, "w") as f:
-            f.write(dict_to_html(vul_list))
+        html_obj = [write_obj]
+        if not os.path.exists(filename):
+            with open(filename, "w") as f:
+                f.write(dict_to_html(html_obj))
+        else:
+            with open(filename, "r") as f:
+                results = f.read()
+                # 读入原来的 vul_list_origin
+                old_vul_list = re.findall(r"var vul_list_origin = (.*?\}\]);", results)
+                old_vul_list = eval(old_vul_list[0])
+                # 添加新的扫描结果
+                old_vul_list.append(write_obj)
+                html_obj = old_vul_list
+            with open(filename, "w") as f:
+                f.write(dict_to_html(html_obj))
 
     else:
         raise ValueError("Unknown output format!")
