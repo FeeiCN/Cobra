@@ -65,7 +65,7 @@ class AST(object):
                 'annotation': r'(\/\/)+'
             }
         }
-        logger.debug("[LANGUAGE] `{language}`".format(language=self.language))
+        logger.debug("[AST] [LANGUAGE] `{language}`".format(language=self.language))
 
     def functions(self):
         """
@@ -74,7 +74,7 @@ class AST(object):
         """
         grep = Tool().grep
         if self.language not in self.regex:
-            logger.info("Undefined language's functions regex {0}".format(self.language))
+            logger.info("[AST] Undefined language's functions regex {0}".format(self.language))
             return False
         regex_functions = self.regex[self.language]['functions']
         param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
@@ -87,16 +87,16 @@ class AST(object):
             for index, line in enumerate(lines):
                 line = line.strip()
                 if line == '':
-                    logger.info('Empty')
+                    logger.info('[AST] Empty')
                     continue
                 line_arr = line.split(':')
                 if len(line_arr) < 2:
-                    logger.info("Not found(:)")
+                    logger.info("[AST] Not found(:)")
 
                 regex_annotation = self.regex[self.language]['annotation']
                 string = re.findall(regex_annotation, line_arr[1].strip())
                 if len(string) >= 1 and string[0] != '':
-                    logger.info(logger.info("This function is annotation"))
+                    logger.info("[AST] This function is annotation")
 
                 function_name = re.findall(regex_functions, line_arr[1].strip())
                 if len(function_name) >= 1:
@@ -115,7 +115,7 @@ class AST(object):
                         'end': None  # next function's start
                     }
                 else:
-                    logger.info("Can't get function name: {0}".format(line))
+                    logger.info("[AST] Can't get function name: {0}".format(line))
             end = sum(1 for l in open(self.file_path))
             for name, value in functions.items():
                 if value['end'] is None:
@@ -136,7 +136,7 @@ class AST(object):
         """
         if block_position == 2:
             if self.line is None or self.line == 0:
-                logger.critical("Line exception: {0}".format(self.line))
+                logger.critical("[AST] Line exception: {0}".format(self.line))
                 return False
             line_rule = '{0}p'.format(self.line)
             code = File(self.file_path).lines(line_rule)
@@ -159,7 +159,7 @@ class AST(object):
                         elif block_position == 3:
                             block_start = function_value['start']
                             block_end = function_value['end']
-                        logger.debug("[FUNCTION] {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
+                        logger.debug("[AST] [FUNCTION] {0} ({1} - {2}) {3}".format(function_name, function_value['start'], function_value['end'], in_this_function))
             else:
                 if block_position == 0:
                     block_start = 1
@@ -170,11 +170,11 @@ class AST(object):
                 elif block_position == 3:
                     block_start = 1
                     block_end = sum(1 for l in open(self.file_path))
-                logger.debug("Not function anything `function`, will split file")
+                logger.debug("[AST] Not function anything `function`, will split file")
             # get param block code
             line_rule = "{0},{1}p".format(block_start, block_end)
             code = File(self.file_path).lines(line_rule)
-            logger.debug('[BLOCK-CODE-LINES] {0} - {1}p'.format(block_start, block_end))
+            logger.debug('[AST] [BLOCK-CODE-LINES] {0} - {1}p'.format(block_start, block_end))
             return code
 
     def is_controllable_param(self):
@@ -182,12 +182,12 @@ class AST(object):
         is controllable param
         :return:
         """
-        logger.debug('Is controllable param')
+        logger.debug('[AST] Is controllable param')
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
             self.param_name = param_name
-            logger.debug('Param: `{0}`'.format(param_name))
+            logger.debug('[AST] Param: `{0}`'.format(param_name))
             # all is string
             regex_string = self.regex[self.language]['string']
             string = re.findall(regex_string, param_name)
@@ -199,56 +199,56 @@ class AST(object):
                     # 'ping $v1 $v2'
                     # foreach $vn
                     param_name = regex_get_variable_result[0]
-                    logger.info("String's variables: `{variables}`".format(variables=','.join(regex_get_variable_result)))
+                    logger.info("[AST] String's variables: `{variables}`".format(variables=','.join(regex_get_variable_result)))
                 else:
-                    logger.debug("String have variables: `No`")
+                    logger.debug("[AST] String have variables: `No`")
                     return False, self.data
-            logger.debug("String have variables: `Yes`")
+            logger.debug("[AST] String have variables: `Yes`")
 
             # variable
             if param_name[:1] == '$':
-                logger.debug("Is variable: `Yes`")
+                logger.debug("[AST] Is variable: `Yes`")
 
                 # Get assign code block
                 param_block_code = self.block_code(0)
                 if param_block_code is False:
-                    logger.debug("Can't get assign code block")
+                    logger.debug("[AST] Can't get assign code block")
                     return True, self.data
-                logger.debug('Code assign code block: ```{language}\r\n{block}```'.format(language=self.language, block=param_block_code))
+                logger.debug('[AST] Code assign code block: ```{language}\r\n{block}```'.format(language=self.language, block=param_block_code))
 
                 # Is assign out input
                 regex_get_param = self.regex[self.language]['assign_out_input'].format(re.escape(param_name))
                 regex_get_param_result = re.findall(regex_get_param, param_block_code)
                 if len(regex_get_param_result) >= 1:
                     self.param_value = regex_get_param_result[0]
-                    logger.debug("Is assign out input: `Yes`")
+                    logger.debug("[AST] Is assign out input: `Yes`")
                     return True, self.data
-                logger.debug("Is assign out input: `No`")
+                logger.debug("[AST] Is assign out input: `No`")
 
                 # Is function's param
                 regex_function_param = r'(function\s*\w+\s*\(.*{0})'.format(re.escape(param_name))
                 regex_function_param_result = re.findall(regex_function_param, param_block_code)
                 if len(regex_function_param_result) >= 1:
                     self.param_value = regex_function_param_result[0]
-                    logger.debug("Is function's param: `Yes`")
+                    logger.debug("[AST] Is function's param: `Yes`")
                     return True, self.data
-                logger.debug("Is function's param: `No`")
+                logger.debug("[AST] Is function's param: `No`")
 
                 # Is assign CONST
                 uc_rule = r'{0}\s?=\s?([A-Z_]*)'.format(re.escape(param_name))
                 uc_rule_result = re.findall(uc_rule, param_block_code)
                 if len(uc_rule_result) >= 1:
-                    logger.debug("Is assign CONST: Yes `{0} = {1}`".format(param_name, uc_rule_result[0]))
+                    logger.debug("[AST] Is assign CONST: Yes `{0} = {1}`".format(param_name, uc_rule_result[0]))
                     return False, self.data
-                logger.debug("Is assign CONST: `No`")
+                logger.debug("[AST] Is assign CONST: `No`")
 
                 # Is assign string
                 regex_assign_string = self.regex[self.language]['assign_string'].format(re.escape(param_name))
                 string = re.findall(regex_assign_string, param_block_code)
                 if len(string) >= 1 and string[0] != '':
-                    logger.debug("Is assign string: `Yes`")
+                    logger.debug("[AST] Is assign string: `Yes`")
                     return False, self.data
-                logger.debug("Is assign string: `No`")
+                logger.debug("[AST] Is assign string: `No`")
                 return True, self.data
             else:
                 if self.language == 'java':
@@ -257,26 +257,26 @@ class AST(object):
                     if param_block_code is False:
                         logger.debug("Can't get block code")
                         return True, self.data
-                    logger.debug("Block code: ```{language}\r\n{code}```".format(language=self.language, code=param_block_code))
+                    logger.debug("[AST] Block code: ```{language}\r\n{code}```".format(language=self.language, code=param_block_code))
                     regex_assign_string = self.regex[self.language]['assign_string'].format(re.escape(param_name))
                     string = re.findall(regex_assign_string, param_block_code)
                     if len(string) >= 1 and string[0] != '':
-                        logger.debug("Is assign string: `Yes`")
+                        logger.debug("[AST] Is assign string: `Yes`")
                         return False, self.data
-                    logger.debug("Is assign string: `No`")
+                    logger.debug("[AST] Is assign string: `No`")
 
                     # Is assign out data
                     regex_get_param = r'String\s{0}\s=\s\w+\.getParameter(.*)'.format(re.escape(param_name))
                     get_param = re.findall(regex_get_param, param_block_code)
                     if len(get_param) >= 1 and get_param[0] != '':
-                        logger.debug("Is assign out data: `Yes`")
+                        logger.debug("[AST] Is assign out data: `Yes`")
                         return False, self.data
-                    logger.debug("Is assign out data: `No`")
+                    logger.debug("[AST] Is assign out data: `No`")
                     return True, self.data
-                logger.critical("Not Java/PHP, can't parse")
+                logger.critical("[AST] Not Java/PHP, can't parse")
                 return False, self.data
         else:
-            logger.warning("Can't get `param`, check built-in rule")
+            logger.warning("[AST] Can't get `param`, check built-in rule")
             return False, self.data
 
     def match(self, rule, block_id):
@@ -287,17 +287,17 @@ class AST(object):
         :return:
         """
         self.data = []
-        logger.debug('[RULE-BLOCK] {r} {b}'.format(r=rule, b=block(block_id)))
+        logger.debug('[REPAIR-RULE-BLOCK] {b} {r}'.format(r=rule, b=block(block_id)))
         code = self.block_code(block_id)
         if code is False:
-            logger.debug("Can't get match block code")
+            logger.debug("[AST] Can't get match block code")
             return False, self.data
         # replace repair {{PARAM}} const
         if '{{PARAM}}' in rule:
             rule = rule.replace('{{PARAM}}', self.param_name)
-        logger.debug("[BLOCK-CODE] `{code}`".format(code=code.strip()))
+        logger.debug("[AST] [BLOCK-CODE] `{code}`".format(code=code.strip()))
         repair_result = re.findall(rule, code)
-        logger.debug("[MATCH-RESULT] {0}".format(repair_result))
+        logger.debug("[AST] [MATCH-RESULT] {0}".format(repair_result))
         if len(repair_result) >= 1:
             return True, self.data
         else:

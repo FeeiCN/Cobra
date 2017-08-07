@@ -51,12 +51,14 @@ class ParseArgs(object):
                             sr += extension
                         self.special_rules.append(sr)
                     else:
-                        logger.warning('Exception rule name: {sr}'.format(sr=sr))
+                        logger.critical('Exception rule name: {sr}'.format(sr=sr))
             else:
                 if self._check_rule_name(special_rules):
                     if extension not in special_rules:
                         special_rules += extension
                     self.special_rules = [special_rules]
+                else:
+                    logger.critical('Exception special rule name(e.g: CVI-110001): {sr}'.format(sr=special_rules))
         else:
             self.special_rules = None
         self.sid = sid
@@ -220,7 +222,7 @@ def path_to_short(path, max_length=36):
     paths = filter(None, paths)
     tmp_path = ''
     for i in range(0, len(paths)):
-        # print(i, str(paths[i]), str(paths[len(paths) - i - 1]))
+        logger.debug((i, str(paths[i]), str(paths[len(paths) - i - 1])))
         tmp_path = tmp_path + str(paths[i]) + '/' + str(paths[len(paths) - i - 1])
         if len(tmp_path) > max_length:
             tmp_path = ''

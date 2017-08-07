@@ -3,7 +3,7 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="硬编码Token/Key"/>
     <language value="*"/>
-    <match><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
+    <match mode="regex-only-match"><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
     <level value="2"/>
     <test>
         <case assert="true" remark="sha1"><![CDATA["41a6bc4d9a033e1627f448f0b9593f9316d071c1"]]></case>
