@@ -1,1 +1,0 @@
-![Framework](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/FRAMEWORK.png)

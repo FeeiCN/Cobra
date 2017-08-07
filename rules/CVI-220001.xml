@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="HRS"/>
+    <language value="php"/>
+    <match><![CDATA[(header\s*\(\s*[^;]*\$_(GET|POST|REQUEST|SERVER|COOKIE))]]></match>
+    <level value="5"/>
+    <solution>
+        ## 安全风险
+        `<?php header("Location: ".$_GET["url"]); ?>`
+        `/index.php?url=a%0a%0dContent-Type:%20text/html%0a%0d%0a%0d<script>alert(1)</script>`
+
+        ## 修复方案
+        使用白名单判断
+        ```php
+        <?php if(!in_array($_GET["url"], $whitelist)) exit; ?>
+        ```
+    </solution>
+    <test>
+        <case assert="true"><![CDATA[header("Location: ".$_GET["url"]);]]></case>
+    </test>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

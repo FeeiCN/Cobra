@@ -1,26 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+
 # -*- coding: utf-8 -*-
+import re
+import sys
 
-"""
-    cobra
-    ~~~~~
-
-    Implements cobra main
-
-    :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/wufeifei/cobra
-    :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2017 Feei. All rights reserved
-"""
-from app import web, manager
-from utils import config
-
-
-def main():
-    debug = config.Config('cobra', 'debug').value
-    web.debug = bool(debug)
-    manager.run()
-
+from cobra import main
 
 if __name__ == '__main__':
-    main()
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
