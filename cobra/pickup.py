@@ -319,7 +319,11 @@ class Git(object):
         logger.debug('cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
-        cmd = 'git pull origin master'
+        if not self.checkout(self.repo_branch):
+            os.chdir(repo_dir)
+            return False, "Checkout failed."
+
+        cmd = 'git pull origin ' + self.repo_branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
         logger.info(pull_out)
@@ -359,7 +363,7 @@ class Git(object):
         # clone repo with username and password
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password
-        cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '" -b master'
+        cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '" -b ' + self.repo_branch
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
