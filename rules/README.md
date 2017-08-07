@@ -45,8 +45,8 @@
 |`name`|规则名称|是|`string`|描述规则名称|`<name value="Logger敏感信息" />`|
 |`language`|规则语言|是|`string`|设置规则针对的开发语言，参见`rules/languages.xml`|`<language value="php" />`|
 |`match`|匹配规则1|是|`string`|匹配规则1|`<match mode="regex-only-match"><![CDATA[regex content]]></match>`|
-|`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 mode="regex-only-match" block="in-function-up"><![CDATA[regex content]]></match>`|
-|`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair mode="regex-only-match"><![CDATA[regex content]]></match>`|
+|`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 block="in-function-up"><![CDATA[regex content]]></match>`|
+|`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair block=""><![CDATA[regex content]]></match>`|
 |`level`|影响等级|是|`integer`|标记该规则扫到的漏洞危害等级，使用数字1-10。|`<level value="3" />`|
 |`solution`|修复方案|是|`string`|该规则扫描的漏洞对应的**安全风险**和**修复方案**|`<solution>详细的安全风险和修复方案</solution>`|
 |`test`|测试用例|是|`case`|该规则对应的测试用例|`<test><case assert="true"><![CDATA[测试存在漏洞的代码]]></case><case assert="false"><![CDATA[测试不存在漏洞的代码]]></case></test>`|
@@ -58,10 +58,11 @@
 #### `<match>` Mode（`<match>`的规则模式）
 > 用来描述规则类型，只能用在`<match>`中。
 
-|Mode|类型|描述|
-|---|---|---|
-|regex-only-match|正则仅匹配|默认不配置就为正则模式，以正则的方式进行匹配|
-|function-param-controllable|函数参数可控|内容写函数名，将以函数的形式进行匹配，并判断参数是否外部用户可控|
+|Mode|类型|默认模式|描述|
+|---|---|---|---|
+|regex-only-match|正则仅匹配|是|默认是此模式，但需要显式的写在规则文件里。以正则的方式进行匹配，匹配到内容则算作漏洞|
+|regex-param-controllable|正则参数可控|否|以正则模式进行匹配，匹配出的变量可外部控制则为漏洞|
+|function-param-controllable|函数参数可控|否|内容写函数名，将搜索所有该函数的调用，若参数外部可控则为漏洞|
 
 #### `<match2>`/`<repair>` Block（`<match2>`/`<repair>`的匹配区块）
 > 用来描述需要匹配的代码区块位置，只能用在`<match2>`或`<repair>`中。
