@@ -209,7 +209,7 @@ class Directory(object):
         path = path.replace(self.absolute_path, '')
         self.file.append(path)
         self.file_sum += 1
-        logger.debug("{0}, {1}".format(self.file_sum, path.encode(encoding='utf-8')))
+        logger.debug(u"{0}, {1}".format(self.file_sum, path))
 
 
 class File(object):
