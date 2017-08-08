@@ -98,6 +98,7 @@
     </language>
     <language name="Conf">
         <extension value=".properties"/>
+        <extension value=".conf"/>
         <extension value=".ini"/>
         <extension value=".cfg"/>
         <extension value=".yml"/>
