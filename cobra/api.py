@@ -57,10 +57,8 @@ class AddJob(Resource):
                 # Scan
                 sid = get_sid(t)
                 sids.append(sid)
-                subprocess.Popen(
-                    ['python', cobra_main, "-t", str(t), "-f", str(formatter), "-o", str(output), '-r', str(rule),
-                     '-sid', str(sid)]
-                )
+                cmd = ['python', cobra_main, "-t", str(t), "-f", str(formatter), "-o", str(output), '-r', str(rule), '-sid', str(sid)]
+                subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             result = {
                 "msg": "Add scan job successfully.",
@@ -68,10 +66,8 @@ class AddJob(Resource):
             }
         else:
             sid = get_sid(target)
-            subprocess.Popen(
-                ["python", cobra_main, "-t", str(target), "-f", str(formatter), "-o", str(output), "-r", str(rule),
-                 "-sid", str(sid)]
-            )
+            cmd = ["python", cobra_main, "-t", str(target), "-f", str(formatter), "-o", str(output), "-r", str(rule), "-sid", str(sid)]
+            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             result = {
                 "msg": "Add scan job successfully.",
                 "sid": sid,

@@ -231,7 +231,7 @@ class File(object):
         :return:
         """
         param = ['sed', "-n", line_rule, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE)
+        p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = p.communicate()
         if len(result[0]):
             content = result[0]
@@ -497,7 +497,7 @@ class Git(object):
             raise NotExistError('Authentication failed')
 
     @staticmethod
-    def committer(file_path, line_number, length=1):
+    def committer(directory, file_path, line_number, length=1):
         """
         git blame -L21,+1 -- git.py
         362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logger.getLogger(__name__)
@@ -509,8 +509,8 @@ class Git(object):
         :param length:
         :return: group#1, group#2
         """
-        # os.chdir(path)
-        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path)
+        os.chdir(directory)
+        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path.replace(directory, ''))
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
         if len(checkout_out) != 0:
@@ -598,5 +598,5 @@ class Subversion(object):
     def commit(self):
         svn_log = subprocess.Popen(
             [self.svn, 'log', self.filename],
-            stdout=subprocess.PIPE).communicate()[0]
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
         return svn_log
