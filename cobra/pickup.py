@@ -359,7 +359,7 @@ class Git(object):
         else:
             # private repo
             clone_address = self.repo_address.split('://')[0] + '://' + quote(self.repo_username) + ':' + \
-                            self.repo_password + '@' + self.repo_address.split('://')[1]
+                            quote(self.repo_password) + '@' + self.repo_address.split('://')[1]
         # clone repo with username and password
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password
@@ -367,12 +367,12 @@ class Git(object):
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
-        logger.info(clone_out)
+        clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
+
+        logger.debug(clone_out)
         logger.info(clone_err)
 
         self.parse_err(clone_err)
-
-        clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
         logger.info('clone done. Switching to branch ' + self.repo_branch)
         # check out to special branch

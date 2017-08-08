@@ -115,8 +115,12 @@ class ParseArgs(object):
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
             target, branch = re.findall(r"(.*?.git):(\w+)$", self.target)[0] if re.findall(r"(.*?.git):(\w+)$", self.target) else (self.target, "master")
-            username = ''
-            password = ''
+            if 'gitlab' in target:
+                username = Config('git', 'username').value
+                password = Config('git', 'password').value
+            else:
+                username = None
+                password = None
             gg = Git(repo_address=target, branch=branch, username=username, password=password)
 
             # Git Clone Error
