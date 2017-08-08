@@ -1,6 +1,6 @@
 # Cobra
 [![Build Status](https://travis-ci.org/wufeifei/cobra.svg?branch=master)](https://travis-ci.org/wufeifei/cobra)
-[![Coverage](https://img.shields.io/coveralls/wufeifei/cobra.svg)](https://coveralls.io/github/wufeifei/cobra)
+[![Coverage Status](https://coveralls.io/repos/github/wufeifei/cobra/badge.svg?branch=master)](https://coveralls.io/github/wufeifei/cobra?branch=master)
 [![Cobra Release](https://img.shields.io/github/release/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/releases)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
 
