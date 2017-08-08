@@ -157,7 +157,7 @@ def start(host, port, debug):
 
     # 消费者线程
     threads = []
-    for i in range(2):
+    for i in range(10):
         threads.append(threading.Thread(target=consumer, args=()))
 
     for i in threads:
