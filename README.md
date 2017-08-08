@@ -5,6 +5,8 @@
 [![Cobra Close Issue](https://img.shields.io/github/issues-closed-raw/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/issues?q=is%3Aissue+is%3Aclosed)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
 
+当前版本非正式版本，正式版本正在做最后的内测中，建议等正式版本出来后再使用，敬请期待！
+
 ## Introduction（介绍）
 Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的数十种漏洞和风险点。
 
@@ -20,6 +22,10 @@ Cobra是一款**源代码安全审计**工具，支持检测多种开发语言�
 
 ## Installation（安装）
 ```bash
+# macOS系统依赖
+brew install grep findutils
+
+# 安装Cobra
 git clone https://github.com/wufeifei/cobra.git && cd cobra
 pip install -r requirements.txt
 ./cobra.py --help
