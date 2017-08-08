@@ -12,6 +12,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import sys
 import time
 import argparse
 import logging
@@ -19,8 +20,11 @@ from .log import logger
 from . import cli, api, config
 
 from .__version__ import __title__, __introduction__, __url__, __version__
-from .__version__ import __build__, __author__, __author_email__, __license__
+from .__version__ import __author__, __author_email__, __license__
 from .__version__ import __copyright__, __epilog__
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 def main():

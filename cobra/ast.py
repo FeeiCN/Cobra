@@ -78,7 +78,7 @@ class AST(object):
             return False
         regex_functions = self.regex[self.language]['functions']
         param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE)
+        p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = p.communicate()
         if len(result[0]):
             functions = {}
@@ -140,7 +140,8 @@ class AST(object):
                 return False
             line_rule = '{0}p'.format(self.line)
             code = File(self.file_path).lines(line_rule)
-            code = code.strip()
+            if code is not False:
+                code = code.strip()
             return code
         else:
             block_start = 1
@@ -296,7 +297,7 @@ class AST(object):
         if '{{PARAM}}' in rule:
             rule = rule.replace('{{PARAM}}', self.param_name)
         logger.debug("[AST] [BLOCK-CODE] `{code}`".format(code=code.strip()))
-        repair_result = re.findall(rule, code)
+        repair_result = re.findall(rule, code, re.I)
         logger.debug("[AST] [MATCH-RESULT] {0}".format(repair_result))
         if len(repair_result) >= 1:
             return True, self.data

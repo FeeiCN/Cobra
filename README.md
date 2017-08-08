@@ -10,7 +10,7 @@ Cobra是一款**源代码安全审计**工具，支持检测多种开发语言�
 
 ## Features（特点）
 #### Multi-language support（支持多种开发语言）
-> 支持PHP、Java、Objective-C等开发语言，并支持数十种文件格式。
+> 支持PHP、Java等开发语言，并支持数十种类型文件。
 
 #### Supported Multi-Vulnerabilities（支持多种漏洞）
 > 首批开放数万条不安全的依赖检查规则和数十条代码安全扫描规则，后续将持续开放更多扫描规则。

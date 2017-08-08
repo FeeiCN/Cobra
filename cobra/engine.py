@@ -137,7 +137,7 @@ def scan(target_directory, sid=None, special_rules=None):
             cvn = vulnerabilities[cvi]
         else:
             cvn = 'Unknown'
-        row = [idx + 1, x.id, cvn, x.rule_name, x.language, level, trigger, commit, x.code_content[:100].strip()]
+        row = [idx + 1, x.id, cvn, x.rule_name, x.language, level, trigger, commit, x.code_content.decode('utf-8')[:100].strip()]
         table.add_row(row)
         if x.id not in trigger_rules:
             logger.debug(' > trigger rule (CVI-{cvi})'.format(cvi=x.id))
@@ -253,7 +253,8 @@ class SingleRule(object):
             # v.php:21111:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
             # v.php:212344:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
             try:
-                mr.file_path, mr.line_number, mr.code_content = re.findall(r'(.*):(\d+):(.*)', single_match)[0]
+                mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
+                mr.file_path = single_match.split(':{n}:'.format(n=mr.line_number))[0]
             except Exception as e:
                 logger.warning('match line parse exception')
                 mr.file_path = ''
@@ -276,7 +277,7 @@ class SingleRule(object):
 
         # committer
         from .pickup import Git
-        c_ret, c_author, c_time = Git.committer(mr.file_path, mr.line_number)
+        c_ret, c_author, c_time = Git.committer(self.target_directory, mr.file_path, mr.line_number)
         if c_ret:
             mr.commit_author = c_author
             mr.commit_time = c_time
@@ -459,6 +460,17 @@ class Core(object):
         if self.is_match_only_rule():
             logger.debug("[CVI-{cvi}] [ONLY-MATCH]".format(cvi=self.cvi))
             found_vul = True
+            if self.rule_repair is not None:
+                logger.debug('[VERIFY-REPAIR]')
+                ast = AST(self.rule_match, self.file_path, self.line_number, self.code_content)
+                is_repair, data = ast.match(self.rule_repair, self.repair_block)
+                if is_repair:
+                    # fixed
+                    logger.debug('[CVI-{cvi}] [RET] Vulnerability Fixed'.format(cvi=self.cvi))
+                    return False, 1002
+                else:
+                    logger.debug('[CVI-{cvi}] [REPAIR] [RET] Not fixed'.format(cvi=self.cvi))
+                    found_vul = True
         else:
             logger.debug('[CVI-{cvi}] [NOT-ONLY-MATCH]'.format(cvi=self.cvi))
             found_vul = False
@@ -494,7 +506,7 @@ class Core(object):
                     return False, 4004
 
         if found_vul:
-            self.code_content = self.code_content.encode('utf-8')
+            self.code_content = self.code_content
             if len(self.code_content) > 512:
                 self.code_content = self.code_content[:500]
             self.status = self.status_init

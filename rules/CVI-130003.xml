@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="配置型硬编码密码1"/>
+    <language value="conf"/>
+    <match mode="regex-only-match"><![CDATA[(?:username|email|host|password|passwd|mysql)\w*\s*(?:=)\s*(.*)]]></match>
+    <level value="4"/>
+    <test>
+        <case assert="true"><![CDATA[db_query_user=db_auto]]></case>
+        <case assert="true"><![CDATA[db_query_password=db_auto]]></case>
+        <case assert="true"><![CDATA[db_alert_email = alert_db@test.com]]></case>
+        <case assert="true"><![CDATA[db_alert_email_password = test==]]></case>
+        <case assert="true"><![CDATA[db_alert_email_smtp = smtp.exmail.qq.com:25]]></case>
+        <case assert="true"><![CDATA[db_host    = 192.168.1.1]]></case>
+        <case assert="true"><![CDATA[db_user    = db_auto]]></case>
+        <case assert="true"><![CDATA[db_pass    = db_auto]]></case>
+        <case assert="false"><![CDATA[userLoginIp := this.Ctx.Request.RemoteAddr]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        硬编码邮箱、用户名、密码、IP、DB链接信息等
+
+        ## 修复方案
+        将密码抽出统一放在配置文件中，配置文件不放在git中
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

@@ -13,10 +13,8 @@
 """
 import socket
 import errno
-import subprocess
 import multiprocessing
 import threading
-import os
 import cli
 from flask import Flask, request
 from flask_restful import Api, Resource

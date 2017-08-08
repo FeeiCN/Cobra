@@ -143,7 +143,10 @@ class ParseArgs(object):
             exit()
 
         logger.debug('target directory: {directory}'.format(directory=target_directory))
-        return target_directory
+        if target_directory[-1] == '/':
+            return target_directory
+        else:
+            return target_directory + '/'
 
 
 def to_bool(value):
