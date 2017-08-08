@@ -80,4 +80,4 @@ $ ./cobra.py --help
 ```
 
 ## Reference（引用）
-- [规则开发规范](https://github.com/wufeifei/cobra/blob/beta/rules/README.md)
+- [规则开发规范](https://github.com/wufeifei/cobra/blob/master/rules/README.md)
