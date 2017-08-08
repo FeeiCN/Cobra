@@ -6,6 +6,7 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
 
 当前版本非正式版本，正式版本正在做最后的内测中，建议等正式版本出来后再使用，敬请期待！
+[![asciicast](https://asciinema.org/a/132572.png)](https://asciinema.org/a/132572)
 
 ## Introduction（介绍）
 Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的数十种漏洞和风险点。
@@ -19,9 +20,6 @@ Cobra是一款**源代码安全审计**工具，支持检测多种开发语言�
 
 #### CLI、API（命令行模式和API模式）
 > 提供本地Server服务，可支持本地API接口，方便和其它系统（发布系统、CI等）对接扩展
-
-## Demo（演示）
-[![asciicast](https://asciinema.org/a/132572.png)](https://asciinema.org/a/132572)
 
 ## Documents（文档）
 - [Cobra安装](https://github.com/wufeifei/cobra/blob/master/docs/installation.md)
