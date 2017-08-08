@@ -309,14 +309,14 @@ class Git(object):
 
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-        logger.info('pull repository...')
+        logger.info('[PICKUP] [PULL] pull repository...')
 
         if not self.__check_exist():
             return False, 'No local repo exist. Please clone first.'
 
         # change work directory to the repo
         repo_dir = self.repo_directory
-        logger.debug('cd directory: {0}'.format(repo_dir))
+        logger.debug('[PICKUP] cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
         if not self.checkout(self.repo_branch):
@@ -326,8 +326,8 @@ class Git(object):
         cmd = 'git pull origin ' + self.repo_branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
-        logger.info(pull_out)
-        logger.info(pull_err)
+        logger.info('[PICKUP] [PULL] ' + pull_out.strip())
+        logger.info('[PICKUP] [PULL] ' + pull_err.strip().replace('\n', ' >'))
 
         self.parse_err(pull_err)
 
@@ -337,7 +337,7 @@ class Git(object):
         os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-            logger.info('pull done.')
+            logger.info('[PICKUP] [PULL] pull done.')
             return True, None
         else:
             return False, pull_err
@@ -346,9 +346,9 @@ class Git(object):
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-        logger.info('clone repository...')
+        logger.info('[PICKUP] [CLONE] clone repository...')
         if self.__check_exist():
-            logger.info('repository already exist.')
+            logger.info('[PICKUP] [CLONE] repository already exist.')
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
 
@@ -369,12 +369,12 @@ class Git(object):
         (clone_out, clone_err) = p.communicate()
         clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
-        logger.debug(clone_out)
-        logger.info(clone_err)
+        logger.debug('[PICKUP] [CLONE] ' + clone_out.strip())
+        logger.info('[PICKUP] [CLONE] ' + clone_err.strip())
 
         self.parse_err(clone_err)
 
-        logger.info('clone done. Switching to branch ' + self.repo_branch)
+        logger.info('[PICKUP] [CLONE] clone done. Switching to branch ' + self.repo_branch)
         # check out to special branch
         if self.checkout(self.repo_branch):
             return True, None
@@ -419,7 +419,7 @@ class Git(object):
                  False-checkout failed. Maybe no branch name.
         """
         if not self.__check_exist():
-            logger.info('No repo directory.')
+            logger.info('[PICKUP] No repo directory.')
             return False
 
         current_dir = os.getcwd()
@@ -428,7 +428,7 @@ class Git(object):
         cmd = "git checkout " + branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
-        logger.info(checkout_err)
+        logger.info('[PICKUP] [CHECKOUT] ' + checkout_err.strip())
 
         # Already on
         # did not match
@@ -547,12 +547,12 @@ class Subversion(object):
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
         if len(diff_err) == 0:
-            logger.debug("svn diff success")
+            logger.debug("[PICKUP] svn diff success")
         elif 'authorization failed' in diff_err:
             logger.warning("svn diff auth failed")
             sys.exit(1)
         elif 'Not a valid URL' in diff_err:
-            logger.warning("svn diff url not a valid")
+            logger.warning("[PICKUP] svn diff url not a valid")
             sys.exit(1)
 
     def log(self):

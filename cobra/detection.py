@@ -77,7 +77,7 @@ class Detection(object):
             for rule_name in frame_data[frame_name]:
                 for project_data in projects_data:
                     if rule_name in project_data:
-                        logger.info("Find the project's framework may be:" + frame_name)
+                        logger.debug("Find the project's framework may be:" + frame_name)
                         return frame_name
         logger.info('Unknown Framework')
         return 'Unknown Framework'
@@ -91,7 +91,7 @@ class Detection(object):
             for rule in framework_infos[frame_name]['rule']:
                 for dependency in dependencies_info:
                     if rule in dependency:
-                        logger.info("Find the project's framework may be:" + frame_name)
+                        logger.debug("Find the project's framework may be:" + frame_name)
                         return frame_name
         return None
 
