@@ -1,7 +1,7 @@
 # Cobra
 [![Build Status](https://travis-ci.org/wufeifei/cobra.svg?branch=master)](https://travis-ci.org/wufeifei/cobra)
-[![Cobra Release](https://img.shields.io/github/release/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/releases)
 [![Coverage](https://img.shields.io/coveralls/wufeifei/cobra.svg)](https://coveralls.io/github/wufeifei/cobra)
+[![Cobra Release](https://img.shields.io/github/release/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/releases)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
 
 当前版本非正式版本，正式版本正在做最后的内测中，建议等正式版本出来后再使用，敬请期待！
