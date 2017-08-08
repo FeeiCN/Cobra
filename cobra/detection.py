@@ -31,7 +31,6 @@ class Detection(object):
         :param files:
         """
         self.target_directory = target_directory
-        self.directory = os.path.abspath(self.target_directory)
         self.files = files
         self.lang = None
         self.requirements = None
@@ -84,7 +83,7 @@ class Detection(object):
 
     def dependency_scan(self, root):
         framework_infos = self.dependency_framework(root)
-        dependencies = Dependencies(self.directory)
+        dependencies = Dependencies(self.target_directory)
         dependencies_info = dependencies.get_framework
         dependencies_info = list(set(dependencies_info))
         for frame_name in framework_infos:
@@ -111,7 +110,7 @@ class Detection(object):
         return framework_infos
 
     def _requirements(self):
-        requirements_txt = os.path.join(self.directory, 'requirements.txt')
+        requirements_txt = os.path.join(self.target_directory, 'requirements.txt')
         logger.debug(requirements_txt)
         if os.path.isfile(requirements_txt):
             requirements = parse_requirements(requirements_txt, session=False)
@@ -405,7 +404,7 @@ class Detection(object):
         total_blank_line = 0
         total_file = 0
         type_num = self.get_dict(extension, type_num)
-        filelists = self.project_information(self.directory, extension, True)
+        filelists = self.project_information(self.target_directory, extension, True)
         for filelist in filelists:
             try:
                 fileext = os.path.splitext(filelist)[1][1:]

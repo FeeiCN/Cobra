@@ -451,7 +451,6 @@ class Core(object):
 
         if self.is_test_file():
             logger.debug("[RET] Test File")
-            return True, 5003
 
         if self.is_annotation():
             logger.debug("[RET] Annotation")
@@ -462,7 +461,7 @@ class Core(object):
             found_vul = True
             if self.rule_repair is not None:
                 logger.debug('[VERIFY-REPAIR]')
-                ast = AST(self.rule_match, self.file_path, self.line_number, self.code_content)
+                ast = AST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                 is_repair, data = ast.match(self.rule_repair, self.repair_block)
                 if is_repair:
                     # fixed
@@ -477,7 +476,7 @@ class Core(object):
             # parameter is controllable
             if self.is_can_parse() and (self.rule_repair is not None or self.rule_match2 is not None):
                 try:
-                    ast = AST(self.rule_match, self.file_path, self.line_number, self.code_content)
+                    ast = AST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
                     if self.rule_match2 is not None:
                         is_match, data = ast.match(self.rule_match2, self.rule_match2_block)

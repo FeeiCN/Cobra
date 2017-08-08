@@ -147,6 +147,7 @@ class ParseArgs(object):
             exit()
 
         logger.debug('target directory: {directory}'.format(directory=target_directory))
+        target_directory = os.path.abspath(target_directory)
         if target_directory[-1] == '/':
             return target_directory
         else:
