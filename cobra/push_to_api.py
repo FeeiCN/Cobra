@@ -30,16 +30,16 @@ class PushToThird(PushBase):
         PushBase.__init__(self)
         self.post_data = None
 
-    def add_data(self, find_vul):
+    def add_data(self, target, find_vul):
         self.post_data = []
-        for vul in flatten(find_vul):
+        for i, vul in enumerate(flatten(find_vul)):
             self.post_data.append({
-                "name": "MVE-" + str(vul.get("id")),
+                "name": "Target-" + str(target) + str(i),
                 "time": vul.get("commit_time"),
-                "vuln_type": vul.get("type"),
+                "vuln_type": vul.get("rule_name"),
                 "summitid": self.token,
-                "signid": vul.get("id"),
-                "description": vul.get("match_result")
+                "signid": str(i),
+                "description": vul.get("rule_name")
             })
 
     def push(self):

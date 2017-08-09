@@ -102,7 +102,8 @@ def dict_to_html(html_obj):
     # 计算 vid 对应的数组偏移，统计 vul_list 中的 rule target
     rule_filter, target_filter = set(), set()
     for result in html_obj:
-        for value in result.get("vulnerabilities"):
+        for id, value in enumerate(result.get("vulnerabilities")):
+            value["vid"] = id + 1
             rule_filter.add(value.get("rule_name"))
 
         target_filter.add(result.get("target"))
@@ -112,7 +113,7 @@ def dict_to_html(html_obj):
 
     templite = Templite(template)
     html_content = templite.render({
-        "vul_list": html.escape(json.dumps(html_obj, ensure_ascii=False)),
+        "vul_list": html.escape(json.dumps(html_obj, ensure_ascii=False, sort_keys=True)),
         "rule_filter": list(rule_filter),
         "target_filter": list(target_filter),
         "report_js": report_js,
@@ -235,7 +236,7 @@ def write_to_file(target, find_vuls, output_format="", filename=""):
                 results = f.read()
                 # 读入原来的 vul_list_origin
                 old_vul_list = re.findall(r"var vul_list_origin = (.*?\}\]);", results)
-                old_vul_list = eval(old_vul_list[0])
+                old_vul_list = eval(old_vul_list[0].replace("null", "None"))
                 # 添加新的扫描结果
                 old_vul_list.append(write_obj)
                 html_obj = old_vul_list
