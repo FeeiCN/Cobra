@@ -16,14 +16,18 @@ import xml.etree.ElementTree as eT
 from cobra.detection import Detection
 
 
+vul_path = './vulnerabilities/'
+examples_path = './examples'
+
+
 def test_framework():
-    detection = Detection('./examples/requirements.txt', '.')
+    detection = Detection(vul_path+'requirements.txt', '.')
     frame = detection.framework
     assert frame == 'Flask'
 
 
 def test_param_xml():
-    detection = Detection('./examples', '.')
+    detection = Detection(examples_path, '.')
     frame_data = {}
     language_data = {}
     tree = detection.rule()
@@ -34,14 +38,14 @@ def test_param_xml():
 
 
 def test_rule():
-    detection = Detection('./example', '.')
-    root = eT.ElementTree(file='./examples/param_xml.xml')
+    detection = Detection(examples_path, '.')
+    root = eT.ElementTree(file=examples_path+'/param_xml.xml')
     tree = detection.rule()
     assert type(root) is type(tree)
 
 
 def test_get_dict():
-    detection = Detection('./example', '.')
+    detection = Detection(examples_path, '.')
     extension = ['php', 'js', 'java']
     type_num = {}
     type_num = detection.get_dict(extension, type_num)
@@ -52,39 +56,39 @@ def test_project_information():
     absolute_path = './examples'
     extension = ['php', 'js', 'java']
     allfiles = Detection.project_information(absolute_path, extension)
-    assert './examples/wp-load.php' in allfiles
+    assert examples_path+'/cloc.html' in allfiles
 
 
 def test_count_py_line():
-    count = Detection.count_py_line('./examples/cloc.py')
+    count = Detection.count_py_line(examples_path+'/cloc.py')
     type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
     assert type_ == type_count
 
 
 def test_count_php_line():
-    count = Detection.count_php_line('./examples/cloc.php')
+    count = Detection.count_php_line(examples_path+'/cloc.php')
     type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
     assert type_ == type_count
 
 
 def test_count_java_line():
-    count = Detection.count_java_line('./examples/cloc.java')
+    count = Detection.count_java_line(examples_path+'/cloc.java')
     type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
     assert type_ == type_count
 
 
 def test_count_html_line():
-    count = Detection.count_html_line('./examples/cloc.html')
+    count = Detection.count_html_line(examples_path+'/cloc.html')
     type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
     assert type_ == type_count
 
 
 def test_count_data_line():
-    count = Detection.count_data_line('./examples/param_xml.xml')
+    count = Detection.count_data_line(examples_path+'/param_xml.xml')
     type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
     assert type_ == type_count
@@ -118,4 +122,4 @@ def test_count_total_num():
 
 
 def test_cloc():
-    assert Detection('./examples', '.').cloc()
+    assert Detection(examples_path, '.').cloc()

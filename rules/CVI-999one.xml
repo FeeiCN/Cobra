@@ -1,0 +1,31 @@
+<cobra document="https://github.com/wufeifei/cobra">
+	<cve id="CVE-2017-5645">
+		<product>log4j:2.0.1</product>
+		<product>log4j:2.5</product>
+		<product>log4j:2.6</product>
+		<product>log4j:2.7</product>
+		<product>log4j:2.4</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.8</product>
+		<product>log4j:2.1</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.2</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.3</product>
+		<product>log4j:2.4.1</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.8.1</product>
+		<product>log4j:2.0.2</product>
+		<product>log4j:2.6.1</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.6.2</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.0</product>
+		<product>log4j:2.0</product>
+	</cve>
+</cobra>

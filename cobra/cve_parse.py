@@ -133,13 +133,11 @@ class CveParse(object):
         for cve_id in self._result.keys():
             cve_child = eT.Element('cve')  # cve Ele
             cve_child.set('id', cve_id)
-            # products = eT.Element('products')
             if 'cpe' in self._result[cve_id]:
                 for product_ in self._result[cve_id]['cpe']:
                     product = eT.Element('product')
                     product.text = product_
                     cve_child.append(product)  # product in products
-                    # cve_child.append(products)  # products in cve
             cobra.append(cve_child)  # cve in cobra
         self.pretty(cobra)
         tree = eT.ElementTree(cobra)

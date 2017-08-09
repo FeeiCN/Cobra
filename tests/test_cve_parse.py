@@ -17,52 +17,57 @@ import xml.etree.ElementTree as eT
 from cobra.cve_parse import CveParse
 
 
+target_directory = './vulnerabilities/requirements.txt'
+rule_path = '../tests/examples/cve.xml'
+rule_cve_path = '../rules/CVI-999999.xml'
+
+
 def test_cve_parse():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
+    cve = CveParse(rule_path, target_directory)
     cve.cve_parse()
-    assert 'CVE-2017-9994' in cve.get_result()
+    assert 'CVE-2017-5645' in cve.get_result()
 
 
 def test_cve_info():
     test_info = {}
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
+    cve = CveParse(rule_path, target_directory)
     tree = cve.parse_xml(cve.cve_file)
     root = tree.getroot()
     childs = root.iter('%sentry' % cve.NS)
     for child in childs:  # child is entry Element
         test_info = cve.cve_info(child)
-    assert 'access-complexity' in test_info
+    assert isinstance(test_info, dict)
 
 
 def test_parse_xml():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
+    cve = CveParse(rule_path, target_directory)
     tree = cve.parse_xml(cve.cve_file)
     root = eT.parse('./examples/cve.xml')
     assert isinstance(tree, type(root))
 
 
 def test_get_result():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
+    cve = CveParse(rule_path, target_directory)
     cve.cve_parse()
-    assert 'CVE-2017-9994' in cve.get_result()
+    assert 'CVE-2017-5645' in cve.get_result()
 
 
 def test_rule_xml():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
+    cve = CveParse(rule_path, target_directory)
     cve.rule_xml()
-    assert os.path.exists(cve.rule_file)
+    assert os.path.exists(rule_cve_path)
 
 
 def test_rule_parse():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
-    cve.rule_parse()
-    assert 'CVE-2017-9994' in cve.get_rule()
+    cve = CveParse(rule_path, target_directory)
+    cve.rule_parse(rule_cve_path)
+    assert 'flask vul' in cve.get_rule()
 
 
 def test_rule_info():
     test_info = {}
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
-    tree = cve.parse_xml(cve.rule_file)
+    cve = CveParse(rule_path, target_directory)
+    tree = cve.parse_xml(rule_cve_path)
     root = tree.getroot()
     cves = root.iter('cve')
     for cvea in cves:
@@ -71,18 +76,18 @@ def test_rule_info():
 
 
 def test_get_rule():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
-    cve.rule_parse()
-    assert 'CVE-2017-9994' in cve.get_rule()
+    cve = CveParse(rule_path, target_directory)
+    cve.rule_parse(rule_cve_path)
+    assert 'flask vul' in cve.get_rule()
 
 
 def test_scan_cve():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
-    cve.scan_cve()
-    assert 'log4j:2.1' in cve.get_scan_result()
+    cve = CveParse(rule_path, target_directory)
+    cve.scan_cve(rule_cve_path)
+    assert 'Flask:0.10.1' in cve.get_scan_result()
 
 
 def test_get_scan_result():
-    cve = CveParse('../tests/examples/cve.xml', './examples/pom.xml')
-    cve.scan_cve()
-    assert 'log4j:2.1' in cve.get_scan_result()
+    cve = CveParse(rule_path, target_directory)
+    cve.scan_cve(rule_cve_path)
+    assert 'Flask:0.10.1' in cve.get_scan_result()
