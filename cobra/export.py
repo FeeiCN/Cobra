@@ -102,7 +102,8 @@ def dict_to_html(html_obj):
     # 计算 vid 对应的数组偏移，统计 vul_list 中的 rule target
     rule_filter, target_filter = set(), set()
     for result in html_obj:
-        for value in result.get("vulnerabilities"):
+        for id, value in enumerate(result.get("vulnerabilities")):
+            value["vid"] = id + 1
             rule_filter.add(value.get("rule_name"))
 
         target_filter.add(result.get("target"))

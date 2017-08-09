@@ -43,9 +43,12 @@ $(function () {
             $('.CodeMirror .cm-loading').hide();
             for (var i = 0; i < vul_list_origin.length; i++) {
                 for (var j = 0; j < vul_list_origin[i].vulnerabilities.length; j++) {
-                    if (vul_list_origin[i].vulnerabilities[j].id === vid) {
+                    if (vul_list_origin[i].vulnerabilities[j].vid === Number(vid)) {
                         var data = vul_list_origin[i].vulnerabilities[j];
                         data.code_content = data.code_content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+                        if (data.code_content === "") {
+                            data.code_content = data.file_path;
+                        }
                     }
                 }
             }
@@ -77,12 +80,12 @@ $(function () {
                     coverGutter: false,
                     noHScroll: false
                 };
-                vulnerabilities_list.cm_code.addLineWidget(data.line_number - 1, widget_trigger_line, widget_config);
+                vulnerabilities_list.cm_code.addLineWidget(1 - 1, widget_trigger_line, widget_config);
                 var h = vulnerabilities_list.cm_code.getScrollInfo().clientHeight;
-                var coords = vulnerabilities_list.cm_code.charCoords({line: data.line_number, ch: 0}, "local");
+                var coords = vulnerabilities_list.cm_code.charCoords({line: 1, ch: 0}, "local");
                 vulnerabilities_list.cm_code.scrollTo(null, (coords.top + coords.bottom - h) / 2);
                 // set cursor
-                doc.setCursor({line: data.line_number - 1, ch: 0});
+                doc.setCursor({line: 1 - 1, ch: 0});
 
             });
 
@@ -233,14 +236,15 @@ $(function () {
                 } else {
                     var list_html = '';
 
+                    var id = 0;
                     for (var i = 0; i < list.length; i++) {
                         for (var j = 0; j < list[i].vulnerabilities.length; j++) {
                             var line = '';
                             if (list[i].vulnerabilities[j].line_number !== 0) {
                                 line = ':' + list[i].vulnerabilities[j].line_number;
                             }
-                            list_html = list_html + '<li data-id="' + list[i].vulnerabilities[j].id + '" class=" " data-start="1" data-line="1">' +
-                                '<strong>MVE-' + list[i].vulnerabilities[j].id + '</strong><br><span>' + list[i].vulnerabilities[j].file_path + line + '</span><br>' +
+                            list_html = list_html + '<li data-id="' + list[i].vulnerabilities[j].vid + '" class=" " data-start="1" data-line="1">' +
+                                '<strong>MVE-' + list[i].vulnerabilities[j].vid + '</strong><br><span>' + list[i].vulnerabilities[j].file_path + line + '</span><br>' +
                                 '<span class="issue-information">' +
                                 '<small>' +
                                 list[i].vulnerabilities[j].match_result + ' => ' + list[i].vulnerabilities[j].commit_time +
