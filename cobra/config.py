@@ -12,12 +12,6 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-<<<<<<< HEAD
-import ConfigParser
-import traceback
-from .log import logger
-
-=======
 import traceback
 from .log import logger
 
@@ -26,7 +20,6 @@ try:
 except ImportError:
     from ConfigParser import ConfigParser
 
->>>>>>> upstream/master
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 code_path = '/tmp/cobra'
 if os.path.isdir(code_path) is not True:
@@ -50,12 +43,7 @@ class Config(object):
         self.level2 = level2
         if level1 is None and level2 is None:
             return
-<<<<<<< HEAD
-        config = ConfigParser.ConfigParser()
-=======
         config = ConfigParser()
->>>>>>> upstream/master
-
         config.read(config_path)
         value = None
         try:
