@@ -12,9 +12,13 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import ConfigParser
 import traceback
 from .log import logger
+
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 code_path = '/tmp/cobra'

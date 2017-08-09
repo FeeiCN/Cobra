@@ -15,7 +15,7 @@ import socket
 import errno
 import multiprocessing
 import threading
-import cli
+from . import cli
 from flask import Flask, request
 from flask_restful import Api, Resource
 from .engine import Running
@@ -166,7 +166,7 @@ def start(host, port, debug):
 
     try:
         app.run(debug=debug, host=host, port=int(port), threaded=True, processes=1)
-    except socket.error, v:
+    except socket.error as v:
         if v[0] == errno.EACCES:
             logger.critical('must root permission for start API Server!')
             exit()

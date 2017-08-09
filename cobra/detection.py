@@ -16,7 +16,7 @@ from prettytable import PrettyTable
 import xml.etree.ElementTree as eT
 from .rule import Rule
 from .dependencies import Dependencies
-from log import logger
+from .log import logger
 from pip.req import parse_requirements
 
 
@@ -138,7 +138,7 @@ class Detection(object):
             try:
                 frame_data[frame_name].append(root.attrib['value'])
                 return frame_data, language_data
-            except KeyError, e:
+            except KeyError as e:
                 logger.warning(e.message)
 
     @staticmethod

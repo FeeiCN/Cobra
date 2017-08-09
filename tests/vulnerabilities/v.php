@@ -9,6 +9,8 @@ $username = $_POST['username'];
 $password = $_POST['password'];
 $callback = $_POST['callback'];
 
+$cmd = $_REQUEST['a']
+
 print($callback);
 
 # CVI-220001
@@ -21,7 +23,7 @@ $cmd = $_GET['cmd'];
 system('ls' + $cmd);
 
 # CVI-180001
-@array_map("ass\x65rt",(array)@$_REQUEST['a']);
+@array_map("ass\x65rt",(array)@$cmd);
 
 # CVI-230001
 if (isset($_GET['sid']) {

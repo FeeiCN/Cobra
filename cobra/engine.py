@@ -17,7 +17,7 @@ import json
 import traceback
 import subprocess
 import multiprocessing
-import const
+from . import const
 from .rule import Rule
 from .utils import Tool
 from .log import logger
@@ -131,14 +131,18 @@ def scan(target_directory, sid=None, special_rules=None):
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
-        commit = '@{author},{time}'.format(author=x.commit_author, time=x.commit_time)
+        commit = u'@{author},{time}'.format(author=x.commit_author, time=x.commit_time)
         level = score2level(x.level)
         cvi = x.id[0:3]
         if cvi in vulnerabilities:
             cvn = vulnerabilities[cvi]
         else:
             cvn = 'Unknown'
-        row = [idx + 1, x.id, cvn, x.rule_name, x.language, level, trigger, commit, x.code_content.decode('utf-8')[:100].strip()]
+        try:
+            code_content = x.code_content[:100].strip()
+        except AttributeError as e:
+            code_content = x.code_content.decode('utf-8')[:100].strip()
+        row = [idx + 1, x.id, cvn, x.rule_name, x.language, level, trigger, commit, code_content]
         table.add_row(row)
         if x.id not in trigger_rules:
             logger.debug(' > trigger rule (CVI-{cvi})'.format(cvi=x.id))
@@ -185,6 +189,15 @@ class SingleRule(object):
             param = [self.find, self.target_directory, "-type", "f"] + filters
         else:
             # grep
+            if self.sr['match-mode'] == const.mm_regex_only_match or self.sr['match-mode'] == const.mm_regex_param_controllable:
+                match = self.sr['match']
+            elif self.sr['match-mode'] == const.mm_function_param_controllable:
+                # param controllable
+                if '|' in self.sr['match']:
+                    match = const.fpc_multi.replace('[f]', self.sr['match'])
+                else:
+                    match = const.fpc_single.replace('[f]', self.sr['match'])
+
             filters = []
             for e in self.sr['extensions']:
                 filters.append('--include=*' + e)
@@ -195,7 +208,7 @@ class SingleRule(object):
                 filters.append('--exclude-dir={0}'.format(explode_dir))
 
             # -s Suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
-            param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [self.sr['match'], self.target_directory]
+            param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [match, self.target_directory]
         try:
             p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             result, error = p.communicate()
@@ -203,6 +216,11 @@ class SingleRule(object):
             traceback.print_exc()
             logger.critical('match exception ({e})'.format(e=e.message))
             return None
+        try:
+            result = result.decode('utf-8')
+            error = error.decode('utf-8')
+        except AttributeError as e:
+            pass
         if len(error) is not 0:
             logger.critical('[CVI-{cvi}] [ORIGIN] [ERROR] {err}'.format(cvi=self.sr['id'], err=error.strip()))
         return result
@@ -218,7 +236,7 @@ class SingleRule(object):
             logger.debug('[CVI-{cvi}] [ORIGIN] NOT FOUND!'.format(cvi=self.sr['id']))
             return None
 
-        origin_vulnerabilities = str(origin_results).strip().split("\n")
+        origin_vulnerabilities = origin_results.strip().split("\n")
         for index, origin_vulnerability in enumerate(origin_vulnerabilities):
             origin_vulnerability = origin_vulnerability.strip()
             logger.debug('[CVI-{cvi}] [ORIGIN] {line}'.format(cvi=self.sr['id'], line=origin_vulnerability))
@@ -254,7 +272,7 @@ class SingleRule(object):
             # v.exe Binary file
             try:
                 mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
-                mr.file_path = single_match.split(':{n}:'.format(n=mr.line_number))[0]
+                mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
             except Exception as e:
                 logger.warning('match line parse exception')
                 mr.file_path = ''
@@ -457,8 +475,16 @@ class Core(object):
             return False, 5004
 
         if self.rule_match_mode == const.mm_find_extension:
+            #
+            # Find-Extension
+            # Match(extension) -> Done
+            #
             found_vul = True
         elif self.rule_match_mode == const.mm_regex_only_match:
+            #
+            # Regex-Only-Match
+            # Match(regex) -> Repair -> Done
+            #
             logger.debug("[CVI-{cvi}] [ONLY-MATCH]".format(cvi=self.cvi))
             found_vul = True
             if self.rule_repair is not None:
@@ -473,10 +499,18 @@ class Core(object):
                     logger.debug('[CVI-{cvi}] [REPAIR] [RET] Not fixed'.format(cvi=self.cvi))
                     found_vul = True
         else:
-            logger.debug('[CVI-{cvi}] [NOT-ONLY-MATCH]'.format(cvi=self.cvi))
+            #
+            # Function-Param-Controllable
+            # Match(function) -> Match2(regex) -> Param-Controllable -> Repair -> Done
+            #
+
+            #
+            # Regex-Param-Controllable
+            # Match(regex) -> Match2(regex) -> Param-Controllable -> Repair -> Done
+            #
+            logger.debug('[CVI-{cvi}] match-mode {mm}'.format(cvi=self.cvi, mm=self.rule_match_mode))
             found_vul = False
-            # parameter is controllable
-            if self.is_can_parse() and (self.rule_repair is not None or self.rule_match2 is not None):
+            if self.is_can_parse():
                 try:
                     ast = AST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
@@ -488,19 +522,21 @@ class Core(object):
                         else:
                             logger.debug('[CVI-{cvi}] [MATCH2] False'.format(cvi=self.cvi))
                             return False, 1002
+                    # Param-Controllable
                     param_is_controllable, data = ast.is_controllable_param()
                     if param_is_controllable:
-                        logger.debug('[CVI-{cvi}] [RET] Param is controllable'.format(cvi=self.cvi))
+                        logger.debug('[CVI-{cvi}] [PARAM-CONTROLLABLE] Param is controllable'.format(cvi=self.cvi))
+                        # Repair
                         is_repair, data = ast.match(self.rule_repair, self.repair_block)
                         if is_repair:
                             # fixed
-                            logger.debug('[CVI-{cvi}] [RET] Vulnerability Fixed'.format(cvi=self.cvi))
+                            logger.debug('[CVI-{cvi}] [REPAIR] Vulnerability Fixed'.format(cvi=self.cvi))
                             return False, 1002
                         else:
                             logger.debug('[CVI-{cvi}] [REPAIR] [RET] Not fixed'.format(cvi=self.cvi))
                             found_vul = True
                     else:
-                        logger.debug('[CVI-{cvi}] [RET] Param Not Controllable'.format(cvi=self.cvi))
+                        logger.debug('[CVI-{cvi}] [PARAM-CONTROLLABLE] Param Not Controllable'.format(cvi=self.cvi))
                         return False, 4002
                 except Exception as e:
                     traceback.print_exc()
@@ -514,5 +550,5 @@ class Core(object):
             self.repair_code = self.repair_code_init
             return True, 1001
         else:
-            logger.debug("[RET] Not found vulnerability")
+            logger.debug("[CVI-{cvi}] [DONE] Not found vulnerability".format(cvi=self.cvi))
             return False, 4002

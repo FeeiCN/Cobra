@@ -23,3 +23,21 @@ match_modes = [
     mm_function_param_controllable,
     mm_find_extension
 ]
+
+#
+# Function-Param-Controllable
+#
+# (?:eval|call_function)\s*\((.*)(?:\))
+# eval ($test + $test2);
+# call_function ($exp);
+#
+fpc = '\s*\((.*)(?:\))'
+fpc_single = '[f]{fpc}'.format(fpc=fpc)
+fpc_multi = '(?:[f]){fpc}'.format(fpc=fpc)
+
+#
+# Find All variables
+#
+# Hallo $var. blabla $var, $iam a var $varvarvar gfg djf jdfgjh fd $variable $_GET['req']
+#
+fav = '\$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)'

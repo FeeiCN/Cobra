@@ -68,7 +68,7 @@ class AST(object):
                 'annotation': r'(\/\/)+'
             }
         }
-        logger.debug("[AST] [LANGUAGE] `{language}`".format(language=self.language))
+        logger.debug("[AST] [LANGUAGE] {language}".format(language=self.language))
 
     def functions(self):
         """
@@ -82,10 +82,17 @@ class AST(object):
         regex_functions = self.regex[self.language]['functions']
         param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
         p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result = p.communicate()
-        if len(result[0]):
+        result, error = p.communicate()
+        try:
+            result = result.decode('utf-8')
+            error = error.decode('utf-8')
+        except AttributeError as e:
+            pass
+        if len(error) is not 0:
+            logger.critical('[AST] {err}'.format(err=error.strip()))
+        if len(result):
             functions = {}
-            lines = str(result[0]).strip().split("\n")
+            lines = result.strip().split("\n")
             prev_function_name = ''
             for index, line in enumerate(lines):
                 line = line.strip()
@@ -186,7 +193,6 @@ class AST(object):
         is controllable param
         :return:
         """
-        logger.debug('[AST] Is controllable param')
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
