@@ -163,6 +163,7 @@
     </language>
     <language name="Thumb">
         <extension value=".db"/>
+        <extension value=".DS_Store"/>
     </language>
     <language name="Git">
         <extension value=".pack"/>
