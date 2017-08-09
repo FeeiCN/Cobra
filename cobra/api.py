@@ -13,13 +13,9 @@
 """
 import socket
 import errno
-<<<<<<< HEAD
-import subprocess
-=======
 import multiprocessing
 import threading
 from . import cli
->>>>>>> upstream/master
 from flask import Flask, request
 from flask_restful import Api, Resource
 from .engine import Running
@@ -27,8 +23,6 @@ from .log import logger
 from .utils import md5, random_generator
 from .config import Config, cobra_main
 
-<<<<<<< HEAD
-=======
 try:
     # Python 3
     import queue
@@ -49,7 +43,6 @@ def consumer():
         p.join()
         q.task_done()
 
->>>>>>> upstream/master
 
 class AddJob(Resource):
     @staticmethod
@@ -86,15 +79,8 @@ class AddJob(Resource):
                 # Scan
                 sid = get_sid(t)
                 sids.append(sid)
-<<<<<<< HEAD
-                subprocess.Popen(
-                    ['python', cobra_main, "-t", str(t), "-f", str(formatter), "-o", str(output), '-r', str(rule),
-                     '-sid', str(sid)]
-                )
-=======
                 arg = (t, formatter, output, rule, sid)
                 producer(task=arg)
->>>>>>> upstream/master
 
             result = {
                 "msg": "Add scan job successfully.",
@@ -102,15 +88,8 @@ class AddJob(Resource):
             }
         else:
             sid = get_sid(target)
-<<<<<<< HEAD
-            subprocess.Popen(
-                ["python", cobra_main, "-t", str(target), "-f", str(formatter), "-o", str(output), "-r", str(rule),
-                 "-sid", str(sid)]
-            )
-=======
             arg = (target, formatter, output, rule, sid)
             producer(task=arg)
->>>>>>> upstream/master
             result = {
                 "msg": "Add scan job successfully.",
                 "sid": sid,
@@ -165,12 +144,9 @@ def get_sid(target):
     return sid.lower()
 
 
-<<<<<<< HEAD
-=======
 q = queue.Queue()
 
 
->>>>>>> upstream/master
 def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
     app = Flask(__name__)
@@ -178,11 +154,6 @@ def start(host, port, debug):
 
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
-<<<<<<< HEAD
-    try:
-        app.run(debug=debug, host=host, port=int(port), threaded=True, processes=1)
-    except socket.error, v:
-=======
 
     # 消费者线程
     threads = []
@@ -196,7 +167,6 @@ def start(host, port, debug):
     try:
         app.run(debug=debug, host=host, port=int(port), threaded=True, processes=1)
     except socket.error as v:
->>>>>>> upstream/master
         if v[0] == errno.EACCES:
             logger.critical('must root permission for start API Server!')
             exit()

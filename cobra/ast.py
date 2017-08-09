@@ -23,12 +23,8 @@ from .pickup import File
 class AST(object):
     languages = ['php', 'java', 'm']
 
-<<<<<<< HEAD:cobra/ast.py
-    def __init__(self, rule, file_path, line, code, ):
-=======
     def __init__(self, rule, target_directory, file_path, line, code, ):
         self.target_directory = target_directory
->>>>>>> upstream/master:cobra/ast.py
         self.data = []
         self.rule = rule
         self.file_path = file_path
@@ -72,11 +68,7 @@ class AST(object):
                 'annotation': r'(\/\/)+'
             }
         }
-<<<<<<< HEAD:cobra/ast.py
-        logger.debug("[AST] [LANGUAGE] `{language}`".format(language=self.language))
-=======
         logger.debug("[AST] [LANGUAGE] {language}".format(language=self.language))
->>>>>>> upstream/master:cobra/ast.py
 
     def functions(self):
         """
@@ -201,10 +193,6 @@ class AST(object):
         is controllable param
         :return:
         """
-<<<<<<< HEAD:cobra/ast.py
-        logger.debug('[AST] Is controllable param')
-=======
->>>>>>> upstream/master:cobra/ast.py
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
@@ -318,11 +306,7 @@ class AST(object):
         if '{{PARAM}}' in rule:
             rule = rule.replace('{{PARAM}}', self.param_name)
         logger.debug("[AST] [BLOCK-CODE] `{code}`".format(code=code.strip()))
-<<<<<<< HEAD:cobra/ast.py
-        repair_result = re.findall(rule, code)
-=======
         repair_result = re.findall(rule, code, re.I)
->>>>>>> upstream/master:cobra/ast.py
         logger.debug("[AST] [MATCH-RESULT] {0}".format(repair_result))
         if len(repair_result) >= 1:
             return True, self.data

@@ -23,11 +23,6 @@ import subprocess
 from operator import itemgetter
 from . import config
 from .log import logger
-<<<<<<< HEAD
-from urllib import quote
-from .config import code_path
-
-=======
 from .config import code_path
 
 try:
@@ -35,7 +30,6 @@ try:
 except ImportError:
     from urllib.parse import quote
 
->>>>>>> upstream/master
 support_extensions = ['.zip', '.rar', '.tgz', '.tar', '.gz']
 
 
@@ -171,11 +165,7 @@ class Directory(object):
             extension = extension.strip()
             self.result[extension] = {'count': len(values), 'list': []}
             # .php : 123
-<<<<<<< HEAD
-            logger.debug('{0} : {1}'.format(extension, len(values)))
-=======
             logger.debug('[PICKUP] [EXTENSION-COUNT] {0} : {1}'.format(extension, len(values)))
->>>>>>> upstream/master
             for f in self.file:
                 es = f.split(os.extsep)
                 if len(es) >= 2:
@@ -191,20 +181,12 @@ class Directory(object):
             del self.result['no_extension']
         t2 = time.clock()
         # reverse list count
-<<<<<<< HEAD
-        self.result = sorted(self.result.items(), key=itemgetter(1), reverse=False)
-=======
         self.result = sorted(self.result.items(), key=lambda t: t[0], reverse=False)
->>>>>>> upstream/master
         return self.result, self.file_sum, t2 - t1
 
     def files(self, absolute_path, level=1):
         if level == 1:
-<<<<<<< HEAD
-            logger.debug(absolute_path)
-=======
             logger.debug('[PICKUP] ' + absolute_path)
->>>>>>> upstream/master
         try:
             if os.path.isfile(absolute_path):
                 filename, directory = os.path.split(absolute_path)
@@ -214,21 +196,13 @@ class Directory(object):
                     directory = os.path.join(absolute_path, filename)
 
                     # Directory Structure
-<<<<<<< HEAD
-                    logger.debug('|  ' * (level - 1) + '|--' + filename)
-=======
                     logger.debug('[PICKUP] [FILES] ' + '|  ' * (level - 1) + '|--' + filename)
->>>>>>> upstream/master
                     if os.path.isdir(directory):
                         self.files(directory, level + 1)
                     if os.path.isfile(directory):
                         self.file_info(directory, filename)
         except OSError as e:
-<<<<<<< HEAD
-            logger.critical('{msg}'.format(msg=e))
-=======
             logger.critical('[PICKUP] {msg}'.format(msg=e))
->>>>>>> upstream/master
             exit()
 
     def file_info(self, path, filename):
@@ -239,10 +213,6 @@ class Directory(object):
         path = path.replace(self.absolute_path, '')
         self.file.append(path)
         self.file_sum += 1
-<<<<<<< HEAD
-        logger.debug("{0}, {1}".format(self.file_sum, path))
-=======
->>>>>>> upstream/master
 
 
 class File(object):
@@ -264,12 +234,6 @@ class File(object):
         :return:
         """
         param = ['sed', "-n", line_rule, self.file_path]
-<<<<<<< HEAD
-        p = subprocess.Popen(param, stdout=subprocess.PIPE)
-        result = p.communicate()
-        if len(result[0]):
-            content = result[0]
-=======
         p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result, err = p.communicate()
         if len(err) is not 0:
@@ -279,7 +243,6 @@ class File(object):
                 content = result.decode('utf-8')
             except AttributeError as e:
                 content = result
->>>>>>> upstream/master
             if content == '':
                 content = False
         else:
@@ -354,22 +317,13 @@ class Git(object):
 
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-<<<<<<< HEAD
-        logger.info('pull repository...')
-=======
         logger.info('[PICKUP] [PULL] pull repository...')
->>>>>>> upstream/master
-
         if not self.__check_exist():
             return False, 'No local repo exist. Please clone first.'
 
         # change work directory to the repo
         repo_dir = self.repo_directory
-<<<<<<< HEAD
-        logger.debug('cd directory: {0}'.format(repo_dir))
-=======
         logger.debug('[PICKUP] cd directory: {0}'.format(repo_dir))
->>>>>>> upstream/master
         os.chdir(repo_dir)
 
         if not self.checkout(self.repo_branch):
@@ -378,11 +332,6 @@ class Git(object):
 
         cmd = 'git pull origin ' + self.repo_branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-<<<<<<< HEAD
-        (pull_out, pull_err) = p.communicate()
-        logger.info(pull_out)
-        logger.info(pull_err)
-=======
         pull_out, pull_err = p.communicate()
 
         try:
@@ -393,7 +342,6 @@ class Git(object):
 
         logger.info('[PICKUP] [PULL] {o}'.format(o=pull_out.strip()))
         logger.info('[PICKUP] [PULL] {e}'.format(e=pull_err.strip().replace(u'\n', u' >')))
->>>>>>> upstream/master
 
         self.parse_err(pull_err)
 
@@ -403,11 +351,7 @@ class Git(object):
         os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-<<<<<<< HEAD
-            logger.info('pull done.')
-=======
             logger.info('[PICKUP] [PULL] pull done.')
->>>>>>> upstream/master
             return True, None
         else:
             return False, pull_err
@@ -416,15 +360,9 @@ class Git(object):
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-<<<<<<< HEAD
-        logger.info('clone repository...')
-        if self.__check_exist():
-            logger.info('repository already exist.')
-=======
         logger.info('[PICKUP] [CLONE] clone repository...')
         if self.__check_exist():
             logger.info('[PICKUP] [CLONE] repository already exist.')
->>>>>>> upstream/master
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
 
@@ -435,11 +373,7 @@ class Git(object):
         else:
             # private repo
             clone_address = self.repo_address.split('://')[0] + '://' + quote(self.repo_username) + ':' + \
-<<<<<<< HEAD
-                            self.repo_password + '@' + self.repo_address.split('://')[1]
-=======
                             quote(self.repo_password) + '@' + self.repo_address.split('://')[1]
->>>>>>> upstream/master
         # clone repo with username and password
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password
@@ -447,16 +381,6 @@ class Git(object):
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
-<<<<<<< HEAD
-        logger.info(clone_out)
-        logger.info(clone_err)
-
-        self.parse_err(clone_err)
-
-        clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
-
-        logger.info('clone done. Switching to branch ' + self.repo_branch)
-=======
         clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
         logger.debug('[PICKUP] [CLONE] ' + clone_out.strip())
@@ -465,7 +389,6 @@ class Git(object):
         self.parse_err(clone_err)
 
         logger.info('[PICKUP] [CLONE] clone done. Switching to branch ' + self.repo_branch)
->>>>>>> upstream/master
         # check out to special branch
         if self.checkout(self.repo_branch):
             return True, None
@@ -510,11 +433,7 @@ class Git(object):
                  False-checkout failed. Maybe no branch name.
         """
         if not self.__check_exist():
-<<<<<<< HEAD
-            logger.info('No repo directory.')
-=======
             logger.info('[PICKUP] No repo directory.')
->>>>>>> upstream/master
             return False
 
         current_dir = os.getcwd()
@@ -523,11 +442,7 @@ class Git(object):
         cmd = "git checkout " + branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
-<<<<<<< HEAD
-        logger.info(checkout_err)
-=======
         logger.info('[PICKUP] [CHECKOUT] ' + checkout_err.strip())
->>>>>>> upstream/master
 
         # Already on
         # did not match
@@ -596,11 +511,7 @@ class Git(object):
             raise NotExistError('Authentication failed')
 
     @staticmethod
-<<<<<<< HEAD
-    def committer(file_path, line_number, length=1):
-=======
     def committer(directory, file_path, line_number, length=1):
->>>>>>> upstream/master
         """
         git blame -L21,+1 -- git.py
         362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logger.getLogger(__name__)
@@ -612,12 +523,6 @@ class Git(object):
         :param length:
         :return: group#1, group#2
         """
-<<<<<<< HEAD
-        # os.chdir(path)
-        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path)
-        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-        (checkout_out, checkout_err) = p.communicate()
-=======
         os.chdir(directory)
         cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path.replace(directory, ''))
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -626,7 +531,6 @@ class Git(object):
             checkout_out = checkout_out.decode('utf-8')
         except AttributeError as e:
             pass
->>>>>>> upstream/master
         if len(checkout_out) != 0:
             group = re.findall(r'(?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})', checkout_out)
             if len(group) > 0:
@@ -661,20 +565,12 @@ class Subversion(object):
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
         if len(diff_err) == 0:
-<<<<<<< HEAD
-            logger.debug("svn diff success")
-=======
             logger.debug("[PICKUP] svn diff success")
->>>>>>> upstream/master
         elif 'authorization failed' in diff_err:
             logger.warning("svn diff auth failed")
             sys.exit(1)
         elif 'Not a valid URL' in diff_err:
-<<<<<<< HEAD
-            logger.warning("svn diff url not a valid")
-=======
             logger.warning("[PICKUP] svn diff url not a valid")
->>>>>>> upstream/master
             sys.exit(1)
 
     def log(self):
@@ -720,9 +616,5 @@ class Subversion(object):
     def commit(self):
         svn_log = subprocess.Popen(
             [self.svn, 'log', self.filename],
-<<<<<<< HEAD
-            stdout=subprocess.PIPE).communicate()[0]
-=======
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
->>>>>>> upstream/master
         return svn_log

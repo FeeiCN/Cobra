@@ -49,22 +49,11 @@ def start(target, formatter, output, special_rules, sid=None):
     main_language = dt.language
     main_framework = dt.framework
 
-<<<<<<< HEAD
-    logger.info('Static analysis')
-    logger.info(' > Target: {tm}, Output: {om}'.format(tm=target_mode, om=output_mode))
-    logger.info(' > {d}'.format(d=target_directory))
-    logger.info(' > Language: {l}, Framework: {f}'.format(l=main_language, f=main_framework))
-    logger.info(' > Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
-
-    if pa.special_rules is not None:
-        logger.info(' > Special Rules: {r}'.format(r=','.join(pa.special_rules)))
-=======
     logger.info('[CLI] [STATISTIC] Language: {l} Framework: {f}'.format(l=main_language, f=main_framework))
     logger.info('[CLI] [STATISTIC] Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
 
     if pa.special_rules is not None:
         logger.info('[CLI] [SPECIAL-RULE] only scan used by {r}'.format(r=','.join(pa.special_rules)))
->>>>>>> upstream/master
 
     # scan
     scan(target_directory, sid, pa.special_rules)

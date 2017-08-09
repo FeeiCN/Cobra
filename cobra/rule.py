@@ -12,11 +12,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-<<<<<<< HEAD
-import re
-=======
 from . import const
->>>>>>> upstream/master
 from .config import rules_path
 from .log import logger
 from .utils import to_bool
@@ -39,11 +35,7 @@ def block(index):
         'in-file-down': 9
     }
     if isinstance(index, int):
-<<<<<<< HEAD
-        blocks_reverse = dict((v, k) for k, v in blocks.iteritems())
-=======
         blocks_reverse = dict((v, k) for k, v in blocks.items())
->>>>>>> upstream/master
         if index in blocks_reverse:
             return blocks_reverse[index]
         else:
@@ -187,11 +179,7 @@ class Rule(object):
             rule_info['id'] = cvi
             for x in xml_rule:
                 if x.tag == 'name':
-<<<<<<< HEAD
-                    rule_info['name'] = x.get('value').encode('utf-8')
-=======
                     rule_info['name'] = x.get('value')
->>>>>>> upstream/master
                 if x.tag == 'language':
                     rule_info['language'] = x.get('value')
                 if x.tag == 'status':
@@ -201,14 +189,6 @@ class Rule(object):
                     email = x.get('email')
                     rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
                 if x.tag in ['match', 'match2', 'repair']:
-<<<<<<< HEAD
-                    rule_info[x.tag] = x.text.strip()
-                    if x.tag == 'match':
-                        if x.get('mode') is not None:
-                            rule_info['match-mode'] = x.get('mode')
-                        else:
-                            logger.warning('unset match mode attr (CVI-{cvi})'.format(cvi=cvi))
-=======
                     if x.text is not None:
                         rule_info[x.tag] = x.text.strip()
                     if x.tag == 'match':
@@ -217,7 +197,6 @@ class Rule(object):
                         if x.get('mode') not in const.match_modes:
                             logger.warning('mode exception (CVI-{cvi})'.format(cvi=cvi))
                         rule_info['match-mode'] = x.get('mode')
->>>>>>> upstream/master
                     elif x.tag == 'repair':
                         rule_info['repair-block'] = block(x.get('block'))
                     elif x.tag == 'match2':
@@ -225,13 +204,6 @@ class Rule(object):
                 if x.tag == 'level':
                     rule_info['level'] = x.get('value')
                 if x.tag == 'solution':
-<<<<<<< HEAD
-                    rule_info['solution'] = x.text.strip().encode('utf-8')
-                if x.tag == 'test':
-                    for case in x:
-                        case_ret = case.get('assert').lower()
-                        case_test = case.text.strip()
-=======
                     rule_info['solution'] = x.text.strip()
                 if x.tag == 'test':
                     for case in x:
@@ -239,7 +211,6 @@ class Rule(object):
                         case_test = ''
                         if case.text is not None:
                             case_test = case.text.strip()
->>>>>>> upstream/master
                         if case_ret in ['true', 'false']:
                             rule_info['test'][case_ret].append(case_test)
             vulnerabilities.append(rule_info)
