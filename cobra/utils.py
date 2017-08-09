@@ -51,14 +51,14 @@ class ParseArgs(object):
                             sr += extension
                         self.special_rules.append(sr)
                     else:
-                        logger.critical('Exception rule name: {sr}'.format(sr=sr))
+                        logger.critical('[PARSE-ARGS] Exception rule name: {sr}'.format(sr=sr))
             else:
                 if self._check_rule_name(special_rules):
                     if extension not in special_rules:
                         special_rules += extension
                     self.special_rules = [special_rules]
                 else:
-                    logger.critical('Exception special rule name(e.g: CVI-110001): {sr}'.format(sr=special_rules))
+                    logger.critical('[PARSE-ARGS] Exception special rule name(e.g: CVI-110001): {sr}'.format(sr=special_rules))
         else:
             self.special_rules = None
         self.sid = sid
@@ -84,9 +84,9 @@ class ParseArgs(object):
         if os.path.isdir(self.target):
             target_mode = TARGET_MODE_FOLDER
         if target_mode is None:
-            logger.critical('[-t <target>] can\'t empty!')
+            logger.critical('[PARSE-ARGS] [-t <target>] can\'t empty!')
             exit()
-        logger.debug('Target Mode: {mode}'.format(mode=target_mode))
+        logger.debug('[PARSE-ARGS] Target Mode: {mode}'.format(mode=target_mode))
         return target_mode
 
     @property
@@ -107,7 +107,7 @@ class ParseArgs(object):
             output_mode = OUTPUT_MODE_FILE
         if output_mode is None:
             output_mode = OUTPUT_MODE_STREAM
-        logger.debug('Output Mode: {mode}'.format(mode=output_mode))
+        logger.debug('[PARSE-ARGS] Output Mode: {mode}'.format(mode=output_mode))
         return output_mode
 
     def target_directory(self, target_mode):
@@ -143,10 +143,10 @@ class ParseArgs(object):
         elif target_mode == TARGET_MODE_FILE:
             target_directory = self.target
         else:
-            logger.critical('exception target mode ({mode})'.format(mode=target_mode))
+            logger.critical('[PARSE-ARGS] exception target mode ({mode})'.format(mode=target_mode))
             exit()
 
-        logger.debug('target directory: {directory}'.format(directory=target_directory))
+        logger.debug('[PARSE-ARGS] target directory: {directory}'.format(directory=target_directory))
         target_directory = os.path.abspath(target_directory)
         if target_directory[-1] == '/':
             return target_directory

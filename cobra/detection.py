@@ -44,21 +44,21 @@ class Detection(object):
         languages = Rule().languages
         tmp_language = None
         for ext, ext_info in self.files:
-            logger.debug("{ext} {count}".format(ext=ext, count=ext_info['count']))
+            logger.debug("[DETECTION] [LANGUAGE] {ext} {count}".format(ext=ext, count=ext_info['count']))
             for language, language_info in languages.items():
                 if ext in language_info['extensions']:
                     if 'chiefly' in language_info and language_info['chiefly'].lower() == 'true':
-                        logger.debug('found the chiefly language({language}), maybe have largest, continue...'.format(
+                        logger.debug('[DETECTION] [LANGUAGE] found the chiefly language({language}), maybe have largest, continue...'.format(
                             language=language))
                         self.lang = language
                     else:
-                        logger.debug('not chiefly, continue...'.format(language=language))
+                        logger.debug('[DETECTION] [LANGUAGE] not chiefly, continue...'.format(language=language))
                         tmp_language = language
             if self.lang is None:
-                logger.debug('not found chiefly language, use the largest language(language) replace'.format(
+                logger.debug('[DETECTION] [LANGUAGE] not found chiefly language, use the largest language(language) replace'.format(
                     language=tmp_language))
                 self.lang = tmp_language
-        logger.debug('main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language,
+        logger.debug('[DETECTION] [LANGUAGE] main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language,
                                                                                            main_language=self.lang))
         return self.lang
 
@@ -76,9 +76,9 @@ class Detection(object):
             for rule_name in frame_data[frame_name]:
                 for project_data in projects_data:
                     if rule_name in project_data:
-                        logger.debug("Find the project's framework may be:" + frame_name)
+                        logger.debug("[DETECTION] [FRAMEWORK] Find the project's framework may be:" + frame_name)
                         return frame_name
-        logger.info('Unknown Framework')
+        logger.info('[DETECTION] [FRAMEWORK] Unknown Framework')
         return 'Unknown Framework'
 
     def dependency_scan(self, root):

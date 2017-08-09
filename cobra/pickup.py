@@ -161,7 +161,7 @@ class Directory(object):
             extension = extension.strip()
             self.result[extension] = {'count': len(values), 'list': []}
             # .php : 123
-            logger.debug('{0} : {1}'.format(extension, len(values)))
+            logger.debug('[PICKUP] [EXTENSION-COUNT] {0} : {1}'.format(extension, len(values)))
             for f in self.file:
                 es = f.split(os.extsep)
                 if len(es) >= 2:
@@ -182,7 +182,7 @@ class Directory(object):
 
     def files(self, absolute_path, level=1):
         if level == 1:
-            logger.debug(absolute_path)
+            logger.debug('[PICKUP] ' + absolute_path)
         try:
             if os.path.isfile(absolute_path):
                 filename, directory = os.path.split(absolute_path)
@@ -192,13 +192,13 @@ class Directory(object):
                     directory = os.path.join(absolute_path, filename)
 
                     # Directory Structure
-                    logger.debug('|  ' * (level - 1) + '|--' + filename)
+                    logger.debug('[PICKUP] [FILES] ' + '|  ' * (level - 1) + '|--' + filename)
                     if os.path.isdir(directory):
                         self.files(directory, level + 1)
                     if os.path.isfile(directory):
                         self.file_info(directory, filename)
         except OSError as e:
-            logger.critical('{msg}'.format(msg=e))
+            logger.critical('[PICKUP] {msg}'.format(msg=e))
             exit()
 
     def file_info(self, path, filename):
@@ -209,7 +209,6 @@ class Directory(object):
         path = path.replace(self.absolute_path, '')
         self.file.append(path)
         self.file_sum += 1
-        logger.debug(u"{0}, {1}".format(self.file_sum, path))
 
 
 class File(object):
