@@ -12,7 +12,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import const
+from . import const
 from .config import rules_path
 from .log import logger
 from .utils import to_bool
@@ -35,7 +35,7 @@ def block(index):
         'in-file-down': 9
     }
     if isinstance(index, int):
-        blocks_reverse = dict((v, k) for k, v in blocks.iteritems())
+        blocks_reverse = dict((v, k) for k, v in blocks.items())
         if index in blocks_reverse:
             return blocks_reverse[index]
         else:

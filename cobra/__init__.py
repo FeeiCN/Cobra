@@ -23,14 +23,17 @@ from .__version__ import __title__, __introduction__, __url__, __version__
 from .__version__ import __author__, __author_email__, __license__
 from .__version__ import __copyright__, __epilog__
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+except NameError as e:
+    pass
 
 
 def main():
     # arg parse
     t1 = time.clock()
-    parser = argparse.ArgumentParser(prog=__title__, description=__introduction__, epilog=__epilog__, version=__version__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(prog=__title__, description=__introduction__, epilog=__epilog__, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser_group_scan = parser.add_argument_group('Scan')
     parser_group_scan.add_argument('-t', '--target', dest='target', action='store', default='', metavar='<target>', help='file, folder, compress, or repository address')

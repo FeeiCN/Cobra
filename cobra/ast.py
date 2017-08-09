@@ -68,7 +68,7 @@ class AST(object):
                 'annotation': r'(\/\/)+'
             }
         }
-        logger.debug("[AST] [LANGUAGE] `{language}`".format(language=self.language))
+        logger.debug("[AST] [LANGUAGE] {language}".format(language=self.language))
 
     def functions(self):
         """
@@ -186,7 +186,6 @@ class AST(object):
         is controllable param
         :return:
         """
-        logger.debug('[AST] Is controllable param')
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()

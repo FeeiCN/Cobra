@@ -151,7 +151,7 @@ class ParseArgs(object):
         if target_directory[-1] == '/':
             return target_directory
         else:
-            return target_directory + '/'
+            return u'{t}/'.format(t=target_directory)
 
 
 def to_bool(value):

@@ -33,6 +33,11 @@ sh_format = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(message)s", "%H
 
 UNICODE_ENCODING = "utf8"
 
+try:
+    mswindows = subprocess.mswindows
+except AttributeError as e:
+    mswindows = False
+
 
 def single_time_warn_message(message):  # Cross-linked function
     sys.stdout.write(message)
@@ -45,7 +50,7 @@ def stdout_encode(data):
         data = data or ""
 
         # Reference: http://bugs.python.org/issue1602
-        if subprocess.mswindows:
+        if mswindows:
             output = data.encode(sys.stdout.encoding, "replace")
 
             if '?' in output and '?' not in data:
@@ -67,7 +72,7 @@ def stdout_encode(data):
     return ret
 
 
-if subprocess.mswindows:
+if mswindows:
     import ctypes
     import ctypes.wintypes
 
@@ -129,9 +134,9 @@ class ColorizingStreamHandler(logging.StreamHandler):
         except Exception as e:
             self.handleError(record)
 
-    if not subprocess.mswindows:
+    if not mswindows:
         def output_colorized(self, message):
-            self.stream.write(message)
+            self.stream.write(message.decode('utf-8'))
     else:
         ansi_esc = re.compile(r'\x1b\[((?:\d+)(?:;(?:\d+))*)m')
 

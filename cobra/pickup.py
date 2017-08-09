@@ -23,8 +23,12 @@ import subprocess
 from operator import itemgetter
 from . import config
 from .log import logger
-from urllib import quote
 from .config import code_path
+
+try:
+    from urllib import quote
+except ImportError:
+    from urllib.parse import quote
 
 support_extensions = ['.zip', '.rar', '.tgz', '.tar', '.gz']
 
@@ -177,7 +181,7 @@ class Directory(object):
             del self.result['no_extension']
         t2 = time.clock()
         # reverse list count
-        self.result = sorted(self.result.items(), key=itemgetter(1), reverse=False)
+        self.result = sorted(self.result.items(), key=lambda t : t[0], reverse=False)
         return self.result, self.file_sum, t2 - t1
 
     def files(self, absolute_path, level=1):
