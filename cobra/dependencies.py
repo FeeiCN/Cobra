@@ -9,7 +9,7 @@ class Dependencies(object):
         """
         :param target_directory: The project's path
         """
-        self.directory = os.path.abspath(target_directory)
+        self.directory = target_directory
         self._result = {}
         self._framework = []
         self.dependencies()
@@ -66,7 +66,7 @@ class Dependencies(object):
                 for line in fi.readlines():
                     flag = line.index("==")
                     module_ = line[:flag]
-                    version = line[flag+2:].strip()
+                    version = line[flag + 2:].strip()
                     self._framework.append(module_)
                     self._result[module_] = version
 
