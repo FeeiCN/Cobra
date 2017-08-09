@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="设计源文件泄露"/>
+    <language value="source"/>
+    <match mode="find-extension"><![CDATA[]]></match>
+    <level value="4"/>
+    <solution>
+        ## 安全风险
+        设计源文件不要放在git项目中
+
+        ## 修复方案
+        删除
+    </solution>
+    <test>
+        <case assert="true"><![CDATA[]]></case>
+    </test>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

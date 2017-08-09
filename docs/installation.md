@@ -1,16 +1,11 @@
-# Installation
-```
-git clone https://github.com/wufeifei/cobra.git
-git checkout -b beta
-cd cobra
-python setup.py install
-```
+# Installation（安装）
 
-# Usage
-```
-# Scan Directory
-python cobra.py -t tests/examples/
+```bash
+# macOS系统依赖
+brew install grep findutils
 
-# Scan Git
-python cobra.py -t https://github.com/wufeifei/cobra.git
+# 安装Cobra
+git clone https://github.com/wufeifei/cobra.git && cd cobra
+pip install -r requirements.txt
+./cobra.py --help
 ```

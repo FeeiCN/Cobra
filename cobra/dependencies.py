@@ -9,7 +9,7 @@ class Dependencies(object):
         """
         :param target_directory: The project's path
         """
-        self.directory = os.path.abspath(target_directory)
+        self.directory = target_directory
         self._result = {}
         self._framework = []
         self.dependencies()

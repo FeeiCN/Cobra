@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="配置型硬编码密码2"/>
+    <language value="conf"/>
+    <match mode="regex-only-match"><![CDATA[(?:username|email|host|password|passwd|mysql)\w*\s*(?::)\s*(.*)]]></match>
+    <repair block="in-current-line"><![CDATA[maven]]></repair>
+    <level value="4"/>
+    <test>
+        <case assert="false"><![CDATA[userLoginIp := this.Ctx.Request.RemoteAddr]]></case>
+        <case assert="true"><![CDATA[username: 123123]]></case>
+        <case assert="true"><![CDATA[password: 123123]]></case>
+        <case assert="true"><![CDATA[mysql: mysql+mysqldb://123:123@10.111.111.111:3306/test]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        硬编码邮箱、用户名、密码、IP、DB链接信息等
+
+        ## 修复方案
+        将密码抽出统一放在配置文件中，配置文件不放在git中
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

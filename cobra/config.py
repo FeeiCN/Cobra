@@ -46,9 +46,8 @@ class Config(object):
         try:
             value = config.get(level1, level2)
         except Exception as e:
-            print(level1, level2)
             traceback.print_exc()
-            print("./configs file configure failed.\nError: {0}\nSee Help: http://cobra-docs.readthedocs.io/en/latest/configuration/".format(e.message))
+            logger.critical("./configs file configure failed.\nError: {0}\nSee Help: http://cobra-docs.readthedocs.io/en/latest/configuration/".format(e.message))
         self.value = value
 
     @staticmethod

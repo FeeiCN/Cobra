@@ -51,12 +51,14 @@ class ParseArgs(object):
                             sr += extension
                         self.special_rules.append(sr)
                     else:
-                        logger.warning('Exception rule name: {sr}'.format(sr=sr))
+                        logger.critical('[PARSE-ARGS] Exception rule name: {sr}'.format(sr=sr))
             else:
                 if self._check_rule_name(special_rules):
                     if extension not in special_rules:
                         special_rules += extension
                     self.special_rules = [special_rules]
+                else:
+                    logger.critical('[PARSE-ARGS] Exception special rule name(e.g: CVI-110001): {sr}'.format(sr=special_rules))
         else:
             self.special_rules = None
         self.sid = sid
@@ -82,9 +84,9 @@ class ParseArgs(object):
         if os.path.isdir(self.target):
             target_mode = TARGET_MODE_FOLDER
         if target_mode is None:
-            logger.critical('[-t <target>] can\'t empty!')
+            logger.critical('[PARSE-ARGS] [-t <target>] can\'t empty!')
             exit()
-        logger.debug('Target Mode: {mode}'.format(mode=target_mode))
+        logger.debug('[PARSE-ARGS] Target Mode: {mode}'.format(mode=target_mode))
         return target_mode
 
     @property
@@ -105,17 +107,21 @@ class ParseArgs(object):
             output_mode = OUTPUT_MODE_FILE
         if output_mode is None:
             output_mode = OUTPUT_MODE_STREAM
-        logger.debug('Output Mode: {mode}'.format(mode=output_mode))
+        logger.debug('[PARSE-ARGS] Output Mode: {mode}'.format(mode=output_mode))
         return output_mode
 
     def target_directory(self, target_mode):
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
-            branch = 'master'
-            username = ''
-            password = ''
-            gg = Git(self.target, branch=branch, username=username, password=password)
+            target, branch = re.findall(r"(.*?.git):(\w+)$", self.target)[0] if re.findall(r"(.*?.git):(\w+)$", self.target) else (self.target, "master")
+            if 'gitlab' in target:
+                username = Config('git', 'username').value
+                password = Config('git', 'password').value
+            else:
+                username = None
+                password = None
+            gg = Git(repo_address=target, branch=branch, username=username, password=password)
 
             # Git Clone Error
             try:
@@ -137,11 +143,15 @@ class ParseArgs(object):
         elif target_mode == TARGET_MODE_FILE:
             target_directory = self.target
         else:
-            logger.critical('exception target mode ({mode})'.format(mode=target_mode))
+            logger.critical('[PARSE-ARGS] exception target mode ({mode})'.format(mode=target_mode))
             exit()
 
-        logger.debug('target directory: {directory}'.format(directory=target_directory))
-        return target_directory
+        logger.debug('[PARSE-ARGS] target directory: {directory}'.format(directory=target_directory))
+        target_directory = os.path.abspath(target_directory)
+        if target_directory[-1] == '/':
+            return target_directory
+        else:
+            return target_directory + '/'
 
 
 def to_bool(value):
@@ -220,7 +230,7 @@ def path_to_short(path, max_length=36):
     paths = filter(None, paths)
     tmp_path = ''
     for i in range(0, len(paths)):
-        # print(i, str(paths[i]), str(paths[len(paths) - i - 1]))
+        logger.debug((i, str(paths[i]), str(paths[len(paths) - i - 1])))
         tmp_path = tmp_path + str(paths[i]) + '/' + str(paths[len(paths) - i - 1])
         if len(tmp_path) > max_length:
             tmp_path = ''

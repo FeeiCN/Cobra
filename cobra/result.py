@@ -16,9 +16,10 @@
 class VulnerabilityResult:
     def __init__(self):
         self.id = ''
-        self.language = ''
-        self.rule_name = ''
         self.file_path = None
+
+        self.rule_name = ''
+        self.language = ''
         self.line_number = None
         self.code_content = None
         self.match_result = None

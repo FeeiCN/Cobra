@@ -12,6 +12,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
+import const
 from .config import rules_path
 from .log import logger
 from .utils import to_bool
@@ -136,14 +137,14 @@ class Rule(object):
         :return: dict
         """
         vulnerabilities = []
-        if rules is not None:
+        if rules is not None and len(rules) > 0:
             files = rules
         else:
             files = os.listdir(self.rules_path)
         for vulnerability_name in files:
             # VN: CVI-190001.xml
             v_path = os.path.join(self.rules_path, vulnerability_name)
-            if os.path.isfile(v_path) is not True or 'cvi-template' in v_path.lower():
+            if os.path.isfile(v_path) is not True or 'cvi-template' in v_path.lower() or 'cvi-999999' in v_path.lower():
                 continue
             if 'cvi' not in v_path.lower() or '.xml' not in v_path.lower():
                 logger.debug('Not rule file {f}'.format(f=v_path))
@@ -151,11 +152,12 @@ class Rule(object):
 
             # rule information
             rule_info = {
-                'name': None,
-                'file': v_path,
                 'id': None,
+                'file': v_path,
+                'name': None,
                 'language': None,
                 'match': None,
+                'match-mode': 'regex-only-match',
                 'match2': None,
                 'match2-block': None,
                 'repair': None,
@@ -187,8 +189,15 @@ class Rule(object):
                     email = x.get('email')
                     rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
                 if x.tag in ['match', 'match2', 'repair']:
-                    rule_info[x.tag] = x.text.strip()
-                    if x.tag == 'repair':
+                    if x.text is not None:
+                        rule_info[x.tag] = x.text.strip()
+                    if x.tag == 'match':
+                        if x.get('mode') is None:
+                            logger.warning('unset match mode attr (CVI-{cvi})'.format(cvi=cvi))
+                        if x.get('mode') not in const.match_modes:
+                            logger.warning('mode exception (CVI-{cvi})'.format(cvi=cvi))
+                        rule_info['match-mode'] = x.get('mode')
+                    elif x.tag == 'repair':
                         rule_info['repair-block'] = block(x.get('block'))
                     elif x.tag == 'match2':
                         rule_info['match2-block'] = block(x.get('block'))
@@ -199,7 +208,9 @@ class Rule(object):
                 if x.tag == 'test':
                     for case in x:
                         case_ret = case.get('assert').lower()
-                        case_test = case.text.strip()
+                        case_test = ''
+                        if case.text is not None:
+                            case_test = case.text.strip()
                         if case_ret in ['true', 'false']:
                             rule_info['test'][case_ret].append(case_test)
             vulnerabilities.append(rule_info)

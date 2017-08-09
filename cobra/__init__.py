@@ -12,6 +12,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import sys
 import time
 import argparse
 import logging
@@ -19,8 +20,11 @@ from .log import logger
 from . import cli, api, config
 
 from .__version__ import __title__, __introduction__, __url__, __version__
-from .__version__ import __build__, __author__, __author_email__, __license__
+from .__version__ import __author__, __author_email__, __license__
 from .__version__ import __copyright__, __epilog__
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 def main():
@@ -44,20 +48,20 @@ def main():
 
     if args.debug:
         logger.setLevel(logging.DEBUG)
-        logger.debug('set logging level: debug')
+        logger.debug('[INIT] set logging level: debug')
 
     if args.host is None and args.port is None and args.target is '' and args.output is '':
         parser.print_help()
         exit()
 
     if args.host is not None and args.port is not None:
-        logger.debug('start RESTful Server...')
+        logger.debug('[INIT] start RESTful Server...')
         api.start(args.host, args.port, args.debug)
     else:
-        logger.debug('start scanning...')
+        logger.debug('[INIT] start scanning...')
         cli.start(args.target, args.format, args.output, args.special_rules, args.sid)
     t2 = time.clock()
-    logger.info('Done! TC:{TC}s'.format(TC=t2 - t1))
+    logger.info('[INIT] Done! TC:{TC}s'.format(TC=t2 - t1))
 
 
 if __name__ == '__main__':

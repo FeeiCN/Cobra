@@ -161,7 +161,7 @@ class Directory(object):
             extension = extension.strip()
             self.result[extension] = {'count': len(values), 'list': []}
             # .php : 123
-            logger.debug('{0} : {1}'.format(extension, len(values)))
+            logger.debug('[PICKUP] [EXTENSION-COUNT] {0} : {1}'.format(extension, len(values)))
             for f in self.file:
                 es = f.split(os.extsep)
                 if len(es) >= 2:
@@ -182,7 +182,7 @@ class Directory(object):
 
     def files(self, absolute_path, level=1):
         if level == 1:
-            logger.debug(absolute_path)
+            logger.debug('[PICKUP] ' + absolute_path)
         try:
             if os.path.isfile(absolute_path):
                 filename, directory = os.path.split(absolute_path)
@@ -192,13 +192,13 @@ class Directory(object):
                     directory = os.path.join(absolute_path, filename)
 
                     # Directory Structure
-                    logger.debug('|  ' * (level - 1) + '|--' + filename)
+                    logger.debug('[PICKUP] [FILES] ' + '|  ' * (level - 1) + '|--' + filename)
                     if os.path.isdir(directory):
                         self.files(directory, level + 1)
                     if os.path.isfile(directory):
                         self.file_info(directory, filename)
         except OSError as e:
-            logger.critical('{msg}'.format(msg=e))
+            logger.critical('[PICKUP] {msg}'.format(msg=e))
             exit()
 
     def file_info(self, path, filename):
@@ -209,7 +209,6 @@ class Directory(object):
         path = path.replace(self.absolute_path, '')
         self.file.append(path)
         self.file_sum += 1
-        logger.debug("{0}, {1}".format(self.file_sum, path))
 
 
 class File(object):
@@ -231,7 +230,7 @@ class File(object):
         :return:
         """
         param = ['sed', "-n", line_rule, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE)
+        p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = p.communicate()
         if len(result[0]):
             content = result[0]
@@ -309,21 +308,25 @@ class Git(object):
 
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
-        logger.info('pull repository...')
+        logger.info('[PICKUP] [PULL] pull repository...')
 
         if not self.__check_exist():
             return False, 'No local repo exist. Please clone first.'
 
         # change work directory to the repo
         repo_dir = self.repo_directory
-        logger.debug('cd directory: {0}'.format(repo_dir))
+        logger.debug('[PICKUP] cd directory: {0}'.format(repo_dir))
         os.chdir(repo_dir)
 
-        cmd = 'git pull origin master'
+        if not self.checkout(self.repo_branch):
+            os.chdir(repo_dir)
+            return False, "Checkout failed."
+
+        cmd = 'git pull origin ' + self.repo_branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (pull_out, pull_err) = p.communicate()
-        logger.info(pull_out)
-        logger.info(pull_err)
+        logger.info('[PICKUP] [PULL] ' + pull_out.strip())
+        logger.info('[PICKUP] [PULL] ' + pull_err.strip().replace('\n', ' >'))
 
         self.parse_err(pull_err)
 
@@ -333,7 +336,7 @@ class Git(object):
         os.chdir(repo_dir)
 
         if 'Updating' in pull_out or 'up-to-date' in pull_out:
-            logger.info('pull done.')
+            logger.info('[PICKUP] [PULL] pull done.')
             return True, None
         else:
             return False, pull_err
@@ -342,9 +345,9 @@ class Git(object):
         """Clone a repo from repo_address
         :return: True - clone success, False - clone error.
         """
-        logger.info('clone repository...')
+        logger.info('[PICKUP] [CLONE] clone repository...')
         if self.__check_exist():
-            logger.info('repository already exist.')
+            logger.info('[PICKUP] [CLONE] repository already exist.')
             return self.pull()
             # call(['rm', '-rf', self.repo_directory])
 
@@ -355,22 +358,22 @@ class Git(object):
         else:
             # private repo
             clone_address = self.repo_address.split('://')[0] + '://' + quote(self.repo_username) + ':' + \
-                            self.repo_password + '@' + self.repo_address.split('://')[1]
+                            quote(self.repo_password) + '@' + self.repo_address.split('://')[1]
         # clone repo with username and password
         # "http[s]://username:password@gitlab.com/username/reponame"
         # !!! if add password in the url, .git/config will log your url with password
-        cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '" -b master'
+        cmd = 'git clone ' + clone_address + ' "' + self.repo_directory + '" -b ' + self.repo_branch
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
-        logger.info(clone_out)
-        logger.info(clone_err)
+        clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
+
+        logger.debug('[PICKUP] [CLONE] ' + clone_out.strip())
+        logger.info('[PICKUP] [CLONE] ' + clone_err.strip())
 
         self.parse_err(clone_err)
 
-        clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
-
-        logger.info('clone done. Switching to branch ' + self.repo_branch)
+        logger.info('[PICKUP] [CLONE] clone done. Switching to branch ' + self.repo_branch)
         # check out to special branch
         if self.checkout(self.repo_branch):
             return True, None
@@ -415,7 +418,7 @@ class Git(object):
                  False-checkout failed. Maybe no branch name.
         """
         if not self.__check_exist():
-            logger.info('No repo directory.')
+            logger.info('[PICKUP] No repo directory.')
             return False
 
         current_dir = os.getcwd()
@@ -424,7 +427,7 @@ class Git(object):
         cmd = "git checkout " + branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
-        logger.info(checkout_err)
+        logger.info('[PICKUP] [CHECKOUT] ' + checkout_err.strip())
 
         # Already on
         # did not match
@@ -493,7 +496,7 @@ class Git(object):
             raise NotExistError('Authentication failed')
 
     @staticmethod
-    def committer(file_path, line_number, length=1):
+    def committer(directory, file_path, line_number, length=1):
         """
         git blame -L21,+1 -- git.py
         362d5798 (wufeifei 2016-09-10 12:19:44 +0800 21) logging = logger.getLogger(__name__)
@@ -505,8 +508,8 @@ class Git(object):
         :param length:
         :return: group#1, group#2
         """
-        # os.chdir(path)
-        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path)
+        os.chdir(directory)
+        cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path.replace(directory, ''))
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
         if len(checkout_out) != 0:
@@ -543,12 +546,12 @@ class Subversion(object):
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
         if len(diff_err) == 0:
-            logger.debug("svn diff success")
+            logger.debug("[PICKUP] svn diff success")
         elif 'authorization failed' in diff_err:
             logger.warning("svn diff auth failed")
             sys.exit(1)
         elif 'Not a valid URL' in diff_err:
-            logger.warning("svn diff url not a valid")
+            logger.warning("[PICKUP] svn diff url not a valid")
             sys.exit(1)
 
     def log(self):
@@ -594,5 +597,5 @@ class Subversion(object):
     def commit(self):
         svn_log = subprocess.Popen(
             [self.svn, 'log', self.filename],
-            stdout=subprocess.PIPE).communicate()[0]
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
         return svn_log

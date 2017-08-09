@@ -98,6 +98,7 @@
     </language>
     <language name="Conf">
         <extension value=".properties"/>
+        <extension value=".conf"/>
         <extension value=".ini"/>
         <extension value=".cfg"/>
         <extension value=".yml"/>
@@ -162,6 +163,7 @@
     </language>
     <language name="Thumb">
         <extension value=".db"/>
+        <extension value=".DS_Store"/>
     </language>
     <language name="Git">
         <extension value=".pack"/>
