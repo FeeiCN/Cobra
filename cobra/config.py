@@ -43,7 +43,7 @@ class Config(object):
         self.level2 = level2
         if level1 is None and level2 is None:
             return
-        config = ConfigParser.ConfigParser()
+        config = ConfigParser()
 
         config.read(config_path)
         value = None
