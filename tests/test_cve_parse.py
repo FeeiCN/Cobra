@@ -18,8 +18,9 @@ from cobra.cve_parse import CveParse
 
 
 target_directory = './vulnerabilities/requirements.txt'
-rule_path = '../tests/examples/cve.xml'
+rule_path = './examples/cve.xml'
 rule_cve_path = '../rules/CVI-999999.xml'
+rule_cve_one = '../rules/CVI-999one.xml'
 
 
 def test_cve_parse():
@@ -42,7 +43,7 @@ def test_cve_info():
 def test_parse_xml():
     cve = CveParse(rule_path, target_directory)
     tree = cve.parse_xml(cve.cve_file)
-    root = eT.parse('./examples/cve.xml')
+    root = eT.parse(rule_path)
     assert isinstance(tree, type(root))
 
 
@@ -55,7 +56,8 @@ def test_get_result():
 def test_rule_xml():
     cve = CveParse(rule_path, target_directory)
     cve.rule_xml()
-    assert os.path.exists(rule_cve_path)
+    assert os.path.exists(rule_cve_one)
+    os.remove(rule_cve_one)
 
 
 def test_rule_parse():
