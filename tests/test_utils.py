@@ -39,11 +39,7 @@ def test_md5():
 
 
 def test_allowed_file():
-<<<<<<< HEAD:tests/test_utils.py
-    assert allowed_file('test01/test02/file.rar') is True
-=======
     pass
->>>>>>> upstream/master:tests/test_utils.py
 
 
 def test_to_bool():

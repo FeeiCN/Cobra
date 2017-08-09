@@ -13,26 +13,13 @@
 """
 from cobra.push_to_api import PushToThird
 from cobra.result import VulnerabilityResult
-<<<<<<< HEAD
-=======
 import json
->>>>>>> upstream/master
 
 find_vul = []
 for i in range(4):
     srv = []
     for j in range(3):
         mr = VulnerabilityResult()
-<<<<<<< HEAD
-        mr.file_path = "/etc/passwd"
-        mr.line_number = 182
-        mr.commit_author = "author"
-        mr.code_content = "<script>alert(document.cookie)</script>"
-        mr.match_result = "pregex"
-        mr.commit_time = "2017-04-04"
-        mr.label = "xss"
-        mr.rule_name = "Reflected XSS"
-=======
         mr.id = '12001'
         mr.file_path = '/index.php'
         mr.rule_name = '硬编码密码'
@@ -43,21 +30,15 @@ for i in range(4):
         mr.level = None
         mr.commit_time = '2017-04-04'
         mr.commit_author = 'author'
->>>>>>> upstream/master
         srv.append(mr)
     find_vul.append(srv)
 
 
 def test_push_to_api():
     pusher = PushToThird()
-<<<<<<< HEAD
-    pusher.add_data(find_vul=find_vul)
-    assert "description" in str(pusher.post_data)
-=======
     pusher.add_data(target='https://github.com/test/test.git', find_vul=find_vul)
     assert 'https://' in json.dumps(pusher.post_data, ensure_ascii=False)
     assert '2017-04-04' in json.dumps(pusher.post_data, ensure_ascii=False)
     assert '硬编码密码' in json.dumps(pusher.post_data, ensure_ascii=False)
     assert 'summitid' in json.dumps(pusher.post_data, ensure_ascii=False)
     assert 'description' in json.dumps(pusher.post_data, ensure_ascii=False)
->>>>>>> upstream/master
