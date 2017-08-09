@@ -17,7 +17,7 @@ import os
 import csv
 from .log import logger
 from prettytable import PrettyTable
-from templite import Templite
+from .templite import Templite
 
 try:
     # python 3

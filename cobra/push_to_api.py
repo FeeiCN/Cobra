@@ -11,9 +11,9 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-from config import Config
-from log import logger
-from export import flatten
+from .config import Config
+from .log import logger
+from .export import flatten
 import requests
 import json
 
