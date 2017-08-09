@@ -10,7 +10,6 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-
 $(function () {
     var vulnerabilities_list = {
         page: 1,
@@ -46,12 +45,13 @@ $(function () {
                 for (var j = 0; j < vul_list_origin[i].vulnerabilities.length; j++) {
                     if (vul_list_origin[i].vulnerabilities[j].id === vid) {
                         var data = vul_list_origin[i].vulnerabilities[j];
+                        data.code_content = data.code_content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
                     }
                 }
             }
             $('#code').val(data.code_content);
             // Highlighting param
-            vulnerabilities_list.cm_code.setOption("mode", data.mode);
+            vulnerabilities_list.cm_code.setOption("mode", data.language);
             if (vulnerabilities_list.cm_code !== null) {
                 var doc = vulnerabilities_list.cm_code.getDoc();
                 doc.setValue(data.code_content);
@@ -274,7 +274,7 @@ $(function () {
             }
         },
         trigger_filter: function () {
-            if ($(".filter").is(":visible") == true) {
+            if ($(".filter").is(":visible") === true) {
                 $('.filter').hide();
                 $('.vulnerabilities_list').show();
             } else {
