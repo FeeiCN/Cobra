@@ -41,14 +41,18 @@ $(function () {
             $('li[data-id=' + vid + ']').addClass('active');
             // hide loading
             $('.CodeMirror .cm-loading').hide();
+            var vul_shift = 0;
+            vid = Number(vid);
             for (var i = 0; i < vul_list_origin.length; i++) {
-                for (var j = 0; j < vul_list_origin[i].vulnerabilities.length; j++) {
-                    if (vul_list_origin[i].vulnerabilities[j].vid === Number(vid)) {
-                        var data = vul_list_origin[i].vulnerabilities[j];
-                        data.code_content = data.code_content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-                        if (data.code_content === "") {
-                            data.code_content = data.file_path;
-                        }
+                if (vid - vul_shift >  vul_list_origin[i].vulnerabilities.length) {
+                    vul_shift += vul_list_origin[i].vulnerabilities.length;
+                }
+                else {
+                    var data = vul_list_origin[i].vulnerabilities[vid - vul_shift - 1];
+                    data.code_content = data.code_content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+                    // 对无代码内容的漏洞进行处理，避免 widget 的 bug
+                    if (data.code_content === "") {
+                        data.code_content = data.file_path;
                     }
                 }
             }
