@@ -63,6 +63,7 @@
 |regex-only-match|正则仅匹配|是|默认是此模式，但需要显式的写在规则文件里。以正则的方式进行匹配，匹配到内容则算作漏洞|
 |regex-param-controllable|正则参数可控|否|以正则模式进行匹配，匹配出的变量可外部控制则为漏洞|
 |function-param-controllable|函数参数可控|否|内容写函数名，将搜索所有该函数的调用，若参数外部可控则为漏洞|
+|find-extension|寻找指定后缀文件|否|找到指定后缀文件则算作漏洞|
 
 #### `<match2>`/`<repair>` Block（`<match2>`/`<repair>`的匹配区块）
 > 用来描述需要匹配的代码区块位置，只能用在`<match2>`或`<repair>`中。
@@ -125,7 +126,7 @@ print("Text: " + $content);
 
 ## 六、Labels（标签）
 | ID | Label | Description(EN) | Description(CN) |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | 110 | MS | Misconfiguration | 错误的配置 |
 | 120 | SSRF | Server-Side Forge | 服务端伪造 |
 | 130 | HCP | Hard-coded Password | 硬编码密码 |

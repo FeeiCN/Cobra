@@ -48,20 +48,20 @@ def main():
 
     if args.debug:
         logger.setLevel(logging.DEBUG)
-        logger.debug('set logging level: debug')
+        logger.debug('[INIT] set logging level: debug')
 
     if args.host is None and args.port is None and args.target is '' and args.output is '':
         parser.print_help()
         exit()
 
     if args.host is not None and args.port is not None:
-        logger.debug('start RESTful Server...')
+        logger.debug('[INIT] start RESTful Server...')
         api.start(args.host, args.port, args.debug)
     else:
-        logger.debug('start scanning...')
+        logger.debug('[INIT] start scanning...')
         cli.start(args.target, args.format, args.output, args.special_rules, args.sid)
     t2 = time.clock()
-    logger.info('Done! TC:{TC}s'.format(TC=t2 - t1))
+    logger.info('[INIT] Done! TC:{TC}s'.format(TC=t2 - t1))
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ def test_vulnerabilities():
     vulnerabilities = Rule().vulnerabilities
     assert isinstance(vulnerabilities, dict)
     assert '110' in vulnerabilities
-    assert 'mc' in vulnerabilities['110']
+    assert 'MC' in vulnerabilities['110']
 
 
 def test_rules():

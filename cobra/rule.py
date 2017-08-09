@@ -12,7 +12,7 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import re
+import const
 from .config import rules_path
 from .log import logger
 from .utils import to_bool
@@ -189,12 +189,14 @@ class Rule(object):
                     email = x.get('email')
                     rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
                 if x.tag in ['match', 'match2', 'repair']:
-                    rule_info[x.tag] = x.text.strip()
+                    if x.text is not None:
+                        rule_info[x.tag] = x.text.strip()
                     if x.tag == 'match':
-                        if x.get('mode') is not None:
-                            rule_info['match-mode'] = x.get('mode')
-                        else:
+                        if x.get('mode') is None:
                             logger.warning('unset match mode attr (CVI-{cvi})'.format(cvi=cvi))
+                        if x.get('mode') not in const.match_modes:
+                            logger.warning('mode exception (CVI-{cvi})'.format(cvi=cvi))
+                        rule_info['match-mode'] = x.get('mode')
                     elif x.tag == 'repair':
                         rule_info['repair-block'] = block(x.get('block'))
                     elif x.tag == 'match2':
@@ -206,7 +208,9 @@ class Rule(object):
                 if x.tag == 'test':
                     for case in x:
                         case_ret = case.get('assert').lower()
-                        case_test = case.text.strip()
+                        case_test = ''
+                        if case.text is not None:
+                            case_test = case.text.strip()
                         if case_ret in ['true', 'false']:
                             rule_info['test'][case_ret].append(case_test)
             vulnerabilities.append(rule_info)

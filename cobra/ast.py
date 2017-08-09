@@ -11,6 +11,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import os
 import re
 import subprocess
 from .utils import Tool
@@ -22,7 +23,8 @@ from .pickup import File
 class AST(object):
     languages = ['php', 'java', 'm']
 
-    def __init__(self, rule, file_path, line, code, ):
+    def __init__(self, rule, target_directory, file_path, line, code, ):
+        self.target_directory = target_directory
         self.data = []
         self.rule = rule
         self.file_path = file_path
@@ -35,6 +37,7 @@ class AST(object):
             if self.file_path[-len(language):].lower() == language:
                 self.language = language
 
+        os.chdir(self.target_directory)
         # Parse rule
         self.regex = {
             'java': {

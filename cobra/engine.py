@@ -17,6 +17,7 @@ import json
 import traceback
 import subprocess
 import multiprocessing
+import const
 from .rule import Rule
 from .utils import Tool
 from .log import logger
@@ -97,7 +98,7 @@ def scan(target_directory, sid=None, special_rules=None):
                 res.file_path = res.file_path.replace(target_directory, '')
                 find_vulnerabilities.append(res)
         else:
-            logger.debug('Not found vulnerabilities on this rule!')
+            logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
 
     pool = multiprocessing.Pool()
     if len(rules) == 0:
@@ -144,9 +145,9 @@ def scan(target_directory, sid=None, special_rules=None):
             trigger_rules.append(x.id)
     vn = len(find_vulnerabilities)
     if vn == 0:
-        logger.info('Not found vulnerability!')
+        logger.info('[SCAN] Not found vulnerability!')
     else:
-        logger.info(" > Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
+        logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
 
     # completed running data
     if sid is not None:
@@ -171,15 +172,16 @@ class SingleRule(object):
         self.rule_vulnerabilities = []
 
     def origin_results(self):
-        if self.sr['match'] == "":
+        logger.debug('[ENGINE] [ORIGIN] match-mode {m}'.format(m=self.sr['match-mode']))
+        if self.sr['match-mode'] == const.mm_find_extension:
             # find
             filters = []
             for index, e in enumerate(self.sr['extensions']):
-                if index > 1:
+                if index > 0:
                     filters.append('-o')
-                filters.append('-name')
-                filters.append('*' + e)
-            # Find Special Ext Files
+                filters.append('-iname')
+                filters.append('*{e}'.format(e=e))
+            # Find Special Ext Files -type f (regular file)
             param = [self.find, self.target_directory, "-type", "f"] + filters
         else:
             # grep
@@ -248,10 +250,8 @@ class SingleRule(object):
             # Rules
             #
             # v.php:2:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # v.php:211:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # v.php:2134:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # v.php:21111:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
-            # v.php:212344:$password = "C787AFE9D9E86A6A6C78ACE99CA778EE";
+            # v.php:2:$password 2017:01:01
+            # v.exe Binary file
             try:
                 mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
                 mr.file_path = single_match.split(':{n}:'.format(n=mr.line_number))[0]
@@ -304,7 +304,7 @@ class Core(object):
         self.line_number = vulnerability_result.line_number
         self.code_content = vulnerability_result.code_content.strip()
 
-        self.rule_match = single_rule['match'].strip()
+        self.rule_match = single_rule['match']
         self.rule_match_mode = single_rule['match-mode']
         self.rule_match2 = single_rule['match2']
         self.rule_match2_block = single_rule['match2-block']
@@ -450,19 +450,20 @@ class Core(object):
             return False, 5002
 
         if self.is_test_file():
-            logger.debug("[RET] Test File")
-            return True, 5003
+            logger.debug("[CORE] Test File")
 
         if self.is_annotation():
             logger.debug("[RET] Annotation")
             return False, 5004
 
-        if self.is_match_only_rule():
+        if self.rule_match_mode == const.mm_find_extension:
+            found_vul = True
+        elif self.rule_match_mode == const.mm_regex_only_match:
             logger.debug("[CVI-{cvi}] [ONLY-MATCH]".format(cvi=self.cvi))
             found_vul = True
             if self.rule_repair is not None:
                 logger.debug('[VERIFY-REPAIR]')
-                ast = AST(self.rule_match, self.file_path, self.line_number, self.code_content)
+                ast = AST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                 is_repair, data = ast.match(self.rule_repair, self.repair_block)
                 if is_repair:
                     # fixed
@@ -477,7 +478,7 @@ class Core(object):
             # parameter is controllable
             if self.is_can_parse() and (self.rule_repair is not None or self.rule_match2 is not None):
                 try:
-                    ast = AST(self.rule_match, self.file_path, self.line_number, self.code_content)
+                    ast = AST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
                     if self.rule_match2 is not None:
                         is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
