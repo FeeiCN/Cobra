@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="赋值型硬编码密码"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[(?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"]]]></match>
+    <level value="2"/>
+    <test>
+        <case assert="true"><![CDATA[private $password = "test"]]></case>
+        <case assert="true"><![CDATA[private static $password = "test"]]></case>
+        <case assert="true"><![CDATA[public $pwd = "test"]]></case>
+        <case assert="true"><![CDATA[protected $passwd = 'test']]></case>
+        <case assert="true"><![CDATA[protected $except_password = md5("test")]]></case>
+        <case assert="true"><![CDATA[protected $password_except = sha1("test")]]></case>
+        <case assert="true"><![CDATA[$password = "test"]]></case>
+        <case assert="true"><![CDATA[$passwd = "test"]]></case>
+        <case assert="true"><![CDATA[$pwd = "test"]]></case>
+        <case assert="false"><![CDATA[$pwd = "";]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        硬编码密码
+
+        ## 修复方案
+        将密码抽出统一放在配置文件中，配置文件不放在git中
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

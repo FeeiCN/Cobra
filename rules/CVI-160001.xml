@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="拼接SQL注入"/>
+    <language value="java"/>
+    <match mode="regex-only-match"><![CDATA[(?:select|update)\s+.*(?:from|set).*where\s+\w+\s*=[^"']*(?:"|').*(?:\+|\%s)]]></match>
+    <level value="8"/>
+    <solution>
+        ## 安全风险
+        拼接SQL语句存在SQL注入风险
+
+        ## 修复方案
+        使用ORM中间件，比如raptor
+    </solution>
+    <test>
+        <case assert="true"><![CDATA[Query q = pm.newQuery("select * from Users where name = " + input);]]></case>
+        <case assert="true"><![CDATA[String hql = "select max(detailLineNo) from TWmsSoreturnAsnDetailEntity where isDel = 0 and asnId="+headId;]]></case>
+    </test>
+    <status value="on"/>
+    <author name="JoyChou" email="viarus@qq.com"/>
+</cobra>

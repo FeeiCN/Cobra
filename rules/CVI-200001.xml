@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="不安全的随机数"/>
+    <language value="java"/>
+    <match mode="regex-only-match"><![CDATA[new Random\s*\(|Random\.next]]></match>
+    <match2 block="in-file-up"><![CDATA[((java|scala)\.util\.Random)]]></match2>
+    <level value="2"/>
+    <solution><![CDATA[
+        ## 安全风险
+        使用可预测的随机数会导致漏洞。
+
+        ## 修复方案
+        建议使用`java.security.SecureRandom`替代` java.util.Random`。
+        ```java
+        import org.apache.commons.codec.binary.Hex;
+
+        String generateSecretToken() {
+            SecureRandom secRandom = new SecureRandom();
+
+            byte[] result = new byte[32];
+            secRandom.nextBytes(result);
+            return Hex.encodeHexString(result);
+        }
+        ```
+        - [CWE-330](http://cwe.mitre.org/data/definitions/330.html)
+]]>
+    </solution>
+    <test>
+        <case assert="true"><![CDATA[Random r = new Random();]]></case>
+        <case assert="true"><![CDATA[Random r = new Random  ();]]></case>
+        <case assert="true"><![CDATA[Random.nextLong()]]></case>
+    </test>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="LFI"/>
+    <language value="jsp"/>
+    <match mode="regex-only-match"><![CDATA[include[^>]*request\.]]></match>
+    <level value="5"/>
+    <solution>
+        ## 安全风险
+        载入的文件可控存在LFI漏洞
+
+        ## 修复方案
+        限制白名单
+    </solution>
+    <test>
+        <case assert="true"><![CDATA[include(request.getParam('test'));]]></case>
+    </test>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

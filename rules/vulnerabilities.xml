@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra/wiki/vulnerabilities">
+    <vulnerability name="MC" vid="110"/>
+    <vulnerability name="SSRF" vid="120"/>
+    <vulnerability name="HCP" vid="130"/>
+    <vulnerability name="XSS" vid="140"/>
+    <vulnerability name="CSRF" vid="150"/>
+    <vulnerability name="SQLI" vid="160"/>
+    <vulnerability name="RFI" vid="170"/>
+    <vulnerability name="RCE" vid="180"/>
+    <vulnerability name="RCE" vid="181"/>
+    <vulnerability name="SIL" vid="190"/>
+    <vulnerability name="PPH" vid="200"/>
+    <vulnerability name="UR" vid="210"/>
+    <vulnerability name="HRS" vid="220"/>
+    <vulnerability name="SF" vid="230"/>
+    <vulnerability name="IC" vid="999"/>
+</cobra>
