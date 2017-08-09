@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -21,21 +22,39 @@ import gzip
 import xml.etree.cElementTree as eT
 import multiprocessing
 from config import project_directory, Config
+=======
+# -*- coding: utf-8 -*-
+import datetime
+import xml.etree.ElementTree as eT
+>>>>>>> upstream/master
 from log import logger
 from dependencies import Dependencies
 
 
 class CveParse(object):
+<<<<<<< HEAD
     def __init__(self, target_file, project_path, year=None):
+=======
+    def __init__(self, target_file, project_path):
+>>>>>>> upstream/master
         """
         :param target_file: The cve_file's path
         """
         self.cve_file = target_file
         self.pro_file = project_path
+<<<<<<< HEAD
         self.year = year
         self._result = {}  # {'cve_id':{'access-complexity':xxx, 'cpe':[]}} access-complexity and cpe may be None
         self._rule = {}
         self._scan_result = {}
+=======
+        self._result = {}  # {'cve_id':{'access-complexity':xxx, 'cpe':[]}} access-complexity and cpe may be None
+        self._rule = {}
+        self._scan_result = {}
+        self.rule_file = "../rules/CVI-999999.xml"
+        self.rule_files = ["../rules/CVI-999999.xml",
+                           "../rules/CVI-Rule.xml"]  # CVI-999999.xml is cve rule, CVI-Rule.xml is custom rule
+>>>>>>> upstream/master
         self.CVSS = "{http://scap.nist.gov/schema/cvss-v2/0.2}"
         self.VULN = "{http://scap.nist.gov/schema/vulnerability/0.4}"
         self.NS = "{http://scap.nist.gov/schema/feed/vulnerability/2.0}"
@@ -45,6 +64,7 @@ class CveParse(object):
         Resolve the latest rules,parse new rule from cve.xml
         :return: None
         """
+<<<<<<< HEAD
         cve_file = self.get_cve_file()
         if not isinstance(cve_file, list):
             tree = self.parse_xml(cve_file)
@@ -75,6 +95,15 @@ class CveParse(object):
                 for filename in filenames:
                     cve_file.append(os.path.join(root, filename))
             return cve_file
+=======
+        tree = self.parse_xml(self.cve_file)
+        root = tree.getroot()
+        childs = root.iter('%sentry' % self.NS)
+        for child in childs:  # child is entry Element
+            cve_id = child.attrib['id']
+            cve_info = self.cve_info(child)
+            self._result[cve_id] = cve_info
+>>>>>>> upstream/master
 
     def cve_info(self, entry):
         """
@@ -83,6 +112,7 @@ class CveParse(object):
         """
         cpe_list = []
         cve_info = {}
+<<<<<<< HEAD
         black_lists = ['ffmpeg', 'linux', 'ie', 'apple_tv', 'iphone_os', 'watchos', 'mac_os_x', 'windows', 'ios',
                        'android', 'flash_player', 'office', 'wireshark', 'safari', 'mysql', 'word', '.net_framework',
                        'samba', 'ntp', 'tomcat', 'unixware', 'vpn', 'netware', 'proxy_server', 'http_server', 'irix',
@@ -95,10 +125,16 @@ class CveParse(object):
                        'jetty_http_server', 'php:', 'enterprise_linux', 'oracle10g', 'oracle9g', 'oracle8g', 'firehol',
                        'fetchmail', 'postgresql', 'freebsd', 'chrome']
         products = entry.iter('%sproduct' % self.VULN)
+=======
+        products = entry.iter('%sproduct' % self.VULN)
+        access_complexity = entry.find('.//%saccess-complexity' % self.CVSS)
+        summary = entry.find('.//%ssummary' % self.VULN)
+>>>>>>> upstream/master
         for product in products:
             module_version = product.text.split(':')
             if len(module_version) > 4:
                 module_ = module_version[3] + ':' + module_version[4]
+<<<<<<< HEAD
             elif len(module_version) == 4:
                 module_ = module_version[3]
             else:
@@ -108,6 +144,20 @@ class CveParse(object):
                     return cve_info
             cpe_list.append(module_)
             cve_info['cpe'] = cpe_list
+=======
+            else:
+                module_ = module_version[3]
+            cpe_list.append(module_)
+            cve_info['cpe'] = cpe_list
+        if access_complexity is None:
+            cve_info['access-complexity'] = 'unknown'
+        else:
+            cve_info['access-complexity'] = access_complexity.text
+        if summary is None:
+            cve_info['summary'] = 'unknown'
+        else:
+            cve_info['summary'] = summary.text
+>>>>>>> upstream/master
         return cve_info
 
     @staticmethod
@@ -126,18 +176,31 @@ class CveParse(object):
         :return:
         """
         starttime = datetime.datetime.now()
+<<<<<<< HEAD
         logger.info('The rule CVE-999' + str(self.year)[1:] + '.xml are being updated. Please wait for a moment....')
+=======
+        logger.info('The rules are being updated. Please wait for a moment....')
+>>>>>>> upstream/master
         self.cve_parse()
         cobra = eT.Element('cobra')  # root Ele
         cobra.set('document', 'https://github.com/wufeifei/cobra')
         for cve_id in self._result.keys():
             cve_child = eT.Element('cve')  # cve Ele
             cve_child.set('id', cve_id)
+<<<<<<< HEAD
             # products = eT.Element('products')
+=======
+            if 'access-complexity' in self._result[cve_id]:
+                level = eT.Element('level')
+                level.text = self._result[cve_id]['access-complexity']
+                cve_child.append(level)  # level in cve
+            products = eT.Element('products')
+>>>>>>> upstream/master
             if 'cpe' in self._result[cve_id]:
                 for product_ in self._result[cve_id]['cpe']:
                     product = eT.Element('product')
                     product.text = product_
+<<<<<<< HEAD
                     cve_child.append(product)  # product in products
                     # cve_child.append(products)  # products in cve
             cobra.append(cve_child)  # cve in cobra
@@ -146,6 +209,20 @@ class CveParse(object):
         tree.write('../rules/CVI-999' + str(self.year)[1:] + '.xml')
         endtime = datetime.datetime.now()
         logger.info('CVE-999' + str(self.year)[1:] + '.xml Rule update succeeds, times:%ds' % (endtime - starttime).seconds)
+=======
+                    products.append(product)  # product in products
+                cve_child.append(products)  # products in cve
+            if 'summary' in self._result[cve_id]:
+                summary = eT.Element('summary')
+                summary.text = self._result[cve_id]['summary']
+                cve_child.append(summary)
+            cobra.append(cve_child)  # cve in cobra
+        self.pretty(cobra)
+        tree = eT.ElementTree(cobra)
+        tree.write(self.rule_file)
+        endtime = datetime.datetime.now()
+        logger.info('Rule update succeeds, times:%ds' % (endtime - starttime).seconds)
+>>>>>>> upstream/master
 
     def pretty(self, e, level=0):
         """
@@ -160,6 +237,7 @@ class CveParse(object):
             child.tail = child.tail[:-1]
         e.tail = '\n' + '\t' * level
 
+<<<<<<< HEAD
     def rule_parse(self, file_):
         """
         :return: rules from CVI-999999.xml and CVI-999999.xml
@@ -171,19 +249,44 @@ class CveParse(object):
             cve_id = cve_child.attrib['id']
             rule_info = self.rule_info(cve_child)
             self._rule[cve_id] = rule_info
+=======
+    def rule_parse(self):
+        """
+        :return: rules from CVI-Rule.xml and CVI-999999.xml
+        """
+        for rule_file in self.rule_files:
+            tree = self.parse_xml(rule_file)
+            root = tree.getroot()
+            cves = root.iter('cve')
+            for cve_child in cves:
+                cve_id = cve_child.attrib['id']
+                rule_info = self.rule_info(cve_child)
+                self._rule[cve_id] = rule_info
+>>>>>>> upstream/master
 
     @staticmethod
     def rule_info(cve_child):
         rule_info = {}
         cpe_list = []
+<<<<<<< HEAD
+=======
+        level = cve_child.find('.//level')
+        rule_info['level'] = level.text
+>>>>>>> upstream/master
         products = cve_child.iter('product')
         for product in products:
             cpe_list.append(product.text)
         rule_info['cpe'] = cpe_list
+<<<<<<< HEAD
+=======
+        summary = cve_child.find('.//summary')
+        rule_info['summary'] = summary.text
+>>>>>>> upstream/master
         return rule_info
 
     def get_rule(self):
         """
+<<<<<<< HEAD
         :return: The rule from CVI-999999.xml and CVI-999999.xml
         """
         return self._rule
@@ -193,6 +296,17 @@ class CveParse(object):
         :return:Analytical dependency，Match the rules and get the result
         """
         self.rule_parse(file_)
+=======
+        :return: The rule from CVI-999999.xml and CVI-Rule.xml
+        """
+        return self._rule
+
+    def scan_cve(self):
+        """
+        :return:Analytical dependency，Match the rules and get the result
+        """
+        self.rule_parse()
+>>>>>>> upstream/master
         cve = self.get_rule()
         dependency = Dependencies(self.pro_file)
         project_info = dependency.get_result
@@ -207,10 +321,17 @@ class CveParse(object):
         :param module_version:
         :return:set the scan result
         """
+<<<<<<< HEAD
         scan_cves = []
         for cve_child in cves:
             if module_version in cves[cve_child]['cpe']:
                 scan_cves.append(cve_child)
+=======
+        scan_cves = {}
+        for cve_child in cves:
+            if module_version in cves[cve_child]['cpe']:
+                scan_cves[cve_child] = cves[cve_child]['level']
+>>>>>>> upstream/master
         if len(scan_cves):
             self._scan_result[module_version] = scan_cves
 
@@ -218,12 +339,18 @@ class CveParse(object):
         for module_ in self._scan_result:
             for cve_child in self._scan_result[module_]:
                 cve_id = cve_child
+<<<<<<< HEAD
                 logger.warning('Find the module ' + module_ + ' have ' + cve_id)
+=======
+                cve_level = self._scan_result[module_][cve_child]
+                logger.warning('Find the module ' + module_ + ' have ' + cve_id + ' and level is ' + cve_level)
+>>>>>>> upstream/master
             count = len(self._scan_result[module_])
             logger.warning('The ' + module_ + ' module have ' + str(count) + ' CVE Vul')
 
     def get_scan_result(self):
         return self._scan_result
+<<<<<<< HEAD
 
 
 def rule_parse():
@@ -308,3 +435,5 @@ def scan(target_directory):
 
 def scan_single(target_directory, cve_path):
     CveParse('.', target_directory).scan_cve(cve_path)
+=======
+>>>>>>> upstream/master

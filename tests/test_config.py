@@ -17,6 +17,7 @@ from cobra.config import Config
 def test_read_exception():
     value = Config('test', 'test').value
     assert value is None
+<<<<<<< HEAD
 
 
 def test_read():
@@ -34,3 +35,5 @@ def test_initialize():
 def test_read_normal():
     value = Config('upload', 'extensions').value
     assert 'rar' in value
+=======
+>>>>>>> upstream/master

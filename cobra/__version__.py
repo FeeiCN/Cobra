@@ -1,8 +1,12 @@
 __title__ = 'cobra'
 __description__ = 'Code Security Audit'
 __url__ = 'https://github.com/wufeifei/cobra'
+<<<<<<< HEAD
 __version__ = '1.2.3'
 __build__ = 0x021801
+=======
+__version__ = '2.0.0'
+>>>>>>> upstream/master
 __author__ = 'Feei'
 __author_email__ = 'feei@feei.cn'
 __license__ = 'MIT License'

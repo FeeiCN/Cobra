@@ -33,6 +33,14 @@ sh_format = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(message)s", "%H
 
 UNICODE_ENCODING = "utf8"
 
+<<<<<<< HEAD
+=======
+try:
+    mswindows = subprocess.mswindows
+except AttributeError as e:
+    mswindows = False
+
+>>>>>>> upstream/master
 
 def single_time_warn_message(message):  # Cross-linked function
     sys.stdout.write(message)
@@ -45,7 +53,11 @@ def stdout_encode(data):
         data = data or ""
 
         # Reference: http://bugs.python.org/issue1602
+<<<<<<< HEAD
         if subprocess.mswindows:
+=======
+        if mswindows:
+>>>>>>> upstream/master
             output = data.encode(sys.stdout.encoding, "replace")
 
             if '?' in output and '?' not in data:
@@ -67,7 +79,11 @@ def stdout_encode(data):
     return ret
 
 
+<<<<<<< HEAD
 if subprocess.mswindows:
+=======
+if mswindows:
+>>>>>>> upstream/master
     import ctypes
     import ctypes.wintypes
 
@@ -129,9 +145,15 @@ class ColorizingStreamHandler(logging.StreamHandler):
         except Exception as e:
             self.handleError(record)
 
+<<<<<<< HEAD
     if not subprocess.mswindows:
         def output_colorized(self, message):
             self.stream.write(message)
+=======
+    if not mswindows:
+        def output_colorized(self, message):
+            self.stream.write(message.decode('utf-8'))
+>>>>>>> upstream/master
     else:
         ansi_esc = re.compile(r'\x1b\[((?:\d+)(?:;(?:\d+))*)m')
 
@@ -227,4 +249,8 @@ logger.addHandler(sh)
 fh = handlers.RotatingFileHandler(logfile, maxBytes=(1048576 * 5), backupCount=7)
 fh.setFormatter(fh_format)
 logger.addHandler(fh)
+<<<<<<< HEAD
 logger.setLevel(logging.INFO)
+=======
+logger.setLevel(logging.INFO)
+>>>>>>> upstream/master

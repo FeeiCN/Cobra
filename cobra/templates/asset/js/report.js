@@ -10,7 +10,10 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/master
 $(function () {
     var vulnerabilities_list = {
         page: 1,
@@ -42,16 +45,35 @@ $(function () {
             $('li[data-id=' + vid + ']').addClass('active');
             // hide loading
             $('.CodeMirror .cm-loading').hide();
+<<<<<<< HEAD
             for (var i = 0; i < vul_list_origin.length; i++) {
                 for (var j = 0; j < vul_list_origin[i].vulnerabilities.length; j++) {
                     if (vul_list_origin[i].vulnerabilities[j].id === vid) {
                         var data = vul_list_origin[i].vulnerabilities[j];
+=======
+            var vul_shift = 0;
+            vid = Number(vid);
+            for (var i = 0; i < vul_list_origin.length; i++) {
+                if (vid - vul_shift >  vul_list_origin[i].vulnerabilities.length) {
+                    vul_shift += vul_list_origin[i].vulnerabilities.length;
+                }
+                else {
+                    var data = vul_list_origin[i].vulnerabilities[vid - vul_shift - 1];
+                    data.code_content = data.code_content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+                    // 对无代码内容的漏洞进行处理，避免 widget 的 bug
+                    if (data.code_content === "") {
+                        data.code_content = data.file_path;
+>>>>>>> upstream/master
                     }
                 }
             }
             $('#code').val(data.code_content);
             // Highlighting param
+<<<<<<< HEAD
             vulnerabilities_list.cm_code.setOption("mode", data.mode);
+=======
+            vulnerabilities_list.cm_code.setOption("mode", data.language);
+>>>>>>> upstream/master
             if (vulnerabilities_list.cm_code !== null) {
                 var doc = vulnerabilities_list.cm_code.getDoc();
                 doc.setValue(data.code_content);
@@ -77,12 +99,21 @@ $(function () {
                     coverGutter: false,
                     noHScroll: false
                 };
+<<<<<<< HEAD
                 vulnerabilities_list.cm_code.addLineWidget(data.line_number - 1, widget_trigger_line, widget_config);
                 var h = vulnerabilities_list.cm_code.getScrollInfo().clientHeight;
                 var coords = vulnerabilities_list.cm_code.charCoords({line: data.line_number, ch: 0}, "local");
                 vulnerabilities_list.cm_code.scrollTo(null, (coords.top + coords.bottom - h) / 2);
                 // set cursor
                 doc.setCursor({line: data.line_number - 1, ch: 0});
+=======
+                vulnerabilities_list.cm_code.addLineWidget(1 - 1, widget_trigger_line, widget_config);
+                var h = vulnerabilities_list.cm_code.getScrollInfo().clientHeight;
+                var coords = vulnerabilities_list.cm_code.charCoords({line: 1, ch: 0}, "local");
+                vulnerabilities_list.cm_code.scrollTo(null, (coords.top + coords.bottom - h) / 2);
+                // set cursor
+                doc.setCursor({line: 1 - 1, ch: 0});
+>>>>>>> upstream/master
 
             });
 
@@ -233,14 +264,23 @@ $(function () {
                 } else {
                     var list_html = '';
 
+<<<<<<< HEAD
+=======
+                    var id = 0;
+>>>>>>> upstream/master
                     for (var i = 0; i < list.length; i++) {
                         for (var j = 0; j < list[i].vulnerabilities.length; j++) {
                             var line = '';
                             if (list[i].vulnerabilities[j].line_number !== 0) {
                                 line = ':' + list[i].vulnerabilities[j].line_number;
                             }
+<<<<<<< HEAD
                             list_html = list_html + '<li data-id="' + list[i].vulnerabilities[j].id + '" class=" " data-start="1" data-line="1">' +
                                 '<strong>MVE-' + list[i].vulnerabilities[j].id + '</strong><br><span>' + list[i].vulnerabilities[j].file_path + line + '</span><br>' +
+=======
+                            list_html = list_html + '<li data-id="' + list[i].vulnerabilities[j].vid + '" class=" " data-start="1" data-line="1">' +
+                                '<strong>MVE-' + list[i].vulnerabilities[j].vid + '</strong><br><span>' + list[i].vulnerabilities[j].file_path + line + '</span><br>' +
+>>>>>>> upstream/master
                                 '<span class="issue-information">' +
                                 '<small>' +
                                 list[i].vulnerabilities[j].match_result + ' => ' + list[i].vulnerabilities[j].commit_time +
@@ -274,7 +314,11 @@ $(function () {
             }
         },
         trigger_filter: function () {
+<<<<<<< HEAD
             if ($(".filter").is(":visible") == true) {
+=======
+            if ($(".filter").is(":visible") === true) {
+>>>>>>> upstream/master
                 $('.filter').hide();
                 $('.vulnerabilities_list').show();
             } else {

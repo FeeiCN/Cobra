@@ -11,6 +11,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import os
 import re
 import subprocess
 from .utils import Tool
@@ -22,7 +23,12 @@ from .pickup import File
 class AST(object):
     languages = ['php', 'java', 'm']
 
+<<<<<<< HEAD:cobra/ast.py
     def __init__(self, rule, file_path, line, code, ):
+=======
+    def __init__(self, rule, target_directory, file_path, line, code, ):
+        self.target_directory = target_directory
+>>>>>>> upstream/master:cobra/ast.py
         self.data = []
         self.rule = rule
         self.file_path = file_path
@@ -35,6 +41,7 @@ class AST(object):
             if self.file_path[-len(language):].lower() == language:
                 self.language = language
 
+        os.chdir(self.target_directory)
         # Parse rule
         self.regex = {
             'java': {
@@ -65,7 +72,11 @@ class AST(object):
                 'annotation': r'(\/\/)+'
             }
         }
+<<<<<<< HEAD:cobra/ast.py
         logger.debug("[AST] [LANGUAGE] `{language}`".format(language=self.language))
+=======
+        logger.debug("[AST] [LANGUAGE] {language}".format(language=self.language))
+>>>>>>> upstream/master:cobra/ast.py
 
     def functions(self):
         """
@@ -78,11 +89,18 @@ class AST(object):
             return False
         regex_functions = self.regex[self.language]['functions']
         param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE)
-        result = p.communicate()
-        if len(result[0]):
+        p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result, error = p.communicate()
+        try:
+            result = result.decode('utf-8')
+            error = error.decode('utf-8')
+        except AttributeError as e:
+            pass
+        if len(error) is not 0:
+            logger.critical('[AST] {err}'.format(err=error.strip()))
+        if len(result):
             functions = {}
-            lines = str(result[0]).strip().split("\n")
+            lines = result.strip().split("\n")
             prev_function_name = ''
             for index, line in enumerate(lines):
                 line = line.strip()
@@ -140,7 +158,8 @@ class AST(object):
                 return False
             line_rule = '{0}p'.format(self.line)
             code = File(self.file_path).lines(line_rule)
-            code = code.strip()
+            if code is not False:
+                code = code.strip()
             return code
         else:
             block_start = 1
@@ -182,7 +201,10 @@ class AST(object):
         is controllable param
         :return:
         """
+<<<<<<< HEAD:cobra/ast.py
         logger.debug('[AST] Is controllable param')
+=======
+>>>>>>> upstream/master:cobra/ast.py
         param_name = re.findall(self.rule, self.code)
         if len(param_name) == 1:
             param_name = param_name[0].strip()
@@ -296,7 +318,11 @@ class AST(object):
         if '{{PARAM}}' in rule:
             rule = rule.replace('{{PARAM}}', self.param_name)
         logger.debug("[AST] [BLOCK-CODE] `{code}`".format(code=code.strip()))
+<<<<<<< HEAD:cobra/ast.py
         repair_result = re.findall(rule, code)
+=======
+        repair_result = re.findall(rule, code, re.I)
+>>>>>>> upstream/master:cobra/ast.py
         logger.debug("[AST] [MATCH-RESULT] {0}".format(repair_result))
         if len(repair_result) >= 1:
             return True, self.data

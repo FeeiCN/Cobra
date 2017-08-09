@@ -15,6 +15,7 @@ import json
 import re
 import os
 import csv
+<<<<<<< HEAD
 from .log import logger
 from prettytable import PrettyTable
 from templite import Templite
@@ -25,6 +26,16 @@ try:
 except ImportError:
     # python 2
     import cgi as html
+=======
+from prettytable import PrettyTable
+from .log import logger
+from .templite import Templite
+
+try:
+    import cgi as html
+except ImportError:
+    import html
+>>>>>>> upstream/master
 
 
 def dict_to_xml(dict_obj, line_padding=""):
@@ -102,7 +113,12 @@ def dict_to_html(html_obj):
     # 计算 vid 对应的数组偏移，统计 vul_list 中的 rule target
     rule_filter, target_filter = set(), set()
     for result in html_obj:
+<<<<<<< HEAD
         for value in result.get("vulnerabilities"):
+=======
+        for id, value in enumerate(result.get("vulnerabilities")):
+            value["vid"] = id + 1
+>>>>>>> upstream/master
             rule_filter.add(value.get("rule_name"))
 
         target_filter.add(result.get("target"))
@@ -112,7 +128,11 @@ def dict_to_html(html_obj):
 
     templite = Templite(template)
     html_content = templite.render({
+<<<<<<< HEAD
         "vul_list": html.escape(json.dumps(html_obj, ensure_ascii=False)),
+=======
+        "vul_list": html.escape(json.dumps(html_obj, ensure_ascii=False, sort_keys=True)),
+>>>>>>> upstream/master
         "rule_filter": list(rule_filter),
         "target_filter": list(target_filter),
         "report_js": report_js,
@@ -235,7 +255,11 @@ def write_to_file(target, find_vuls, output_format="", filename=""):
                 results = f.read()
                 # 读入原来的 vul_list_origin
                 old_vul_list = re.findall(r"var vul_list_origin = (.*?\}\]);", results)
+<<<<<<< HEAD
                 old_vul_list = eval(old_vul_list[0])
+=======
+                old_vul_list = eval(old_vul_list[0].replace("null", "None"))
+>>>>>>> upstream/master
                 # 添加新的扫描结果
                 old_vul_list.append(write_obj)
                 html_obj = old_vul_list

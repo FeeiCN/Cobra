@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 ## Test
+=======
+## Test（测试）
+
+>>>>>>> upstream/master
 ```
 # TestCase Test
 $ pytest -v

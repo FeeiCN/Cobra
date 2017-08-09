@@ -98,6 +98,10 @@
     </language>
     <language name="Conf">
         <extension value=".properties"/>
+<<<<<<< HEAD
+=======
+        <extension value=".conf"/>
+>>>>>>> upstream/master
         <extension value=".ini"/>
         <extension value=".cfg"/>
         <extension value=".yml"/>
@@ -162,6 +166,10 @@
     </language>
     <language name="Thumb">
         <extension value=".db"/>
+<<<<<<< HEAD
+=======
+        <extension value=".DS_Store"/>
+>>>>>>> upstream/master
     </language>
     <language name="Git">
         <extension value=".pack"/>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -12,6 +13,9 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+=======
+# -*- coding: utf-8 -*-
+>>>>>>> upstream/master
 import os
 import xml.etree.cElementTree as eT
 from .log import logger
@@ -22,7 +26,11 @@ class Dependencies(object):
         """
         :param target_directory: The project's path
         """
+<<<<<<< HEAD
         self.directory = os.path.abspath(target_directory)
+=======
+        self.directory = target_directory
+>>>>>>> upstream/master
         self._result = {}
         self._framework = []
         self.dependencies()

@@ -16,7 +16,11 @@ from prettytable import PrettyTable
 import xml.etree.ElementTree as eT
 from .rule import Rule
 from .dependencies import Dependencies
+<<<<<<< HEAD
 from log import logger
+=======
+from .log import logger
+>>>>>>> upstream/master
 from pip.req import parse_requirements
 
 
@@ -31,7 +35,10 @@ class Detection(object):
         :param files:
         """
         self.target_directory = target_directory
+<<<<<<< HEAD
         self.directory = os.path.abspath(self.target_directory)
+=======
+>>>>>>> upstream/master
         self.files = files
         self.lang = None
         self.requirements = None
@@ -45,6 +52,7 @@ class Detection(object):
         languages = Rule().languages
         tmp_language = None
         for ext, ext_info in self.files:
+<<<<<<< HEAD
             logger.debug("{ext} {count}".format(ext=ext, count=ext_info['count']))
             for language, language_info in languages.items():
                 if ext in language_info['extensions']:
@@ -60,6 +68,23 @@ class Detection(object):
                     language=tmp_language))
                 self.lang = tmp_language
         logger.debug('main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language,
+=======
+            logger.debug("[DETECTION] [LANGUAGE] {ext} {count}".format(ext=ext, count=ext_info['count']))
+            for language, language_info in languages.items():
+                if ext in language_info['extensions']:
+                    if 'chiefly' in language_info and language_info['chiefly'].lower() == 'true':
+                        logger.debug('[DETECTION] [LANGUAGE] found the chiefly language({language}), maybe have largest, continue...'.format(
+                            language=language))
+                        self.lang = language
+                    else:
+                        logger.debug('[DETECTION] [LANGUAGE] not chiefly, continue...'.format(language=language))
+                        tmp_language = language
+            if self.lang is None:
+                logger.debug('[DETECTION] [LANGUAGE] not found chiefly language, use the largest language(language) replace'.format(
+                    language=tmp_language))
+                self.lang = tmp_language
+        logger.debug('[DETECTION] [LANGUAGE] main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language,
+>>>>>>> upstream/master
                                                                                            main_language=self.lang))
         return self.lang
 
@@ -77,21 +102,35 @@ class Detection(object):
             for rule_name in frame_data[frame_name]:
                 for project_data in projects_data:
                     if rule_name in project_data:
+<<<<<<< HEAD
                         logger.info("Find the project's framework may be:" + frame_name)
                         return frame_name
         logger.info('Unknown Framework')
+=======
+                        logger.debug("[DETECTION] [FRAMEWORK] Find the project's framework may be:" + frame_name)
+                        return frame_name
+        logger.info('[DETECTION] [FRAMEWORK] Unknown Framework')
+>>>>>>> upstream/master
         return 'Unknown Framework'
 
     def dependency_scan(self, root):
         framework_infos = self.dependency_framework(root)
+<<<<<<< HEAD
         dependencies = Dependencies(self.directory)
+=======
+        dependencies = Dependencies(self.target_directory)
+>>>>>>> upstream/master
         dependencies_info = dependencies.get_framework
         dependencies_info = list(set(dependencies_info))
         for frame_name in framework_infos:
             for rule in framework_infos[frame_name]['rule']:
                 for dependency in dependencies_info:
                     if rule in dependency:
+<<<<<<< HEAD
                         logger.info("Find the project's framework may be:" + frame_name)
+=======
+                        logger.debug("Find the project's framework may be:" + frame_name)
+>>>>>>> upstream/master
                         return frame_name
         return None
 
@@ -111,7 +150,11 @@ class Detection(object):
         return framework_infos
 
     def _requirements(self):
+<<<<<<< HEAD
         requirements_txt = os.path.join(self.directory, 'requirements.txt')
+=======
+        requirements_txt = os.path.join(self.target_directory, 'requirements.txt')
+>>>>>>> upstream/master
         logger.debug(requirements_txt)
         if os.path.isfile(requirements_txt):
             requirements = parse_requirements(requirements_txt, session=False)
@@ -139,7 +182,11 @@ class Detection(object):
             try:
                 frame_data[frame_name].append(root.attrib['value'])
                 return frame_data, language_data
+<<<<<<< HEAD
             except KeyError, e:
+=======
+            except KeyError as e:
+>>>>>>> upstream/master
                 logger.warning(e.message)
 
     @staticmethod
@@ -405,7 +452,11 @@ class Detection(object):
         total_blank_line = 0
         total_file = 0
         type_num = self.get_dict(extension, type_num)
+<<<<<<< HEAD
         filelists = self.project_information(self.directory, extension, True)
+=======
+        filelists = self.project_information(self.target_directory, extension, True)
+>>>>>>> upstream/master
         for filelist in filelists:
             try:
                 fileext = os.path.splitext(filelist)[1][1:]
