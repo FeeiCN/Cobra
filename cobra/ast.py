@@ -82,10 +82,17 @@ class AST(object):
         regex_functions = self.regex[self.language]['functions']
         param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
         p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result = p.communicate()
-        if len(result[0]):
+        result, error = p.communicate()
+        try:
+            result = result.decode('utf-8')
+            error = error.decode('utf-8')
+        except AttributeError as e:
+            pass
+        if len(error) is not 0:
+            logger.critical('[AST] {err}'.format(err=error.strip()))
+        if len(result):
             functions = {}
-            lines = str(result[0]).strip().split("\n")
+            lines = result.strip().split("\n")
             prev_function_name = ''
             for index, line in enumerate(lines):
                 line = line.strip()

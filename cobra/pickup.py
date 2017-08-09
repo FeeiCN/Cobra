@@ -181,7 +181,7 @@ class Directory(object):
             del self.result['no_extension']
         t2 = time.clock()
         # reverse list count
-        self.result = sorted(self.result.items(), key=lambda t : t[0], reverse=False)
+        self.result = sorted(self.result.items(), key=lambda t: t[0], reverse=False)
         return self.result, self.file_sum, t2 - t1
 
     def files(self, absolute_path, level=1):
@@ -235,9 +235,14 @@ class File(object):
         """
         param = ['sed', "-n", line_rule, self.file_path]
         p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result = p.communicate()
-        if len(result[0]):
-            content = result[0]
+        result, err = p.communicate()
+        if len(err) is not 0:
+            logger.critical('[PICKUP] {err}'.format(err=err.strip()))
+        if len(result):
+            try:
+                content = result.decode('utf-8')
+            except AttributeError as e:
+                content = result
             if content == '':
                 content = False
         else:
@@ -328,9 +333,16 @@ class Git(object):
 
         cmd = 'git pull origin ' + self.repo_branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-        (pull_out, pull_err) = p.communicate()
-        logger.info('[PICKUP] [PULL] ' + pull_out.strip())
-        logger.info('[PICKUP] [PULL] ' + pull_err.strip().replace('\n', ' >'))
+        pull_out, pull_err = p.communicate()
+
+        try:
+            pull_out = pull_out.decode('utf-8')
+            pull_err = pull_err.decode('utf-8')
+        except AttributeError as e:
+            pass
+
+        logger.info('[PICKUP] [PULL] {o}'.format(o=pull_out.strip()))
+        logger.info('[PICKUP] [PULL] {e}'.format(e=pull_err.strip().replace(u'\n', u' >')))
 
         self.parse_err(pull_err)
 
@@ -515,7 +527,11 @@ class Git(object):
         os.chdir(directory)
         cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path.replace(directory, ''))
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-        (checkout_out, checkout_err) = p.communicate()
+        checkout_out, checkout_err = p.communicate()
+        try:
+            checkout_out = checkout_out.decode('utf-8')
+        except AttributeError as e:
+            pass
         if len(checkout_out) != 0:
             group = re.findall(r'(?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})', checkout_out)
             if len(group) > 0:

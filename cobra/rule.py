@@ -179,7 +179,7 @@ class Rule(object):
             rule_info['id'] = cvi
             for x in xml_rule:
                 if x.tag == 'name':
-                    rule_info['name'] = x.get('value').encode('utf-8')
+                    rule_info['name'] = x.get('value')
                 if x.tag == 'language':
                     rule_info['language'] = x.get('value')
                 if x.tag == 'status':
@@ -204,7 +204,7 @@ class Rule(object):
                 if x.tag == 'level':
                     rule_info['level'] = x.get('value')
                 if x.tag == 'solution':
-                    rule_info['solution'] = x.text.strip().encode('utf-8')
+                    rule_info['solution'] = x.text.strip()
                 if x.tag == 'test':
                     for case in x:
                         case_ret = case.get('assert').lower()

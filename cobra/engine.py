@@ -131,7 +131,7 @@ def scan(target_directory, sid=None, special_rules=None):
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
-        commit = '@{author},{time}'.format(author=x.commit_author, time=x.commit_time)
+        commit = u'@{author},{time}'.format(author=x.commit_author, time=x.commit_time)
         level = score2level(x.level)
         cvi = x.id[0:3]
         if cvi in vulnerabilities:
@@ -216,6 +216,11 @@ class SingleRule(object):
             traceback.print_exc()
             logger.critical('match exception ({e})'.format(e=e.message))
             return None
+        try:
+            result = result.decode('utf-8')
+            error = error.decode('utf-8')
+        except AttributeError as e:
+            pass
         if len(error) is not 0:
             logger.critical('[CVI-{cvi}] [ORIGIN] [ERROR] {err}'.format(cvi=self.sr['id'], err=error.strip()))
         return result
@@ -231,7 +236,7 @@ class SingleRule(object):
             logger.debug('[CVI-{cvi}] [ORIGIN] NOT FOUND!'.format(cvi=self.sr['id']))
             return None
 
-        origin_vulnerabilities = str(origin_results).strip().split("\n")
+        origin_vulnerabilities = origin_results.strip().split("\n")
         for index, origin_vulnerability in enumerate(origin_vulnerabilities):
             origin_vulnerability = origin_vulnerability.strip()
             logger.debug('[CVI-{cvi}] [ORIGIN] {line}'.format(cvi=self.sr['id'], line=origin_vulnerability))
@@ -267,7 +272,7 @@ class SingleRule(object):
             # v.exe Binary file
             try:
                 mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
-                mr.file_path = single_match.split(':{n}:'.format(n=mr.line_number))[0]
+                mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
             except Exception as e:
                 logger.warning('match line parse exception')
                 mr.file_path = ''
