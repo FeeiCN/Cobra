@@ -11,7 +11,6 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-
 import requests
 from cobra.api import start
 import json

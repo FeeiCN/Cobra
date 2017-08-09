@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+    cobra
+    ~~~~~
+
+    Implements cobra main
+
+    :author:    BlBana <635373043@qq.com>
+    :homepage:  https://github.com/wufeifei/cobra
+    :license:   MIT, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 Feei. All rights reserved
+"""
 # -*- coding: utf-8 -*-
 import os
 import xml.etree.cElementTree as eT
@@ -9,7 +23,7 @@ class Dependencies(object):
         """
         :param target_directory: The project's path
         """
-        self.directory = target_directory
+        self.directory = os.path.abspath(target_directory)
         self._result = {}
         self._framework = []
         self.dependencies()

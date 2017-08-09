@@ -318,7 +318,6 @@ class Git(object):
     def pull(self):
         """Pull a repo from repo_address and repo_directory"""
         logger.info('[PICKUP] [PULL] pull repository...')
-
         if not self.__check_exist():
             return False, 'No local repo exist. Please clone first.'
 

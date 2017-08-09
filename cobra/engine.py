@@ -197,7 +197,6 @@ class SingleRule(object):
                     match = const.fpc_multi.replace('[f]', self.sr['match'])
                 else:
                     match = const.fpc_single.replace('[f]', self.sr['match'])
-
             filters = []
             for e in self.sr['extensions']:
                 filters.append('--include=*' + e)

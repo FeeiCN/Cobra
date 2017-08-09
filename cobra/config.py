@@ -44,7 +44,6 @@ class Config(object):
         if level1 is None and level2 is None:
             return
         config = ConfigParser()
-
         config.read(config_path)
         value = None
         try:
