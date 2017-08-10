@@ -14,3 +14,8 @@ curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "
 ```bash
 curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","sid": "e3ea91nd1f4"}' http://127.0.0.1/api/status
 ```
+
+## 查询扫描报告
+```bash
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","task_id": "your_task_id"}' http://127.0.0.1/api/report
+```
