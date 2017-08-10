@@ -40,6 +40,7 @@ class CveParse(object):
         self._result = {}  # {'cve_id':{'access-complexity':xxx, 'cpe':[]}} access-complexity and cpe may be None
         self._rule = {}
         self._scan_result = {}
+        self.res = True
         self.CVSS = "{http://scap.nist.gov/schema/cvss-v2/0.2}"
         self.VULN = "{http://scap.nist.gov/schema/vulnerability/0.4}"
         self.NS = "{http://scap.nist.gov/schema/feed/vulnerability/2.0}"
@@ -217,7 +218,6 @@ class CveParse(object):
             self.set_scan_result(cve, module_version)
         self.log_result()
 
-
     def set_scan_result(self, cves, module_version):
         """
         :param cves:
@@ -332,7 +332,7 @@ def scan(target_directory):
     if len(cve_files) == 0:
         logger.info("Can't find the rules, please update rules")
         return
-    pool = multiprocessing.Pool(processes=20)
+    pool = multiprocessing.Pool()
     for cve_file in cve_files:
         cve_path = os.path.join(rule_path, cve_file)
         pool.apply_async(scan_single, args=(target_directory, cve_path))
