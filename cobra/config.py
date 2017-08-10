@@ -27,7 +27,6 @@ if os.path.isdir(code_path) is not True:
 running_path = os.path.join(code_path, 'running')
 if os.path.isdir(running_path) is not True:
     os.mkdir(running_path)
-
 cobra_main = os.path.join(project_directory, 'cobra.py')
 core_path = os.path.join(project_directory, 'cobra')
 tests_path = os.path.join(project_directory, 'tests')
@@ -51,7 +50,7 @@ class Config(object):
             value = config.get(level1, level2)
         except Exception as e:
             traceback.print_exc()
-            logger.critical("./configs file configure failed.\nError: {0}\nSee Help: http://cobra-docs.readthedocs.io/en/latest/configuration/".format(e.message))
+            logger.critical("./configs file configure failed.\nError: {0}".format(e.message))
         self.value = value
 
     @staticmethod

@@ -31,7 +31,7 @@ class Running:
     def __init__(self, sid):
         self.sid = sid
 
-    def init_list(self, data=None):
+    def list(self, data=None):
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
         if data is None:
             with open(file_path) as f:
@@ -42,15 +42,16 @@ class Running:
             with open(file_path, 'w+') as f:
                 f.writelines(data)
 
-    def init(self):
-        data = {
-            'status': 'running',
-            'report': ''
-        }
-        data = json.dumps(data)
+    def status(self, data=None):
         file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
-        with open(file_path, 'w') as f:
-            f.writelines(data)
+        if data is None:
+            with open(file_path) as f:
+                result = f.readline()
+            return json.loads(result)
+        else:
+            data = json.dumps(data)
+            with open(file_path, 'w') as f:
+                f.writelines(data)
 
     def data(self, data=None):
         file_path = os.path.join(running_path, '{sid}_data'.format(sid=self.sid))
@@ -63,24 +64,12 @@ class Running:
             with open(file_path, 'w+') as f:
                 f.writelines(data)
 
-    def completed(self, report):
-        data = {
-            'status': 'done',
-            'report': report
-        }
-        data = json.dumps(data)
-        file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
-        with open(file_path, 'w+') as f:
-            f.writelines(data)
-
-    def get(self):
-        file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
-        with open(file_path) as f:
-            result = f.readline()
-        return json.loads(result)
-
-    def is_file(self):
-        file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
+    def is_file(self, is_data=False):
+        if is_data:
+            ext = 'data'
+        else:
+            ext = 'status'
+        file_path = os.path.join(running_path, '{sid}_{ext}'.format(sid=self.sid, ext=ext))
         return os.path.isfile(file_path)
 
 
@@ -181,9 +170,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None):
         logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
 
     # completed running data
-    if a_sid is not None:
-        report = '?sid={a_sid}'.format(a_sid=a_sid)
-        Running(a_sid).completed(report)
+    if s_sid is not None:
         Running(s_sid).data(data)
     return True
 

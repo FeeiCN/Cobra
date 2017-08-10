@@ -96,11 +96,17 @@ class AddJob(Resource):
         a_sid_data = {
             'sids': []
         }
+        running = Running(a_sid)
+
         # Write a_sid running data
-        Running(a_sid).init_list(a_sid_data)
+        running.list(a_sid_data)
 
         # Write a_sid running status
-        Running(a_sid).init()
+        data = {
+            'status': 'running',
+            'report': ''
+        }
+        running.status(data)
         return {"code": 1001, "result": result}
 
 
@@ -134,7 +140,17 @@ class JobStatus(Resource):
                 'report': ''
             }
         else:
-            result = running.get()
+            result = running.status()
+            if result['status'] == 'running':
+                r_data = running.list()
+                ret = True
+                logger.info(r_data['sids'])
+                for s in r_data['sids']:
+                    if Running(s).is_file(True) is False:
+                        ret = False
+                if ret:
+                    result['status'] = 'done'
+                    running.status(result)
             data = {
                 'code': 1001,
                 'msg': 'success',
