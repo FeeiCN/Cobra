@@ -23,7 +23,7 @@ from .utils import Tool
 from .log import logger
 from .config import running_path
 from .result import VulnerabilityResult
-from .ast import AST
+from .cast import CAST
 from prettytable import PrettyTable
 
 
@@ -516,7 +516,7 @@ class Core(object):
             found_vul = True
             if self.rule_repair is not None:
                 logger.debug('[VERIFY-REPAIR]')
-                ast = AST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                 is_repair, data = ast.match(self.rule_repair, self.repair_block)
                 if is_repair:
                     # fixed
@@ -539,7 +539,7 @@ class Core(object):
             found_vul = False
             if self.is_can_parse():
                 try:
-                    ast = AST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                    ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
                     if self.rule_match2 is not None:
                         is_match, data = ast.match(self.rule_match2, self.rule_match2_block)

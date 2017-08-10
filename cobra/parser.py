@@ -11,10 +11,6 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import sys
-
-sys.path.append('..')
-
 from phply.phplex import lexer
 from phply.phpparse import make_parser
 
