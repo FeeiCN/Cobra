@@ -16,27 +16,43 @@ from .utils import ParseArgs
 from .detection import Detection
 from .engine import scan, Running
 from .log import logger
+from .utils import md5, random_generator
 
 
-def start(target, formatter, output, special_rules, sid=None):
+def get_sid(target, is_a_sid=False):
+    target = target.encode('utf-8')
+    if isinstance(target, list):
+        target = ';'.join(target)
+    sid = md5(target)[:5]
+    if is_a_sid:
+        pre = 'a'
+    else:
+        pre = 's'
+    sid = '{p}{sid}{r}'.format(p=pre, sid=sid, r=random_generator())
+    return sid.lower()
+
+
+def start(target, formatter, output, special_rules, a_sid=None):
     """
     Start CLI
     :param target: File, FOLDER, GIT
     :param formatter:
     :param output:
     :param special_rules:
-    :param sid:
+    :param a_sid: all scan id
     :return:
     """
+    # generate single scan id
+    s_sid = get_sid(target)
+    r = Running(a_sid)
+    data = r.init_list()
+    data['sids'].append(s_sid)
+    r.init_list(data)
+
     # parse target mode and output mode
-    pa = ParseArgs(target, formatter, output, special_rules, sid=None)
+    pa = ParseArgs(target, formatter, output, special_rules, a_sid=None)
     target_mode = pa.target_mode
     output_mode = pa.output_mode
-
-    # init running data
-    if sid is not None:
-        running = Running(sid)
-        running.init()
 
     # target directory
     target_directory = pa.target_directory(target_mode)
@@ -56,4 +72,4 @@ def start(target, formatter, output, special_rules, sid=None):
         logger.info('[CLI] [SPECIAL-RULE] only scan used by {r}'.format(r=','.join(pa.special_rules)))
 
     # scan
-    scan(target_directory, sid, pa.special_rules)
+    scan(target_directory, a_sid, s_sid, pa.special_rules)

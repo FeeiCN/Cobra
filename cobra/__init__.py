@@ -18,6 +18,8 @@ import argparse
 import logging
 from .log import logger
 from . import cli, api, config
+from .cli import get_sid
+from .engine import Running
 
 from .__version__ import __title__, __introduction__, __url__, __version__
 from .__version__ import __author__, __author_email__, __license__
@@ -62,7 +64,18 @@ def main():
         api.start(args.host, args.port, args.debug)
     else:
         logger.debug('[INIT] start scanning...')
-        cli.start(args.target, args.format, args.output, args.special_rules, args.sid)
+
+        # Native CLI mode
+        if args.sid is None:
+            a_sid = get_sid(args.target, True)
+            data = {
+                'sids': []
+            }
+            Running(a_sid).init_list(data)
+        else:
+            # API call CLI mode
+            a_sid = args.sid
+        cli.start(args.target, args.format, args.output, args.special_rules, a_sid)
     t2 = time.clock()
     logger.info('[INIT] Done! TC:{TC}s'.format(TC=t2 - t1))
 

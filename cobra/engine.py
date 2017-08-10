@@ -30,7 +30,17 @@ from prettytable import PrettyTable
 class Running:
     def __init__(self, sid):
         self.sid = sid
-        self.running_path = os.path.join(running_path, sid)
+
+    def init_list(self, data=None):
+        file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
+        if data is None:
+            with open(file_path) as f:
+                result = f.readline()
+            return json.loads(result)
+        else:
+            data = json.dumps(data)
+            with open(file_path, 'w+') as f:
+                f.writelines(data)
 
     def init(self):
         data = {
@@ -38,8 +48,20 @@ class Running:
             'report': ''
         }
         data = json.dumps(data)
-        with open(self.running_path, 'w') as f:
+        file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
+        with open(file_path, 'w') as f:
             f.writelines(data)
+
+    def data(self, data=None):
+        file_path = os.path.join(running_path, '{sid}_data'.format(sid=self.sid))
+        if data is None:
+            with open(file_path) as f:
+                result = f.readline()
+            return json.loads(result)
+        else:
+            data = json.dumps(data)
+            with open(file_path, 'w+') as f:
+                f.writelines(data)
 
     def completed(self, report):
         data = {
@@ -47,16 +69,19 @@ class Running:
             'report': report
         }
         data = json.dumps(data)
-        with open(self.running_path, 'w+') as f:
+        file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
+        with open(file_path, 'w+') as f:
             f.writelines(data)
 
     def get(self):
-        with open(self.running_path) as f:
+        file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
+        with open(file_path) as f:
             result = f.readline()
         return json.loads(result)
 
     def is_file(self):
-        return os.path.isfile(self.running_path)
+        file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
+        return os.path.isfile(file_path)
 
 
 def score2level(score):
@@ -84,7 +109,7 @@ def scan_single(target_directory, single_rule):
         traceback.print_exc()
 
 
-def scan(target_directory, sid=None, special_rules=None):
+def scan(target_directory, a_sid=None, s_sid=None, special_rules=None):
     r = Rule()
     vulnerabilities = r.vulnerabilities
     languages = r.languages
@@ -126,6 +151,7 @@ def scan(target_directory, sid=None, special_rules=None):
     pool.join()
 
     # print
+    data = []
     table = PrettyTable(['#', 'CVI', 'VUL', 'Rule(ID/Name)', 'Lang', 'Level-Score', 'Target-File:Line-Number', 'Commit(Author/Time)', 'Source Code Content'])
     table.align = 'l'
     trigger_rules = []
@@ -143,6 +169,7 @@ def scan(target_directory, sid=None, special_rules=None):
         except AttributeError as e:
             code_content = x.code_content.decode('utf-8')[:100].strip()
         row = [idx + 1, x.id, cvn, x.rule_name, x.language, level, trigger, commit, code_content]
+        data.append(row)
         table.add_row(row)
         if x.id not in trigger_rules:
             logger.debug(' > trigger rule (CVI-{cvi})'.format(cvi=x.id))
@@ -154,10 +181,10 @@ def scan(target_directory, sid=None, special_rules=None):
         logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
 
     # completed running data
-    if sid is not None:
-        report = 'http://xxx.test.com'
-        running = Running(sid)
-        running.completed(report)
+    if a_sid is not None:
+        report = '?sid={a_sid}'.format(a_sid=a_sid)
+        Running(a_sid).completed(report)
+        Running(s_sid).data(data)
     return True
 
 
