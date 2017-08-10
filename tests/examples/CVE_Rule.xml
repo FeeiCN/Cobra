@@ -1,7 +1,5 @@
 <cobra document="https://github.com/wufeifei/cobra">
 	<cve id="CVE-2017-9994">
-		<level>MEDIUM</level>
-		<products>
 			<product>ffmpeg:3.2</product>
 			<product>ffmpeg:3.2.3</product>
 			<product>ffmpeg:3.0.5</product>
@@ -25,11 +23,8 @@
 			<product>ffmpeg:3.1.6</product>
 			<product>ffmpeg:3.0.7</product>
 			<product>ffmpeg:2.8.11</product>
-		</products>
 	</cve>
 	<cve id="CVE-2017-5645">
-		<level>unknown</level>
-		<products>
 			<product>log4j:2.0.1</product>
 			<product>log4j:2.5</product>
 			<product>log4j:2.6</product>
@@ -57,14 +52,10 @@
 			<product>log4j:2.0</product>
 			<product>log4j:2.0</product>
 			<product>log4j:2.0</product>
-		</products>
 	</cve>
 	<cve id="CVE-2017-5338">
-		<level>unknown</level>
 	</cve>
 	<cve id="CVE-2017-8564">
-		<level>LOW</level>
-		<products>
 			<product>windows_10:1607</product>
 			<product>windows_server_2012:-</product>
 			<product>windows_8.1</product>
@@ -77,6 +68,5 @@
 			<product>windows_rt_8.1</product>
 			<product>windows_server_2016</product>
 			<product>windows_server_2012:r2</product>
-		</products>
 	</cve>
 </cobra>
