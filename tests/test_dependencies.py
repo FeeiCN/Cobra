@@ -15,10 +15,11 @@
 import os
 import xml.etree.ElementTree as eT
 from cobra.dependencies import Dependencies
+from cobra.config import project_directory
 
 
-requirements = './vulnerabilities/requirements.txt'
-pom = './vulnerabilities/pom.xml'
+requirements = project_directory+'/tests/vulnerabilities/requirements.txt'
+pom = project_directory+'/tests/vulnerabilities/pom.xml'
 
 
 def test_find_file():
