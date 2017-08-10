@@ -194,7 +194,7 @@ class CveParse(object):
         cpe_list = []
         products = cve_child.iter('product')
         for product in products:
-            cpe_list.append(product.text)
+            cpe_list.append(product.text.lower())
         rule_info['cpe'] = cpe_list
         return rule_info
 
@@ -213,9 +213,10 @@ class CveParse(object):
         dependency = Dependencies(self.pro_file)
         project_info = dependency.get_result
         for pro_info in project_info:
-            module_version = pro_info + ':' + project_info[pro_info]
+            module_version = pro_info.lower() + ':' + project_info[pro_info]
             self.set_scan_result(cve, module_version)
         self.log_result()
+
 
     def set_scan_result(self, cves, module_version):
         """
@@ -237,7 +238,7 @@ class CveParse(object):
                 level = self._scan_result[module_][cve_id]
                 logger.warning('Find the module ' + module_ + ' have ' + cve_id +',level: ' +level)
             count = len(self._scan_result[module_])
-            logger.warning('The ' + module_ + ' module have ' + str(count) + ' CVE Vul')
+            logger.warning('The ' + module_ + ' module have ' + str(count) + ' CVE Vul(s)')
 
     def get_scan_result(self):
         return self._scan_result
@@ -247,15 +248,16 @@ def rule_parse():
     if is_update():
         gz_files = download_rule_gz()
         un_gz(gz_files)
-        pool = multiprocessing.Pool(processes=100)
+        pool = multiprocessing.Pool(processes=50)
         for year in range(2002, datetime.datetime.now().year+1):
             cve_xml = "../rules/%d.xml" % year
             pool.apply_async(rule_single, args=(cve_xml, year))
         pool.close()
         pool.join()
         for year in range(2002, datetime.datetime.now().year+1):
-            os.remove("../rules/%d.xml" % year)
+            os.remove(project_directory+"/rules/%d.xml" % year)
         logger.info("The rule update success, start scan cve vuls")
+        return True
     else:
         logger.info("The CVE Rule not update, start scan cve vuls")
 
@@ -267,11 +269,11 @@ def download_rule_gz():
     for year in range(2002, datetime.datetime.now().year+1):
         url = "https://static.nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-" + str(year) + ".xml.gz"
         logger.info("start download " + str(year) + ".xml.gz")
-        thread = threading.Thread(target=urllib.urlretrieve, args=(url, "../rules/"+str(year)+".xml.gz"))
+        thread = threading.Thread(target=urllib.urlretrieve, args=(url, project_directory+"/rules/"+str(year)+".xml.gz"))
         thread.start()
         threads.append(thread)
         logger.info('CVE-' + str(year) + " is download success")
-        files.append(os.path.join(project_directory, "rules/" + str(year) + ".xml.gz"))
+        files.append(project_directory+"/rules/" + str(year) + ".xml.gz")
     for t in threads:
         t.join()
     end_time = datetime.datetime.now()
@@ -291,6 +293,7 @@ def un_gz(gz_files):
         os.remove(gz_file)
     end_time = datetime.datetime.now()
     logger.info("Decompress success, use time:%ds" % (end_time-start_time).seconds)
+    return True
 
 
 def rule_single(target_directory, year):
@@ -329,12 +332,13 @@ def scan(target_directory):
     if len(cve_files) == 0:
         logger.info("Can't find the rules, please update rules")
         return
-    pool = multiprocessing.Pool(processes=50)
+    pool = multiprocessing.Pool(processes=20)
     for cve_file in cve_files:
         cve_path = os.path.join(rule_path, cve_file)
         pool.apply_async(scan_single, args=(target_directory, cve_path))
     pool.close()
     pool.join()
+    return True
 
 
 def scan_single(target_directory, cve_path):
@@ -344,3 +348,4 @@ def scan_single(target_directory, cve_path):
     :return:
     """
     CveParse('.', target_directory).scan_cve(cve_path)
+    return True
