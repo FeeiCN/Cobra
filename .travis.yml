@@ -9,6 +9,7 @@ python:
   - "nightly"
 install:
   - pip install coveralls
+  - pip install -r requirements.txt
 script:
   - py.test
   - coverage run --source=cobra -m pytest
