@@ -16,7 +16,7 @@
 - 持续维护更新
 
 ## Cobra支持哪些开发语言？
-> 目前Cobra主要支持PHP、Java和Objective-C，并持续更新规则支持更多语言。
+> 目前Cobra主要支持PHP、Java和Objective-C三种主要语言及其它数十种文件类型，并持续更新规则支持更多开发语言。
 
 ## Cobra能发现哪些漏洞？
 > 覆盖所有常见漏洞
