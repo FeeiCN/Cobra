@@ -21,7 +21,7 @@ from flask_restful import Api, Resource
 from .engine import Running
 from .log import logger
 from .utils import md5, random_generator
-from .config import Config, cobra_main
+from .config import Config
 
 try:
     # Python 3
@@ -51,17 +51,15 @@ class AddJob(Resource):
         if not data or data == "":
             return {"code": 1003, "result": "Only support json, please post json data."}
 
-        key = Config(level1="cobra", level2="secret_key").value
-        _key = data.get("key")
         target = data.get("target")
         formatter = data.get("formatter")
         output = data.get("output")
         rule = data.get("rule")
 
-        if not _key or _key == "":
-            return {"code": 1002, "result": "Key cannot be empty."}
-        elif not _key == key:
-            return {"code": 4002, "result": "Key verify failed."}
+        is_valid_key = key_verify(data=data)
+
+        if is_valid_key is not True:
+            return is_valid_key
 
         if not target or target == "":
             return {"code": 1002, "result": "URL cannot be empty."}
@@ -82,8 +80,11 @@ class AddJob(Resource):
                 arg = (t, formatter, output, rule, sid)
                 producer(task=arg)
 
+            task_id = "something"
+
             result = {
                 "msg": "Add scan job successfully.",
+                "task_id": task_id,
                 "sid": sids,
             }
         else:
@@ -104,19 +105,17 @@ class JobStatus(Resource):
         if not data or data == "":
             return {"code": 1003, "result": "Only support json, please post json data."}
 
-        sid = str(data.get("sid"))  # 需要拼接入路径，转为字符串
+        sid = data.get("sid")  # 需要拼接入路径，转为字符串
 
-        key = Config(level1="cobra", level2="secret_key").value
-        _key = data.get("key")
+        is_valid_key = key_verify(data=data)
 
-        if not _key or _key == "":
-            return {"code": 1002, "result": "Key cannot be empty."}
-        elif not _key == key:
-            return {"code": 4002, "result": "Key verify failed."}
+        if is_valid_key is not True:
+            return is_valid_key
 
         if not sid or sid == "":
             return {"code": 1002, "result": "sid is required."}
 
+        sid = str(data.get("sid"))  # 需要拼接入路径，转为字符串
         running = Running(sid)
         if running.is_file() is not True:
             data = {
@@ -138,10 +137,51 @@ class JobStatus(Resource):
         return data
 
 
+class ReportStatus(Resource):
+    @staticmethod
+    def post():
+        data = request.json
+        if not data or data == "":
+            return {"code": 1003, "result": "Only support json, please post json data."}
+
+        task_id = data.get("task_id")
+        is_valid_key = key_verify(data=data)
+
+        if is_valid_key is not True:
+            return is_valid_key
+
+        if not task_id or task_id == '':
+            return {'code': 1002, 'result': 'task_id is required.'}
+
+        task_id = str(data.get("task_id"))
+        report = 'https://xxx.test.com'
+
+        return {
+            "code": 1001,
+            "msg": "task done",
+            "task_id": task_id,
+            "report": report,
+        }
+
+
 def get_sid(target):
     sid = md5(target)[:5]
     sid = '{sid}{r}'.format(sid=sid, r=random_generator())
     return sid.lower()
+
+
+def key_verify(data):
+    key = Config(level1="cobra", level2="secret_key").value
+    _key = data.get("key")
+
+    if _key == key:
+        return True
+    elif not _key or _key == "":
+        return {"code": 1002, "result": "Key cannot be empty."}
+    elif not _key == key:
+        return {"code": 4002, "result": "Key verify failed."}
+    else:
+        return {"code": 4002, "result": "Unknown key verify error."}
 
 
 q = queue.Queue()
@@ -154,6 +194,7 @@ def start(host, port, debug):
 
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
+    api.add_resource(ReportStatus, '/api/report')
 
     # 消费者线程
     threads = []
