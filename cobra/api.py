@@ -16,11 +16,11 @@ import errno
 import multiprocessing
 import threading
 from . import cli
+from .cli import get_sid
 from flask import Flask, request
 from flask_restful import Api, Resource
 from .engine import Running
 from .log import logger
-from .utils import md5, random_generator
 from .config import Config
 
 try:
@@ -71,30 +71,34 @@ class AddJob(Resource):
         if not rule or rule == '':
             rule = ''
 
+        # Report All Id
+        a_sid = get_sid(target, True)
         if isinstance(target, list):
-            sids = list()
             for t in target:
                 # Scan
-                sid = get_sid(t)
-                sids.append(sid)
-                arg = (t, formatter, output, rule, sid)
+                arg = (t, formatter, output, rule, a_sid)
                 producer(task=arg)
-
-            task_id = "something"
 
             result = {
                 "msg": "Add scan job successfully.",
-                "task_id": task_id,
-                "sid": sids,
+                "sid": a_sid,
             }
         else:
-            sid = get_sid(target)
-            arg = (target, formatter, output, rule, sid)
+            arg = (target, formatter, output, rule, a_sid)
             producer(task=arg)
             result = {
                 "msg": "Add scan job successfully.",
-                "sid": sid,
+                "sid": a_sid,
             }
+
+        a_sid_data = {
+            'sids': []
+        }
+        # Write a_sid running data
+        Running(a_sid).init_list(a_sid_data)
+
+        # Write a_sid running status
+        Running(a_sid).init()
         return {"code": 1001, "result": result}
 
 
@@ -162,12 +166,6 @@ class ReportStatus(Resource):
             "task_id": task_id,
             "report": report,
         }
-
-
-def get_sid(target):
-    sid = md5(target)[:5]
-    sid = '{sid}{r}'.format(sid=sid, r=random_generator())
-    return sid.lower()
 
 
 def key_verify(data):

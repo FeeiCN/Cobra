@@ -35,7 +35,7 @@ OUTPUT_MODE_STREAM = 'stream'
 
 
 class ParseArgs(object):
-    def __init__(self, target, formatter, output, special_rules=None, sid=None):
+    def __init__(self, target, formatter, output, special_rules=None, a_sid=None):
         self.target = target
         self.formatter = formatter
         self.output = output
@@ -61,7 +61,7 @@ class ParseArgs(object):
                     logger.critical('[PARSE-ARGS] Exception special rule name(e.g: CVI-110001): {sr}'.format(sr=special_rules))
         else:
             self.special_rules = None
-        self.sid = sid
+        self.sid = a_sid
 
     @staticmethod
     def _check_rule_name(name):
