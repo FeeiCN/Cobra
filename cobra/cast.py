@@ -4,7 +4,7 @@
     ast
     ~~~
 
-    Implements AST(Abstract Syntax Tree)
+    Implements CAST(Cross Abstract Syntax Tree)
 
     :author:    Feei <feei@feei.cn>
     :homepage:  https://github.com/wufeifei/cobra
@@ -20,7 +20,7 @@ from .rule import block
 from .pickup import File
 
 
-class AST(object):
+class CAST(object):
     languages = ['php', 'java', 'm']
 
     def __init__(self, rule, target_directory, file_path, line, code, ):
