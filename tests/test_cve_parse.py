@@ -14,13 +14,13 @@
 """
 import os
 import xml.etree.ElementTree as eT
-from cobra.cve_parse import CveParse
+from cobra.cve_parse import CveParse, project_directory
 
 
-target_directory = './vulnerabilities/requirements.txt'
-rule_path = './examples/cve.xml'
-rule_cve_path = '../rules/CVI-999999.xml'
-rule_cve_one = '../rules/CVI-999one.xml'
+target_directory = project_directory + '/tests/vulnerabilities/requirements.txt'
+rule_path = project_directory + '/tests/examples/cve.xml'
+rule_cve_path = project_directory + '/rules/CVI-999999.xml'
+rule_cve_one = project_directory + '/rules/CVI-999one.xml'
 
 
 def test_cve_parse():
@@ -56,6 +56,7 @@ def test_get_result():
 def test_rule_xml():
     cve = CveParse(rule_path, target_directory)
     cve.rule_xml()
+    print rule_cve_one
     assert os.path.exists(rule_cve_one)
     os.remove(rule_cve_one)
 

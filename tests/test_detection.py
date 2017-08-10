@@ -14,10 +14,11 @@
 """
 import xml.etree.ElementTree as eT
 from cobra.detection import Detection
+from cobra.config import project_directory
 
 
-vul_path = './vulnerabilities/'
-examples_path = './examples'
+vul_path = project_directory+'/tests/vulnerabilities/'
+examples_path = project_directory+'/tests/examples'
 
 
 def test_framework():
@@ -53,9 +54,8 @@ def test_get_dict():
 
 
 def test_project_information():
-    absolute_path = './examples'
     extension = ['php', 'js', 'java']
-    allfiles = Detection.project_information(absolute_path, extension)
+    allfiles = Detection.project_information(examples_path, extension)
     assert examples_path+'/cloc.html' in allfiles
 
 

@@ -117,6 +117,7 @@ class CveParse(object):
             return cve_info
         else:
             cve_info['cpe'] = cpe_list
+
         if access_complexity is None:
             cve_info['level'] = 'unknown'
         else:
@@ -146,6 +147,7 @@ class CveParse(object):
         for cve_id in self._result.keys():
             cve_child = eT.Element('cve')  # cve Ele
             cve_child.set('id', cve_id)
+            cve_child.set('level', self._result[cve_id]['level'])
             if 'cpe' in self._result[cve_id]:
                 for product_ in self._result[cve_id]['cpe']:
                     product = eT.Element('product')
@@ -154,7 +156,8 @@ class CveParse(object):
             cobra.append(cve_child)  # cve in cobra
         self.pretty(cobra)
         tree = eT.ElementTree(cobra)
-        tree.write('../rules/CVI-999' + str(self.year)[1:] + '.xml')
+        rule_path = project_directory + '/rules/CVI-999'
+        tree.write(rule_path + str(self.year)[1:] + '.xml')
         endtime = datetime.datetime.now()
         logger.info('CVE-999' + str(self.year)[1:] + '.xml Rule update succeeds, times:%ds' % (endtime - starttime).seconds)
 
@@ -180,7 +183,9 @@ class CveParse(object):
         cves = root.iter('cve')
         for cve_child in cves:
             cve_id = cve_child.attrib['id']
+            cve_level = cve_child.attrib['level']
             rule_info = self.rule_info(cve_child)
+            rule_info['level'] = cve_level
             self._rule[cve_id] = rule_info
 
     @staticmethod
@@ -218,10 +223,10 @@ class CveParse(object):
         :param module_version:
         :return:set the scan result
         """
-        scan_cves = []
+        scan_cves = {}
         for cve_child in cves:
             if module_version in cves[cve_child]['cpe']:
-                scan_cves.append(cve_child)
+                scan_cves[cve_child] = cves[cve_child]['level']
         if len(scan_cves):
             self._scan_result[module_version] = scan_cves
 
@@ -229,7 +234,8 @@ class CveParse(object):
         for module_ in self._scan_result:
             for cve_child in self._scan_result[module_]:
                 cve_id = cve_child
-                logger.warning('Find the module ' + module_ + ' have ' + cve_id)
+                level = self._scan_result[module_][cve_id]
+                logger.warning('Find the module ' + module_ + ' have ' + cve_id +',level: ' +level)
             count = len(self._scan_result[module_])
             logger.warning('The ' + module_ + ' module have ' + str(count) + ' CVE Vul')
 
@@ -320,6 +326,9 @@ def scan(target_directory):
     for cvi_file in files:
         if cvi_file.startswith('CVI-999'):
             cve_files.append(cvi_file)
+    if len(cve_files) == 0:
+        logger.info("Can't find the rules, please update rules")
+        return
     pool = multiprocessing.Pool(processes=50)
     for cve_file in cve_files:
         cve_path = os.path.join(rule_path, cve_file)
@@ -329,4 +338,9 @@ def scan(target_directory):
 
 
 def scan_single(target_directory, cve_path):
+    """
+    :param target_directory: scan path
+    :param cve_path: CVI-999***.xml
+    :return:
+    """
     CveParse('.', target_directory).scan_cve(cve_path)
