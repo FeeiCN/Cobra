@@ -109,10 +109,9 @@ class JobStatus(Resource):
         if not data or data == "":
             return {"code": 1003, "result": "Only support json, please post json data."}
 
-        sid = data.get("sid")  # 需要拼接入路径，转为字符串
+        sid = data.get("sid")
 
         is_valid_key = key_verify(data=data)
-
         if is_valid_key is not True:
             return is_valid_key
 
@@ -141,33 +140,6 @@ class JobStatus(Resource):
         return data
 
 
-class ReportStatus(Resource):
-    @staticmethod
-    def post():
-        data = request.json
-        if not data or data == "":
-            return {"code": 1003, "result": "Only support json, please post json data."}
-
-        task_id = data.get("task_id")
-        is_valid_key = key_verify(data=data)
-
-        if is_valid_key is not True:
-            return is_valid_key
-
-        if not task_id or task_id == '':
-            return {'code': 1002, 'result': 'task_id is required.'}
-
-        task_id = str(data.get("task_id"))
-        report = 'https://xxx.test.com'
-
-        return {
-            "code": 1001,
-            "msg": "task done",
-            "task_id": task_id,
-            "report": report,
-        }
-
-
 def key_verify(data):
     key = Config(level1="cobra", level2="secret_key").value
     _key = data.get("key")
@@ -192,7 +164,6 @@ def start(host, port, debug):
 
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
-    api.add_resource(ReportStatus, '/api/report')
 
     # 消费者线程
     threads = []

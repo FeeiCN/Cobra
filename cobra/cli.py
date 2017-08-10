@@ -20,7 +20,7 @@ from .utils import md5, random_generator
 
 
 def get_sid(target, is_a_sid=False):
-    target = target.encode('utf-8')
+    # target = target.encode('utf-8')
     if isinstance(target, list):
         target = ';'.join(target)
     sid = md5(target)[:5]

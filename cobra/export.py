@@ -17,6 +17,7 @@ import os
 import csv
 from prettytable import PrettyTable
 from .log import logger
+from .config import running_path
 from .templite import Templite
 
 try:
@@ -156,54 +157,38 @@ def flatten(input_list):
     return output_list
 
 
-def write_to_file(target, find_vuls, output_format="", filename=""):
+def write_to_file(sid, output_format="", filename=""):
     """
     Export scan result to file.
-    :param target: target URL
-    :param find_vuls: list of scan result
+    :param sid: scan sid
     :param output_format: output format
     :param filename: filename to save
     :return:
     """
-
-    # find_vuls
-    """
-    [
-        [mr, mr, mr],
-        [mr, mr, mr],
-        [mr, mr, mr]
-    ]
-
-    where
-    mr = {"file_path": "xxxx", "code_content": "<?php phpinfo();?>"}, which is a dict.
-    """
-
-    vul_list = flatten(find_vuls)
-    write_obj = {
-        "target": target,
-        "vulnerabilities": vul_list,
-    }
+    data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+    with open(data_file, 'r') as f:
+        scan_data = json.load(f)
 
     if output_format == "":
-        logger.info("Vulnerabilities\n" + str(dict_to_pretty_table(vul_list)))
+        logger.info("Vulnerabilities\n" + str(dict_to_pretty_table(scan_data.get('vulnerabilities'))))
 
     elif output_format == "json" or output_format == "JSON":
         if not os.path.exists(filename):
             with open(filename, "w") as f:
                 f.write("""{"results":[\n""")
-                f.write(dict_to_json(write_obj))
+                f.write(dict_to_json(scan_data))
                 f.write("\n]}")
         else:
             # 在倒数第二行插入
             with open(filename, "r") as f:
                 results = f.readlines()
-                results.insert(len(results) - 1, ",\n" + dict_to_json(write_obj) + "\n")
+                results.insert(len(results) - 1, ",\n" + dict_to_json(scan_data) + "\n")
             with open(filename, "w") as f:
                 f.writelines(results)
 
     elif output_format == "xml" or output_format == "XML":
         xml_obj = {
-            "result": write_obj,
+            "result": scan_data,
         }
         if not os.path.exists(filename):
             with open(filename, "w") as f:
@@ -220,12 +205,12 @@ def write_to_file(target, find_vuls, output_format="", filename=""):
                 f.writelines(results)
 
     elif output_format == "csv" or output_format == "CSV":
-        for vul in vul_list:
-            vul["target"] = target
-        dict_to_csv(vul_list, filename)
+        for vul in scan_data.get('vulnerabilities'):
+            vul["target"] = scan_data.get('target')
+        dict_to_csv(scan_data.get('vulnerabilities'), filename)
 
     elif output_format == "html" or output_format == "HTML":
-        html_obj = [write_obj]
+        html_obj = [scan_data]
         if not os.path.exists(filename):
             with open(filename, "w") as f:
                 f.write(dict_to_html(html_obj))
@@ -236,7 +221,7 @@ def write_to_file(target, find_vuls, output_format="", filename=""):
                 old_vul_list = re.findall(r"var vul_list_origin = (.*?\}\]);", results)
                 old_vul_list = eval(old_vul_list[0].replace("null", "None"))
                 # 添加新的扫描结果
-                old_vul_list.append(write_obj)
+                old_vul_list.append(scan_data)
                 html_obj = old_vul_list
             with open(filename, "w") as f:
                 f.write(dict_to_html(html_obj))

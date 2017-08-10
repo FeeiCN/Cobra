@@ -184,7 +184,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None):
     if a_sid is not None:
         report = '?sid={a_sid}'.format(a_sid=a_sid)
         Running(a_sid).completed(report)
-        Running(s_sid).data(data)
+        Running(s_sid).data({'target': target_directory, 'vulnerabilities': [x.convert_to_dict() for x in find_vulnerabilities]})
     return True
 
 
