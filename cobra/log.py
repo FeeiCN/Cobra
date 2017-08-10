@@ -23,7 +23,7 @@ from logging import handlers
 # Copyright (C) 2010-2012 Vinay Sajip. All rights reserved. Licensed under the new BSD license.
 #
 logger = logging.getLogger('CobraLog')
-log_path = os.path.join('/tmp/cobra', 'logs')
+log_path = '/tmp/cobra/logs'
 if os.path.isdir(log_path) is not True:
     os.mkdir(log_path)
 logfile = os.path.join(log_path, 'cobra.log')
