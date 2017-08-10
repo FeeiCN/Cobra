@@ -15,16 +15,14 @@ import json
 import re
 import os
 import csv
-from .log import logger
 from prettytable import PrettyTable
+from .log import logger
 from .templite import Templite
 
 try:
-    # python 3
-    import html
-except ImportError:
-    # python 2
     import cgi as html
+except ImportError:
+    import html
 
 
 def dict_to_xml(dict_obj, line_padding=""):

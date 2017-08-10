@@ -125,6 +125,7 @@ print("Text: " + $content);
 
 
 ## 六、Labels（标签）
+
 | ID | Label | Description(EN) | Description(CN) |
 |---|---|---|---|
 | 110 | MS | Misconfiguration | 错误的配置 |
