@@ -22,9 +22,6 @@ target_directory = project_directory + '/tests/vulnerabilities/requirements.txt'
 rule_path = project_directory + '/tests/examples/cve.xml'
 rule_cve_path = project_directory + '/rules/CVI-999999.xml'
 rule_cve_one = project_directory + '/rules/CVI-999one.xml'
-rule_2003 = project_directory + '/tests/examples/2003.xml.gz'
-rule_2004 = project_directory + '/tests/examples/2004.xml.gz'
-gz_files = [rule_2003, rule_2004]
 cve_file = project_directory + '/tests/examples/2003.xml'
 
 
