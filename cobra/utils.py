@@ -39,7 +39,7 @@ class ParseArgs(object):
         self.target = target
         self.formatter = formatter
         self.output = output
-        if special_rules is not None:
+        if special_rules is not None and special_rules is not '':
             self.special_rules = []
             extension = '.xml'
             if ',' in special_rules:
