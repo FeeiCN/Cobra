@@ -469,7 +469,7 @@ class Core(object):
         Whether to parse the parameter is controllable operation
         :return:
         """
-        for language in AST.languages:
+        for language in CAST.languages:
             if self.file_path[-len(language):].lower() == language:
                 return True
         return False
