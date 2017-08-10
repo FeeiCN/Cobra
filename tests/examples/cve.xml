@@ -1,5 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <nvd xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" nvd_xml_version="2.0" pub_date="2017-07-25T03:00:00" xsi:schemaLocation="http://scap.nist.gov/schema/patch/0.1 https://scap.nist.gov/schema/nvd/patch_0.1.xsd http://scap.nist.gov/schema/feed/vulnerability/2.0 https://scap.nist.gov/schema/nvd/nvd-cve-feed_2.0.xsd http://scap.nist.gov/schema/scap-core/0.1 https://scap.nist.gov/schema/nvd/scap-core_0.1.xsd">
+    <entry id="CVE-1999-0026">
+    <vuln:vulnerable-configuration id="http://nvd.nist.gov/">
+      <cpe-lang:logical-test operator="OR" negate="false">
+        <cpe-lang:fact-ref name="cpe:/o:sgi:irix"/>
+      </cpe-lang:logical-test>
+    </vuln:vulnerable-configuration>
+    <vuln:vulnerable-software-list>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:windows:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+    </vuln:vulnerable-software-list>
+    <vuln:cve-id>CVE-1999-0026</vuln:cve-id>
+    <vuln:published-datetime>1997-07-16T00:00:00.000-04:00</vuln:published-datetime>
+    <vuln:last-modified-datetime>2008-09-09T08:33:35.307-04:00</vuln:last-modified-datetime>
+    <vuln:cvss>
+      <cvss:base_metrics>
+        <cvss:score>4.6</cvss:score>
+        <cvss:access-vector>LOCAL</cvss:access-vector>
+        <cvss:access-complexity>LOW</cvss:access-complexity>
+        <cvss:authentication>NONE</cvss:authentication>
+        <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
+        <cvss:integrity-impact>PARTIAL</cvss:integrity-impact>
+        <cvss:availability-impact>PARTIAL</cvss:availability-impact>
+        <cvss:source>http://nvd.nist.gov</cvss:source>
+        <cvss:generated-on-datetime>2004-01-01T00:00:00.000-05:00</cvss:generated-on-datetime>
+      </cvss:base_metrics>
+    </vuln:cvss>
+    <vuln:security-protection>ALLOWS_USER_ACCESS</vuln:security-protection>
+    <vuln:summary>root privileges via buffer overflow in pset command on SGI IRIX systems.</vuln:summary>
+  </entry>
     <entry id="CVE-2017-5645">
         <vuln:vulnerable-configuration id="http://nvd.nist.gov/">
           <cpe-lang:logical-test operator="OR" negate="false">
