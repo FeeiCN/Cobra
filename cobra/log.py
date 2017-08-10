@@ -23,10 +23,10 @@ from logging import handlers
 # Copyright (C) 2010-2012 Vinay Sajip. All rights reserved. Licensed under the new BSD license.
 #
 logger = logging.getLogger('CobraLog')
-
-if not os.path.isdir('logs'):
-    os.mkdir('logs')
-logfile = os.path.join('logs', 'cobra.log')
+log_path = os.path.join('/tmp/cobra', 'logs')
+if os.path.isdir(log_path) is not True:
+    os.mkdir(log_path)
+logfile = os.path.join(log_path, 'cobra.log')
 fh_format = logging.Formatter("[%(asctime)s] %(levelname)s [%(lineno)s] %(message)s")
 sh_format = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(message)s", "%H:%M:%S")
 
@@ -230,5 +230,6 @@ logger.addHandler(sh)
 # file handle
 fh = handlers.RotatingFileHandler(logfile, maxBytes=(1048576 * 5), backupCount=7)
 fh.setFormatter(fh_format)
+fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 logger.setLevel(logging.INFO)

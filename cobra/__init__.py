@@ -71,7 +71,12 @@ def main():
             data = {
                 'sids': []
             }
-            Running(a_sid).init_list(data)
+            Running(a_sid).list(data)
+            data = {
+                'status': 'running',
+                'report': ''
+            }
+            Running(a_sid).status(data)
         else:
             # API call CLI mode
             a_sid = args.sid

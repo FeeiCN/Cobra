@@ -14,6 +14,7 @@
 """
 import os
 import xml.etree.ElementTree as eT
+from cobra.cve_parse import *
 from cobra.cve_parse import CveParse, project_directory
 
 
@@ -21,6 +22,7 @@ target_directory = project_directory + '/tests/vulnerabilities/requirements.txt'
 rule_path = project_directory + '/tests/examples/cve.xml'
 rule_cve_path = project_directory + '/rules/CVI-999999.xml'
 rule_cve_one = project_directory + '/rules/CVI-999one.xml'
+cve_file = project_directory + '/tests/examples/2003.xml'
 
 
 def test_cve_parse():
@@ -87,10 +89,51 @@ def test_get_rule():
 def test_scan_cve():
     cve = CveParse(rule_path, target_directory)
     cve.scan_cve(rule_cve_path)
-    assert 'Flask:0.10.1' in cve.get_scan_result()
+    assert 'flask:0.10.1' in cve.get_scan_result()
 
 
 def test_get_scan_result():
     cve = CveParse(rule_path, target_directory)
     cve.scan_cve(rule_cve_path)
-    assert 'Flask:0.10.1' in cve.get_scan_result()
+    assert 'flask:0.10.1' in cve.get_scan_result()
+
+
+def test_rule_parse_fun():
+    rule_parse()
+    assert os.path.exists(project_directory+'/rules/CVI-999999.xml')
+
+
+def test_download_rule_gz():
+    files = download_rule_gz()
+    assert isinstance(files, list)
+    for file_ in files:
+        os.remove(file_)
+
+
+def test_un_gz():
+    files = download_rule_gz()
+    res = un_gz(files)
+    assert res is True
+    for year in range(2002, datetime.datetime.now().year+1):
+        os.remove(project_directory+"/rules/%d.xml" % year)
+
+
+def test_rule_single():
+    rule_single(rule_cve_path, 2050)
+    assert os.path.exists(project_directory+'/rules/CVI-999050.xml')
+    os.remove(project_directory+'/rules/CVI-999050.xml')
+
+
+def test_is_update():
+    res = is_update()
+    assert res is False
+
+
+def test_scan():
+    res = scan(target_directory)
+    assert res is True
+
+
+def test_scan_single():
+    res = scan_single(target_directory, rule_cve_path)
+    assert res is True

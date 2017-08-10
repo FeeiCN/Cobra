@@ -11,14 +11,11 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import sys
-
-sys.path.append('..')
-
+from .log import logger
 from phply.phplex import lexer
 from phply.phpparse import make_parser
 
-with_lineno = True
+with_line = True
 
 
 def export(items):
@@ -26,7 +23,7 @@ def export(items):
     if items:
         for item in items:
             if hasattr(item, 'generic'):
-                item = item.generic(with_lineno=with_lineno)
+                item = item.generic(with_lineno=with_line)
             result.append(item)
     return result
 
@@ -34,11 +31,11 @@ def export(items):
 def get_all_params_parent(node_node):
     _params = []
 
-    def get_all_params(node_node):
-        if node_node[0] == 'Variable':
-            _params.append(node_node[1]['name'])
+    def get_all_params(nn):
+        if nn[0] == 'Variable':
+            _params.append(nn[1]['name'])
         else:
-            for k, v in node_node[1].items():
+            for k, v in nn[1].items():
                 if isinstance(v, tuple):
                     get_all_params(v)
 
@@ -47,6 +44,11 @@ def get_all_params_parent(node_node):
 
 
 def get_all_parameter(node_params):
+    """
+    取函数所有入参名称
+    :param node_params:
+    :return:
+    """
     params = []
     for x in node_params:
         if x[0] == 'Parameter':
@@ -55,70 +57,84 @@ def get_all_parameter(node_params):
 
 
 def is_controllable(expr):
-    # 0 'expr': ('ArrayOffset',)
-    # 1 {'lineno': 3, 'node': ('Variable', {'lineno': 3, 'name': '$_GET'}), 'expr': 'cmd'}
-    controllabled_params = [
+    controlled_params = [
         '$_GET',
-        '$_POST'
+        '$_POST',
+        '$_REQUEST',
+        '$_COOKIE',
+        '$_FILES',
+        '$_SERVER',
+        '$HTTP_POST_FILES',
+        '$HTTP_COOKIE_VARS',
+        '$HTTP_REQUEST_VARS',
+        '$HTTP_POST_VARS',
+        '$HTTP_RAW_POST_DATA',
+        '$HTTP_GET_VARS'
     ]
     controllable_params = get_all_params_parent(expr[1]['node'])
     for cp in controllable_params:
-        if cp in controllabled_params:
+        if cp in controlled_params:
             return True, cp
     return False, None
 
 
 def get_all_usage_controllable(params, nodes):
-    """get all params usage and is controllable"""
+    """
+    遍历所有节点，判断是否有函数入参的赋值情况
+    :param params: 函数所有入参
+    :param nodes: 全部节点
+    :return:
+    """
     result = {}
     for method, value in nodes:
         if method == 'Assignment':
             usage_params = get_all_params_parent(value['node'])
             for up in usage_params:
+                # check controllable
+                ic, cf = is_controllable(value['expr'])
+                logger.debug('[PARAM-ASSIGN] {l} {p} = {a}'.format(l=value['lineno'], p=usage_params, a=cf))
+                in_params = False
                 if up in params:
-                    # check controllable
-                    ic, cf = is_controllable(value['expr'])
+                    in_params = True
                     result[up] = {
                         'ic': ic,
                         'cf': cf
                     }
+                # if in_params is False:
+                #     logger.debug('digui')
+                #     get_all_usage_controllable(usage_params, nodes)
+        else:
+            logger.debug('not assignment')
     return result
 
 
 def traversal(nodes, vul_function, vul_function_line, level=0):
+    """
+    递归所有节点，找到函数调用点 -> 取出所有参数变量 -> 判断每一个入参变量是否可控
+    :param nodes:
+    :param vul_function:
+    :param vul_function_line:
+    :param level:
+    :return:
+    """
+    func, params, uc = None, None, None
     for method, value in nodes:
+        logger.debug('[LINE] {m} {v}'.format(m=method, v=value))
         if method == 'FunctionCall':
             if value['name'] == vul_function and value['lineno'] == vul_function_line:
-                print('[FUNCTION] ', level, method, value['name'])
+                func = value['name']
+                logger.debug('[FUNCTION] {l} {m} {f}'.format(l=level, m=method, f=func))
                 params = get_all_parameter(value['params'])
-                print('[PARAMS]', params)
-                usage_controllable = get_all_usage_controllable(params, nodes)
-                print('[USAGE-CONTROLLABLE]', usage_controllable)
-                print('----------')
+                logger.debug('[PARAMS] {p}'.format(p=params))
+                uc = get_all_usage_controllable(params, nodes)
+                logger.debug('[USAGE-CONTROLLABLE] {uc}'.format(uc=uc))
+                logger.debug('----------')
         if 'nodes' in value:
             traversal(value['nodes'], vul_function, vul_function_line, level=level + 1)
-        print(method, value)
+    return func, params, uc
 
 
 def scan(code_content, vul_function, vul_function_line):
     parser = make_parser()
-    all_nodes = export(parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_lineno))
-    print(all_nodes)
-    traversal(all_nodes, vul_function, vul_function_line)
-
-
-if __name__ == '__main__':
-    tests = [
-        (u"""<?php
-    $cmd = $_GET['cmd'];
-    system("ls" + $cmd);
-    """, u'system', 3),
-        (u"""<?php
-    $cmd_test = $_POST['cmd'];
-    exec("test" + $cmd_test);
-    """, u'exec', 3),
-    ]
-    for test in tests:
-        test_content, func, line = test
-        print(test)
-        scan(test_content, func, line)
+    all_nodes = export(parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line))
+    return traversal(all_nodes, vul_function, vul_function_line)

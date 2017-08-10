@@ -20,7 +20,7 @@ from .utils import md5, random_generator
 
 
 def get_sid(target, is_a_sid=False):
-    # target = target.encode('utf-8')
+    target = target
     if isinstance(target, list):
         target = ';'.join(target)
     sid = md5(target)[:5]
@@ -45,9 +45,14 @@ def start(target, formatter, output, special_rules, a_sid=None):
     # generate single scan id
     s_sid = get_sid(target)
     r = Running(a_sid)
-    data = r.init_list()
+    data = r.list()
     data['sids'].append(s_sid)
-    r.init_list(data)
+    r.list(data)
+
+    report = '?sid={a_sid}'.format(a_sid=a_sid)
+    d = r.status()
+    d['report'] = report
+    r.status(d)
 
     # parse target mode and output mode
     pa = ParseArgs(target, formatter, output, special_rules, a_sid=None)
