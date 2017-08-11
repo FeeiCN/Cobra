@@ -40,7 +40,7 @@ def test_get_path():
 def test_find_python_pip():
     dependencies = Dependencies(requirements)
     dependencies.dependencies()
-    assert 'flask' in dependencies.get_result
+    assert 'Flask' in dependencies.get_result
 
 
 def test_find_java_mvn():
@@ -59,7 +59,7 @@ def test_parse_xml():
 def test_get_version():
     dependencies = Dependencies(requirements)
     dependencies.dependencies()
-    version = dependencies.get_version('flask')
+    version = dependencies.get_version('Flask')
     assert version == '0.10.1'
 
 

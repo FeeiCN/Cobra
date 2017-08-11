@@ -32,10 +32,13 @@ class Dependencies(object):
         file_path, flag = self.find_file()
         if flag == 0:  # flag == 0
             logger.warning('Dependency analysis cannot be done without finding dependency files')
+            return False
         if flag == 1:
             self.find_python_pip(file_path)
+            return True
         if flag == 2:
             self.find_java_mvn(file_path)
+            return True
 
     def find_file(self):
         """

@@ -114,7 +114,9 @@ class ParseArgs(object):
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
-            target, branch = re.findall(r"(.*?.git):(\w+)$", self.target)[0] if re.findall(r"(.*?.git):(\w+)$", self.target) else (self.target, "master")
+            # branch or tag
+            branch_tag = r"(.*?.git):(\w+|[\w\d\.-]*)$"
+            target, branch = re.findall(branch_tag, self.target)[0] if re.findall(branch_tag, self.target) else (self.target, "master")
             if 'gitlab' in target:
                 username = Config('git', 'username').value
                 password = Config('git', 'password').value
