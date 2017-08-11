@@ -38,21 +38,11 @@
                                             <tbody>
                                             <tr>
                                                 <td>Report time</td>
-                                                <td>2017-06-08 10:16:49</td>
+                                                <td>{{ start_time }}</td>
                                             </tr>
                                             <tr>
-                                                <td>Scan time</td>
-                                                <td>10:16:50 - 10:17:32
-                                                    (42″)
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Total number of files</td>
-                                                <td>21738</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Total number of codes</td>
-                                                <td>157308 lines</td>
+                                                <td>Total number of targets</td>
+                                                <td>{{ total_targets_number }}</td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -68,12 +58,12 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr>
-                                                <td><a href="https://www.baidu.com" target="_blank">https://github.com/wufeifei/grw.git</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="https://www.google.com" target="_blank">https://github.com/shadowsocks/shadowsocks.git</a></td>
-                                            </tr>
+                                            {% for s_sid, git in scan_list.items() %}
+                                                <tr>
+                                                    <td><a href="/report/{{ a_sid }}/{{ s_sid }}"
+                                                           target="_blank">{{ git }}</a></td>
+                                                </tr>
+                                            {% endfor %}
                                             </tbody>
                                         </table>
                                     </address>
@@ -85,35 +75,29 @@
                                             <thead>
                                             <tr>
                                                 <th>Level</th>
-                                                <th>Not fixed</th>
-                                                <th>Fixed</th>
-                                                <th>Total</th>
+                                                <th>Number</th>
                                             </tr>
                                             </thead>
                                             <tbody class="n-o-v">
                                             <tr>
+                                                <td>Critical</td>
+                                                <td>{{ critical_vul_number }}</td>
+                                            </tr>
+                                            <tr>
                                                 <td>High</td>
-                                                <td>45</td>
-                                                <td>54</td>
-                                                <td>23</td>
+                                                <td>{{ high_vul_number }}</td>
                                             </tr>
                                             <tr>
                                                 <td>Medium</td>
-                                                <td>33</td>
-                                                <td>56</td>
-                                                <td>54</td>
+                                                <td>{{ medium_vul_number }}</td>
                                             </tr>
                                             <tr>
                                                 <td>Low</td>
-                                                <td>44</td>
-                                                <td>45</td>
-                                                <td>67</td>
+                                                <td>{{ low_vul_number }}</td>
                                             </tr>
                                             <tr>
                                                 <td>Total</td>
-                                                <td>46</td>
-                                                <td>67</td>
-                                                <td>76</td>
+                                                <td>{{ total_vul_number }}</td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -155,6 +139,65 @@
             </div>
         </div>
     </div>
+    <script>
+        var types = [];
+        var vuls = [];
+        {% for vul in vuls.keys() %}
+            types.push('{{ vul }}');
+            vuls.push({value: {{ vuls.get(vul) }}, name: '{{ vul }}'});
+        {% endfor %}
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: types
+            },
+            series: [
+                {
+                    name: 'Vulnerability hazard ratio',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    radius: [0, '30%'],
+                    label: {
+                        normal: {
+                            position: 'inner'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: [
+                        {%  if critical_vul_number != 0 %}
+                            {value: {{ critical_vul_number }}, name: 'Critical'}
+                        {% endif %}
+                        {%  if high_vul_number != 0 %}
+                            {value: {{ high_vul_number }}, name: 'High', selected: true},
+                        {% endif %}
+                        {%  if medium_vul_number != 0 %}
+                            {value: {{ medium_vul_number }}, name: 'Medium'},
+                        {% endif %}
+                        {%  if low_vul_number != 0 %}
+                            {value: {{ low_vul_number }}, name: 'Low'},
+                        {% endif %}
+                    ]
+                },
+                {
+                    name: 'Vulnerability type accounting',
+                    type: 'pie',
+                    radius: ['40%', '55%'],
+                    data: vuls
+                }
+            ]
+        };
+        var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+        vul_distributing.setOption(option);
+    </script>
 </div>
 </body>
 </html>

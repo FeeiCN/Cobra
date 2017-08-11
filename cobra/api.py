@@ -13,6 +13,7 @@
 """
 import socket
 import errno
+import time
 import os
 import json
 import multiprocessing
@@ -177,13 +178,47 @@ def summary():
     with open(scan_list_file, 'r') as f:
         scan_list = json.load(f).get('sids')
 
-    for s_sid in scan_list:
-        pass
-
     if scan_status == 'running':
         return 'Scan job is still running, Please check later.'
 
-    return render_template(template_name_or_list='summary.html')
+    start_time = os.path.getctime(filename=scan_status_file)
+    start_time = time.localtime(start_time)
+    start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
+
+    total_targets_number = len(scan_list)
+    total_vul_number, critical_vul_number, high_vul_number , medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
+    rule_filter = dict()
+    for s_sid in scan_list:
+        s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+        with open(s_sid_file, 'r') as f:
+            s_sid_data = json.load(f)
+        total_vul_number += len(s_sid_data)
+        for vul in s_sid_data:
+            if 9 <= int(vul.get('level')) <= 10:
+                critical_vul_number += 1
+            elif 6 <= int(vul.get('level')) <= 8:
+                high_vul_number += 1
+            elif 3 <= int(vul.get('level')) <= 5:
+                medium_vul_number += 1
+            elif 1 <= int(vul.get('level')) <= 2:
+                low_vul_number += 1
+
+            try:
+                rule_filter[vul.get('rule_name')] += 1
+            except KeyError:
+                rule_filter[vul.get('rule_name')] = 1
+
+    return render_template(template_name_or_list='summary.html',
+                           total_targets_number=total_targets_number,
+                           start_time=start_time,
+                           scan_list=scan_list,
+                           a_sid=a_sid,
+                           total_vul_number=total_vul_number,
+                           critical_vul_number=critical_vul_number,
+                           high_vul_number=high_vul_number,
+                           medium_vul_number=medium_vul_number,
+                           low_vul_number=low_vul_number,
+                           vuls=rule_filter,)
 
 
 @app.route('/report/<path:a_sid>/<path:s_sid>', methods=['GET'])
@@ -201,7 +236,12 @@ def report(a_sid, s_sid):
     with open(scan_list_file, 'r') as f:
         scan_list = json.load(f).get('sids')
 
-    
+    with open(os.path.join(os.path.dirname(__file__), 'templates/asset/js/report.js')) as f:
+        report_js = f.read()
+
+    return render_template(template_name_or_list='export.html',
+                           scan_data=json.dumps(scan_data, ensure_ascii=False),
+                           report_js=report_js)
 
 
 def key_verify(data):

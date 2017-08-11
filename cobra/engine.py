@@ -171,7 +171,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None):
 
     # completed running data
     if s_sid is not None:
-        Running(s_sid).data({'vulnerabilities': [x.__dict__ for x in find_vulnerabilities]})
+        Running(s_sid).data([x.__dict__ for x in find_vulnerabilities])
     return True
 
 
