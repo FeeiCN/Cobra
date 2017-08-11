@@ -104,7 +104,8 @@ def test_get_scan_result():
 
 
 def test_rule_parse_fun():
-    rule_parse()
+    with pytest.raises(NoSectionError):
+        rule_parse()
     assert os.path.exists(project_directory+'/rules/CVI-999999.xml')
 
 
