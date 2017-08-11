@@ -162,7 +162,7 @@ class JobStatus(Resource):
 
 
 @app.route('/', methods=['GET', 'POST'])
-def result():
+def summary():
     a_sid = request.args.get(key='sid')
     if a_sid is None:
         return 'No sid specified.'
@@ -177,19 +177,31 @@ def result():
     with open(scan_list_file, 'r') as f:
         scan_list = json.load(f).get('sids')
 
+    for s_sid in scan_list:
+        pass
+
     if scan_status == 'running':
         return 'Scan job is still running, Please check later.'
 
     return render_template(template_name_or_list='summary.html')
 
 
-@app.route('/report/<path:s_sid>', methods=['GET'])
-def report(s_sid):
+@app.route('/report/<path:a_sid>/<path:s_sid>', methods=['GET'])
+def report(a_sid, s_sid):
     if s_sid is None:
         return 'No sid specified.'
-    else:
-        return s_sid
 
+    scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+    scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
+    if not os.path.isfile(scan_data_file):
+        return 'No such target.'
+
+    with open(scan_data_file, 'r') as f:
+        scan_data = json.load(f)
+    with open(scan_list_file, 'r') as f:
+        scan_list = json.load(f).get('sids')
+
+    
 
 
 def key_verify(data):
