@@ -46,7 +46,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     s_sid = get_sid(target)
     r = Running(a_sid)
     data = r.list()
-    data['sids'].append(s_sid)
+    data['sids'][s_sid] = target
     r.list(data)
 
     report = '?sid={a_sid}'.format(a_sid=a_sid)
