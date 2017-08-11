@@ -440,7 +440,7 @@ class Git(object):
         current_dir = os.getcwd()
         os.chdir(self.repo_directory)
 
-        cmd = "git checkout " + branch
+        cmd = "git fetch origin && git checkout " + branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
         logger.info('[PICKUP] [CHECKOUT] ' + checkout_err.strip())
