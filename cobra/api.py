@@ -13,15 +13,17 @@
 """
 import socket
 import errno
+import os
+import json
 import multiprocessing
 import threading
+from flask import Flask, request, render_template
+from flask_restful import Api, Resource
 from . import cli
 from .cli import get_sid
-from flask import Flask, request
-from flask_restful import Api, Resource
 from .engine import Running
 from .log import logger
-from .config import Config
+from .config import Config, running_path
 
 try:
     # Python 3
@@ -29,6 +31,9 @@ try:
 except ImportError:
     # Python 2
     import Queue as queue
+
+q = queue.Queue()
+app = Flask(__name__, static_folder='templates/asset')
 
 
 def producer(task):
@@ -156,6 +161,37 @@ class JobStatus(Resource):
         return data
 
 
+@app.route('/', methods=['GET', 'POST'])
+def result():
+    a_sid = request.args.get(key='sid')
+    if a_sid is None:
+        return 'No sid specified.'
+
+    scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
+    scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
+    if not os.path.isfile(scan_status_file):
+        return 'No such scan.'
+
+    with open(scan_status_file, 'r') as f:
+        scan_status = json.load(f).get('status')
+    with open(scan_list_file, 'r') as f:
+        scan_list = json.load(f).get('sids')
+
+    if scan_status == 'running':
+        return 'Scan job is still running, Please check later.'
+
+    return render_template(template_name_or_list='summary.html')
+
+
+@app.route('/report/<path:s_sid>', methods=['GET'])
+def report(s_sid):
+    if s_sid is None:
+        return 'No sid specified.'
+    else:
+        return s_sid
+
+
+
 def key_verify(data):
     key = Config(level1="cobra", level2="secret_key").value
     _key = data.get("key")
@@ -170,12 +206,8 @@ def key_verify(data):
         return {"code": 4002, "result": "Unknown key verify error."}
 
 
-q = queue.Queue()
-
-
 def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
-    app = Flask(__name__)
     api = Api(app)
 
     api.add_resource(AddJob, '/api/add')

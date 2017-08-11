@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="./templates/asset/css/base.css">
-    <link rel="stylesheet" href="./templates/asset/css/report.css">
-    <script src="./templates/asset/js/jquery-1.11.2.min.js"></script>
-    <script src="./templates/asset/js/echarts.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
     <title>Task Information</title>
 </head>
 <body>
@@ -124,7 +124,7 @@
                         <div class="col-md-8">
                             <h4>Vulnerability distribution statistics</h4>
                             <div id="vul_distributing" style="height:400px;">
-                                <img src="./templates/asset/img/congratulations.jpg" class="congratulations"
+                                <img src="/asset/img/congratulations.jpg" class="congratulations"
                                      alt="">
                                 <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no
                                     vulnerability was detected :)</h3>
