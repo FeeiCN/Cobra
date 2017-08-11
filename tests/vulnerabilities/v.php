@@ -9,6 +9,9 @@ $username = $_POST['username'];
 $password = $_POST['password'];
 $callback = $_POST['callback'];
 
+# CVI-130005
+$target = "10.11.2.220";
+
 $cmd = $_REQUEST['a']
 
 print($callback);
