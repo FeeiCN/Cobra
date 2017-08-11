@@ -71,10 +71,11 @@ def is_controllable(expr):
         '$HTTP_RAW_POST_DATA',
         '$HTTP_GET_VARS'
     ]
-    controllable_params = get_all_params_parent(expr[1]['node'])
-    for cp in controllable_params:
-        if cp in controlled_params:
-            return True, cp
+    if 'node' in expr[1]:
+        controllable_params = get_all_params_parent(expr[1]['node'])
+        for cp in controllable_params:
+            if cp in controlled_params:
+                return True, cp
     return False, None
 
 
@@ -100,9 +101,9 @@ def get_all_usage_controllable(params, nodes):
                         'ic': ic,
                         'cf': cf
                     }
-                # if in_params is False:
-                #     logger.debug('digui')
-                #     get_all_usage_controllable(usage_params, nodes)
+                    # if in_params is False:
+                    #     logger.debug('digui')
+                    #     get_all_usage_controllable(usage_params, nodes)
         else:
             logger.debug('not assignment')
     return result
