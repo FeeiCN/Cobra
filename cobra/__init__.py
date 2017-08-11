@@ -69,7 +69,7 @@ def main():
         if args.sid is None:
             a_sid = get_sid(args.target, True)
             data = {
-                'sids': []
+                'sids': {}
             }
             Running(a_sid).list(data)
             data = {

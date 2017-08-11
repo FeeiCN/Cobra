@@ -94,7 +94,7 @@ class AddJob(Resource):
             }
 
         a_sid_data = {
-            'sids': []
+            'sids': {}
         }
         running = Running(a_sid)
 
@@ -145,8 +145,8 @@ class JobStatus(Resource):
                 r_data = running.list()
                 ret = True
                 logger.info(r_data['sids'])
-                for s in r_data['sids']:
-                    if Running(s).is_file(True) is False:
+                for sid, git in r_data['sids'].items():
+                    if Running(sid).is_file(True) is False:
                         ret = False
                 if ret:
                     result['status'] = 'done'
