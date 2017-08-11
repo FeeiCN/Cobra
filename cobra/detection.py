@@ -18,7 +18,7 @@ from .rule import Rule
 from .dependencies import Dependencies
 from .log import logger
 from pip.req import parse_requirements
-
+from .config import rules_path
 
 file_type = []
 
@@ -59,7 +59,7 @@ class Detection(object):
                     language=tmp_language))
                 self.lang = tmp_language
         logger.debug('[DETECTION] [LANGUAGE] main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language,
-                                                                                           main_language=self.lang))
+                                                                                                                  main_language=self.lang))
         return self.lang
 
     @property
@@ -143,9 +143,8 @@ class Detection(object):
 
     @staticmethod
     def rule():
-        project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-        rules_path = os.path.join(project_directory, 'cobra/rules/frameworks.xml')
-        tree = eT.ElementTree(file=rules_path)
+        framework_path = os.path.join(rules_path, 'frameworks.xml')
+        tree = eT.ElementTree(file=framework_path)
         return tree
 
     @staticmethod
@@ -440,7 +439,7 @@ class Detection(object):
                 x.add_row([lang, type_num[lang]['files'], type_num[lang]['blank'], type_num[lang]['pound'],
                            type_num[lang]['code']])
             except KeyError:
-                logger.warning('There is no such file type -->'+lang + ',please add it to the whitelist')
+                logger.warning('There is no such file type -->' + lang + ',please add it to the whitelist')
         x.add_row(["SUM", total_file, total_blank_line, total_pound_line, total_code_line])
         logger.info('\n' + str(x))
         return True
