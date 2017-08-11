@@ -13,9 +13,14 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
+import pytest
 import xml.etree.ElementTree as eT
 from cobra.cve_parse import *
 from cobra.cve_parse import CveParse, project_directory
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser, NoSectionError
 
 
 target_directory = project_directory + '/tests/vulnerabilities/requirements.txt'
@@ -58,7 +63,7 @@ def test_get_result():
 def test_rule_xml():
     cve = CveParse(rule_path, target_directory)
     cve.rule_xml()
-    print rule_cve_one
+    print(rule_cve_one)
     assert os.path.exists(rule_cve_one)
     os.remove(rule_cve_one)
 
@@ -125,8 +130,8 @@ def test_rule_single():
 
 
 def test_is_update():
-    res = is_update()
-    assert res is False
+    with pytest.raises(NoSectionError):
+        is_update()
 
 
 def test_scan():
