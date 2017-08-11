@@ -33,7 +33,7 @@ class PushToThird(PushBase):
         self.post_data = []
         for i, vul in enumerate(find_vul):
             self.post_data.append({
-                "name": "Target-" + str(target) + str(i),
+                "name": "Target-" + str(target) + '-' + str(i),
                 "time": vul.get("commit_time"),
                 "vuln_type": vul.get("rule_name"),
                 "summitid": self.token,

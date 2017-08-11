@@ -193,7 +193,7 @@ def summary():
         with open(s_sid_file, 'r') as f:
             s_sid_data = json.load(f)
         total_vul_number += len(s_sid_data)
-        for vul in s_sid_data:
+        for vul in s_sid_data.get('vulnerabilities'):
             if 9 <= int(vul.get('level')) <= 10:
                 critical_vul_number += 1
             elif 6 <= int(vul.get('level')) <= 8:
@@ -239,7 +239,7 @@ def report(a_sid, s_sid):
     with open(os.path.join(os.path.dirname(__file__), 'templates/asset/js/report.js')) as f:
         report_js = f.read()
 
-    return render_template(template_name_or_list='export.html',
+    return render_template(template_name_or_list='result.html',
                            scan_data=json.dumps(scan_data, ensure_ascii=False),
                            report_js=report_js)
 

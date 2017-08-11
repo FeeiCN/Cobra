@@ -19,7 +19,7 @@ from codecs import open
 from prettytable import PrettyTable
 from .log import logger
 from .config import running_path
-from .templite import Templite
+from jinja2 import Template
 
 try:
     import cgi as html
@@ -86,41 +86,15 @@ def dict_to_csv(vul_list, filename):
     header.remove("target")
     header.insert(0, "target")
 
-    with open(filename, "w") as f:
-        csv_writer = csv.DictWriter(f, header)
-        csv_writer.writeheader()
-        csv_writer.writerows(vul_list)
-
-
-def dict_to_html(html_obj):
-    """
-    Convert scan result to HTML string.
-    :param html_obj: a list contains write_obj
-    :return: HTML String
-    """
-    with open(os.path.join(os.path.dirname(__file__), "templates/asset/js/report.js"), "r") as f:
-        report_js = f.read()
-
-    # 计算 vid 对应的数组偏移，统计 vul_list 中的 rule target
-    rule_filter, target_filter = set(), set()
-    for result in html_obj:
-        for id, value in enumerate(result.get("vulnerabilities")):
-            value["vid"] = id + 1
-            rule_filter.add(value.get("rule_name"))
-
-        target_filter.add(result.get("target"))
-
-    with open(os.path.join(os.path.dirname(__file__), "templates/export.html"), "r") as f:
-        template = f.read()
-
-    templite = Templite(template)
-    html_content = templite.render({
-        "vul_list": html.escape(json.dumps(html_obj, ensure_ascii=False, sort_keys=True)),
-        "rule_filter": list(rule_filter),
-        "target_filter": list(target_filter),
-        "report_js": report_js,
-    })
-    return html_content
+    if not os.path.exists(filename):
+        with open(filename, "w", encoding='utf-8') as f:
+            csv_writer = csv.DictWriter(f, header)
+            csv_writer.writeheader()
+            csv_writer.writerows(vul_list)
+    else:
+        with open(filename, "a", encoding='utf-8') as f:
+            csv_writer = csv.DictWriter(f, header)
+            csv_writer.writerows(vul_list)
 
 
 def dict_to_pretty_table(vul_list):
@@ -157,26 +131,41 @@ def write_to_file(target, sid, output_format="", filename=""):
         logger.info("Vulnerabilities\n" + str(dict_to_pretty_table(scan_data.get('vulnerabilities'))))
 
     elif output_format == "json" or output_format == "JSON":
-        with open(filename, "w") as f:
-            f.write(dict_to_json(scan_data))
+        if not os.path.exists(filename):
+            with open(filename, "w") as f:
+                f.write("""{"results":[\n""")
+                f.write(dict_to_json(scan_data))
+                f.write("\n]}")
+        else:
+            # 在倒数第二行插入
+            with open(filename, "r") as f:
+                results = f.readlines()
+                results.insert(len(results) - 1, ",\n" + dict_to_json(scan_data) + "\n")
+            with open(filename, "w") as f:
+                f.writelines(results)
 
     elif output_format == "xml" or output_format == "XML":
         xml_obj = {
             "result": scan_data,
         }
-        with open(filename, "w") as f:
-            f.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
-            f.write(dict_to_xml(xml_obj))
+        if not os.path.exists(filename):
+            with open(filename, "w", encoding='utf-8') as f:
+                f.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
+                f.write("""<results>\n""")
+                f.write(dict_to_xml(xml_obj))
+                f.write("""\n</results>\n""")
+        else:
+            # 在倒数第二行插入
+            with open(filename, "r", encoding='utf-8') as f:
+                results = f.readlines()
+                results.insert(len(results) - 1, "\n" + dict_to_xml(xml_obj) + "\n")
+            with open(filename, "w", encoding='utf-8') as f:
+                f.writelines(results)
 
     elif output_format == "csv" or output_format == "CSV":
         for vul in scan_data.get('vulnerabilities'):
             vul["target"] = scan_data.get('target')
         dict_to_csv(scan_data.get('vulnerabilities'), filename)
-
-    elif output_format == "html" or output_format == "HTML":
-        html_obj = [scan_data]
-        with open(filename, "w", encoding='utf-8') as f:
-            f.write(dict_to_html(html_obj))
 
     else:
         raise ValueError("Unknown output format!")
