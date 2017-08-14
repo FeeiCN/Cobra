@@ -60,7 +60,7 @@ $(function () {
                 // panel
                 $('.v-path').text(data.file_path + ':' + data.line_number);
                 $('.v-id').text('MVE-' + vid);
-                $('.v-language').text(data.lang);
+                $('.v-language').text(data.language);
                 // widget
                 function init_widget() {
                     var lis = $('.widget-trigger li');
