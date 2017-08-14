@@ -147,19 +147,23 @@ ul.v_detail li {
     border-radius: 6px;
 }
 
-.n-o-v tr td:nth-child(2) {
+.n-o-v tr:nth-child(1) td:nth-child(2){
     color: red;
 }
 
-.n-o-v tr td:nth-child(3) {
+.n-o-v tr:nth-child(2) td:nth-child(2){
+    color: 	gold;
+}
+
+.n-o-v tr:nth-child(3) td:nth-child(2){
     color: green;
 }
 
-.n-o-v tr td:nth-child(4) {
+.n-o-v tr:nth-child(4) td:nth-child(2){
     color: #357abd;
 }
 
-.n-o-v tr:nth-child(4) {
+.n-o-v tr:nth-child(5) {
     background: #efefef;
     font-weight: bold;
 }

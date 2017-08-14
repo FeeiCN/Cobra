@@ -49,6 +49,6 @@ def send_mail(filename):
     except smtplib.SMTPSenderRefused:
         logger.critical("发件人被拒绝")
         return False
-    except smtplib.SMTPException as  error:
+    except smtplib.SMTPException as error:
         logger.critical(error)
         return False

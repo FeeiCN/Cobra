@@ -142,6 +142,8 @@ print("Text: " + $content);
 | 210 | UR | Unvalidated Redirect | 未经验证的任意链接跳转 |
 | 220 | HRS | HTTP Response Splitting | HTTP响应拆分 |
 | 230 | SF | Session Fixation | SESSION固定 |
+| 980 | IV | iOS Vulnerabilities | iOS漏洞 |
+| 970 | AV | Android Vulnerabilities | Android漏洞 |
 | 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
 
 ## 七、Level（危害等级）

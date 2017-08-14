@@ -13,7 +13,6 @@
 """
 from .config import Config
 from .log import logger
-from .export import flatten
 import requests
 import json
 
@@ -32,9 +31,9 @@ class PushToThird(PushBase):
 
     def add_data(self, target, find_vul):
         self.post_data = []
-        for i, vul in enumerate(flatten(find_vul)):
+        for i, vul in enumerate(find_vul):
             self.post_data.append({
-                "name": "Target-" + str(target) + str(i),
+                "name": "Target-" + str(target) + '-' + str(i),
                 "time": vul.get("commit_time"),
                 "vuln_type": vul.get("rule_name"),
                 "summitid": self.token,
@@ -58,7 +57,7 @@ class PushToThird(PushBase):
             else:
                 logger.debug("Push result error: {0}".format(re.text))
                 return False
-        except (requests.ConnectionError, requests.HTTPError) as error:
+        except (requests.ConnectionError, requests.HTTPError)as error:
             logger.critical("Network error: {0}".format(str(error)))
             return False
         except ValueError as error:
