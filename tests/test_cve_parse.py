@@ -18,7 +18,7 @@ import xml.etree.ElementTree as eT
 from cobra.cve_parse import *
 from cobra.cve_parse import CveParse, project_directory
 try:
-    from configparser import ConfigParser
+    from configparser import ConfigParser, NoSectionError
 except ImportError:
     from ConfigParser import ConfigParser, NoSectionError
 
