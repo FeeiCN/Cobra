@@ -19,6 +19,7 @@ import multiprocessing
 import os
 
 # test apiserver after creating config file.
+# kill -9 $(ps aux|grep test_apiserver.py|awk '{print $2}')
 
 p = multiprocessing.Process(target=start, args=("127.0.0.1", 5000, True))
 p.start()
