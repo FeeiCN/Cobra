@@ -21,7 +21,7 @@ for j in range(10):
     mr = VulnerabilityResult()
     mr.id = str(random.randint(1000, 9999))
     mr.language = 'php'
-    mr.rule_name = random.choice(("xss", "sqli", "csrf"))
+    mr.rule_name = 'xss'
     mr.file_path = '/etc/passwd'
     mr.line_number = 182
     mr.code_content = '<script>alert(document.cookie)</script>'
