@@ -41,7 +41,7 @@ def test_cve_info():
     cve = CveParse(rule_path, target_directory)
     tree = cve.parse_xml(cve.cve_file)
     root = tree.getroot()
-    childs = root.iter('%sentry' % cve.NS)
+    childs = root.findall('.//%sentry' % cve.NS)
     for child in childs:  # child is entry Element
         test_info = cve.cve_info(child)
     assert isinstance(test_info, dict)
@@ -79,7 +79,7 @@ def test_rule_info():
     cve = CveParse(rule_path, target_directory)
     tree = cve.parse_xml(rule_cve_path)
     root = tree.getroot()
-    cves = root.iter('cve')
+    cves = root.findall('.//cve')
     for cvea in cves:
         test_info = cve.rule_info(cvea)
     assert 'cpe' in test_info
