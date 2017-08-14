@@ -1,4 +1,3 @@
-Flask==0.10.1
 Flask-RESTful==0.3.6
 rarfile==2.7
 prettytable==0.7.2
