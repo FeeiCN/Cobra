@@ -43,18 +43,11 @@ $(function () {
             $('.CodeMirror .cm-loading').hide();
             var vul_shift = 0;
             vid = Number(vid);
-            for (var i = 0; i < vul_list_origin.length; i++) {
-                if (vid - vul_shift >  vul_list_origin[i].vulnerabilities.length) {
-                    vul_shift += vul_list_origin[i].vulnerabilities.length;
-                }
-                else {
-                    var data = vul_list_origin[i].vulnerabilities[vid - vul_shift - 1];
-                    data.code_content = data.code_content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-                    // 对无代码内容的漏洞进行处理，避免 widget 的 bug
-                    if (data.code_content === "") {
-                        data.code_content = data.file_path;
-                    }
-                }
+            var data = vul_list_origin.vulnerabilities[vid - 1];
+            data.code_content = data.code_content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+            // 对无代码内容的漏洞进行处理，避免 widget 的 bug
+            if (data.code_content === "") {
+                data.code_content = data.file_path;
             }
             $('#code').val(data.code_content);
             // Highlighting param
@@ -180,7 +173,7 @@ $(function () {
 
                 var content_bottom = '<span class="v-id">MVE-0001</span>' + '<span class="v-language">PHP</span>';
                 addPanel('bottom', content_bottom);
-                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong><img class="icon full-screen" src="templates/asset/icon/resize-full-screen.png" alt="Full screen">';
+                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong><img class="icon full-screen" src="/asset/icon/resize-full-screen.png" alt="Full screen">';
                 addPanel('top', content_top);
 
                 // full screen
@@ -234,7 +227,7 @@ $(function () {
 
                 // load vulnerabilities list
 
-                var list = vul_list_origin;
+                var list = vul_list_origin.vulnerabilities;
                 if (list.length === 0) {
                     $(".vulnerabilities_list").html('<li><h3 style="text-align: center;margin: 200px auto;">Wow, no vulnerability was detected :)</h3></li>');
                 } else {
@@ -242,20 +235,19 @@ $(function () {
 
                     var id = 0;
                     for (var i = 0; i < list.length; i++) {
-                        for (var j = 0; j < list[i].vulnerabilities.length; j++) {
-                            var line = '';
-                            if (list[i].vulnerabilities[j].line_number !== 0) {
-                                line = ':' + list[i].vulnerabilities[j].line_number;
-                            }
-                            list_html = list_html + '<li data-id="' + list[i].vulnerabilities[j].vid + '" class=" " data-start="1" data-line="1">' +
-                                '<strong>MVE-' + list[i].vulnerabilities[j].vid + '</strong><br><span>' + list[i].vulnerabilities[j].file_path + line + '</span><br>' +
-                                '<span class="issue-information">' +
-                                '<small>' +
-                                list[i].vulnerabilities[j].match_result + ' => ' + list[i].vulnerabilities[j].commit_time +
-                                '</small>' +
-                                '</span>' +
-                                '</li>';
+                        var line = '';
+                        if (list[i].line_number !== 0) {
+                            line = ':' + list[i].line_number;
                         }
+                        list_html = list_html + '<li data-id="' + (i+1) + '" class=" " data-start="1" data-line="1">' +
+                            '<strong>MVE-' + (i+1) + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
+                            '<span class="issue-information">' +
+                            '<small>' +
+                            list[i].match_result + ' => ' + list[i].commit_time +
+                            '</small>' +
+                            '</span>' +
+                            '</li>';
+
                     }
 
                     $('.vulnerabilities_list').html(list_html);
