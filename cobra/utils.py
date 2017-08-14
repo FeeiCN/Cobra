@@ -179,7 +179,7 @@ def convert_time(seconds):
     if minute == 0:
         return str(seconds % one_minute) + "\""
     else:
-        return str(minute) + "'" + str(seconds % one_minute) + "\""
+        return str(int(minute)) + "'" + str(seconds % one_minute) + "\""
 
 
 def convert_number(n):
