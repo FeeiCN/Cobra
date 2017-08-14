@@ -18,6 +18,7 @@ import time
 import string
 import random
 import hashlib
+import locale
 from .log import logger
 from .config import Config
 from .exceptions import PickupException, NotExistException, AuthFailedException
@@ -191,7 +192,8 @@ def convert_number(number):
     if number is None or number == 0:
         return 0
     number = int(number)
-    return '{:20,}'.format(number).strip()
+    locale.setlocale(locale.LC_ALL, 'en_US')
+    return locale.format("%d", number, grouping=True)
 
 
 def md5(content):
