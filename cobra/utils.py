@@ -271,8 +271,9 @@ def path_to_file(path):
     :return:
     """
     paths = path.split('/')
-    paths = filter(None, paths)
-    return '.../{0}'.format(paths[len(paths) - 1])
+    paths = list(filter(None, paths))
+    length = len(paths)
+    return '.../{0}'.format(paths[length - 1])
 
 
 def percent(part, whole, need_per=True):
