@@ -53,6 +53,11 @@ password:
 [git]
 username:
 password:
+private_token:
+# http://xxx.gitlab.com/api/v3/projects
+gitlab_url:
+cobra_ip:
+
 
 [cve]
 modified = 00B6A630D5515C9D6F61B2FC97ED7EE689A787AC52E1654D1E991BC26F4647CD

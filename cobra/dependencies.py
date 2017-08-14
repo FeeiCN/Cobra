@@ -91,7 +91,7 @@ class Dependencies(object):
         for pom in file_path:
             tree = self.parse_xml(pom)
             root = tree.getroot()
-            childs = root.iter('%sdependency' % pom_ns)
+            childs = root.findall('.//%sdependency' % pom_ns)
             for child in childs:
                 group_id = child.getchildren()[0].text
                 artifact_id = child.getchildren()[1].text

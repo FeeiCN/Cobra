@@ -52,7 +52,7 @@ class CveParse(object):
         if not isinstance(cve_file, list):
             tree = self.parse_xml(cve_file)
             root = tree.getroot()
-            childs = root.iter('%sentry' % self.NS)
+            childs = root.findall('.//%sentry' % self.NS)
             for child in childs:  # child is entry Element
                 cve_id = child.attrib['id']
                 cve_info = self.cve_info(child)
@@ -62,7 +62,7 @@ class CveParse(object):
             for filename in cve_file:
                 tree = self.parse_xml(filename)
                 root = tree.getroot()
-                childs = root.iter('%sentry' % self.NS)
+                childs = root.findall('.//%sentry' % self.NS)
                 for child in childs:  # child is entry Element
                     cve_id = child.attrib['id']
                     cve_info = self.cve_info(child)
@@ -97,7 +97,7 @@ class CveParse(object):
                        'wu-ftpd', 'cluster_server', 'catos', 'mantis', 'quicktime', 'security_linux', 'firefox',
                        'jetty_http_server', 'php:', 'enterprise_linux', 'oracle10g', 'oracle9g', 'oracle8g', 'firehol',
                        'fetchmail', 'postgresql', 'freebsd', 'chrome']
-        products = entry.iter('%sproduct' % self.VULN)
+        products = entry.findall('.//%sproduct' % self.VULN)
         access_complexity = entry.find('.//%saccess-complexity' % self.CVSS)
         for product in products:
             module_version = product.text.split(':')
@@ -179,7 +179,7 @@ class CveParse(object):
         """
         tree = self.parse_xml(file_)
         root = tree.getroot()
-        cves = root.iter('cve')
+        cves = root.findall('.//cve')
         for cve_child in cves:
             cve_id = cve_child.attrib['id']
             cve_level = cve_child.attrib['level']
@@ -191,7 +191,7 @@ class CveParse(object):
     def rule_info(cve_child):
         rule_info = {}
         cpe_list = []
-        products = cve_child.iter('product')
+        products = cve_child.findall('.//product')
         for product in products:
             cpe_list.append(product.text.lower())
         rule_info['cpe'] = cpe_list
@@ -246,7 +246,7 @@ def rule_parse():
     if is_update():
         gz_files = download_rule_gz()
         un_gz(gz_files)
-        pool = multiprocessing.Pool(processes=50)
+        pool = multiprocessing.Pool()
         for year in range(2002, datetime.datetime.now().year+1):
             cve_xml = "../rules/%d.xml" % year
             pool.apply_async(rule_single, args=(cve_xml, year))

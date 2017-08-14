@@ -35375,12 +35375,8 @@
 		<product>network_node_manager_i:9.25</product>
 		<product>network_node_manager_i:9.24</product>
 	</cve>
-	<cve id="CVE-2016-8917" level="MEDIUM">
-		<product>sterling_selling_and_fulfillment_foundation:9.5.0</product>
-		<product>sterling_selling_and_fulfillment_foundation:9.4.0</product>
-		<product>sterling_selling_and_fulfillment_foundation:9.2.1</product>
-		<product>sterling_selling_and_fulfillment_foundation:9.3.0</product>
-		<product>sterling_selling_and_fulfillment_foundation:9.2.0</product>
+	<cve id="CVE-2016-8030" level="MEDIUM">
+		<product>virusscan_enterprise:8.8.0</product>
 	</cve>
 	<cve id="CVE-2016-0899" level="MEDIUM">
 		<product>rsa_archer_egrc:5.5.2.3</product>
@@ -37876,11 +37872,17 @@
 	<cve id="CVE-2016-10400" level="LOW">
 		<product>atutor:2.2.1</product>
 	</cve>
+	<cve id="CVE-2016-10401" level="LOW">
+		<product>pk5001z_firmware:-</product>
+	</cve>
 	<cve id="CVE-2016-9337" level="HIGH">
 		<product>gateway_ecu:-</product>
 	</cve>
 	<cve id="CVE-2016-7202" level="HIGH">
 		<product>edge</product>
+	</cve>
+	<cve id="CVE-2016-10404" level="MEDIUM">
+		<product>liferay_portal:7.0</product>
 	</cve>
 	<cve id="CVE-2016-9334" level="LOW">
 		<product>1766-l32awaa_series_a:15.004</product>
@@ -46498,6 +46500,13 @@
 		<product>bigfix_inventory:9.2</product>
 		<product>license_metric_tool:9.2.0</product>
 	</cve>
+	<cve id="CVE-2016-8917" level="MEDIUM">
+		<product>sterling_selling_and_fulfillment_foundation:9.5.0</product>
+		<product>sterling_selling_and_fulfillment_foundation:9.4.0</product>
+		<product>sterling_selling_and_fulfillment_foundation:9.2.1</product>
+		<product>sterling_selling_and_fulfillment_foundation:9.3.0</product>
+		<product>sterling_selling_and_fulfillment_foundation:9.2.0</product>
+	</cve>
 	<cve id="CVE-2016-0408" level="MEDIUM">
 		<product>peoplesoft_enterprise_peopletools:8.54</product>
 		<product>peoplesoft_enterprise_peopletools:8.53</product>
@@ -46604,8 +46613,8 @@
 		<product>ec-cube:3.0.8</product>
 		<product>ec-cube:3.0.7</product>
 	</cve>
-	<cve id="CVE-2016-8030" level="MEDIUM">
-		<product>virusscan_enterprise:8.8.0</product>
+	<cve id="CVE-2016-4982" level="MEDIUM">
+		<product>authd:-</product>
 	</cve>
 	<cve id="CVE-2016-8335" level="MEDIUM">
 		<product>argus:6.6.04</product>

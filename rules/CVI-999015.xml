@@ -874,6 +874,9 @@
 	<cve id="CVE-2015-2697" level="LOW">
 		<product>kerberos:5-1.13.2</product>
 	</cve>
+	<cve id="CVE-2015-2690" level="MEDIUM">
+		<product>addons_module:2.11.0.6</product>
+	</cve>
 	<cve id="CVE-2015-8608" level="LOW">
 		<product>perl:5.22</product>
 	</cve>
@@ -1395,6 +1398,10 @@
 	</cve>
 	<cve id="CVE-2015-3640" level="MEDIUM">
 		<product>phpmybackuppro:2.5</product>
+	</cve>
+	<cve id="CVE-2015-3642" level="MEDIUM">
+		<product>netscaler_gateway:-</product>
+		<product>netscaler_application_delivery_controller:-</product>
 	</cve>
 	<cve id="CVE-2015-0515" level="LOW">
 		<product>watch4net:6.5</product>
@@ -2001,8 +2008,8 @@
 	<cve id="CVE-2015-7886" level="MEDIUM">
 		<product>data_ontap:8.2.4</product>
 	</cve>
-	<cve id="CVE-2015-8855" level="LOW">
-		<product>node.js:4.3.1</product>
+	<cve id="CVE-2015-7887" level="LOW">
+		<product>snapcenter_server:1.0</product>
 	</cve>
 	<cve id="CVE-2015-8856" level="MEDIUM">
 		<product>node.js:1.6.2</product>
@@ -2336,6 +2343,9 @@
 		<product>apport:2.14.2</product>
 		<product>apport:2.15.1</product>
 		<product>apport:2.14.7</product>
+	</cve>
+	<cve id="CVE-2015-7847" level="LOW">
+		<product>e3272s_firmware:-</product>
 	</cve>
 	<cve id="CVE-2015-6114" level="MEDIUM">
 		<product>silverlight:5.0</product>
@@ -6768,6 +6778,9 @@
 	</cve>
 	<cve id="CVE-2015-6584" level="MEDIUM">
 		<product>datatables:1.10.8</product>
+	</cve>
+	<cve id="CVE-2015-6585" level="MEDIUM">
+		<product>hangul_word_processor:2014</product>
 	</cve>
 	<cve id="CVE-2015-6586" level="LOW">
 		<product>wlan_acu2_firmware:v200r006c00</product>
@@ -25221,6 +25234,22 @@
 	<cve id="CVE-2015-2993" level="LOW">
 		<product>sysaid:15.1</product>
 	</cve>
+	<cve id="CVE-2015-3293" level="LOW">
+		<product>fortimail:5.0.7</product>
+		<product>fortimail:5.0.3</product>
+		<product>fortimail:5.1.2</product>
+		<product>fortimail:5.2.1</product>
+		<product>fortimail:5.0.4</product>
+		<product>fortimail:5.1.3</product>
+		<product>fortimail:5.2.2</product>
+		<product>fortimail:5.0.5</product>
+		<product>fortimail:5.1.4</product>
+		<product>fortimail:5.2.3</product>
+		<product>fortimail:5.0.6</product>
+		<product>fortimail:5.2</product>
+		<product>fortimail:5.1</product>
+		<product>fortimail:5.1.1</product>
+	</cve>
 	<cve id="CVE-2015-2991" level="MEDIUM">
 		<product>nscripter:-</product>
 	</cve>
@@ -37041,8 +37070,8 @@
 		<product>koha:3.14.11</product>
 		<product>koha:3.14.15</product>
 	</cve>
-	<cve id="CVE-2015-7847" level="LOW">
-		<product>e3272s_firmware:-</product>
+	<cve id="CVE-2015-5946" level="LOW">
+		<product>sugarcrm:6.5.22</product>
 	</cve>
 	<cve id="CVE-2015-5233" level="MEDIUM">
 		<product>foreman:1.8.3</product>
@@ -37933,21 +37962,8 @@
 	<cve id="CVE-2015-0915" level="MEDIUM">
 		<product>maildealer:11.2.1</product>
 	</cve>
-	<cve id="CVE-2015-3293" level="LOW">
-		<product>fortimail:5.0.7</product>
-		<product>fortimail:5.0.3</product>
-		<product>fortimail:5.1.2</product>
-		<product>fortimail:5.2.1</product>
-		<product>fortimail:5.0.4</product>
-		<product>fortimail:5.1.3</product>
-		<product>fortimail:5.2.2</product>
-		<product>fortimail:5.0.5</product>
-		<product>fortimail:5.1.4</product>
-		<product>fortimail:5.2.3</product>
-		<product>fortimail:5.0.6</product>
-		<product>fortimail:5.2</product>
-		<product>fortimail:5.1</product>
-		<product>fortimail:5.1.1</product>
+	<cve id="CVE-2015-2798" level="LOW">
+		<product>contact_form_maker:1.0.1</product>
 	</cve>
 	<cve id="CVE-2015-2791" level="LOW">
 		<product>wpml:3.1.8</product>
@@ -40435,6 +40451,9 @@
 		<product>openshift:3.1</product>
 		<product>jenkins:1.637</product>
 	</cve>
+	<cve id="CVE-2015-8264" level="MEDIUM">
+		<product>f-secure_online_scanner:-</product>
+	</cve>
 	<cve id="CVE-2015-4790" level="MEDIUM">
 		<product>berkeley_db:11.2.5.2.42</product>
 		<product>berkeley_db:11.2.5.1.29</product>
@@ -40612,6 +40631,12 @@
 	</cve>
 	<cve id="CVE-2015-3208" level="LOW">
 		<product>activemq_artemis:-</product>
+	</cve>
+	<cve id="CVE-2015-4463" level="LOW">
+		<product>efront:3.6.15.4</product>
+	</cve>
+	<cve id="CVE-2015-4462" level="LOW">
+		<product>efront:3.6.15.4</product>
 	</cve>
 	<cve id="CVE-2015-6939" level="MEDIUM">
 		<product>joomla%21:3.4.1</product>
@@ -40848,6 +40873,9 @@
 	</cve>
 	<cve id="CVE-2015-8708" level="LOW">
 		<product>claws-mail:3.13.1</product>
+	</cve>
+	<cve id="CVE-2015-8855" level="LOW">
+		<product>node.js:4.3.1</product>
 	</cve>
 	<cve id="CVE-2015-5918" level="LOW">
 		<product>watch_os:1.01</product>
@@ -41216,6 +41244,9 @@
 	<cve id="CVE-2015-0980" level="LOW">
 		<product>bacnet_opc_server:2.1.359.22</product>
 	</cve>
+	<cve id="CVE-2015-8013" level="LOW">
+		<product>openpgpjs:1.2.0</product>
+	</cve>
 	<cve id="CVE-2015-5426" level="LOW">
 		<product>loadrunner:12.49</product>
 	</cve>
@@ -41484,6 +41515,9 @@
 		<product>keyview:10.23.0.0</product>
 	</cve>
 	<cve id="CVE-2015-7570" level="LOW">
+		<product>yeager_cms:1.2.1</product>
+	</cve>
+	<cve id="CVE-2015-7571" level="MEDIUM">
 		<product>yeager_cms:1.2.1</product>
 	</cve>
 	<cve id="CVE-2015-8356" level="MEDIUM">

@@ -59,6 +59,9 @@
 	<cve id="CVE-2017-9413" level="MEDIUM">
 		<product>subsonic:6.1.1</product>
 	</cve>
+	<cve id="CVE-2017-9412" level="MEDIUM">
+		<product>lame:3.99.5</product>
+	</cve>
 	<cve id="CVE-2017-6190" level="LOW">
 		<product>dwr-116_firmware:v1.05%28au%29</product>
 		<product>dwr-116_firmware:v1.00%28cp%29b10</product>
@@ -128,6 +131,9 @@
 	</cve>
 	<cve id="CVE-2017-7677" level="MEDIUM">
 		<product>ranger:0.7.0</product>
+	</cve>
+	<cve id="CVE-2017-9410" level="MEDIUM">
+		<product>lame:3.99.5</product>
 	</cve>
 	<cve id="CVE-2017-11127" level="MEDIUM">
 		<product>bolt_cms:3.2.14</product>
@@ -525,6 +531,9 @@
 	<cve id="CVE-2017-9528" level="MEDIUM">
 		<product>irfanview:4.44</product>
 		<product>fpx:4.46</product>
+	</cve>
+	<cve id="CVE-2017-8900" level="LOW">
+		<product>lightdm:1.22.0</product>
 	</cve>
 	<cve id="CVE-2017-9363" level="LOW">
 		<product>iam:1.7.4</product>
@@ -992,6 +1001,9 @@
 	<cve id="CVE-2017-8459" level="MEDIUM">
 		<product>brave:0.12.4</product>
 	</cve>
+	<cve id="CVE-2017-6484" level="MEDIUM">
+		<product>inter-mediator:5.5</product>
+	</cve>
 	<cve id="CVE-2017-6577" level="LOW">
 		<product>mail-masta:1.0</product>
 	</cve>
@@ -1198,6 +1210,9 @@
 	<cve id="CVE-2017-6641" level="LOW">
 		<product>remote_expert_manager:11.0.0</product>
 	</cve>
+	<cve id="CVE-2017-7887" level="MEDIUM">
+		<product>dolibarr:4.0.4</product>
+	</cve>
 	<cve id="CVE-2017-12597" level="MEDIUM">
 		<product>opencv:3.3.0</product>
 	</cve>
@@ -1215,60 +1230,8 @@
 	<cve id="CVE-2017-9462" level="LOW">
 		<product>mercurial:4.12</product>
 	</cve>
-	<cve id="CVE-2017-8907" level="LOW">
-		<product>bamboo:5.8.5</product>
-		<product>bamboo:5.8.1</product>
-		<product>bamboo:5.8.2</product>
-		<product>bamboo:5.6.1</product>
-		<product>bamboo:5.9</product>
-		<product>bamboo:5.6.2</product>
-		<product>bamboo:5.14.0</product>
-		<product>bamboo:5.12.2</product>
-		<product>bamboo:5.14.1</product>
-		<product>bamboo:6.0.0</product>
-		<product>bamboo:5.12.0</product>
-		<product>bamboo:5.12.1</product>
-		<product>bamboo:5.15.5</product>
-		<product>bamboo:5.15.3</product>
-		<product>bamboo:5.15.4</product>
-		<product>bamboo:5.14.4.1</product>
-		<product>bamboo:5.15.2</product>
-		<product>bamboo:5.1.1</product>
-		<product>bamboo:5.0</product>
-		<product>bamboo:5.9.4</product>
-		<product>bamboo:5.9.2</product>
-		<product>bamboo:5.9.3</product>
-		<product>bamboo:5.7.2</product>
-		<product>bamboo:5.9.1</product>
-		<product>bamboo:5.7.1</product>
-		<product>bamboo:5.13.1</product>
-		<product>bamboo:5.11.3</product>
-		<product>bamboo:5.13.2</product>
-		<product>bamboo:5.15.0</product>
-		<product>bamboo:5.13.0</product>
-		<product>bamboo:5.9.7</product>
-		<product>bamboo:5.0</product>
-		<product>bamboo:5.0</product>
-		<product>bamboo:5.14.5</product>
-		<product>bamboo:5.0</product>
-		<product>bamboo:5.14.2</product>
-		<product>bamboo:5.12.4</product>
-		<product>bamboo:5.0</product>
-		<product>bamboo:5.14.3</product>
-		<product>bamboo:5.12.5</product>
-		<product>bamboo:5.4.1</product>
-		<product>bamboo:5.7</product>
-		<product>bamboo:5.4.2</product>
-		<product>bamboo:5.8</product>
-		<product>bamboo:5.2.1</product>
-		<product>bamboo:5.5</product>
-		<product>bamboo:5.2.2</product>
-		<product>bamboo:5.6</product>
-		<product>bamboo:5.0.1</product>
-		<product>bamboo:5.3</product>
-		<product>bamboo:5.4</product>
-		<product>bamboo:5.1</product>
-		<product>bamboo:5.2</product>
+	<cve id="CVE-2017-7881" level="MEDIUM">
+		<product>bigtree_cms:4.2.17</product>
 	</cve>
 	<cve id="CVE-2017-9364" level="LOW">
 		<product>bigtree_cms:4.2.18</product>
@@ -1276,8 +1239,8 @@
 	<cve id="CVE-2017-9463" level="LOW">
 		<product>piwigo:2.9.0</product>
 	</cve>
-	<cve id="CVE-2017-9251" level="MEDIUM">
-		<product>finecms:-</product>
+	<cve id="CVE-2017-7882" level="LOW">
+		<product>libreoffice:5.2.6</product>
 	</cve>
 	<cve id="CVE-2017-9782" level="MEDIUM">
 		<product>jasper:2.0.12</product>
@@ -1695,8 +1658,8 @@
 	<cve id="CVE-2017-5625" level="LOW">
 		<product>oxygenos:4.0.2</product>
 	</cve>
-	<cve id="CVE-2017-6533" level="MEDIUM">
-		<product>webpagetest:3.0</product>
+	<cve id="CVE-2017-10047" level="LOW">
+		<product>micros_bellavita:2.7.x</product>
 	</cve>
 	<cve id="CVE-2017-6532" level="LOW">
 		<product>coaxdata_gateway_1gbps_firmware:1.02.0014_4.20</product>
@@ -1707,14 +1670,17 @@
 	<cve id="CVE-2017-6530" level="LOW">
 		<product>coaxdata_gateway_1gbps_firmware:1.02.0014_4.20</product>
 	</cve>
-	<cve id="CVE-2017-6537" level="MEDIUM">
-		<product>webpagetest:3.0</product>
+	<cve id="CVE-2017-10043" level="MEDIUM">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
+		<product>business_intelligence_publisher:11.1.1.9.0</product>
 	</cve>
 	<cve id="CVE-2017-6536" level="MEDIUM">
 		<product>webpagetest:3.0</product>
 	</cve>
-	<cve id="CVE-2017-6535" level="MEDIUM">
-		<product>webpagetest:3.0</product>
+	<cve id="CVE-2017-10041" level="MEDIUM">
+		<product>business_intelligence_publisher:12.2.1.2.0</product>
+		<product>business_intelligence_publisher:12.2.1.1.0</product>
+		<product>business_intelligence_publisher:11.1.1.9.0</product>
 	</cve>
 	<cve id="CVE-2017-6534" level="MEDIUM">
 		<product>webpagetest:3.0</product>
@@ -2013,6 +1979,9 @@
 		<product>internet_explorer:9</product>
 		<product>internet_explorer:10</product>
 	</cve>
+	<cve id="CVE-2017-8919" level="LOW">
+		<product>oncommand_api:1.2</product>
+	</cve>
 	<cve id="CVE-2017-8917" level="LOW">
 		<product>joomla%21:3.7.0</product>
 	</cve>
@@ -2241,6 +2210,9 @@
 		<product>connect_client_desktop_application_for_windows_and_mac:9.2.0</product>
 		<product>connect:8.5.3</product>
 	</cve>
+	<cve id="CVE-2017-7442" level="MEDIUM">
+		<product>nitro_pro:11.0.3.173</product>
+	</cve>
 	<cve id="CVE-2017-7443" level="MEDIUM">
 		<product>apt-cacher-ng:3.3</product>
 		<product>apt-cacher:1.7.13</product>
@@ -2274,6 +2246,9 @@
 	</cve>
 	<cve id="CVE-2017-11326" level="LOW">
 		<product>tilde_cms:1.0.1</product>
+	</cve>
+	<cve id="CVE-2017-11320" level="MEDIUM">
+		<product>tc7337_firmware:08.89.17.20.00</product>
 	</cve>
 	<cve id="CVE-2017-9841" level="LOW">
 		<product>phpunit:5.1.0</product>
@@ -2761,6 +2736,9 @@
 	<cve id="CVE-2017-9208" level="MEDIUM">
 		<product>qpdf:6.0.0</product>
 	</cve>
+	<cve id="CVE-2017-9289" level="MEDIUM">
+		<product>note:1.2.0</product>
+	</cve>
 	<cve id="CVE-2017-4971" level="MEDIUM">
 		<product>spring_web_flow:2.4.1</product>
 		<product>spring_web_flow:2.4.0</product>
@@ -3051,6 +3029,9 @@
 	<cve id="CVE-2017-8766" level="MEDIUM">
 		<product>irfanview:4.44</product>
 	</cve>
+	<cve id="CVE-2017-9770" level="LOW">
+		<product>razer_synapse</product>
+	</cve>
 	<cve id="CVE-2017-7624" level="MEDIUM">
 		<product>imageworsener:1.3.0</product>
 	</cve>
@@ -3273,8 +3254,12 @@
 		<product>drupal:8.3.0</product>
 		<product>drupal:8.3.0</product>
 	</cve>
-	<cve id="CVE-2017-6918" level="MEDIUM">
-		<product>bigtree_cms:4.2.16</product>
+	<cve id="CVE-2017-10030" level="MEDIUM">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
+	</cve>
+	<cve id="CVE-2017-10035" level="MEDIUM">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
+		<product>business_intelligence_publisher:11.1.1.9.0</product>
 	</cve>
 	<cve id="CVE-2017-7888" level="LOW">
 		<product>dolibarr:4.0.4</product>
@@ -3562,8 +3547,8 @@
 		<product>maximo_asset_management:7.5</product>
 		<product>maximo_asset_management:7.6</product>
 	</cve>
-	<cve id="CVE-2017-7946" level="MEDIUM">
-		<product>radare2:1.3.0</product>
+	<cve id="CVE-2017-6756" level="MEDIUM">
+		<product>prime_collaboration_provisioning:12.2</product>
 	</cve>
 	<cve id="CVE-2017-7579" level="MEDIUM">
 		<product>phpmyfaq:2.9.6</product>
@@ -3590,8 +3575,8 @@
 	<cve id="CVE-2017-9431" level="LOW">
 		<product>grpc:1.2.2</product>
 	</cve>
-	<cve id="CVE-2017-9430" level="LOW">
-		<product>dnstracer:1.9</product>
+	<cve id="CVE-2017-6754" level="LOW">
+		<product>smart_net_total_care_collector_appliance:3.11</product>
 	</cve>
 	<cve id="CVE-2017-9437" level="LOW">
 		<product>openbravo_erp:3.0</product>
@@ -3713,6 +3698,10 @@
 	</cve>
 	<cve id="CVE-2017-9438" level="LOW">
 		<product>yara:3.5.0</product>
+	</cve>
+	<cve id="CVE-2017-6752" level="LOW">
+		<product>adaptive_security_appliance:9.3.3</product>
+		<product>adaptive_security_appliance:9.6.2</product>
 	</cve>
 	<cve id="CVE-2017-1278" level="MEDIUM">
 		<product>rational_requirements_composer:4.0.6</product>
@@ -3864,6 +3853,9 @@
 	<cve id="CVE-2017-6180" level="MEDIUM">
 		<product>kk002_ip_camera_firmware:1.8.12</product>
 	</cve>
+	<cve id="CVE-2017-9212" level="LOW">
+		<product>bluetooth_stack:-</product>
+	</cve>
 	<cve id="CVE-2017-7725" level="MEDIUM">
 		<product>concrete5:5.8.1.0</product>
 	</cve>
@@ -3942,101 +3934,8 @@
 		<product>antivirus_plus:12.0</product>
 		<product>total_security:12.0</product>
 	</cve>
-	<cve id="CVE-2017-9505" level="LOW">
-		<product>confluence:5.10.4</product>
-		<product>confluence:6.0.1</product>
-		<product>confluence:5.10.2</product>
-		<product>confluence:5.10.3</product>
-		<product>confluence:5.8.13</product>
-		<product>confluence:5.8.15</product>
-		<product>confluence:5.8.14</product>
-		<product>confluence:6.0.5</product>
-		<product>confluence:5.10.1</product>
-		<product>confluence:6.0.4</product>
-		<product>confluence:6.0.3</product>
-		<product>confluence:6.0.2</product>
-		<product>confluence:5.1</product>
-		<product>confluence:5.0.2</product>
-		<product>confluence:5.4</product>
-		<product>confluence:5.0.1</product>
-		<product>confluence:5.3</product>
-		<product>confluence:5.8.10</product>
-		<product>confluence:5.6</product>
-		<product>confluence:5.0.3</product>
-		<product>confluence:5.5</product>
-		<product>confluence:5.2.4</product>
-		<product>confluence:5.4.2</product>
-		<product>confluence:5.2.3</product>
-		<product>confluence:5.4.1</product>
-		<product>confluence:5.7</product>
-		<product>confluence:4.3.1</product>
-		<product>confluence:5.9.7</product>
-		<product>confluence:4.3.2</product>
-		<product>confluence:5.9.6</product>
-		<product>confluence:4.3.3</product>
-		<product>confluence:5.9.9</product>
-		<product>confluence:5.9.8</product>
-		<product>confluence:5.9.14</product>
-		<product>confluence:5.0</product>
-		<product>confluence:5.5.3</product>
-		<product>confluence:5.7.1</product>
-		<product>confluence:5.3.4</product>
-		<product>confluence:5.5.2</product>
-		<product>confluence:5.7.3</product>
-		<product>confluence:5.9.1</product>
-		<product>confluence:5.9.10</product>
-		<product>confluence:5.9.11</product>
-		<product>confluence:5.9.12</product>
-		<product>confluence:5.5.7</product>
-		<product>confluence:5.7.5</product>
-		<product>confluence:5.9.3</product>
-		<product>confluence:5.5.6</product>
-		<product>confluence:5.7.4</product>
-		<product>confluence:5.9.2</product>
-		<product>confluence:5.9.5</product>
-		<product>confluence:5.7.6</product>
-		<product>confluence:5.9.4</product>
-		<product>confluence:5.8.17</product>
-		<product>confluence:5.8.16</product>
-		<product>confluence:5.8.18</product>
-		<product>confluence:5.10</product>
-		<product>confluence:6.1.4</product>
-		<product>confluence:6.1.3</product>
-		<product>confluence:6.1.2</product>
-		<product>confluence:6.1.1</product>
-		<product>confluence:4.3</product>
-		<product>confluence:5.1.1</product>
-		<product>confluence:4.3.5</product>
-		<product>confluence:4.3.6</product>
-		<product>confluence:4.3.7</product>
-		<product>confluence:5.1.3</product>
-		<product>confluence:5.3.1</product>
-		<product>confluence:6.2</product>
-		<product>confluence:5.1.2</product>
-		<product>confluence:5.1.5</product>
-		<product>confluence:5.5.1</product>
-		<product>confluence:6.0</product>
-		<product>confluence:5.1.4</product>
-		<product>confluence:6.1</product>
-		<product>confluence:5.8.8</product>
-		<product>confluence:5.8.9</product>
-		<product>confluence:5.4.4</product>
-		<product>confluence:5.2.5</product>
-		<product>confluence:5.4.3</product>
-		<product>confluence:5.6.1</product>
-		<product>confluence:5.6.4</product>
-		<product>confluence:5.8.2</product>
-		<product>confluence:5.6.3</product>
-		<product>confluence:5.6.6</product>
-		<product>confluence:5.8.4</product>
-		<product>confluence:5.10.8</product>
-		<product>confluence:5.6.5</product>
-		<product>confluence:5.8.6</product>
-		<product>confluence:5.10.6</product>
-		<product>confluence:5.8.5</product>
-		<product>confluence:5.10.7</product>
-		<product>confluence:6.0.7</product>
-		<product>confluence:6.0.6</product>
+	<cve id="CVE-2017-7885" level="MEDIUM">
+		<product>jbig2dec:0.13</product>
 	</cve>
 	<cve id="CVE-2017-6682" level="LOW">
 		<product>elastic_services_controller:2.2%289.76%29</product>
@@ -4115,8 +4014,8 @@
 		<product>radicale:2.0.0</product>
 		<product>radicale:1.1.1</product>
 	</cve>
-	<cve id="CVE-2017-8900" level="LOW">
-		<product>lightdm:1.22.0</product>
+	<cve id="CVE-2017-7886" level="LOW">
+		<product>dolibarr:4.0.4</product>
 	</cve>
 	<cve id="CVE-2017-8903" level="LOW">
 		<product>xen:4.8.1</product>
@@ -4155,8 +4054,8 @@
 	<cve id="CVE-2017-9186" level="LOW">
 		<product>autotrace:0.31.1</product>
 	</cve>
-	<cve id="CVE-2017-9185" level="LOW">
-		<product>autotrace:0.31.1</product>
+	<cve id="CVE-2017-9146" level="MEDIUM">
+		<product>ytnef:1.9.2</product>
 	</cve>
 	<cve id="CVE-2017-9184" level="LOW">
 		<product>autotrace:0.31.1</product>
@@ -4699,6 +4598,9 @@
 		<product>airwatch_inbox:-</product>
 		<product>airwatch_agent:-</product>
 	</cve>
+	<cve id="CVE-2017-9899" level="MEDIUM">
+		<product>xnview:2.40</product>
+	</cve>
 	<cve id="CVE-2017-4969" level="LOW">
 		<product>cf-release:254</product>
 	</cve>
@@ -5142,6 +5044,9 @@
 		<product>jitsi:2.9.5544</product>
 		<product>jitsi:2.5.5061</product>
 	</cve>
+	<cve id="CVE-2017-9769" level="LOW">
+		<product>razer_synapse:2.20.15.1104</product>
+	</cve>
 	<cve id="CVE-2017-5604" level="MEDIUM">
 		<product>mcabber:1.0.4</product>
 		<product>mcabber:1.0.3</product>
@@ -5274,6 +5179,9 @@
 	<cve id="CVE-2017-8053" level="MEDIUM">
 		<product>podofo:0.9.5</product>
 	</cve>
+	<cve id="CVE-2017-12067" level="LOW">
+		<product>potrace:1.14</product>
+	</cve>
 	<cve id="CVE-2017-7626" level="MEDIUM">
 		<product>smart_related_articles:1.1</product>
 	</cve>
@@ -5341,6 +5249,12 @@
 	<cve id="CVE-2017-6620" level="LOW">
 		<product>small_business_rv_series_router_firmware:1.0.1.19</product>
 	</cve>
+	<cve id="CVE-2017-10025" level="LOW">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
+	</cve>
+	<cve id="CVE-2017-10024" level="MEDIUM">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
+	</cve>
 	<cve id="CVE-2017-6399" level="LOW">
 		<product>access:7.2.1</product>
 		<product>netbackup_appliance:2.7.1</product>
@@ -5349,11 +5263,11 @@
 	<cve id="CVE-2017-6398" level="LOW">
 		<product>interscan_messaging_security_virtual_appliance:9.1-1600</product>
 	</cve>
-	<cve id="CVE-2017-6397" level="MEDIUM">
-		<product>flightairmap:1.0</product>
+	<cve id="CVE-2017-10029" level="MEDIUM">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
 	</cve>
-	<cve id="CVE-2017-6396" level="MEDIUM">
-		<product>webpagetest:3.0</product>
+	<cve id="CVE-2017-10028" level="MEDIUM">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
 	</cve>
 	<cve id="CVE-2017-6395" level="MEDIUM">
 		<product>hashover:2.0</product>
@@ -5373,8 +5287,14 @@
 	<cve id="CVE-2017-6390" level="MEDIUM">
 		<product>whatanime.ga:34c7155c6fd82b7746fe8b56eb89bf278553c421</product>
 	</cve>
+	<cve id="CVE-2017-6397" level="MEDIUM">
+		<product>flightairmap:1.0</product>
+	</cve>
 	<cve id="CVE-2017-9444" level="MEDIUM">
 		<product>bigtree_cms:4.2.18</product>
+	</cve>
+	<cve id="CVE-2017-6396" level="MEDIUM">
+		<product>webpagetest:3.0</product>
 	</cve>
 	<cve id="CVE-2017-8051" level="LOW">
 		<product>appliance:4.3.1</product>
@@ -5657,7 +5577,114 @@
 		<product>radare2:1.5.0</product>
 	</cve>
 	<cve id="CVE-2017-0247" level="LOW">
-		<product>asp.net:-</product>
+		<product>microsoft.aspnetcore.mvc:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.2</product>
+		<product>system.text.encodings.web:4.0.0</product>
+		<product>system.net.http.winhttphandler:4.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.2</product>
+		<product>system.net.websockets.client:4.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.3</product>
+		<product>system.net.http:4.3.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc:1.0.0</product>
+		<product>system.text.encodings.web:4.3.0</product>
+		<product>system.net.http:4.1.1</product>
+		<product>microsoft.aspnetcore.mvc:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.0</product>
+		<product>system.net.websockets.client:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.2</product>
+		<product>system.net.security:4.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.2</product>
+		<product>system.net.security:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.0</product>
+		<product>system.net.http.winhttphandler:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.0</product>
 	</cve>
 	<cve id="CVE-2017-9331" level="MEDIUM">
 		<product>epesi:1.8.2</product>
@@ -5757,7 +5784,114 @@
 		<product>libdwarf:20170628</product>
 	</cve>
 	<cve id="CVE-2017-0249" level="LOW">
-		<product>asp.net:-</product>
+		<product>microsoft.aspnetcore.mvc:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.2</product>
+		<product>system.text.encodings.web:4.0.0</product>
+		<product>system.net.http.winhttphandler:4.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.2</product>
+		<product>system.net.websockets.client:4.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.3</product>
+		<product>system.net.http:4.3.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc:1.0.0</product>
+		<product>system.text.encodings.web:4.3.0</product>
+		<product>system.net.http:4.1.1</product>
+		<product>microsoft.aspnetcore.mvc:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.0</product>
+		<product>system.net.websockets.client:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.2</product>
+		<product>system.net.security:4.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.2</product>
+		<product>system.net.security:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.0</product>
+		<product>system.net.http.winhttphandler:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.0</product>
 	</cve>
 	<cve id="CVE-2017-9518" level="MEDIUM">
 		<product>atmail:7.8.0.1</product>
@@ -6393,6 +6527,9 @@
 	<cve id="CVE-2017-7493" level="LOW">
 		<product>qemu</product>
 	</cve>
+	<cve id="CVE-2017-9815" level="MEDIUM">
+		<product>libtiff:4.0.7</product>
+	</cve>
 	<cve id="CVE-2017-7719" level="LOW">
 		<product>spider_event_calendar:1.5.51</product>
 	</cve>
@@ -6590,8 +6727,8 @@
 	<cve id="CVE-2017-5973" level="LOW">
 		<product>qemu</product>
 	</cve>
-	<cve id="CVE-2017-9146" level="MEDIUM">
-		<product>ytnef:1.9.2</product>
+	<cve id="CVE-2017-8000" level="MEDIUM">
+		<product>rsa_authentication_manager:8.2</product>
 	</cve>
 	<cve id="CVE-2017-3255" level="LOW">
 		<product>jdeveloper:12.2.1.2.0</product>
@@ -6865,8 +7002,8 @@
 	<cve id="CVE-2017-3418" level="MEDIUM">
 		<product>customer_relationship_management_technical_foundation:12.1.3</product>
 	</cve>
-	<cve id="CVE-2017-7279" level="LOW">
-		<product>enterprise_backup:8.2.0-8</product>
+	<cve id="CVE-2017-0320" level="LOW">
+		<product>gpu_driver:-</product>
 	</cve>
 	<cve id="CVE-2017-3413" level="MEDIUM">
 		<product>advanced_outbound_telephony:12.2.5</product>
@@ -6939,6 +7076,9 @@
 		<product>advanced_outbound_telephony:12.2.3</product>
 		<product>advanced_outbound_telephony:12.2.4</product>
 		<product>advanced_outbound_telephony:12.1.1</product>
+	</cve>
+	<cve id="CVE-2017-12414" level="LOW">
+		<product>format_factory:4.1.0</product>
 	</cve>
 	<cve id="CVE-2017-9613" level="MEDIUM">
 		<product>successfactors:b1702p5e.1190658</product>
@@ -7107,8 +7247,9 @@
 	<cve id="CVE-2017-2272" level="MEDIUM">
 		<product>attachecase:3.2.2.6</product>
 	</cve>
-	<cve id="CVE-2017-5553" level="MEDIUM">
-		<product>b2evolution:6.8.4</product>
+	<cve id="CVE-2017-2273" level="MEDIUM">
+		<product>wmr-433_firmware:1.02</product>
+		<product>wmr-433w_firmware:1.40</product>
 	</cve>
 	<cve id="CVE-2017-2274" level="MEDIUM">
 		<product>wmr-433w_firmware:1.40</product>
@@ -7389,6 +7530,9 @@
 		<product>internet_security:10.1.0.316</product>
 		<product>antivirus_pro:10.1.0.316</product>
 	</cve>
+	<cve id="CVE-2017-9379" level="MEDIUM">
+		<product>bigtree_cms:4.2.18</product>
+	</cve>
 	<cve id="CVE-2017-7968" level="LOW">
 		<product>wonderware_indusoft_web_studio:8.0</product>
 	</cve>
@@ -7488,8 +7632,8 @@
 	<cve id="CVE-2017-9503" level="MEDIUM">
 		<product>qemu</product>
 	</cve>
-	<cve id="CVE-2017-9899" level="MEDIUM">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-9457" level="LOW">
+		<product>intense_pc_firmware:cr_2.2.0.400.2</product>
 	</cve>
 	<cve id="CVE-2017-10730" level="MEDIUM">
 		<product>irfanview:4.44</product>
@@ -7512,8 +7656,8 @@
 	<cve id="CVE-2017-8611" level="MEDIUM">
 		<product>edge</product>
 	</cve>
-	<cve id="CVE-2017-8934" level="LOW">
-		<product>pcmanfm:1.2.5</product>
+	<cve id="CVE-2017-11760" level="LOW">
+		<product>projeqtor:6.3.1</product>
 	</cve>
 	<cve id="CVE-2017-0252" level="LOW">
 		<product>edge:-</product>
@@ -7525,7 +7669,114 @@
 		<product>sharepoint_foundation:2013</product>
 	</cve>
 	<cve id="CVE-2017-0256" level="LOW">
-		<product>asp.net:-</product>
+		<product>microsoft.aspnetcore.mvc:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.2</product>
+		<product>system.text.encodings.web:4.0.0</product>
+		<product>system.net.http.winhttphandler:4.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.1.2</product>
+		<product>system.net.websockets.client:4.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.3</product>
+		<product>system.net.http:4.3.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.core:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc:1.0.0</product>
+		<product>system.text.encodings.web:4.3.0</product>
+		<product>system.net.http:4.1.1</product>
+		<product>microsoft.aspnetcore.mvc:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.json:1.0.0</product>
+		<product>system.net.websockets.client:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.localization:1.1.2</product>
+		<product>system.net.security:4.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.webapicompatshim:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.2</product>
+		<product>system.net.security:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.dataannotations:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.formatters.xml:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.razor.host:1.0.0</product>
+		<product>system.net.http.winhttphandler:4.3.0</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.abstractions:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.razor:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.taghelpers:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.cors:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.2</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.3</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.0</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.1</product>
+		<product>microsoft.aspnetcore.mvc.apiexplorer:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.core:1.0.2</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.1</product>
+		<product>microsoft.aspnetcore.mvc.viewfeatures:1.1.0</product>
 	</cve>
 	<cve id="CVE-2017-1381" level="LOW">
 		<product>websphere_application_server:8.0</product>
@@ -7822,6 +8073,15 @@
 	</cve>
 	<cve id="CVE-2017-9452" level="MEDIUM">
 		<product>piwigo:2.9.0</product>
+	</cve>
+	<cve id="CVE-2017-6612" level="LOW">
+		<product>asr_5000_series_software:17.3.9.62033</product>
+		<product>asr_5000_series_software:20.1.2</product>
+		<product>asr_5000_series_software:19.6.3</product>
+		<product>asr_5000_series_software:21.1.2</product>
+		<product>asr_5000_series_software:20.2.12</product>
+		<product>asr_5000_series_software:17.7.5</product>
+		<product>asr_5000_series_software:21.0.1</product>
 	</cve>
 	<cve id="CVE-2017-6613" level="LOW">
 		<product>prime_network_registrar:8.3.0</product>
@@ -8672,8 +8932,8 @@
 	<cve id="CVE-2017-5837" level="MEDIUM">
 		<product>gstreamer:1.10.2</product>
 	</cve>
-	<cve id="CVE-2017-5836" level="LOW">
-		<product>libplist</product>
+	<cve id="CVE-2017-2288" level="MEDIUM">
+		<product>lhaforge:1.6.5</product>
 	</cve>
 	<cve id="CVE-2017-5835" level="LOW">
 		<product>libplist</product>
@@ -8722,23 +8982,34 @@
 	<cve id="CVE-2017-7884" level="LOW">
 		<product>apc_ups_daemon:3.14.14</product>
 	</cve>
-	<cve id="CVE-2017-7885" level="MEDIUM">
-		<product>jbig2dec:0.13</product>
+	<cve id="CVE-2017-10002" level="LOW">
+		<product>hospitality_inventory_management:8.5.1</product>
+		<product>hospitality_inventory_management:9.0.0</product>
 	</cve>
-	<cve id="CVE-2017-7886" level="LOW">
-		<product>dolibarr:4.0.4</product>
+	<cve id="CVE-2017-10001" level="MEDIUM">
+		<product>hospitality_simphony:1.7.1</product>
 	</cve>
-	<cve id="CVE-2017-7887" level="MEDIUM">
-		<product>dolibarr:4.0.4</product>
+	<cve id="CVE-2017-10000" level="LOW">
+		<product>hospitality_reporting_and_analytics:9.0.0</product>
+		<product>hospitality_reporting_and_analytics:8.5.1</product>
 	</cve>
-	<cve id="CVE-2017-9815" level="MEDIUM">
-		<product>libtiff:4.0.7</product>
+	<cve id="CVE-2017-10007" level="LOW">
+		<product>flexcube_private_banking:2.0.1</product>
+		<product>flexcube_private_banking:2.2.0</product>
+		<product>flexcube_private_banking:2.0.0</product>
+		<product>flexcube_private_banking:12.0.1</product>
 	</cve>
-	<cve id="CVE-2017-7881" level="MEDIUM">
-		<product>bigtree_cms:4.2.17</product>
+	<cve id="CVE-2017-10006" level="LOW">
+		<product>flexcube_private_banking:2.0.1</product>
+		<product>flexcube_private_banking:2.2.0</product>
+		<product>flexcube_private_banking:2.0.0</product>
+		<product>flexcube_private_banking:12.0.1</product>
 	</cve>
-	<cve id="CVE-2017-7882" level="LOW">
-		<product>libreoffice:5.2.6</product>
+	<cve id="CVE-2017-10005" level="MEDIUM">
+		<product>flexcube_private_banking:2.0.1</product>
+		<product>flexcube_private_banking:2.2.0</product>
+		<product>flexcube_private_banking:2.0.0</product>
+		<product>flexcube_private_banking:12.0.1</product>
 	</cve>
 	<cve id="CVE-2017-6578" level="LOW">
 		<product>mail-masta:1.0</product>
@@ -9004,8 +9275,8 @@
 	<cve id="CVE-2017-9288" level="MEDIUM">
 		<product>raygun4wp:1.8.0</product>
 	</cve>
-	<cve id="CVE-2017-9289" level="MEDIUM">
-		<product>note:1.2.0</product>
+	<cve id="CVE-2017-6533" level="MEDIUM">
+		<product>webpagetest:3.0</product>
 	</cve>
 	<cve id="CVE-2017-8383" level="LOW">
 		<product>craft_cms:2.6.2974</product>
@@ -9048,6 +9319,9 @@
 	</cve>
 	<cve id="CVE-2017-7603" level="MEDIUM">
 		<product>libaacplus:2.0.2</product>
+	</cve>
+	<cve id="CVE-2017-6537" level="MEDIUM">
+		<product>webpagetest:3.0</product>
 	</cve>
 	<cve id="CVE-2017-1249" level="MEDIUM">
 		<product>rhapsody_design_manager:6.0.2</product>
@@ -9907,8 +10181,8 @@
 	<cve id="CVE-2017-5223" level="LOW">
 		<product>phpmailer:5.2.21</product>
 	</cve>
-	<cve id="CVE-2017-9568" level="MEDIUM">
-		<product>financial_plus_mobile_banking:3.0.3</product>
+	<cve id="CVE-2017-8006" level="MEDIUM">
+		<product>rsa_authentication_manager:8.2</product>
 	</cve>
 	<cve id="CVE-2017-9253" level="MEDIUM">
 		<product>freeware_advanced_audio_decoder_2:2.7</product>
@@ -10037,6 +10311,9 @@
 	</cve>
 	<cve id="CVE-2017-9836" level="MEDIUM">
 		<product>piwigo:2.9.1</product>
+	</cve>
+	<cve id="CVE-2017-9258" level="MEDIUM">
+		<product>soundtouch:1.9.2</product>
 	</cve>
 	<cve id="CVE-2017-5959" level="LOW">
 		<product>genixcms:1.0.1</product>
@@ -10255,6 +10532,9 @@
 	<cve id="CVE-2017-12435" level="LOW">
 		<product>imagemagick:7.0.6-1</product>
 	</cve>
+	<cve id="CVE-2017-9925" level="MEDIUM">
+		<product>swftools:2013-04-09-1007</product>
+	</cve>
 	<cve id="CVE-2017-8398" level="LOW">
 		<product>binutils:2.28</product>
 	</cve>
@@ -10285,6 +10565,10 @@
 	</cve>
 	<cve id="CVE-2017-2290" level="LOW">
 		<product>mcollective-puppet-agent:1.12.0</product>
+	</cve>
+	<cve id="CVE-2017-9921" level="MEDIUM">
+		<product>irfanview:4.44</product>
+		<product>tools:4.50</product>
 	</cve>
 	<cve id="CVE-2017-2298" level="MEDIUM">
 		<product>mcollective-sshkey-security:0.5.0</product>
@@ -10993,6 +11277,61 @@
 	</cve>
 	<cve id="CVE-2017-6055" level="MEDIUM">
 		<product>eparakstitajs_3:1.3.8</product>
+	</cve>
+	<cve id="CVE-2017-8907" level="LOW">
+		<product>bamboo:5.8.5</product>
+		<product>bamboo:5.8.1</product>
+		<product>bamboo:5.8.2</product>
+		<product>bamboo:5.6.1</product>
+		<product>bamboo:5.9</product>
+		<product>bamboo:5.6.2</product>
+		<product>bamboo:5.14.0</product>
+		<product>bamboo:5.12.2</product>
+		<product>bamboo:5.14.1</product>
+		<product>bamboo:6.0.0</product>
+		<product>bamboo:5.12.0</product>
+		<product>bamboo:5.12.1</product>
+		<product>bamboo:5.15.5</product>
+		<product>bamboo:5.15.3</product>
+		<product>bamboo:5.15.4</product>
+		<product>bamboo:5.14.4.1</product>
+		<product>bamboo:5.15.2</product>
+		<product>bamboo:5.1.1</product>
+		<product>bamboo:5.0</product>
+		<product>bamboo:5.9.4</product>
+		<product>bamboo:5.9.2</product>
+		<product>bamboo:5.9.3</product>
+		<product>bamboo:5.7.2</product>
+		<product>bamboo:5.9.1</product>
+		<product>bamboo:5.7.1</product>
+		<product>bamboo:5.13.1</product>
+		<product>bamboo:5.11.3</product>
+		<product>bamboo:5.13.2</product>
+		<product>bamboo:5.15.0</product>
+		<product>bamboo:5.13.0</product>
+		<product>bamboo:5.9.7</product>
+		<product>bamboo:5.0</product>
+		<product>bamboo:5.0</product>
+		<product>bamboo:5.14.5</product>
+		<product>bamboo:5.0</product>
+		<product>bamboo:5.14.2</product>
+		<product>bamboo:5.12.4</product>
+		<product>bamboo:5.0</product>
+		<product>bamboo:5.14.3</product>
+		<product>bamboo:5.12.5</product>
+		<product>bamboo:5.4.1</product>
+		<product>bamboo:5.7</product>
+		<product>bamboo:5.4.2</product>
+		<product>bamboo:5.8</product>
+		<product>bamboo:5.2.1</product>
+		<product>bamboo:5.5</product>
+		<product>bamboo:5.2.2</product>
+		<product>bamboo:5.6</product>
+		<product>bamboo:5.0.1</product>
+		<product>bamboo:5.3</product>
+		<product>bamboo:5.4</product>
+		<product>bamboo:5.1</product>
+		<product>bamboo:5.2</product>
 	</cve>
 	<cve id="CVE-2017-6029" level="MEDIUM">
 		<product>atvise_scada:2.5.10</product>
@@ -11707,21 +12046,34 @@
 	<cve id="CVE-2017-11744" level="MEDIUM">
 		<product>modx_revolution:2.5.7</product>
 	</cve>
-	<cve id="CVE-2017-9466" level="LOW">
-		<product>wr841n_v8_firmware:tl-wr841n_v8_140724</product>
+	<cve id="CVE-2017-11742" level="LOW">
+		<product>libexpat:2.2.2</product>
+		<product>libexpat:2.2.1</product>
 	</cve>
-	<cve id="CVE-2017-6746" level="LOW">
-		<product>web_security_appliance:10.1.0</product>
-		<product>web_security_appliance:10.0.0-233</product>
-		<product>web_security_appliance:10.0_base</product>
-		<product>web_security_appliance:11.0.0-613</product>
-		<product>web_security_appliance:11.0.0</product>
-		<product>web_security_appliance:11.0.0-641</product>
-		<product>web_security_appliance:10.1.1-234</product>
-		<product>web_security_appliance:10.5.0-358</product>
-		<product>web_security_appliance:10.5.0</product>
-		<product>web_security_appliance:10.1.0-204</product>
-		<product>web_security_appliance:10.1.1-230</product>
+	<cve id="CVE-2017-6745" level="LOW">
+		<product>videoscape_distribution_suite_for_television:3.3%281%29</product>
+		<product>videoscape_distribution_suite_for_television:4.1%285%29</product>
+		<product>videoscape_distribution_suite_for_television:3.5%281%29</product>
+		<product>videoscape_distribution_suite_for_television:3.2%287%29</product>
+		<product>videoscape_distribution_suite_for_television:3.4%282%29</product>
+		<product>videoscape_distribution_suite_for_television:3.4%281%29</product>
+		<product>videoscape_distribution_suite_for_television:3.2%286%29</product>
+		<product>videoscape_distribution_suite_for_television:3.8%281%29</product>
+		<product>videoscape_distribution_suite_for_television:3.9%281%29</product>
+		<product>videoscape_distribution_suite_for_television:3.5%281%29-cos</product>
+		<product>videoscape_distribution_suite_for_television:4.1%284%29</product>
+		<product>videoscape_distribution_suite_for_television:3.6%281%29</product>
+		<product>videoscape_distribution_suite_for_television:4.1%283%29</product>
+		<product>videoscape_distribution_suite_for_television:4.4%281%29</product>
+		<product>videoscape_distribution_suite_for_television:3.2%285%29es1</product>
+		<product>videoscape_distribution_suite_for_television:4.1%282%29</product>
+		<product>videoscape_distribution_suite_for_television:4.2%281%29</product>
+	</cve>
+	<cve id="CVE-2017-11749" level="MEDIUM">
+		<product>ftp_commander:8.02</product>
+	</cve>
+	<cve id="CVE-2017-11748" level="MEDIUM">
+		<product>spider_player:2.5.3</product>
 	</cve>
 	<cve id="CVE-2017-9058" level="LOW">
 		<product>ytnef:1.9.2</product>
@@ -11749,29 +12101,41 @@
 		<product>exchange_server:2013</product>
 		<product>exchange_server:2016</product>
 	</cve>
-	<cve id="CVE-2017-10775" level="LOW">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-10803" level="MEDIUM">
+		<product>odoo:9.0</product>
+		<product>odoo:10.0</product>
+		<product>odoo:9.0</product>
+		<product>odoo:8.0</product>
+		<product>odoo:10.0</product>
 	</cve>
 	<cve id="CVE-2017-10774" level="LOW">
 		<product>xnview:2.40</product>
 	</cve>
-	<cve id="CVE-2017-10777" level="LOW">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-10801" level="MEDIUM">
+		<product>phpsocial:3.0.0</product>
 	</cve>
-	<cve id="CVE-2017-10776" level="LOW">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-10800" level="MEDIUM">
+		<product>graphicsmagick:1.3.25</product>
 	</cve>
-	<cve id="CVE-2017-10771" level="LOW">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-10807" level="LOW">
+		<product>jabberd2:2.6.0</product>
 	</cve>
-	<cve id="CVE-2017-10770" level="LOW">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-10806" level="LOW">
+		<product>qemu</product>
 	</cve>
-	<cve id="CVE-2017-10773" level="LOW">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-10805" level="LOW">
+		<product>odoo:9.0</product>
+		<product>odoo:10.0</product>
+		<product>odoo:9.0</product>
+		<product>odoo:8.0</product>
+		<product>odoo:10.0</product>
 	</cve>
-	<cve id="CVE-2017-10772" level="LOW">
-		<product>xnview:2.40</product>
+	<cve id="CVE-2017-10804" level="LOW">
+		<product>odoo:9.0</product>
+		<product>odoo:10.0</product>
+		<product>odoo:9.0</product>
+		<product>odoo:8.0</product>
+		<product>odoo:10.0</product>
 	</cve>
 	<cve id="CVE-2017-10779" level="LOW">
 		<product>xnview:2.40</product>
@@ -11885,8 +12249,8 @@
 	<cve id="CVE-2017-9125" level="MEDIUM">
 		<product>libquicktime:1.2.4</product>
 	</cve>
-	<cve id="CVE-2017-9124" level="MEDIUM">
-		<product>libquicktime:1.2.4</product>
+	<cve id="CVE-2017-6535" level="MEDIUM">
+		<product>webpagetest:3.0</product>
 	</cve>
 	<cve id="CVE-2017-9127" level="MEDIUM">
 		<product>libquicktime:1.2.4</product>
@@ -12384,6 +12748,9 @@
 		<product>dpc3939_firmware:dpc3939-p20-18-v303r20421733-160420a-cmcst</product>
 		<product>dpc3939_firmware:dpc3939-p20-18-v303r20421746-170221a-cmcst</product>
 		<product>dpc3939b_firmware:dpc3939b-v303r204217-150321a-cmcst</product>
+	</cve>
+	<cve id="CVE-2017-8078" level="LOW">
+		<product>tl-sg108e_firmware:1.1.2</product>
 	</cve>
 	<cve id="CVE-2017-2820" level="MEDIUM">
 		<product>poppler:0.53.0</product>
@@ -13319,8 +13686,8 @@
 	<cve id="CVE-2017-1131" level="LOW">
 		<product>sterling_b2b_integrator:5.2</product>
 	</cve>
-	<cve id="CVE-2017-9868" level="LOW">
-		<product>mosquitto:1.4.12</product>
+	<cve id="CVE-2017-11422" level="LOW">
+		<product>framework_cms:2.5.11</product>
 	</cve>
 	<cve id="CVE-2017-11423" level="MEDIUM">
 		<product>libmspack:0.5</product>
@@ -13360,6 +13727,9 @@
 	</cve>
 	<cve id="CVE-2017-9865" level="MEDIUM">
 		<product>poppler:0.54.0</product>
+	</cve>
+	<cve id="CVE-2017-7279" level="LOW">
+		<product>enterprise_backup:8.2.0-8</product>
 	</cve>
 	<cve id="CVE-2017-8856" level="LOW">
 		<product>netbackup:8.0</product>
@@ -13660,11 +14030,17 @@
 		<product>junos:15.1</product>
 		<product>junos:15.1x53</product>
 	</cve>
+	<cve id="CVE-2017-5553" level="MEDIUM">
+		<product>b2evolution:6.8.4</product>
+	</cve>
 	<cve id="CVE-2017-6040" level="LOW">
 		<product>gecko_lite_managed_switch_firmware:2.0.00</product>
 	</cve>
 	<cve id="CVE-2017-6351" level="MEDIUM">
 		<product>wipg-1500_firmware:1.0.3.7</product>
+	</cve>
+	<cve id="CVE-2017-9185" level="LOW">
+		<product>autotrace:0.31.1</product>
 	</cve>
 	<cve id="CVE-2017-8912" level="LOW">
 		<product>cms_made_simple:2.1.6</product>
@@ -15844,6 +16220,9 @@
 		<product>websphere_portal:8.5</product>
 		<product>websphere_portal:9.0</product>
 	</cve>
+	<cve id="CVE-2017-9259" level="MEDIUM">
+		<product>soundtouch:1.9.2</product>
+	</cve>
 	<cve id="CVE-2017-1214" level="MEDIUM">
 		<product>inotes:8.5.1.4</product>
 		<product>inotes:8.5.2.3</product>
@@ -15879,11 +16258,44 @@
 	<cve id="CVE-2017-0349" level="LOW">
 		<product>gpu_driver:-</product>
 	</cve>
+	<cve id="CVE-2017-6746" level="LOW">
+		<product>web_security_appliance:10.1.0</product>
+		<product>web_security_appliance:10.0.0-233</product>
+		<product>web_security_appliance:10.0_base</product>
+		<product>web_security_appliance:11.0.0-613</product>
+		<product>web_security_appliance:11.0.0</product>
+		<product>web_security_appliance:11.0.0-641</product>
+		<product>web_security_appliance:10.1.1-234</product>
+		<product>web_security_appliance:10.5.0-358</product>
+		<product>web_security_appliance:10.5.0</product>
+		<product>web_security_appliance:10.1.0-204</product>
+		<product>web_security_appliance:10.1.1-230</product>
+	</cve>
+	<cve id="CVE-2017-6747" level="LOW">
+		<product>identity_services_engine:1.4%280.109%29</product>
+		<product>identity_services_engine:2.0%281.130%29</product>
+		<product>identity_services_engine:1.4%280.253%29</product>
+		<product>identity_services_engine:1.3%280.909%29</product>
+		<product>identity_services_engine:1.4%280.908%29</product>
+		<product>identity_services_engine:1.4%280.181%29</product>
+		<product>identity_services_engine:2.0_base</product>
+		<product>identity_services_engine:2.1%28102.101%29</product>
+		<product>identity_services_engine:1.3%280.722%29</product>
+		<product>identity_services_engine:2.0%280.222%29</product>
+		<product>identity_services_engine:1.3%28120.135%29</product>
+		<product>identity_services_engine:1.3%280.876%29</product>
+		<product>identity_services_engine:2.1_base</product>
+		<product>identity_services_engine:2.1%280.474%29</product>
+		<product>identity_services_engine:1.3%28106.146%29</product>
+		<product>identity_services_engine:2.1%280.800%29</product>
+		<product>identity_services_engine:2.0%280.147%29</product>
+		<product>identity_services_engine:2.0%280.169%29</product>
+	</cve>
 	<cve id="CVE-2017-5552" level="LOW">
 		<product>qemu</product>
 	</cve>
-	<cve id="CVE-2017-9925" level="MEDIUM">
-		<product>swftools:2013-04-09-1007</product>
+	<cve id="CVE-2017-11721" level="LOW">
+		<product>ioquake3:2017-07-31</product>
 	</cve>
 	<cve id="CVE-2017-11720" level="LOW">
 		<product>lame:3.99.5</product>
@@ -15894,9 +16306,8 @@
 	<cve id="CVE-2017-11722" level="MEDIUM">
 		<product>graphicsmagick:1.3.26</product>
 	</cve>
-	<cve id="CVE-2017-9921" level="MEDIUM">
-		<product>irfanview:4.44</product>
-		<product>tools:4.50</product>
+	<cve id="CVE-2017-11725" level="MEDIUM">
+		<product>secret_server:10.2.000018</product>
 	</cve>
 	<cve id="CVE-2017-11724" level="MEDIUM">
 		<product>imagemagick:7.0.2-0</product>
@@ -16938,6 +17349,9 @@
 	<cve id="CVE-2017-8294" level="LOW">
 		<product>yara:3.5.0</product>
 	</cve>
+	<cve id="CVE-2017-12647" level="MEDIUM">
+		<product>liferay_portal:7.0</product>
+	</cve>
 	<cve id="CVE-2017-8296" level="LOW">
 		<product>ked_password_manager:1.0</product>
 		<product>ked_password_manager:0.5</product>
@@ -17318,8 +17732,8 @@
 		<product>acrobat_dc:15.020.20042</product>
 		<product>acrobat:11.0.18</product>
 	</cve>
-	<cve id="CVE-2017-10801" level="MEDIUM">
-		<product>phpsocial:3.0.0</product>
+	<cve id="CVE-2017-10777" level="LOW">
+		<product>xnview:2.40</product>
 	</cve>
 	<cve id="CVE-2017-6128" level="LOW">
 		<product>big-ip_policy_enforcement_manager:11.5.2</product>
@@ -17450,8 +17864,8 @@
 		<product>marketing:12.2.5</product>
 		<product>marketing:12.2.6</product>
 	</cve>
-	<cve id="CVE-2017-10807" level="LOW">
-		<product>jabberd2:2.6.0</product>
+	<cve id="CVE-2017-10771" level="LOW">
+		<product>xnview:2.40</product>
 	</cve>
 	<cve id="CVE-2017-2139" level="LOW">
 		<product>cs-cart:4.3.10</product>
@@ -17471,8 +17885,8 @@
 	<cve id="CVE-2017-3330" level="MEDIUM">
 		<product>siebel_ui_framework:16.1</product>
 	</cve>
-	<cve id="CVE-2017-10806" level="LOW">
-		<product>qemu</product>
+	<cve id="CVE-2017-10770" level="LOW">
+		<product>xnview:2.40</product>
 	</cve>
 	<cve id="CVE-2017-12449" level="MEDIUM">
 		<product>binutils:2.29</product>
@@ -17480,19 +17894,11 @@
 	<cve id="CVE-2017-12448" level="MEDIUM">
 		<product>binutils:2.29</product>
 	</cve>
-	<cve id="CVE-2017-10805" level="LOW">
-		<product>odoo:9.0</product>
-		<product>odoo:10.0</product>
-		<product>odoo:9.0</product>
-		<product>odoo:8.0</product>
-		<product>odoo:10.0</product>
+	<cve id="CVE-2017-10773" level="LOW">
+		<product>xnview:2.40</product>
 	</cve>
-	<cve id="CVE-2017-10804" level="LOW">
-		<product>odoo:9.0</product>
-		<product>odoo:10.0</product>
-		<product>odoo:9.0</product>
-		<product>odoo:8.0</product>
-		<product>odoo:10.0</product>
+	<cve id="CVE-2017-10772" level="LOW">
+		<product>xnview:2.40</product>
 	</cve>
 	<cve id="CVE-2017-6548" level="LOW">
 		<product>rt-ac53_firmware:3.0.0.4.380.6038</product>
@@ -17719,9 +18125,8 @@
 		<product>nextcloud:9.0.54</product>
 		<product>nextcloud:10.0.2</product>
 	</cve>
-	<cve id="CVE-2017-0884" level="LOW">
-		<product>nextcloud:9.0.54</product>
-		<product>nextcloud:10.0.2</product>
+	<cve id="CVE-2017-10775" level="LOW">
+		<product>xnview:2.40</product>
 	</cve>
 	<cve id="CVE-2017-0887" level="LOW">
 		<product>nextcloud:9.0.54</product>
@@ -17735,8 +18140,8 @@
 		<product>nextcloud:9.0.54</product>
 		<product>nextcloud:10.0.2</product>
 	</cve>
-	<cve id="CVE-2017-9379" level="MEDIUM">
-		<product>bigtree_cms:4.2.18</product>
+	<cve id="CVE-2017-12068" level="MEDIUM">
+		<product>event_list:0.7.9</product>
 	</cve>
 	<cve id="CVE-2017-11534" level="MEDIUM">
 		<product>imagemagick:7.0.6-1</product>
@@ -17856,6 +18261,9 @@
 		<product>jasperreports_professional:6.3.0</product>
 		<product>jasperreports_professional:6.2.1</product>
 		<product>jasperreports_server_community_edition:6.3.0</product>
+	</cve>
+	<cve id="CVE-2017-9868" level="LOW">
+		<product>mosquitto:1.4.12</product>
 	</cve>
 	<cve id="CVE-2017-6335" level="MEDIUM">
 		<product>graphicsmagick:1.3.25</product>
@@ -18216,6 +18624,9 @@
 		<product>freeradius:2.2.5</product>
 		<product>freeradius:2.2.4</product>
 	</cve>
+	<cve id="CVE-2017-10776" level="LOW">
+		<product>xnview:2.40</product>
+	</cve>
 	<cve id="CVE-2017-6487" level="MEDIUM">
 		<product>epesi:1.8.1.1</product>
 	</cve>
@@ -18264,6 +18675,16 @@
 		<product>freeradius:3.0.5</product>
 		<product>freeradius:3.0.14</product>
 		<product>freeradius:3.0.0</product>
+	</cve>
+	<cve id="CVE-2017-9801" level="LOW">
+		<product>commons_email:1.3</product>
+		<product>commons_email:1.3.1</product>
+		<product>commons_email:1.3.3</product>
+		<product>commons_email:1.0</product>
+		<product>commons_email:1.2</product>
+		<product>commons_email:1.1</product>
+		<product>commons_email:1.4</product>
+		<product>commons_email:1.3.2</product>
 	</cve>
 	<cve id="CVE-2017-3334" level="MEDIUM">
 		<product>marketing:12.1.1</product>
@@ -18382,6 +18803,9 @@
 	<cve id="CVE-2017-8368" level="MEDIUM">
 		<product>sublime_text_3:-</product>
 	</cve>
+	<cve id="CVE-2017-9124" level="MEDIUM">
+		<product>libquicktime:1.2.4</product>
+	</cve>
 	<cve id="CVE-2017-6127" level="MEDIUM">
 		<product>dg-hr1400_firmware:1.00.02</product>
 	</cve>
@@ -18478,6 +18902,9 @@
 		<product>integration_bus:9.0.0.1</product>
 		<product>integration_bus:9.0.0.4</product>
 	</cve>
+	<cve id="CVE-2017-11718" level="MEDIUM">
+		<product>metinfo:5.3.17</product>
+	</cve>
 	<cve id="CVE-2017-1000014" level="LOW">
 		<product>phpmyadmin:4.0.10.5</product>
 		<product>phpmyadmin:4.0.10.6</product>
@@ -18553,77 +18980,14 @@
 	<cve id="CVE-2017-11714" level="MEDIUM">
 		<product>ghostscript:9.21</product>
 	</cve>
-	<cve id="CVE-2017-1000015" level="MEDIUM">
-		<product>phpmyadmin:4.0.10.5</product>
-		<product>phpmyadmin:4.0.10.6</product>
-		<product>phpmyadmin:4.0.10.3</product>
-		<product>phpmyadmin:4.0.10.4</product>
-		<product>phpmyadmin:4.0.10.1</product>
-		<product>phpmyadmin:4.0.10.2</product>
-		<product>phpmyadmin:4.4.15.2</product>
-		<product>phpmyadmin:4.4.15.3</product>
-		<product>phpmyadmin:4.4.15.4</product>
-		<product>phpmyadmin:4.4.15.5</product>
-		<product>phpmyadmin:4.4.13.1</product>
-		<product>phpmyadmin:4.4.6.1</product>
-		<product>phpmyadmin:4.4.15.1</product>
-		<product>phpmyadmin:4.0.8</product>
-		<product>phpmyadmin:4.4.4</product>
-		<product>phpmyadmin:4.6.2</product>
-		<product>phpmyadmin:4.0.9</product>
-		<product>phpmyadmin:4.4.5</product>
-		<product>phpmyadmin:4.6.3</product>
-		<product>phpmyadmin:4.4.8</product>
-		<product>phpmyadmin:4.4.9</product>
-		<product>phpmyadmin:4.0.6</product>
-		<product>phpmyadmin:4.4.2</product>
-		<product>phpmyadmin:4.6.0</product>
-		<product>phpmyadmin:4.0.7</product>
-		<product>phpmyadmin:4.4.3</product>
-		<product>phpmyadmin:4.6.1</product>
-		<product>phpmyadmin:4.0.0</product>
-		<product>phpmyadmin:4.0.1</product>
-		<product>phpmyadmin:4.0.4</product>
-		<product>phpmyadmin:4.4.0</product>
-		<product>phpmyadmin:4.0.5</product>
-		<product>phpmyadmin:4.4.1</product>
-		<product>phpmyadmin:4.0.2</product>
-		<product>phpmyadmin:4.0.3</product>
-		<product>phpmyadmin:4.4.15.8</product>
-		<product>phpmyadmin:4.4.15.9</product>
-		<product>phpmyadmin:4.4.15</product>
-		<product>phpmyadmin:4.4.10</product>
-		<product>phpmyadmin:4.0.4.1</product>
-		<product>phpmyadmin:4.4.13</product>
-		<product>phpmyadmin:4.0.0</product>
-		<product>phpmyadmin:4.0.10</product>
-		<product>phpmyadmin:4.0.10.9</product>
-		<product>phpmyadmin:4.6.0</product>
-		<product>phpmyadmin:4.4.12</product>
-		<product>phpmyadmin:4.0.0</product>
-		<product>phpmyadmin:4.4.11</product>
-		<product>phpmyadmin:4.6.0</product>
-		<product>phpmyadmin:4.4.14.1</product>
-		<product>phpmyadmin:4.4.1.1</product>
-		<product>phpmyadmin:4.6.0</product>
-		<product>phpmyadmin:4.0.4.2</product>
-		<product>phpmyadmin:4.0.10.10</product>
-		<product>phpmyadmin:4.4.6</product>
-		<product>phpmyadmin:4.6.4</product>
-		<product>phpmyadmin:4.0.10.11</product>
-		<product>phpmyadmin:4.4.7</product>
-		<product>phpmyadmin:4.6.5</product>
-		<product>phpmyadmin:4.0.10.7</product>
-		<product>phpmyadmin:4.0.10.8</product>
-		<product>phpmyadmin:4.0.10.14</product>
-		<product>phpmyadmin:4.0.10.15</product>
-		<product>phpmyadmin:4.0.10.16</product>
-		<product>phpmyadmin:4.0.10.17</product>
-		<product>phpmyadmin:4.0.10.18</product>
-		<product>phpmyadmin:4.0.10.12</product>
-		<product>phpmyadmin:4.4.15.6</product>
-		<product>phpmyadmin:4.0.10.13</product>
-		<product>phpmyadmin:4.4.15.7</product>
+	<cve id="CVE-2017-11715" level="LOW">
+		<product>metinfo:5.3.17</product>
+	</cve>
+	<cve id="CVE-2017-11716" level="MEDIUM">
+		<product>metinfo:5.3.17</product>
+	</cve>
+	<cve id="CVE-2017-11717" level="LOW">
+		<product>metinfo:5.3.17</product>
 	</cve>
 	<cve id="CVE-2017-5688" level="LOW">
 		<product>solid_state_drive_toolbox:3.4.3</product>
@@ -18960,6 +19324,9 @@
 	</cve>
 	<cve id="CVE-2017-7363" level="MEDIUM">
 		<product>pixie:1.04</product>
+	</cve>
+	<cve id="CVE-2017-9100" level="LOW">
+		<product>dir-600m_firmware:3.04</product>
 	</cve>
 	<cve id="CVE-2017-7362" level="MEDIUM">
 		<product>pixie:1.04</product>
@@ -20081,11 +20448,20 @@
 	<cve id="CVE-2017-8402" level="LOW">
 		<product>pivotx:2.3.11</product>
 	</cve>
+	<cve id="CVE-2017-12477" level="LOW">
+		<product>backup:9.1</product>
+	</cve>
 	<cve id="CVE-2017-3868" level="MEDIUM">
 		<product>unified_computing_system_director:6.0%280.0%29</product>
 	</cve>
 	<cve id="CVE-2017-3869" level="LOW">
 		<product>prime_infrastructure:3.1%281%29</product>
+	</cve>
+	<cve id="CVE-2017-12478" level="LOW">
+		<product>backup:9.1</product>
+	</cve>
+	<cve id="CVE-2017-12479" level="LOW">
+		<product>backup:9.1</product>
 	</cve>
 	<cve id="CVE-2017-5876" level="MEDIUM">
 		<product>dotcms:3.7.0</product>
@@ -20997,6 +21373,10 @@
 	<cve id="CVE-2017-12654" level="MEDIUM">
 		<product>imagemagick:7.0.6-3</product>
 	</cve>
+	<cve id="CVE-2017-0884" level="LOW">
+		<product>nextcloud:9.0.54</product>
+		<product>nextcloud:10.0.2</product>
+	</cve>
 	<cve id="CVE-2017-9580" level="MEDIUM">
 		<product>pioneer_bank_%26_trust_mobile_banking:3.0.0</product>
 	</cve>
@@ -21100,6 +21480,9 @@
 	</cve>
 	<cve id="CVE-2017-6259" level="MEDIUM">
 		<product>gpu_driver:-</product>
+	</cve>
+	<cve id="CVE-2017-6918" level="MEDIUM">
+		<product>bigtree_cms:4.2.16</product>
 	</cve>
 	<cve id="CVE-2017-6078" level="MEDIUM">
 		<product>maxview:3.1</product>
@@ -21352,8 +21735,26 @@
 	<cve id="CVE-2017-11675" level="LOW">
 		<product>zen_cart:1.5.5e</product>
 	</cve>
-	<cve id="CVE-2017-9100" level="LOW">
-		<product>dir-600m_firmware:3.04</product>
+	<cve id="CVE-2017-11674" level="MEDIUM">
+		<product>web_vulnerability_scanner:8</product>
+	</cve>
+	<cve id="CVE-2017-11673" level="LOW">
+		<product>web_vulnerability_scanner:8</product>
+	</cve>
+	<cve id="CVE-2017-11671" level="LOW">
+		<product>gcc:4.7</product>
+		<product>gcc:4.6</product>
+		<product>gcc:4.9</product>
+		<product>gcc:4.8</product>
+		<product>gcc:5.2</product>
+		<product>gcc:6.1</product>
+		<product>gcc:5.0</product>
+		<product>gcc:6.2</product>
+		<product>gcc:6.3</product>
+		<product>gcc:6.0</product>
+		<product>gcc:5.1</product>
+		<product>gcc:5.4</product>
+		<product>gcc:5.3</product>
 	</cve>
 	<cve id="CVE-2017-6670" level="MEDIUM">
 		<product>unified_communications_domain_manager:8.1%287%29er1</product>
@@ -21361,6 +21762,31 @@
 	<cve id="CVE-2017-6671" level="LOW">
 		<product>email_security_appliance:9.7.1-066</product>
 		<product>email_security_appliance:10.0.1-087</product>
+	</cve>
+	<cve id="CVE-2017-6672" level="LOW">
+		<product>asr_5000_series_software:19.6.0</product>
+		<product>asr_5000_series_software:21.1.v0</product>
+		<product>asr_5000_series_software:19.3.11</product>
+		<product>asr_5000_series_software:20.1.v5</product>
+		<product>asr_5000_series_software:20.2.4</product>
+		<product>asr_5000_series_software:21.2.a0.65995</product>
+		<product>asr_5000_series_software:21.1.2</product>
+		<product>asr_5000_series_software:21.3.0</product>
+		<product>asr_5000_series_software:21.2.a0.65914</product>
+		<product>asr_5000_series_software:20.2.12</product>
+		<product>asr_5000_series_software:21.1.0</product>
+		<product>asr_5000_series_software:19.6.6</product>
+		<product>asr_5000_series_software:21.1.m0.65931</product>
+		<product>asr_5000_series_software:21.1.m0.65986</product>
+		<product>asr_5000_series_software:21.0.v1.66638</product>
+		<product>asr_5000_series_software:19.3.12</product>
+		<product>asr_5000_series_software:20.3.0</product>
+		<product>asr_5000_series_software:19.3.5</product>
+		<product>asr_5000_series_software:19.6.3</product>
+		<product>asr_5000_series_software:21.0.v2</product>
+		<product>asr_5000_series_software:21.1.m0.65921</product>
+		<product>asr_5000_series_software:20.3.1</product>
+		<product>asr_5000_series_software:21.1.m0.65710</product>
 	</cve>
 	<cve id="CVE-2017-6673" level="LOW">
 		<product>firepower_management_center:6.2.0</product>
@@ -22497,8 +22923,11 @@
 	<cve id="CVE-2017-5240" level="LOW">
 		<product>appspider_pro:6.14.059</product>
 	</cve>
-	<cve id="CVE-2017-6484" level="MEDIUM">
-		<product>inter-mediator:5.5</product>
+	<cve id="CVE-2017-12649" level="MEDIUM">
+		<product>liferay_portal:7.0</product>
+	</cve>
+	<cve id="CVE-2017-12648" level="MEDIUM">
+		<product>liferay_portal:7.0</product>
 	</cve>
 	<cve id="CVE-2017-12139" level="MEDIUM">
 		<product>xoops:2.5.8</product>
@@ -22520,6 +22949,15 @@
 	</cve>
 	<cve id="CVE-2017-12640" level="MEDIUM">
 		<product>imagemagick:7.0.6-1</product>
+	</cve>
+	<cve id="CVE-2017-12131" level="MEDIUM">
+		<product>easy_testimonials:3.0.4</product>
+	</cve>
+	<cve id="CVE-2017-12646" level="MEDIUM">
+		<product>liferay_portal:7.0</product>
+	</cve>
+	<cve id="CVE-2017-12645" level="MEDIUM">
+		<product>liferay_portal:7.0</product>
 	</cve>
 	<cve id="CVE-2017-12132" level="MEDIUM">
 		<product>glibc:2.25</product>
@@ -22695,6 +23133,9 @@
 	</cve>
 	<cve id="CVE-2017-9988" level="LOW">
 		<product>libming:0.4.8</product>
+	</cve>
+	<cve id="CVE-2017-9568" level="MEDIUM">
+		<product>financial_plus_mobile_banking:3.0.3</product>
 	</cve>
 	<cve id="CVE-2017-6488" level="MEDIUM">
 		<product>epesi:1.8.1.1</product>
@@ -23962,8 +24403,9 @@
 	<cve id="CVE-2017-8599" level="MEDIUM">
 		<product>edge</product>
 	</cve>
-	<cve id="CVE-2017-8078" level="LOW">
-		<product>tl-sg108e_firmware:1.1.2</product>
+	<cve id="CVE-2017-6769" level="MEDIUM">
+		<product>secure_access_control_system:5.8%281.5%29</product>
+		<product>secure_access_control_system:5.8%280.8%29</product>
 	</cve>
 	<cve id="CVE-2017-5886" level="MEDIUM">
 		<product>podofo:0.9.4</product>
@@ -24211,8 +24653,18 @@
 	<cve id="CVE-2017-6413" level="LOW">
 		<product>mod_auth_openidc:2.1.5</product>
 	</cve>
-	<cve id="CVE-2017-5857" level="LOW">
-		<product>qemu</product>
+	<cve id="CVE-2017-10091" level="LOW">
+		<product>enterprise_manager_base_platform:13.1.0</product>
+		<product>enterprise_manager_base_platform:13.2.0</product>
+		<product>enterprise_manager_base_platform:12.1.0</product>
+	</cve>
+	<cve id="CVE-2017-10092" level="MEDIUM">
+		<product>agile_product_lifecycle_management_framework:9.3.6</product>
+		<product>agile_product_lifecycle_management_framework:9.3.5</product>
+	</cve>
+	<cve id="CVE-2017-10093" level="LOW">
+		<product>agile_product_lifecycle_management_framework:9.3.6</product>
+		<product>agile_product_lifecycle_management_framework:9.3.5</product>
 	</cve>
 	<cve id="CVE-2017-9443" level="LOW">
 		<product>bigtree_cms:4.2.18</product>
@@ -24252,6 +24704,9 @@
 	</cve>
 	<cve id="CVE-2017-5517" level="LOW">
 		<product>genixcms:0.0.8</product>
+	</cve>
+	<cve id="CVE-2017-9466" level="LOW">
+		<product>wr841n_v8_firmware:tl-wr841n_v8_140724</product>
 	</cve>
 	<cve id="CVE-2017-7941" level="MEDIUM">
 		<product>imagemagick:7.0.5-4</product>
@@ -24368,6 +24823,9 @@
 	</cve>
 	<cve id="CVE-2017-11470" level="LOW">
 		<product>uptime_infrastructure_monitor:7.8</product>
+	</cve>
+	<cve id="CVE-2017-7946" level="MEDIUM">
+		<product>radare2:1.3.0</product>
 	</cve>
 	<cve id="CVE-2017-11475" level="LOW">
 		<product>glpi:9.1.5.0</product>
@@ -24928,6 +25386,9 @@
 		<product>tivoli_federated_identity_manager:6.2.1.9</product>
 		<product>tivoli_federated_identity_manager:6.2.2.8</product>
 	</cve>
+	<cve id="CVE-2017-10711" level="MEDIUM">
+		<product>simplerisk:20170614-001</product>
+	</cve>
 	<cve id="CVE-2017-9501" level="MEDIUM">
 		<product>imagemagick:7.0.5-7</product>
 	</cve>
@@ -25147,8 +25608,8 @@
 	<cve id="CVE-2017-7909" level="LOW">
 		<product>mesr901_firmware:1.5.2</product>
 	</cve>
-	<cve id="CVE-2017-9212" level="LOW">
-		<product>bluetooth_stack:-</product>
+	<cve id="CVE-2017-6005" level="MEDIUM">
+		<product>maxxaudio:1.1.6.0</product>
 	</cve>
 	<cve id="CVE-2017-9210" level="MEDIUM">
 		<product>qpdf:6.0.0</product>
@@ -25492,6 +25953,9 @@
 	</cve>
 	<cve id="CVE-2017-9546" level="MEDIUM">
 		<product>bigtree_cms:4.2.18</product>
+	</cve>
+	<cve id="CVE-2017-9545" level="MEDIUM">
+		<product>mpg123:1.24.0</product>
 	</cve>
 	<cve id="CVE-2017-9544" level="LOW">
 		<product>easy_chat_server:2.5</product>
@@ -25948,6 +26412,9 @@
 		<product>internet_explorer:11</product>
 		<product>internet_explorer:10</product>
 	</cve>
+	<cve id="CVE-2017-5857" level="LOW">
+		<product>qemu</product>
+	</cve>
 	<cve id="CVE-2017-7479" level="LOW">
 		<product>openvpn:2.4.0</product>
 		<product>openvpn:2.4.1</product>
@@ -26004,6 +26471,9 @@
 		<product>camel:2.14.4</product>
 		<product>camel:2.17.0</product>
 		<product>camel:2.17.4</product>
+	</cve>
+	<cve id="CVE-2017-8934" level="LOW">
+		<product>pcmanfm:1.2.5</product>
 	</cve>
 	<cve id="CVE-2017-6705" level="LOW">
 		<product>prime_collaboration_provisioning:12.1</product>
@@ -27028,8 +27498,112 @@
 	<cve id="CVE-2017-9054" level="LOW">
 		<product>libdwarf:20170321</product>
 	</cve>
+	<cve id="CVE-2017-9505" level="LOW">
+		<product>confluence:5.10.4</product>
+		<product>confluence:6.0.1</product>
+		<product>confluence:5.10.2</product>
+		<product>confluence:5.10.3</product>
+		<product>confluence:5.8.13</product>
+		<product>confluence:5.8.15</product>
+		<product>confluence:5.8.14</product>
+		<product>confluence:6.0.5</product>
+		<product>confluence:5.10.1</product>
+		<product>confluence:6.0.4</product>
+		<product>confluence:6.0.3</product>
+		<product>confluence:6.0.2</product>
+		<product>confluence:5.1</product>
+		<product>confluence:5.0.2</product>
+		<product>confluence:5.4</product>
+		<product>confluence:5.0.1</product>
+		<product>confluence:5.3</product>
+		<product>confluence:5.8.10</product>
+		<product>confluence:5.6</product>
+		<product>confluence:5.0.3</product>
+		<product>confluence:5.5</product>
+		<product>confluence:5.2.4</product>
+		<product>confluence:5.4.2</product>
+		<product>confluence:5.2.3</product>
+		<product>confluence:5.4.1</product>
+		<product>confluence:5.7</product>
+		<product>confluence:4.3.1</product>
+		<product>confluence:5.9.7</product>
+		<product>confluence:4.3.2</product>
+		<product>confluence:5.9.6</product>
+		<product>confluence:4.3.3</product>
+		<product>confluence:5.9.9</product>
+		<product>confluence:5.9.8</product>
+		<product>confluence:5.9.14</product>
+		<product>confluence:5.0</product>
+		<product>confluence:5.5.3</product>
+		<product>confluence:5.7.1</product>
+		<product>confluence:5.3.4</product>
+		<product>confluence:5.5.2</product>
+		<product>confluence:5.7.3</product>
+		<product>confluence:5.9.1</product>
+		<product>confluence:5.9.10</product>
+		<product>confluence:5.9.11</product>
+		<product>confluence:5.9.12</product>
+		<product>confluence:5.5.7</product>
+		<product>confluence:5.7.5</product>
+		<product>confluence:5.9.3</product>
+		<product>confluence:5.5.6</product>
+		<product>confluence:5.7.4</product>
+		<product>confluence:5.9.2</product>
+		<product>confluence:5.9.5</product>
+		<product>confluence:5.7.6</product>
+		<product>confluence:5.9.4</product>
+		<product>confluence:5.8.17</product>
+		<product>confluence:5.8.16</product>
+		<product>confluence:5.8.18</product>
+		<product>confluence:5.10</product>
+		<product>confluence:6.1.4</product>
+		<product>confluence:6.1.3</product>
+		<product>confluence:6.1.2</product>
+		<product>confluence:6.1.1</product>
+		<product>confluence:4.3</product>
+		<product>confluence:5.1.1</product>
+		<product>confluence:4.3.5</product>
+		<product>confluence:4.3.6</product>
+		<product>confluence:4.3.7</product>
+		<product>confluence:5.1.3</product>
+		<product>confluence:5.3.1</product>
+		<product>confluence:6.2</product>
+		<product>confluence:5.1.2</product>
+		<product>confluence:5.1.5</product>
+		<product>confluence:5.5.1</product>
+		<product>confluence:6.0</product>
+		<product>confluence:5.1.4</product>
+		<product>confluence:6.1</product>
+		<product>confluence:5.8.8</product>
+		<product>confluence:5.8.9</product>
+		<product>confluence:5.4.4</product>
+		<product>confluence:5.2.5</product>
+		<product>confluence:5.4.3</product>
+		<product>confluence:5.6.1</product>
+		<product>confluence:5.6.4</product>
+		<product>confluence:5.8.2</product>
+		<product>confluence:5.6.3</product>
+		<product>confluence:5.6.6</product>
+		<product>confluence:5.8.4</product>
+		<product>confluence:5.10.8</product>
+		<product>confluence:5.6.5</product>
+		<product>confluence:5.8.6</product>
+		<product>confluence:5.10.6</product>
+		<product>confluence:5.8.5</product>
+		<product>confluence:5.10.7</product>
+		<product>confluence:6.0.7</product>
+		<product>confluence:6.0.6</product>
+	</cve>
+	<cve id="CVE-2017-10082" level="MEDIUM">
+		<product>agile_product_lifecycle_management_framework:9.3.6</product>
+		<product>agile_product_lifecycle_management_framework:9.3.5</product>
+	</cve>
 	<cve id="CVE-2017-7729" level="LOW">
 		<product>cube_one_firmware:-</product>
+	</cve>
+	<cve id="CVE-2017-10088" level="LOW">
+		<product>agile_product_lifecycle_management_framework:9.3.6</product>
+		<product>agile_product_lifecycle_management_framework:9.3.5</product>
 	</cve>
 	<cve id="CVE-2017-9050" level="LOW">
 		<product>libxml2:2.9.4</product>
@@ -27098,6 +27672,13 @@
 	</cve>
 	<cve id="CVE-2017-11440" level="LOW">
 		<product>cms:8.2</product>
+	</cve>
+	<cve id="CVE-2017-7850" level="LOW">
+		<product>nessus:6.10.0</product>
+		<product>nessus:6.10.2</product>
+		<product>nessus:6.10.1</product>
+		<product>nessus:6.10.4</product>
+		<product>nessus:6.10.3</product>
 	</cve>
 	<cve id="CVE-2017-11448" level="MEDIUM">
 		<product>imagemagick:7.0.6-0</product>
@@ -27432,6 +28013,9 @@
 	<cve id="CVE-2017-11592" level="LOW">
 		<product>exiv2:0.26</product>
 	</cve>
+	<cve id="CVE-2017-11593" level="MEDIUM">
+		<product>markdown_preview_plus:0.4.5</product>
+	</cve>
 	<cve id="CVE-2017-11590" level="MEDIUM">
 		<product>libgxps:0.2.5</product>
 	</cve>
@@ -27456,6 +28040,10 @@
 	</cve>
 	<cve id="CVE-2017-6512" level="MEDIUM">
 		<product>file-path_module:2.12</product>
+	</cve>
+	<cve id="CVE-2017-10064" level="MEDIUM">
+		<product>hospitality_websuite8_cloud_service:8.10.x</product>
+		<product>hospitality_websuite8_cloud_service:8.9.6</product>
 	</cve>
 	<cve id="CVE-2017-6519" level="LOW">
 		<product>avahi:0.6.32</product>
@@ -27551,6 +28139,9 @@
 		<product>jazz_reporting_service:6.0</product>
 		<product>jazz_reporting_service:5.0</product>
 	</cve>
+	<cve id="CVE-2017-7540" level="LOW">
+		<product>safemode:1.3.2</product>
+	</cve>
 	<cve id="CVE-2017-1159" level="MEDIUM">
 		<product>business_process_manager:8.5.0.0</product>
 		<product>business_process_manager:8.5.6.0</product>
@@ -27609,6 +28200,13 @@
 		<product>outlook:2013</product>
 		<product>outlook:2016</product>
 	</cve>
+	<cve id="CVE-2017-1331" level="MEDIUM">
+		<product>content_navigator:2.0.3.7</product>
+		<product>content_navigator:2.0.3.8</product>
+		<product>content_navigator:3.0.0</product>
+		<product>content_navigator:2.0.3.5</product>
+		<product>content_navigator:2.0.3.6</product>
+	</cve>
 	<cve id="CVE-2017-1332" level="MEDIUM">
 		<product>inotes:9.0.1.8</product>
 		<product>inotes:8.5.2.4</product>
@@ -27631,6 +28229,9 @@
 	<cve id="CVE-2017-1337" level="MEDIUM">
 		<product>websphere_mq:9.0.2</product>
 		<product>websphere_mq:9.0.1</product>
+	</cve>
+	<cve id="CVE-2017-11629" level="MEDIUM">
+		<product>finecms:5.0.10</product>
 	</cve>
 	<cve id="CVE-2017-11624" level="MEDIUM">
 		<product>qpdf:6.0.0</product>
@@ -27766,9 +28367,6 @@
 	</cve>
 	<cve id="CVE-2017-7318" level="LOW">
 		<product>etherhaul_firmware:7.3.0</product>
-	</cve>
-	<cve id="CVE-2017-10800" level="MEDIUM">
-		<product>graphicsmagick:1.3.25</product>
 	</cve>
 	<cve id="CVE-2017-6504" level="MEDIUM">
 		<product>qbittorrent:3.3.10</product>
@@ -28263,12 +28861,8 @@
 	<cve id="CVE-2017-6807" level="MEDIUM">
 		<product>mod_auth_mellon:0.13.0</product>
 	</cve>
-	<cve id="CVE-2017-7850" level="LOW">
-		<product>nessus:6.10.0</product>
-		<product>nessus:6.10.2</product>
-		<product>nessus:6.10.1</product>
-		<product>nessus:6.10.4</product>
-		<product>nessus:6.10.3</product>
+	<cve id="CVE-2017-6509" level="MEDIUM">
+		<product>burgundy-cms:2017-02-20</product>
 	</cve>
 	<cve id="CVE-2017-0067" level="HIGH">
 		<product>edge:-</product>
@@ -28789,8 +29383,83 @@
 	<cve id="CVE-2017-9759" level="LOW">
 		<product>zenbership:1.0.8</product>
 	</cve>
+	<cve id="CVE-2017-9260" level="MEDIUM">
+		<product>soundtouch:1.9.2</product>
+	</cve>
 	<cve id="CVE-2017-9261" level="MEDIUM">
 		<product>imagemagick:7.0.5-6</product>
+	</cve>
+	<cve id="CVE-2017-1000015" level="MEDIUM">
+		<product>phpmyadmin:4.0.10.5</product>
+		<product>phpmyadmin:4.0.10.6</product>
+		<product>phpmyadmin:4.0.10.3</product>
+		<product>phpmyadmin:4.0.10.4</product>
+		<product>phpmyadmin:4.0.10.1</product>
+		<product>phpmyadmin:4.0.10.2</product>
+		<product>phpmyadmin:4.4.15.2</product>
+		<product>phpmyadmin:4.4.15.3</product>
+		<product>phpmyadmin:4.4.15.4</product>
+		<product>phpmyadmin:4.4.15.5</product>
+		<product>phpmyadmin:4.4.13.1</product>
+		<product>phpmyadmin:4.4.6.1</product>
+		<product>phpmyadmin:4.4.15.1</product>
+		<product>phpmyadmin:4.0.8</product>
+		<product>phpmyadmin:4.4.4</product>
+		<product>phpmyadmin:4.6.2</product>
+		<product>phpmyadmin:4.0.9</product>
+		<product>phpmyadmin:4.4.5</product>
+		<product>phpmyadmin:4.6.3</product>
+		<product>phpmyadmin:4.4.8</product>
+		<product>phpmyadmin:4.4.9</product>
+		<product>phpmyadmin:4.0.6</product>
+		<product>phpmyadmin:4.4.2</product>
+		<product>phpmyadmin:4.6.0</product>
+		<product>phpmyadmin:4.0.7</product>
+		<product>phpmyadmin:4.4.3</product>
+		<product>phpmyadmin:4.6.1</product>
+		<product>phpmyadmin:4.0.0</product>
+		<product>phpmyadmin:4.0.1</product>
+		<product>phpmyadmin:4.0.4</product>
+		<product>phpmyadmin:4.4.0</product>
+		<product>phpmyadmin:4.0.5</product>
+		<product>phpmyadmin:4.4.1</product>
+		<product>phpmyadmin:4.0.2</product>
+		<product>phpmyadmin:4.0.3</product>
+		<product>phpmyadmin:4.4.15.8</product>
+		<product>phpmyadmin:4.4.15.9</product>
+		<product>phpmyadmin:4.4.15</product>
+		<product>phpmyadmin:4.4.10</product>
+		<product>phpmyadmin:4.0.4.1</product>
+		<product>phpmyadmin:4.4.13</product>
+		<product>phpmyadmin:4.0.0</product>
+		<product>phpmyadmin:4.0.10</product>
+		<product>phpmyadmin:4.0.10.9</product>
+		<product>phpmyadmin:4.6.0</product>
+		<product>phpmyadmin:4.4.12</product>
+		<product>phpmyadmin:4.0.0</product>
+		<product>phpmyadmin:4.4.11</product>
+		<product>phpmyadmin:4.6.0</product>
+		<product>phpmyadmin:4.4.14.1</product>
+		<product>phpmyadmin:4.4.1.1</product>
+		<product>phpmyadmin:4.6.0</product>
+		<product>phpmyadmin:4.0.4.2</product>
+		<product>phpmyadmin:4.0.10.10</product>
+		<product>phpmyadmin:4.4.6</product>
+		<product>phpmyadmin:4.6.4</product>
+		<product>phpmyadmin:4.0.10.11</product>
+		<product>phpmyadmin:4.4.7</product>
+		<product>phpmyadmin:4.6.5</product>
+		<product>phpmyadmin:4.0.10.7</product>
+		<product>phpmyadmin:4.0.10.8</product>
+		<product>phpmyadmin:4.0.10.14</product>
+		<product>phpmyadmin:4.0.10.15</product>
+		<product>phpmyadmin:4.0.10.16</product>
+		<product>phpmyadmin:4.0.10.17</product>
+		<product>phpmyadmin:4.0.10.18</product>
+		<product>phpmyadmin:4.0.10.12</product>
+		<product>phpmyadmin:4.4.15.6</product>
+		<product>phpmyadmin:4.0.10.13</product>
+		<product>phpmyadmin:4.4.15.7</product>
 	</cve>
 	<cve id="CVE-2017-8384" level="MEDIUM">
 		<product>craft_cms:2.6.2974</product>
@@ -28983,6 +29652,9 @@
 	</cve>
 	<cve id="CVE-2017-12565" level="MEDIUM">
 		<product>imagemagick:7.0.6-2</product>
+	</cve>
+	<cve id="CVE-2017-12562" level="LOW">
+		<product>libsndfile:1.0.28</product>
 	</cve>
 	<cve id="CVE-2017-12563" level="MEDIUM">
 		<product>imagemagick:7.0.6-2</product>
@@ -29255,8 +29927,14 @@
 		<product>acrobat:11.0.19</product>
 		<product>acrobat_reader_dc:15.006.30280</product>
 	</cve>
+	<cve id="CVE-2017-9251" level="MEDIUM">
+		<product>finecms:-</product>
+	</cve>
 	<cve id="CVE-2017-11450" level="MEDIUM">
 		<product>imagemagick:7.0.6-0</product>
+	</cve>
+	<cve id="CVE-2017-11457" level="LOW">
+		<product>netweaver:7.5</product>
 	</cve>
 	<cve id="CVE-2017-11456" level="LOW">
 		<product>gwr352wv_wide_voltage_3g_router_firmware:-</product>
@@ -29314,6 +29992,9 @@
 	<cve id="CVE-2017-8833" level="MEDIUM">
 		<product>zen_cart:1.6.0</product>
 	</cve>
+	<cve id="CVE-2017-9430" level="LOW">
+		<product>dnstracer:1.9</product>
+	</cve>
 	<cve id="CVE-2017-5638" level="LOW">
 		<product>struts:2.3.6</product>
 		<product>struts:2.5.4</product>
@@ -29369,6 +30050,9 @@
 		<product>struts:2.5.2</product>
 		<product>struts:2.3.21</product>
 	</cve>
+	<cve id="CVE-2017-9411" level="MEDIUM">
+		<product>lame:3.99.5</product>
+	</cve>
 	<cve id="CVE-2017-5631" level="MEDIUM">
 		<product>caseaware:-</product>
 	</cve>
@@ -29401,8 +30085,8 @@
 	<cve id="CVE-2017-11581" level="MEDIUM">
 		<product>finecms:5.0.9</product>
 	</cve>
-	<cve id="CVE-2017-0320" level="LOW">
-		<product>gpu_driver:-</product>
+	<cve id="CVE-2017-10059" level="MEDIUM">
+		<product>business_intelligence_publisher:11.1.1.7.0</product>
 	</cve>
 	<cve id="CVE-2017-11583" level="LOW">
 		<product>finecms:5.0.9</product>
@@ -29428,6 +30112,10 @@
 	<cve id="CVE-2017-7856" level="LOW">
 		<product>libreoffice:5.2.6.1</product>
 	</cve>
+	<cve id="CVE-2017-10052" level="MEDIUM">
+		<product>agile_product_lifecycle_management_framework:9.3.6</product>
+		<product>agile_product_lifecycle_management_framework:9.3.5</product>
+	</cve>
 	<cve id="CVE-2017-7854" level="MEDIUM">
 		<product>radare2:1.3.0</product>
 	</cve>
@@ -29440,8 +30128,8 @@
 	<cve id="CVE-2017-6508" level="MEDIUM">
 		<product>wget:1.19.1</product>
 	</cve>
-	<cve id="CVE-2017-6509" level="MEDIUM">
-		<product>burgundy-cms:2017-02-20</product>
+	<cve id="CVE-2017-5836" level="LOW">
+		<product>libplist</product>
 	</cve>
 	<cve id="CVE-2017-5918" level="MEDIUM">
 		<product>bcr_movil:3.7</product>
@@ -29449,13 +30137,6 @@
 	<cve id="CVE-2017-9892" level="MEDIUM">
 		<product>irfanview:4.44</product>
 		<product>fpx:4.46</product>
-	</cve>
-	<cve id="CVE-2017-10803" level="MEDIUM">
-		<product>odoo:9.0</product>
-		<product>odoo:10.0</product>
-		<product>odoo:9.0</product>
-		<product>odoo:8.0</product>
-		<product>odoo:10.0</product>
 	</cve>
 	<cve id="CVE-2017-8357" level="MEDIUM">
 		<product>imagemagick:7.0.5-5</product>
