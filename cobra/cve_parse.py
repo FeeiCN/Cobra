@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
     cobra
     ~~~~~
@@ -20,9 +18,9 @@ import threading
 import gzip
 import xml.etree.cElementTree as eT
 import multiprocessing
-from config import project_directory, Config, config_path
-from log import logger
-from dependencies import Dependencies
+from .config import project_directory, Config, config_path
+from .log import logger
+from .dependencies import Dependencies
 try:
     from configparser import ConfigParser
 except ImportError:
@@ -315,7 +313,7 @@ def is_update():
             fi = open(config_path, 'w')
             config.write(fi)
             fi.close()
-        except IOError, e:
+        except IOError as e:
             logger.warning(e.message)
         logger.info("The sha256 been update")
         return True
@@ -333,6 +331,7 @@ def scan(target_directory):
         logger.info("Can't find the rules, please update rules")
         return
     pool = multiprocessing.Pool()
+    logger.info('[PUSH] {rc} CVE Rules'.format(rc=len(cve_files)))
     for cve_file in cve_files:
         cve_path = os.path.join(rule_path, cve_file)
         pool.apply_async(scan_single, args=(target_directory, cve_path))
