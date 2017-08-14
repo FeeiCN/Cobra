@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
     cobra
     ~~~~~
@@ -16,12 +15,19 @@ import json
 import requests
 
 
-def start():
+def start(url, private_token, cobra_ip, key):
+    """
+    :param url: The gitlab's projects api ,example:http://xxx.gitlab.com/api/v3/projects
+    :param private_token: The user's private_token
+    :param cobra_ip: The Cobra server's ip
+    :param key: The Cobra api key
+    :return:
+    """
     page = 1
     while True:
         git_urls = []
-        params = {'private_token': 'aQueyqZmKYLPx3wmgDNH', 'page': page}
-        url = 'http://gitlab.mogujie.org/api/v3/projects/all'
+        params = {'private_token': private_token, 'page': page}
+        url = url
         r = requests.get(url, params=params)
 
         if r.status_code == 200:
@@ -38,7 +44,7 @@ def start():
                 else:
                     request_url = git_url
                 git_urls.append(request_url)
-            # res = push_to_api(git_urls)
+            # res = push_to_api(git_urls, cobra_ip, key)
             # if res:
             #     print ("page %d git push success" % page)
             # else:
@@ -53,10 +59,10 @@ def start():
         page += 1
 
 
-def push_to_api(urls):
+def push_to_api(urls, cobra_ip, key):
     headers = {"Content-Type": "application/json"}
-    url = "http://10.11.2.51:9999/api/add"
-    payload = {"key": "your_secret_key", "target": urls}
+    url = cobra_ip + "/api/add"
+    payload = {"key": key, "target": urls}
     r = requests.post(url=url, data=json.dumps(payload), headers=headers)
     if r.status_code == 200:
         print(r.json())
@@ -68,6 +74,3 @@ def push_to_api(urls):
 
 def get_pages():
     pass
-
-
-start()
