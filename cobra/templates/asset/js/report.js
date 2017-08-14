@@ -66,9 +66,17 @@ $(function () {
                     var lis = $('.widget-trigger li');
                     $('.commit-author').text('@' + data.commit_author);
                     $('.commit-time').text('@' + data.commit_time);
-                    $('.v-level').text(data.level);
+                    if (9<= data.level && data.level<= 10) {
+                        $('.v-level').text('Critical');
+                    } else if (6 <= data.level && data.level <= 8) {
+                        $('.v-level').text('High');
+                    } else if (3 <= data.level && data.level <= 5) {
+                        $('.v-level').text('Medium');
+                    } else if (1 <= data.level && data.level <= 2) {
+                        $('.v-level').text('Low');
+                    }
                     $('.v-type').text(data.rule_name);
-                    $('.v-rule').text(data.match_result);
+                    // $('.v-rule').text(data.match_result);
                 }
 
                 init_widget();
