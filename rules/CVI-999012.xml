@@ -1314,8 +1314,7 @@
 		<product>elastic_load_balancing_api_tools:1.0.3.4</product>
 	</cve>
 	<cve id="CVE-2012-5786" level="MEDIUM">
-		<product>cxf:2.6.0</product>
-		<product>cxf:-</product>
+		<product>cxf:2.6.17</product>
 	</cve>
 	<cve id="CVE-2012-5787" level="MEDIUM">
 		<product>merchant_sdk:-</product>

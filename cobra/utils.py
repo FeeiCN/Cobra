@@ -18,6 +18,7 @@ import time
 import string
 import random
 import hashlib
+import locale
 from .log import logger
 from .config import Config
 from .exceptions import PickupException, NotExistException, AuthFailedException
@@ -178,20 +179,32 @@ def convert_time(seconds):
     if minute == 0:
         return str(seconds % one_minute) + "\""
     else:
-        return str(minute) + "'" + str(seconds % one_minute) + "\""
+        return str(int(minute)) + "'" + str(seconds % one_minute) + "\""
 
 
-def convert_number(number):
+def convert_number(n):
     """
     Convert number to , split
     Ex: 123456 -> 123,456
-    :param number:
+    :param n:
     :return:
     """
-    if number is None or number == 0:
-        return 0
-    number = int(number)
-    return '{:20,}'.format(number).strip()
+    if n is None: return '0'
+    n = str(n)
+    if '.' in n:
+        dollars, cents = n.split('.')
+    else:
+        dollars, cents = n, None
+
+    r = []
+    for i, c in enumerate(str(dollars)[::-1]):
+        if i and (not (i % 3)):
+            r.insert(0, ',')
+        r.insert(0, c)
+    out = ''.join(r)
+    if cents:
+        out += '.' + cents
+    return out
 
 
 def md5(content):
@@ -200,6 +213,7 @@ def md5(content):
     :param content:
     :return:
     """
+    content = content.encode('utf8')
     return hashlib.md5(content).hexdigest()
 
 
@@ -230,6 +244,7 @@ def path_to_short(path, max_length=36):
         return path
     paths = path.split('/')
     paths = filter(None, paths)
+    paths = list(paths)
     tmp_path = ''
     for i in range(0, len(paths)):
         logger.debug((i, str(paths[i]), str(paths[len(paths) - i - 1])))
@@ -258,8 +273,9 @@ def path_to_file(path):
     :return:
     """
     paths = path.split('/')
-    paths = filter(None, paths)
-    return '.../{0}'.format(paths[len(paths) - 1])
+    paths = list(filter(None, paths))
+    length = len(paths)
+    return '.../{0}'.format(paths[length - 1])
 
 
 def percent(part, whole, need_per=True):

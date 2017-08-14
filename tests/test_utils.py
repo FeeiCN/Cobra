@@ -27,11 +27,11 @@ def test_convert_number():
 
 
 def test_convert_number_0():
-    assert convert_number(0) == 0
+    assert convert_number(0) == '0'
 
 
 def test_convert_number_none():
-    assert convert_number(None) == 0
+    assert convert_number(None) == '0'
 
 
 def test_md5():

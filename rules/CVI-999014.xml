@@ -7011,6 +7011,9 @@
 		<product>xepan_cms:1.0.4.1</product>
 		<product>xepan_cms:1.0.1</product>
 	</cve>
+	<cve id="CVE-2014-1235" level="MEDIUM">
+		<product>graphviz:2.34.0</product>
+	</cve>
 	<cve id="CVE-2014-6516" level="LOW">
 		<product>jd_edwards_products:8.98</product>
 	</cve>
@@ -17230,9 +17233,8 @@
 	<cve id="CVE-2014-5409" level="LOW">
 		<product>hydran_m2</product>
 	</cve>
-	<cve id="CVE-2014-8372" level="LOW">
-		<product>airwatch:7.3.3.0</product>
-		<product>airwatch:7.3.0.0</product>
+	<cve id="CVE-2014-3452" level="MEDIUM">
+		<product>k-lite_codec:10.4.5</product>
 	</cve>
 	<cve id="CVE-2014-3453" level="LOW">
 		<product>flag:7.x-3.3</product>
@@ -45053,8 +45055,9 @@
 	<cve id="CVE-2014-5119" level="LOW">
 		<product>glibc</product>
 	</cve>
-	<cve id="CVE-2014-3452" level="MEDIUM">
-		<product>k-lite_codec:10.4.5</product>
+	<cve id="CVE-2014-8372" level="LOW">
+		<product>airwatch:7.3.3.0</product>
+		<product>airwatch:7.3.0.0</product>
 	</cve>
 	<cve id="CVE-2014-8373" level="LOW">
 		<product>vcloud_automation_center:6.1.1</product>
@@ -49895,9 +49898,8 @@
 	<cve id="CVE-2014-3461" level="MEDIUM">
 		<product>qemu:1.6.2</product>
 	</cve>
-	<cve id="CVE-2014-3460" level="MEDIUM">
-		<product>sentinel_agent_manager:-</product>
-		<product>sentinel:-</product>
+	<cve id="CVE-2014-8340" level="LOW">
+		<product>phptraffica:2.2.1</product>
 	</cve>
 	<cve id="CVE-2014-8000" level="LOW">
 		<product>unified_communications_manager_im_and_presence_service:9.1%281%29</product>
@@ -51358,8 +51360,9 @@
 		<product>xbuffy:3.3.bl.3.dfsg-3</product>
 		<product>xbuffy:3.3.bl.3-23</product>
 	</cve>
-	<cve id="CVE-2014-8340" level="LOW">
-		<product>phptraffica:2.2.1</product>
+	<cve id="CVE-2014-3460" level="MEDIUM">
+		<product>sentinel_agent_manager:-</product>
+		<product>sentinel:-</product>
 	</cve>
 	<cve id="CVE-2014-7108" level="MEDIUM">
 		<product>stop_headaches_and_migraines:1.2</product>
