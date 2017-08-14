@@ -13,7 +13,6 @@
 import datetime
 import os
 import requests
-import urllib
 import threading
 import gzip
 import xml.etree.cElementTree as eT
@@ -21,6 +20,12 @@ import multiprocessing
 from .config import project_directory, Config, config_path
 from .log import logger
 from .dependencies import Dependencies
+
+try:
+    from urllib import urlretrieve  # Python2
+except ImportError:
+    from urllib.request import urlretrieve  # Python3
+
 try:
     from configparser import ConfigParser
 except ImportError:
@@ -158,7 +163,8 @@ class CveParse(object):
         rule_path = project_directory + '/rules/CVI-999'
         tree.write(rule_path + str(self.year)[1:] + '.xml')
         endtime = datetime.datetime.now()
-        logger.info('CVE-999' + str(self.year)[1:] + '.xml Rule update succeeds, times:%ds' % (endtime - starttime).seconds)
+        logger.info(
+            'CVE-999' + str(self.year)[1:] + '.xml Rule update succeeds, times:%ds' % (endtime - starttime).seconds)
 
     def pretty(self, e, level=0):
         """
@@ -234,7 +240,7 @@ class CveParse(object):
             for cve_child in self._scan_result[module_]:
                 cve_id = cve_child
                 level = self._scan_result[module_][cve_id]
-                logger.warning('Find the module ' + module_ + ' have ' + cve_id +',level: ' +level)
+                logger.warning('Find the module ' + module_ + ' have ' + cve_id + ',level: ' + level)
             count = len(self._scan_result[module_])
             logger.warning('The ' + module_ + ' module have ' + str(count) + ' CVE Vul(s)')
 
@@ -247,13 +253,13 @@ def rule_parse():
         gz_files = download_rule_gz()
         un_gz(gz_files)
         pool = multiprocessing.Pool()
-        for year in range(2002, datetime.datetime.now().year+1):
+        for year in range(2002, datetime.datetime.now().year + 1):
             cve_xml = "../rules/%d.xml" % year
             pool.apply_async(rule_single, args=(cve_xml, year))
         pool.close()
         pool.join()
-        for year in range(2002, datetime.datetime.now().year+1):
-            os.remove(project_directory+"/rules/%d.xml" % year)
+        for year in range(2002, datetime.datetime.now().year + 1):
+            os.remove(project_directory + "/rules/%d.xml" % year)
         logger.info("The rule update success, start scan cve vuls")
         return True
     else:
@@ -264,18 +270,19 @@ def download_rule_gz():
     threads = []
     files = []
     start_time = datetime.datetime.now()
-    for year in range(2002, datetime.datetime.now().year+1):
+    for year in range(2002, datetime.datetime.now().year + 1):
         url = "https://static.nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-" + str(year) + ".xml.gz"
         logger.info("start download " + str(year) + ".xml.gz")
-        thread = threading.Thread(target=urllib.urlretrieve, args=(url, project_directory+"/rules/"+str(year)+".xml.gz"))
+        thread = threading.Thread(target=urlretrieve,
+                                  args=(url, project_directory + "/rules/" + str(year) + ".xml.gz"))
         thread.start()
         threads.append(thread)
         logger.info('CVE-' + str(year) + " is download success")
-        files.append(project_directory+"/rules/" + str(year) + ".xml.gz")
+        files.append(project_directory + "/rules/" + str(year) + ".xml.gz")
     for t in threads:
         t.join()
     end_time = datetime.datetime.now()
-    logger.info("All CVE xml file already download success, use time:%ds" % (end_time-start_time).seconds)
+    logger.info("All CVE xml file already download success, use time:%ds" % (end_time - start_time).seconds)
     return files
 
 
@@ -286,11 +293,11 @@ def un_gz(gz_files):
     for gz_file in gz_files:
         f_name = gz_file.replace(".gz", "")
         g_file = gzip.GzipFile(gz_file)
-        open(f_name, "w+").write(g_file.read())
+        open(f_name, "wb+").write(g_file.read())
         g_file.close()
         os.remove(gz_file)
     end_time = datetime.datetime.now()
-    logger.info("Decompress success, use time:%ds" % (end_time-start_time).seconds)
+    logger.info("Decompress success, use time:%ds" % (end_time - start_time).seconds)
     return True
 
 
@@ -300,9 +307,9 @@ def rule_single(target_directory, year):
 
 def is_update():
     url = "https://static.nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-modified.meta"
-    r = requests.get(url)
+    r = requests.get(url, verify=False)
     index = r.text.find('sha256:')
-    sha256_now = r.text[index+7:].strip()
+    sha256_now = r.text[index + 7:].strip()
     sha256_local = Config(level1='cve', level2='modified').value
     if sha256_local != sha256_now:
         logger.info("The CVE Rule already update, start update local rule")
@@ -314,7 +321,7 @@ def is_update():
             config.write(fi)
             fi.close()
         except IOError as e:
-            logger.warning(e.message)
+            logger.warning(e)
         logger.info("The sha256 been update")
         return True
     return False

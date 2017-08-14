@@ -50,7 +50,8 @@ def test_get_dict():
     extension = ['php', 'js', 'java']
     type_num = {}
     type_num = detection.get_dict(extension, type_num)
-    assert isinstance(extension, type(type_num.keys()))
+    print(type(type_num))
+    assert type_num['php']['blank'] == 0
 
 
 def test_project_information():
@@ -61,37 +62,32 @@ def test_project_information():
 
 def test_count_py_line():
     count = Detection.count_py_line(examples_path+'/cloc.py')
-    type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
-    assert type_ == type_count
+    assert count['count_code'] == 5
 
 
 def test_count_php_line():
     count = Detection.count_php_line(examples_path+'/cloc.php')
-    type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
-    assert type_ == type_count
+    assert count['count_code'] == 2
 
 
 def test_count_java_line():
     count = Detection.count_java_line(examples_path+'/cloc.java')
-    type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
-    assert type_ == type_count
+    assert count['count_code'] == 1
 
 
 def test_count_html_line():
     count = Detection.count_html_line(examples_path+'/cloc.html')
-    type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
-    assert type_ == type_count
+    assert count['count_code'] == 9
 
 
 def test_count_data_line():
     count = Detection.count_data_line(examples_path+'/param_xml.xml')
-    type_ = count.keys()
     type_count = ['count_blank', 'count_code', 'count_pound']
-    assert type_ == type_count
+    assert count['count_code'] == 81
 
 
 def test_countnum():
