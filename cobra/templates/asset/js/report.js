@@ -27,7 +27,8 @@ $(function () {
             // filter submit button
             $('.filter_btn').on('click', function () {
                 vulnerabilities_list.page = 1;
-                vulnerabilities_list.get(true);
+                vulnerabilities_list.pushState();
+                vulnerabilities_list.get();
                 vulnerabilities_list.trigger_filter();
             });
 
@@ -61,12 +62,13 @@ $(function () {
                 $('.v-path').text(data.file_path + ':' + data.line_number);
                 $('.v-id').text('MVE-' + vid);
                 $('.v-language').text(data.language);
+
                 // widget
                 function init_widget() {
                     var lis = $('.widget-trigger li');
                     $('.commit-author').text('@' + data.commit_author);
                     $('.commit-time').text('@' + data.commit_time);
-                    if (9<= data.level && data.level<= 10) {
+                    if (9 <= data.level && data.level <= 10) {
                         $('.v-level').text('Critical');
                     } else if (6 <= data.level && data.level <= 8) {
                         $('.v-level').text('High');
@@ -202,84 +204,107 @@ $(function () {
                     evt.stopPropagation();
                 });
             }
-            if ($("input[name=need_scan]").val() !== "False") {
-                // Search vulnerability type
-                if (on_filter === false || typeof on_filter === 'undefined') {
-                    var svt = getParameterByName('svt');
-                    if (svt !== null && svt > 0) {
-                        $('#search_vul_type').val(svt);
-                    }
-                    // Search rule
-                    var sr = getParameterByName('sr');
-                    if (sr !== null && sr > 0) {
-                        $('#search_rule').val(sr);
-                    }
-                    // Search level
-                    var sl = getParameterByName('sl');
-                    if (sl !== null && sl > 0) {
-                        $('#search_level').val(sl);
-                    }
-                    // Search target
-                    var st = getParameterByName('st');
-                    if (st !== null && st > 0) {
-                        $('#search_task').val(st);
-                    }
-                    // Search status
-                    var ss = getParameterByName('ss');
-                    if (ss !== null && ss > 0) {
-                        $('#search_status').val(ss);
+            // Search vulnerability type
+            if (on_filter === false || typeof on_filter === 'undefined') {
+                var svt = getParameterByName('svt');
+                if (svt !== null && svt > 0) {
+                    $('#search_vul_type').val(svt);
+                }
+                // Search rule
+                var sr = getParameterByName('sr');
+                if (sr !== null && sr > 0) {
+                    $('#search_rule').val(sr);
+                }
+                // Search level
+                var sl = getParameterByName('sl');
+                if (sl !== null && sl > 0) {
+                    $('#search_level').val(sl);
+                }
+                // Search target
+                var st = getParameterByName('st');
+                if (st !== null && st > 0) {
+                    $('#search_task').val(st);
+                }
+                // Search status
+                var ss = getParameterByName('ss');
+                if (ss !== null && ss > 0) {
+                    $('#search_status').val(ss);
+                }
+            }
+
+            vulnerabilities_list.pushState();
+
+            // load vulnerabilities list
+
+            var list = vul_list_origin.vulnerabilities;
+            sl = Number(sl);
+            var list_html = '';
+
+            var id = 0;
+            for (var i = 0; i < list.length; i++) {
+                // search rule
+                if (sr !== null && sr > 0) {
+                    if (list[i].id !== sr) {
+                        continue;
                     }
                 }
+                // search level
+                if (sl !== null && sl > 0) {
+                    if (sl === 4) {
+                        if (list[i].level < 9) {
+                            console.log(sl);
+                            continue;
+                        }
+                    } else if (sl === 3) {
+                        console.log(sl);
+                        if (list[i].level < 6 || list[i].level > 8) {
+                            continue;
+                        }
+                    } else if (sl === 2) {
+                        if (list[i].level < 3 || list[i].level > 5) {
+                            continue;
+                        }
+                    } else if (sl === 1) {
+                        if (list[i].level < 1 || list[i].level > 2) {
+                            continue;
+                        }
+                    }
+                }
+                var line = '';
+                if (list[i].line_number !== 0) {
+                    line = ':' + list[i].line_number;
+                }
+                list_html = list_html + '<li data-id="' + (i + 1) + '" class=" " data-start="1" data-line="1">' +
+                    '<strong>MVE-' + (i + 1) + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
+                    '<span class="issue-information">' +
+                    '<small>' +
+                    ' => ' + list[i].commit_time +
+                    '</small>' +
+                    '</span>' +
+                    '</li>';
+            }
+            if (list_html.length === 0) {
+                $(".vulnerabilities_list").html('<li><h3 style="text-align: center;margin: 200px auto;">Wow, no vulnerability was detected :)</h3></li>');
+            } else {
+                $('.vulnerabilities_list').html(list_html);
+            }
 
+            // current vulnerability
+            var vid = getParameterByName('vid');
+            if (vid !== null && vid > 0) {
+                vulnerabilities_list.detail(vid);
+            }
+
+            // vulnerabilities list detail
+            $('.vulnerabilities_list li').off('click').on('click', function () {
+                // loading
+                $('.CodeMirror').prepend($('.cm-loading').show().get(0));
+
+                vulnerabilities_list.vid = $(this).attr('data-id');
                 vulnerabilities_list.pushState();
 
-                // load vulnerabilities list
-
-                var list = vul_list_origin.vulnerabilities;
-                if (list.length === 0) {
-                    $(".vulnerabilities_list").html('<li><h3 style="text-align: center;margin: 200px auto;">Wow, no vulnerability was detected :)</h3></li>');
-                } else {
-                    var list_html = '';
-
-                    var id = 0;
-                    for (var i = 0; i < list.length; i++) {
-                        var line = '';
-                        if (list[i].line_number !== 0) {
-                            line = ':' + list[i].line_number;
-                        }
-                        list_html = list_html + '<li data-id="' + (i+1) + '" class=" " data-start="1" data-line="1">' +
-                            '<strong>MVE-' + (i+1) + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
-                            '<span class="issue-information">' +
-                            '<small>' +
-                            list[i].match_result + ' => ' + list[i].commit_time +
-                            '</small>' +
-                            '</span>' +
-                            '</li>';
-
-                    }
-
-                    $('.vulnerabilities_list').html(list_html);
-
-                    // current vulnerability
-                    var vid = getParameterByName('vid');
-                    if (vid !== null && vid > 0) {
-                        vulnerabilities_list.detail(vid);
-                    }
-
-                    // vulnerabilities list detail
-                    $('.vulnerabilities_list li').off('click').on('click', function () {
-                        // loading
-                        $('.CodeMirror').prepend($('.cm-loading').show().get(0));
-
-                        vulnerabilities_list.vid = $(this).attr('data-id');
-                        vulnerabilities_list.pushState();
-
-                        vulnerabilities_list.detail(vulnerabilities_list.vid);
-                    });
-                }
-            } else {
-                $(".vulnerabilities_list").html('<li><h3 style="text-align: center;margin: 200px auto;">The project is deprecated :(</h3></li>');
-            }
+                vulnerabilities_list.detail(vulnerabilities_list.vid);
+            });
         },
         trigger_filter: function () {
             if ($(".filter").is(":visible") === true) {
