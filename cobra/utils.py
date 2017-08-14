@@ -182,18 +182,29 @@ def convert_time(seconds):
         return str(minute) + "'" + str(seconds % one_minute) + "\""
 
 
-def convert_number(number):
+def convert_number(n):
     """
     Convert number to , split
     Ex: 123456 -> 123,456
-    :param number:
+    :param n:
     :return:
     """
-    if number is None or number == 0:
-        return 0
-    number = int(number)
-    locale.setlocale(locale.LC_ALL, 'en_US')
-    return locale.format("%d", number, grouping=True)
+    if n is None: return '0'
+    n = str(n)
+    if '.' in n:
+        dollars, cents = n.split('.')
+    else:
+        dollars, cents = n, None
+
+    r = []
+    for i, c in enumerate(str(dollars)[::-1]):
+        if i and (not (i % 3)):
+            r.insert(0, ',')
+        r.insert(0, c)
+    out = ''.join(r)
+    if cents:
+        out += '.' + cents
+    return out
 
 
 def md5(content):
