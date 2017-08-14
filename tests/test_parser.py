@@ -21,17 +21,12 @@ tests = [
     (u"""<?php
     $cmd_test = $_POST['cmd'];
     exec("test" + $cmd_test);
-    """, u'exec', 3),
-    (u"""<?php
-    $param = $_COOKIE['param'];
-    $cmd = $param;
-    shell_exec($cmd);""", u'shell_exec', 4),
+    """, u'exec', 3)
 ]
 
 tests_ret = [
     ('system', [u'$cmd'], '$_GET'),
-    ('exec', [u'$cmd_test'], '$_POST'),
-    ('shell_exec', [u'$cmd'], '$_COOKIE'),
+    ('exec', [u'$cmd_test'], '$_POST')
 ]
 
 
