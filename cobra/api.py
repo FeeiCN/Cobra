@@ -186,13 +186,25 @@ def summary():
     start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
 
     total_targets_number = len(scan_list)
-    total_vul_number, critical_vul_number, high_vul_number , medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
+    total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
     rule_filter = dict()
+    targets = list()
     for s_sid in scan_list.keys():
+        target_info = dict()
+        target_info.update({
+            'sid': s_sid,
+            'target': scan_list.get(s_sid),
+        })
         s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
         with open(s_sid_file, 'r') as f:
             s_sid_data = json.load(f)
-        total_vul_number += len(s_sid_data)
+        total_vul_number += len(s_sid_data.get('vulnerabilities'))
+
+        target_info.update({'total_vul_number': len(s_sid_data.get('vulnerabilities'))})
+        target_info.update(s_sid_data)
+
+        targets.append(target_info)
+
         for vul in s_sid_data.get('vulnerabilities'):
             if 9 <= int(vul.get('level')) <= 10:
                 critical_vul_number += 1
@@ -211,7 +223,7 @@ def summary():
     return render_template(template_name_or_list='summary.html',
                            total_targets_number=total_targets_number,
                            start_time=start_time,
-                           scan_list=scan_list,
+                           targets=targets,
                            a_sid=a_sid,
                            total_vul_number=total_vul_number,
                            critical_vul_number=critical_vul_number,

@@ -78,6 +78,7 @@ $(function () {
                         $('.v-level').text('Low');
                     }
                     $('.v-type').text(data.rule_name);
+                    $('.v-solution').text(data.solution);
                     // $('.v-rule').text(data.match_result);
                 }
 
@@ -183,7 +184,7 @@ $(function () {
 
                 var content_bottom = '<span class="v-id">MVE-0001</span>' + '<span class="v-language">PHP</span>';
                 addPanel('bottom', content_bottom);
-                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong><img class="icon full-screen" src="/asset/icon/resize-full-screen.png" alt="Full screen">';
+                var content_top = '<strong class="v-path">/this/is/a/demo/code.php:1</strong>';
                 addPanel('top', content_top);
 
                 // full screen
