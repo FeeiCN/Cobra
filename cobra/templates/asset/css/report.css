@@ -51,24 +51,30 @@
 }
 
 /* Let's get this party started */
-::-webkit-scrollbar {
-    width: 10px;
-}
+/*::-webkit-scrollbar {*/
+    /*width: 10px;*/
+/*}*/
 
-/* Track */
-::-webkit-scrollbar-track {
-    background: #343f44;
-}
+/*!* Track *!*/
+/*::-webkit-scrollbar-track {*/
+    /*background: #343f44;*/
+/*}*/
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #525b5f !important;
-    border-radius: 5px !important;
-    border: 1px solid #383e40 !important;
-}
+/*!* Handle *!*/
+/*::-webkit-scrollbar-thumb {*/
+    /*background: #525b5f !important;*/
+    /*border-radius: 5px !important;*/
+    /*border: 1px solid #383e40 !important;*/
+/*}*/
 
-::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(255, 0, 0, 0.4);
+/*::-webkit-scrollbar-thumb:window-inactive {*/
+    /*background: rgba(255, 0, 0, 0.4);*/
+/*}*/
+
+
+#table {
+    overflow-y: auto;
+    max-height: 600px;
 }
 
 .vulnerabilities_list > li {
