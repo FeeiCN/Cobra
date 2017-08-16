@@ -119,13 +119,16 @@
     <div class="widget-list">
         <ul class="widget-trigger">
             <li>
-                <img class="icon" src="{{ url_for('static', filename='icon/v-card.png') }}" alt="Commit Author"> <span
-                    class="commit-author"></span> <img class="icon"
-                                                       src="{{ url_for('static', filename='icon/calendar.png') }}"
-                                                       alt="Commit Time"> <span class="commit-time"></span>
+                <img class="icon" src="{{ url_for('static', filename='icon/v-card.png') }}" alt="Commit Author">
+                <span class="commit-author"></span>
+                <img class="icon" src="{{ url_for('static', filename='icon/calendar.png') }}" alt="Commit Time">
+                <span class="commit-time"></span>
             </li>
             <li>
                 Level: <span class="v-level"></span> <span class="v-type"></span><span class="v-rule"></span>
+            </li>
+            <li>
+                Solution: <span class="v-solution"></span>
             </li>
             <li class="hidden">
                 Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank: <span></span> Bounty:

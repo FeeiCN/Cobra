@@ -60,7 +60,7 @@ class Running:
                 result = f.readline()
             return json.loads(result)
         else:
-            data = json.dumps(data)
+            data = json.dumps(data, sort_keys=True)
             with open(file_path, 'w+') as f:
                 f.writelines(data)
 
@@ -98,7 +98,8 @@ def scan_single(target_directory, single_rule):
         traceback.print_exc()
 
 
-def scan(target_directory, a_sid=None, s_sid=None, special_rules=None):
+def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=None, framework=None, file_count=0,
+         extension_count=0):
     r = Rule()
     vulnerabilities = r.vulnerabilities
     languages = r.languages
@@ -171,7 +172,13 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None):
 
     # completed running data
     if s_sid is not None:
-        Running(s_sid).data({'vulnerabilities': [x.__dict__ for x in find_vulnerabilities]})
+        Running(s_sid).data({'vulnerabilities': [x.__dict__ for x in find_vulnerabilities],
+                             'language': language,
+                             'framework': framework,
+                             'extension': extension_count,
+                             'file': file_count,
+                             'push_rules': len(rules),
+                             'trigger_rules': len(trigger_rules)})
     return True
 
 
