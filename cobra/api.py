@@ -134,7 +134,6 @@ class JobStatus(Resource):
         running = Running(sid)
         if running.is_file() is not True:
             data = {
-                'code': 1001,
                 'msg': 'scan id not exist!',
                 'sid': sid,
                 'status': 'no such scan',
@@ -153,13 +152,12 @@ class JobStatus(Resource):
                     result['status'] = 'done'
                     running.status(result)
             data = {
-                'code': 1001,
                 'msg': 'success',
                 'sid': sid,
                 'status': result['status'],
                 'report': result['report']
             }
-        return data
+        return {"code": 1001, "result": data}
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -186,7 +184,7 @@ def summary():
     start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
 
     total_targets_number = len(scan_list)
-    total_vul_number, critical_vul_number, high_vul_number , medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
+    total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
     rule_filter = dict()
     for s_sid in scan_list.keys():
         s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
@@ -218,7 +216,7 @@ def summary():
                            high_vul_number=high_vul_number,
                            medium_vul_number=medium_vul_number,
                            low_vul_number=low_vul_number,
-                           vuls=rule_filter,)
+                           vuls=rule_filter, )
 
 
 @app.route('/report/<path:a_sid>/<path:s_sid>', methods=['GET'])
