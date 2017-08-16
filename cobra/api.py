@@ -20,11 +20,13 @@ import multiprocessing
 import threading
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
+from werkzeug.utils import secure_filename
 from . import cli
 from .cli import get_sid
 from .engine import Running
 from .log import logger
 from .config import Config, running_path
+from .utils import allowed_file
 
 try:
     # Python 3
@@ -159,6 +161,33 @@ class JobStatus(Resource):
         return {"code": 1001, "result": data}
 
 
+class FileUpload(Resource):
+    @staticmethod
+    def post():
+        """
+        Scan by uploading compressed files
+        :return:
+        """
+        if 'file' not in request.files:
+            return {'code': 1002, 'result': "File can't empty!"}
+        file_instance = request.files['file']
+        if file_instance.filename == '':
+            return {'code': 1002, 'result': "File name can't empty!"}
+        if file_instance and allowed_file(file_instance.filename):
+            filename = secure_filename(file_instance.filename)
+
+            if not os.path.isdir(os.path.join(Config(level1='upload', level2='directory').value, 'uploads')):
+                os.mkdir(os.path.join(Config(level1='upload', level2='directory').value, 'uploads'))
+
+            file_instance.save(os.path.join(os.path.join(Config(level1='upload', level2='directory').value, 'uploads'),
+                                            filename))
+            # Start scan
+            code, result = 1001, 222
+            return {'code': code, 'result': result}
+        else:
+            return {'code': 1002, 'result': "This extension can't support!"}
+
+
 @app.route('/', methods=['GET', 'POST'])
 def summary():
     a_sid = request.args.get(key='sid')
@@ -284,6 +313,7 @@ def start(host, port, debug):
 
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
+    api.add_resource(FileUpload, '/api/upload')
 
     # 消费者线程
     threads = []

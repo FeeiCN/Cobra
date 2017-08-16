@@ -172,10 +172,7 @@
             var new_version = $("input[name=new_version]").val();
 
             var data = {
-                'target': url,
-                'branch': branch,
-                'old_version': old_version,
-                'new_version': new_version,
+                'target': url + ':' + branch,
                 'key': "{{ key }}"
             };
             $.ajax({
@@ -187,7 +184,7 @@
                 async: true,
                 success: function (result) {
                     if (result.code == 1001) {
-                        var sid = result.result['sid'];
+                        var sid = result.result.sid;
                         var data = {sid: sid, key: "{{ key }}"};
 
                         function get_status() {
@@ -200,9 +197,9 @@
                                 async: false,
                                 success: function (result) {
                                     if (result.code == 1001) {
-                                        if (result.status == 'done') {
+                                        if (result.result['status'] == 'done') {
                                             $('.tab-content').plainOverlay('hide');
-                                            window.location=result.report;
+                                            window.location=result.result['report'];
                                         } else {
                                             setTimeout(get_status, 3000);
                                         }
@@ -226,9 +223,9 @@
         $('#uploadFile').fileupload({
             url: '/api/upload',
             dataType: 'json',
-            done: function (e, data) {
-                if (data.result.code == 1001) {
-                    var scan_id = data.result.result['scan_id'];
+            done: function (e, result) {
+                if (result.result.code == 1001) {
+                    var scan_id = result.result.result['scan_id'];
                     var data = {scan_id: scan_id, key: "{{ key }}"};
 
                     function get_status() {
@@ -257,7 +254,7 @@
 
                     get_status();
                 } else {
-                    alert(data.result.result);
+                    alert(result.result.result);
                 }
             },
             start: function (e) {
