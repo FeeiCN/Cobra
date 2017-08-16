@@ -145,7 +145,6 @@ class JobStatus(Resource):
             if result['status'] == 'running':
                 r_data = running.list()
                 ret = True
-                logger.info(r_data['sids'])
                 for sid, git in r_data['sids'].items():
                     if Running(sid).is_file(True) is False:
                         ret = False
@@ -166,7 +165,9 @@ class JobStatus(Resource):
 def summary():
     a_sid = request.args.get(key='sid')
     if a_sid is None:
-        return 'No sid specified.'
+        key = Config(level1="cobra", level2="secret_key").value
+        return render_template(template_name_or_list='index.html',
+                               key=key)
 
     scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
     scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
