@@ -20,6 +20,7 @@ from .log import logger
 from . import cli, api, config
 from .cli import get_sid
 from .engine import Running
+import cProfile, pstats, io
 
 from .__version__ import __title__, __introduction__, __url__, __version__
 from .__version__ import __author__, __author_email__, __license__
@@ -35,6 +36,8 @@ except NameError as e:
 def main():
     # arg parse
     t1 = time.clock()
+    pr = cProfile.Profile()
+    pr.enable()
     parser = argparse.ArgumentParser(prog=__title__, description=__introduction__, epilog=__epilog__, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser_group_scan = parser.add_argument_group('Scan')
@@ -82,7 +85,12 @@ def main():
             a_sid = args.sid
         cli.start(args.target, args.format, args.output, args.special_rules, a_sid)
     t2 = time.clock()
-    logger.info('[INIT] Done! TC:{TC}s'.format(TC=t2 - t1))
+    # pr.disable()
+    # s = io.StringIO()
+    # ps = pstats.Stats(pr, stream=s)
+    # ps.print_stats()
+    # print(s.getvalue())
+    logger.info('[INIT] Done! Consume Time:{ct}s'.format(ct=t2 - t1))
 
 
 if __name__ == '__main__':
