@@ -284,7 +284,7 @@ def start(host, port, debug):
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
 
-    # 消费者线程
+    # consumer
     threads = []
     for i in range(10):
         threads.append(threading.Thread(target=consumer, args=()))
@@ -296,10 +296,10 @@ def start(host, port, debug):
     try:
         app.run(debug=debug, host=host, port=int(port), threaded=True, processes=1)
     except socket.error as v:
-        if v[0] == errno.EACCES:
-            logger.critical('must root permission for start API Server!')
+        if v.errno == errno.EACCES:
+            logger.critical('[{err}] must root permission for start API Server!'.format(err=v.strerror))
             exit()
         else:
-            logger.critical('{msg}'.format(msg=v[1]))
+            logger.critical('{msg}'.format(msg=v.strerror))
 
     logger.info('API Server start success')
