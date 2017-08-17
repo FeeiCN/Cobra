@@ -4,6 +4,7 @@
     <name value="输出入参"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[(echo(\s*\()?|(print(_r)?|exit|die|printf|vprintf|trigger_error|user_error|odbc_result_all|ovrimos_result_all|ifx_htmltbl_result)\s*\()\s*[^;]*\$_(GET|POST|REQUEST|SERVER|COOKIE)]]></match>
+    <repair block="in-current-line"><![CDATA[(htmlspecialchars)]]></repair>
     <level value="4"/>
     <solution>
         ## 安全风险

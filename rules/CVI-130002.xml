@@ -3,8 +3,8 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="硬编码Token/Key"/>
     <language value="*"/>
-    <match mode="regex-only-match"><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
-    <repair block="in-current-line"><![CDATA[(jQuery|hash|version|hm\.js|githubusercontent|ClientCnxn)]]></repair>
+    <match mode="regex-only-match"><![CDATA[[^\\/](?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})[^.]]]></match>
+    <repair block="in-current-line"><![CDATA[(github\.com|composer|reference|jQuery|hash|version|hm\.js|githubusercontent|ClientCnxn)]]></repair>
     <level value="2"/>
     <test>
         <case assert="true" remark="sha1"><![CDATA["41a6bc4d9a033e1627f448f0b9593f9316d071c1"]]></case>
@@ -15,6 +15,13 @@
         <case assert="false"><![CDATA[ffffffffffffffffffffffffffffffff]]></case>
         <case assert="false"><![CDATA[01110101001110011101011010101001]]></case>
         <case assert="false"><![CDATA[00000000000000000000000000000000]]></case>
+        <case assert="false"><![CDATA[\3986770edb3e40a7eeb35e867ceb7821.php]]></case>
+        <case assert="false"><![CDATA[/3986770edb3e40a7eeb35e867ceb7821.php]]></case>
+        <case assert="false"><![CDATA[3986770edb3e40a7eeb35e867ceb7821.php]]></case>
+        <case assert="false"><![CDATA[api.github.com/repos/nikic/PHP-Parser/zipball/f78af2c9c86107aa1a34cd]]></case>
+        <case assert="false"><![CDATA[files.phpcomposer.com/files/PHPMailer/PHPMailer/22d04c6a58145a244696]]></case>
+        <case assert="false"><![CDATA["reference": "f78af2c9c86107aa1a34cd1dbb5bbe9eeb0d9f51"]]></case>
+        <case assert="false"><![CDATA[return ComposerAutoloaderInitc106a97e2ff6ae6c690bb686f7369207::getLoader();]]></case>
     </test>
     <solution>
         ## 安全风险

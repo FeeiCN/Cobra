@@ -8,6 +8,7 @@
 类型：`JSON`
 
 #### 请求参数
+
 |参数|类型|必填|描述|例子|
 |---|---|---|---|---|
 |key|string|是|`config`文件中配置的`secret_key`|`{"key":"your_secret_key"}`|
@@ -32,6 +33,7 @@
 类型：`JSON`
 
 #### 请求参数
+
 |参数|类型|必填|描述|例子|
 |---|---|---|---|---|
 |key|string|是|`config`文件中配置的`secret_key`|`{"key":"your_secret_key"}`|
