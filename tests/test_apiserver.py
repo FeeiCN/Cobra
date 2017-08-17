@@ -18,6 +18,7 @@ import subprocess
 import time
 import os
 import shutil
+import signal
 from cobra.config import cobra_main, project_directory
 
 p = subprocess.Popen(['python', cobra_main, '-H', '127.0.0.1', '-P', '5000'])
@@ -62,4 +63,4 @@ def test_job_status():
 
 def test_close_api():
     os.remove(config_path)
-    p.terminate()
+    p.send_signal(signal=signal.SIGINT)
