@@ -16,7 +16,8 @@ import requests
 import json
 import subprocess
 import time
-from cobra.config import cobra_main
+import os
+from cobra.config import cobra_main, project_directory
 
 p = subprocess.Popen(['python', cobra_main, '-H', '127.0.0.1', '-P', '5000'])
 time.sleep(1)
@@ -55,4 +56,6 @@ def test_job_status():
 
 
 def test_close_api():
+    config_path = os.path.join(project_directory, 'config')
+    os.remove(config_path)
     p.terminate()
