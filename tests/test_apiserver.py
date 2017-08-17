@@ -63,4 +63,4 @@ def test_job_status():
 
 def test_close_api():
     os.remove(config_path)
-    p.send_signal(signal=signal.SIGINT)
+    p.send_signal(signal.SIGINT)
