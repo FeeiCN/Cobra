@@ -20,11 +20,13 @@ import multiprocessing
 import threading
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
+from werkzeug.utils import secure_filename
 from . import cli
 from .cli import get_sid
 from .engine import Running
 from .log import logger
 from .config import Config, running_path
+from .utils import allowed_file
 
 try:
     # Python 3
@@ -144,7 +146,6 @@ class JobStatus(Resource):
             if result['status'] == 'running':
                 r_data = running.list()
                 ret = True
-                logger.info(r_data['sids'])
                 for sid, git in r_data['sids'].items():
                     if Running(sid).is_file(True) is False:
                         ret = False
@@ -160,11 +161,40 @@ class JobStatus(Resource):
         return {"code": 1001, "result": data}
 
 
+class FileUpload(Resource):
+    @staticmethod
+    def post():
+        """
+        Scan by uploading compressed files
+        :return:
+        """
+        if 'file' not in request.files:
+            return {'code': 1002, 'result': "File can't empty!"}
+        file_instance = request.files['file']
+        if file_instance.filename == '':
+            return {'code': 1002, 'result': "File name can't empty!"}
+        if file_instance and allowed_file(file_instance.filename):
+            filename = secure_filename(file_instance.filename)
+
+            if not os.path.isdir(os.path.join(Config(level1='upload', level2='directory').value, 'uploads')):
+                os.mkdir(os.path.join(Config(level1='upload', level2='directory').value, 'uploads'))
+
+            file_instance.save(os.path.join(os.path.join(Config(level1='upload', level2='directory').value, 'uploads'),
+                                            filename))
+            # Start scan
+            code, result = 1001, 222
+            return {'code': code, 'result': result}
+        else:
+            return {'code': 1002, 'result': "This extension can't support!"}
+
+
 @app.route('/', methods=['GET', 'POST'])
 def summary():
     a_sid = request.args.get(key='sid')
     if a_sid is None:
-        return 'No sid specified.'
+        key = Config(level1="cobra", level2="secret_key").value
+        return render_template(template_name_or_list='index.html',
+                               key=key)
 
     scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
     scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
@@ -283,6 +313,7 @@ def start(host, port, debug):
 
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
+    api.add_resource(FileUpload, '/api/upload')
 
     # consumer
     threads = []

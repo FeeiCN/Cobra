@@ -10,6 +10,8 @@ python:
 install:
   - pip install coveralls
   - pip install -r requirements.txt
+before-script:
+  - cp config.template config
 script:
   - py.test
   - coverage run --source=cobra -m pytest
