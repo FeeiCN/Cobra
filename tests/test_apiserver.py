@@ -17,10 +17,15 @@ import json
 import subprocess
 import time
 import os
+import shutil
 from cobra.config import cobra_main, project_directory
 
 p = subprocess.Popen(['python', cobra_main, '-H', '127.0.0.1', '-P', '5000'])
 time.sleep(1)
+
+config_path = os.path.join(project_directory, 'config')
+template_path = os.path.join(project_directory, 'config.template')
+shutil.copyfile(template_path, config_path)
 
 
 def test_add_job():
@@ -56,6 +61,5 @@ def test_job_status():
 
 
 def test_close_api():
-    config_path = os.path.join(project_directory, 'config')
     os.remove(config_path)
     p.terminate()
