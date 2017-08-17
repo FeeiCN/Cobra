@@ -17,6 +17,7 @@ import json
 import subprocess
 import time
 import os
+import shutil
 from cobra.config import cobra_main, project_directory
 
 p = subprocess.Popen(['python', cobra_main, '-H', '127.0.0.1', '-P', '5000'])
@@ -24,10 +25,7 @@ time.sleep(1)
 
 config_path = os.path.join(project_directory, 'config')
 template_path = os.path.join(project_directory, 'config.template')
-with open(template_path, 'r') as f:
-    config = f.read()
-with open(config_path, 'w') as f:
-    f.write(config)
+shutil.copyfile(template_path, config_path)
 
 
 def test_add_job():
@@ -40,9 +38,9 @@ def test_add_job():
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    assert "1001" in re.content
-    assert "Add scan job successfully" in re.content
-    assert "sid" in re.content
+    assert "1001" in re.text
+    assert "Add scan job successfully" in re.text
+    assert "sid" in re.text
 
 
 def test_job_status():
@@ -55,11 +53,11 @@ def test_job_status():
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    assert "1001" in re.content
-    assert "msg" in re.content
-    assert "sid" in re.content
-    assert "status" in re.content
-    assert "report" in re.content
+    assert "1001" in re.text
+    assert "msg" in re.text
+    assert "sid" in re.text
+    assert "status" in re.text
+    assert "report" in re.text
 
 
 def test_close_api():
