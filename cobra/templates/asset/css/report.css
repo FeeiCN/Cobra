@@ -80,7 +80,7 @@
 .vulnerabilities_list > li {
     border-top: 1px solid #282828;
     padding: 5px;
-    height: 75px;
+    min-height: 75px;
 }
 
 .vulnerabilities_list > li.high {

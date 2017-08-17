@@ -72,31 +72,21 @@
 
         <div class="tab-content">
             <div class="tab-pane active" id="config">
-                <h3>Github/Gitlab/Subversion</h3>
+                <h3>Github / Gitlab / Subversion</h3>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
                                 <label>GIT / SVN repository address (.git at the end) or local project path</label>
-                                <input type="text" class="form-control" name="repository" placeholder="Ex:http://github.com/wufeifei/grw.git or /home/Feei/project_name">
+                                <input type="text" class="form-control" name="repository"
+                                       placeholder="Ex:http://github.com/wufeifei/grw.git or /home/Feei/project_name">
                             </div>
                         </div>
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>Gitlab branch(Not support)</label>
-                                <input type="text" class="form-control" name="branch" placeholder="Default: master, optional" disabled="disabled" value="master">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><i class="icon-backward"></i> Old commit version</label>
-                                <input name="old_version" class="form-control" type="text" placeholder="Optional">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><i class="icon-forward-3"></i> New commit version</label>
-                                <input name="new_version" class="form-control" type="text" placeholder="Optional">
+                                <label>Gitlab branch</label>
+                                <input type="text" class="form-control" name="branch"
+                                       placeholder="Default: master, optional" value="master">
                             </div>
                         </div>
                     </div>
@@ -113,7 +103,7 @@
                         <div align="center" id="selectFile"></div>
                         <hr>
                         <input type="file" class="btn_1" id="uploadFile" name="file" style="width: 100%;">
-                        <small>Support for upload extensions: {{ data.extensions }}</small>
+                        <small>Support for upload extensions: tar.bz2|tar|gz|tgz|tar.gz|rar|zip</small>
                         <div id="progress">
                             <div class="bar"></div>
                         </div>
@@ -165,6 +155,7 @@
     // click and select file to upload
     var files;
     $('input[type=file]').on('change', prepareUpload);
+
     function prepareUpload(event) {
         files = event.target.files;
     }
@@ -181,11 +172,8 @@
             var new_version = $("input[name=new_version]").val();
 
             var data = {
-                'target': url,
-                'branch': branch,
-                'old_version': old_version,
-                'new_version': new_version,
-                'key': "{{ data.key }}"
+                'target': url + ':' + branch,
+                'key': "{{ key }}"
             };
             $.ajax({
                 url: '/api/add',
@@ -196,8 +184,8 @@
                 async: true,
                 success: function (result) {
                     if (result.code == 1001) {
-                        var scan_id = result.result['scan_id'];
-                        var data = {scan_id: scan_id, key: "{{ data.key }}"};
+                        var sid = result.result.sid;
+                        var data = {sid: sid, key: "{{ key }}"};
 
                         function get_status() {
                             $.ajax({
@@ -208,10 +196,10 @@
                                 dataType: 'json',
                                 async: false,
                                 success: function (result) {
-                                    if (result.status == 1001) {
+                                    if (result.code == 1001) {
                                         if (result.result['status'] == 'done') {
                                             $('.tab-content').plainOverlay('hide');
-                                            window.open(result.result['report'], '_blank');
+                                            window.location=result.result['report'];
                                         } else {
                                             setTimeout(get_status, 3000);
                                         }
@@ -235,10 +223,10 @@
         $('#uploadFile').fileupload({
             url: '/api/upload',
             dataType: 'json',
-            done: function (e, data) {
-                if (data.result.code == 1001) {
-                    var scan_id = data.result.result['scan_id'];
-                    var data = {scan_id: scan_id, key: "{{ data.key }}"};
+            done: function (e, result) {
+                if (result.result.code == 1001) {
+                    var scan_id = result.result.result['scan_id'];
+                    var data = {scan_id: scan_id, key: "{{ key }}"};
 
                     function get_status() {
                         $.ajax({
@@ -266,7 +254,7 @@
 
                     get_status();
                 } else {
-                    alert(data.result.result);
+                    alert(result.result.result);
                 }
             },
             start: function (e) {
@@ -279,8 +267,8 @@
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
                 process_bar.css(
-                        'width',
-                        progress + '%'
+                    'width',
+                    progress + '%'
                 );
                 process_bar.text('uploading(' + progress + '%)');
             }
