@@ -10,6 +10,19 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+var score2level = {
+    1: 'Low',
+    2: 'Low',
+    3: 'Medium',
+    4: 'Medium',
+    5: 'Medium',
+    6: 'High',
+    7: 'High',
+    8: 'High',
+    9: 'Critical',
+    10: 'Critical'
+};
+
 $(function () {
     var vulnerabilities_list = {
         page: 1,
@@ -68,15 +81,7 @@ $(function () {
                     var lis = $('.widget-trigger li');
                     $('.commit-author').text('@' + data.commit_author);
                     $('.commit-time').text('@' + data.commit_time);
-                    if (9 <= data.level && data.level <= 10) {
-                        $('.v-level').text('Critical');
-                    } else if (6 <= data.level && data.level <= 8) {
-                        $('.v-level').text('High');
-                    } else if (3 <= data.level && data.level <= 5) {
-                        $('.v-level').text('Medium');
-                    } else if (1 <= data.level && data.level <= 2) {
-                        $('.v-level').text('Low');
-                    }
+                    $('.v-level').text(score2level[data.level]);
                     $('.v-type').text(data.rule_name);
                     $('.v-solution').text(data.solution);
                     // $('.v-rule').text(data.match_result);
@@ -275,7 +280,8 @@ $(function () {
                 if (list[i].line_number !== 0) {
                     line = ':' + list[i].line_number;
                 }
-                list_html = list_html + '<li data-id="' + (i + 1) + '" class=" " data-start="1" data-line="1">' +
+                list_html = list_html + '<li data-id="' + (i + 1) + '" class="' + score2level[list[i].level].toLowerCase() +'"' +
+                    ' data-start="1" data-line="1">' +
                     '<strong>MVE-' + (i + 1) + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
                     '<span class="issue-information">' +
                     '<small>' +
