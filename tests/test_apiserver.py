@@ -14,13 +14,16 @@
 
 import requests
 import json
-import subprocess
+import multiprocessing
 import time
 import os
 import shutil
-from cobra.config import cobra_main, project_directory
+import socket
+from cobra.config import project_directory
+from cobra.api import start
 
-p = subprocess.Popen(['python', cobra_main, '-H', '127.0.0.1', '-P', '5000'], preexec_fn=os.setsid())
+p = multiprocessing.Process(target=start, args=('127.0.0.1', 5000, False))
+p.start()
 time.sleep(1)
 
 config_path = os.path.join(project_directory, 'config')
@@ -63,5 +66,25 @@ def test_job_status():
 def test_close_api():
     os.remove(config_path)
     p.terminate()
-    p.wait()
+    p.join()
+
+    # wait for scan process
+    while True:
+        cobra_process = os.popen('ps aux | grep python').read()
+        cobra_process_num = len(cobra_process.strip().split('\n'))
+        if cobra_process_num <= 3:
+            # grep python
+            # sh -c ps aux | grep python
+            # python pytest
+            break
+        time.sleep(1)
+
+    # whether port 5000 is closed
+    s = socket.socket()
+    s.settimeout(0.5)
+    try:
+        assert s.connect_ex(('localhost', 5000)) != 0
+    finally:
+        s.close()
+
     assert not os.path.exists(config_path)
