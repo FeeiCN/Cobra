@@ -70,12 +70,12 @@ def test_close_api():
 
     # wait for scan process
     while True:
-        cobra_process = os.popen('ps aux | grep test_apiserver.py').read()
+        cobra_process = os.popen('ps aux | grep python').read()
         cobra_process_num = len(cobra_process.strip().split('\n'))
         if cobra_process_num <= 3:
-            # grep test_apiserver.py
-            # sh -c ps aux | grep test_apiserver.py
-            # python test_apiserver.py
+            # grep python
+            # sh -c ps aux | grep python
+            # python pytest
             break
         time.sleep(1)
 
