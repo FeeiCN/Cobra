@@ -148,7 +148,7 @@ $(function () {
 
             var sid = '';
             if (sid !== null) {
-                sid = '&sid=' + getParameterByName('sid');
+                sid = 'sid=' + getParameterByName('sid');
             }
 
             var s_sid = '';
@@ -157,7 +157,7 @@ $(function () {
             }
             var url = '';
             var current_tab = 'vul';
-            url = "?t=" + current_tab + sid + s_sid + vulnerabilities_list.filter_url() + v;
+            url = '?' + sid + s_sid + vulnerabilities_list.filter_url() + v;
             window.history.pushState("CobraState", "Cobra", url);
         },
         get: function (on_filter) {
@@ -263,7 +263,7 @@ $(function () {
                 async: false,
                 success: function(result) {
                     if (result.code === 1001) {
-                        vul_list_origin = result.result;
+                        vul_list_origin = result.result.scan_data;
                     } else {
                         alert(result.result);
                     }

@@ -61,7 +61,6 @@
             <div class="invoice-title">
                 <h2>Cobra</h2>
             </div>
-            <hr>
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#inf" data-toggle="tab">Information</a></li>
                 <li><a href="#tar" data-toggle="tab">Targets</a></li>
@@ -202,8 +201,8 @@
                                     <select id="search_target" class="form-control" style="height: 30px;"
                                             onchange="self.location.href=options[selectedIndex].value">
                                         <option value="all">All</option>
-                                        {% for target in target_filter %}
-                                            <option value="./{{ target }}">{{ target_filter.get(target) }}</option>
+                                        {% for target_info in targets %}
+                                            <option value="./?sid={{ a_sid }}&s_sid={{ target_info.get('sid') }}">{{ target_info.get('target') }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -237,35 +236,31 @@
                             <div class='cm-loading' style='display:none;'></div>
                         </div>
                     </div>
-                    <div class="widget-list">
-                        <ul class="widget-trigger">
-                            <li>
-                                <img class="icon" src="{{ url_for('static', filename='icon/v-card.png') }}"
-                                     alt="Commit Author">
-                                <span class="commit-author"></span>
-                                <img class="icon" src="{{ url_for('static', filename='icon/calendar.png') }}"
-                                     alt="Commit Time">
-                                <span class="commit-time"></span>
-                            </li>
-                            <li>
-                                Level: <span class="v-level"></span> <span class="v-type"></span><span
-                                    class="v-rule"></span>
-                            </li>
-                            <li>
-                                Solution: <span class="v-solution"></span>
-                            </li>
-                            <li class="hidden">
-                                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank:
-                                <span></span> Bounty:
-                                <span></span>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <hr>
+    <div class="widget-list">
+        <ul class="widget-trigger">
+            <li>
+                <img class="icon" src="{{ url_for('static', filename='icon/v-card.png') }}" alt="Commit Author">
+                <span class="commit-author"></span>
+                <img class="icon" src="{{ url_for('static', filename='icon/calendar.png') }}" alt="Commit Time">
+                <span class="commit-time"></span>
+            </li>
+            <li>
+                Level: <span class="v-level"></span> <span class="v-type"></span><span class="v-rule"></span>
+            </li>
+            <li>
+                Solution: <span class="v-solution"></span>
+            </li>
+            <li class="hidden">
+                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank:
+                <span></span> Bounty:
+                <span></span>
+            </li>
+        </ul>
+    </div>
     <div class="row">
         <div class="col-md-6">
             <div>

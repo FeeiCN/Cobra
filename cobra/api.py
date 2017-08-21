@@ -209,12 +209,22 @@ class ResultData(Resource):
 
         s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
         if not os.path.exists(s_sid_file):
-            return 'No such target.'
+            return {'code': 1002, 'result': 'No such target.'}
 
         with open(s_sid_file, 'r') as f:
             scan_data = json.load(f)
 
-        return {'code': 1001, 'result': scan_data}
+        rule_filter = dict()
+        for vul in scan_data.get('vulnerabilities'):
+            rule_filter[vul.get('id')] = vul.get('rule_name')
+
+        return {
+            'code': 1001,
+            'result': {
+                'scan_data': scan_data,
+                'rule_filter': rule_filter
+            }
+        }
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -255,6 +265,8 @@ def summary():
         s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
         with open(s_sid_file, 'r') as f:
             s_sid_data = json.load(f)
+            if s_sid_file.get('code') != 1001:
+                continue
         total_vul_number += len(s_sid_data.get('vulnerabilities'))
 
         target_info.update({'total_vul_number': len(s_sid_data.get('vulnerabilities'))})
@@ -302,6 +314,8 @@ def report(a_sid, s_sid):
 
     with open(scan_data_file, 'r') as f:
         scan_data = json.load(f)
+        if scan_data.get('code') != 1001:
+            return scan_data.get('msg')
     with open(scan_list_file, 'r') as f:
         scan_list = json.load(f).get('sids')
 
