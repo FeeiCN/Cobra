@@ -17,6 +17,7 @@ from .detection import Detection
 from .engine import scan, Running
 from .log import logger
 from .utils import md5, random_generator
+from .exceptions import NotExistException
 
 
 def get_sid(target, is_a_sid=False):
@@ -60,7 +61,15 @@ def start(target, formatter, output, special_rules, a_sid=None):
     output_mode = pa.output_mode
 
     # target directory
-    target_directory = pa.target_directory(target_mode)
+    try:
+        target_directory = pa.target_directory(target_mode)
+    except NotExistException as e:
+        result = {
+            'code': 1002,
+            'msg': 'Repository not exist!'
+        }
+        Running(s_sid).data(result)
+        return
 
     # static analyse files info
     files, file_count, time_consume = Directory(target_directory).collect_files()
