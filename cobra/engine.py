@@ -172,13 +172,18 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
 
     # completed running data
     if s_sid is not None:
-        Running(s_sid).data({'vulnerabilities': [x.__dict__ for x in find_vulnerabilities],
-                             'language': language,
-                             'framework': framework,
-                             'extension': extension_count,
-                             'file': file_count,
-                             'push_rules': len(rules),
-                             'trigger_rules': len(trigger_rules)})
+        Running(s_sid).data({
+            'code': 1001,
+            'msg': 'scan finished',
+            'result': {
+                'vulnerabilities': [x.__dict__ for x in find_vulnerabilities],
+                'language': language,
+                'framework': framework,
+                'extension': extension_count,
+                'file': file_count,
+                'push_rules': len(rules),
+                'trigger_rules': len(trigger_rules)}
+        })
     return True
 
 

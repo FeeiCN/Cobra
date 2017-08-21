@@ -213,6 +213,11 @@ class ResultData(Resource):
 
         with open(s_sid_file, 'r') as f:
             scan_data = json.load(f)
+            if scan_data.get('code') != 1001:
+                return {
+                    'code': scan_data.get('code'),
+                    'msg': scan_data.get('msg'),
+                }
 
         rule_filter = dict()
         for vul in scan_data.get('vulnerabilities'):
@@ -222,7 +227,7 @@ class ResultData(Resource):
             'code': 1001,
             'result': {
                 'scan_data': scan_data,
-                'rule_filter': rule_filter
+                'rule_filter': rule_filter,
             }
         }
 
@@ -265,8 +270,10 @@ def summary():
         s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
         with open(s_sid_file, 'r') as f:
             s_sid_data = json.load(f)
-            if s_sid_file.get('code') != 1001:
+            if s_sid_data.get('code') != 1001:
                 continue
+            else:
+                s_sid_data = s_sid_data.get('result')
         total_vul_number += len(s_sid_data.get('vulnerabilities'))
 
         target_info.update({'total_vul_number': len(s_sid_data.get('vulnerabilities'))})
