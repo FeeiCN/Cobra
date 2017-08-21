@@ -23,6 +23,8 @@ var score2level = {
     10: 'Critical'
 };
 
+var vul_list_origin = '';
+
 $(function () {
     var vulnerabilities_list = {
         page: 1,
@@ -143,9 +145,19 @@ $(function () {
             if (vulnerabilities_list.vid !== null) {
                 v = '&vid=' + vulnerabilities_list.vid;
             }
+
+            var sid = '';
+            if (sid !== null) {
+                sid = '&sid=' + getParameterByName('sid');
+            }
+
+            var s_sid = '';
+            if(s_sid !== null) {
+                s_sid = '&s_sid=' + getParameterByName('s_sid');
+            }
             var url = '';
             var current_tab = 'vul';
-            url = "?t=" + current_tab + vulnerabilities_list.filter_url() + v;
+            url = "?t=" + current_tab + sid + s_sid + vulnerabilities_list.filter_url() + v;
             window.history.pushState("CobraState", "Cobra", url);
         },
         get: function (on_filter) {
@@ -241,6 +253,22 @@ $(function () {
             vulnerabilities_list.pushState();
 
             // load vulnerabilities list
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/data',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({sid: getParameterByName('s_sid')}),
+                dataType: 'json',
+                async: false,
+                success: function(result) {
+                    if (result.code === 1001) {
+                        vul_list_origin = result.result;
+                    } else {
+                        alert(result.result);
+                    }
+                }
+            });
 
             var list = vul_list_origin.vulnerabilities;
             sl = Number(sl);

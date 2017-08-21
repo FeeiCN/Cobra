@@ -146,8 +146,11 @@ class JobStatus(Resource):
             if result['status'] == 'running':
                 r_data = running.list()
                 ret = True
-                for sid, git in r_data['sids'].items():
-                    if Running(sid).is_file(True) is False:
+                result['still_running'] = dict()
+                for s_sid, git in r_data['sids'].items():
+                    if Running(s_sid).is_file(True) is False:
+                        result['still_running'].update({s_sid: git})
+                        print result['still_running']
                         ret = False
                 if ret:
                     result['status'] = 'done'
@@ -155,8 +158,9 @@ class JobStatus(Resource):
             data = {
                 'msg': 'success',
                 'sid': sid,
-                'status': result['status'],
-                'report': result['report']
+                'status': result.get('status'),
+                'report': result.get('report'),
+                'still_running': result.get('still_running')
             }
         return {"code": 1001, "result": data}
 
@@ -186,6 +190,31 @@ class FileUpload(Resource):
             return {'code': code, 'result': result}
         else:
             return {'code': 1002, 'result': "This extension can't support!"}
+
+
+class ResultData(Resource):
+    @staticmethod
+    def post():
+        """
+        pull scan result data.
+        :return:
+        """
+        data = request.json
+        if not data or data == "":
+            return {"code": 1003, "result": "Only support json, please post json data."}
+
+        s_sid = data.get('sid')
+        if not s_sid or s_sid == "":
+            return {"code": 1002, "result": "sid is required."}
+
+        s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+        if not os.path.exists(s_sid_file):
+            return 'No such target.'
+
+        with open(s_sid_file, 'r') as f:
+            scan_data = json.load(f)
+
+        return {'code': 1001, 'result': scan_data}
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -314,6 +343,7 @@ def start(host, port, debug):
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
     api.add_resource(FileUpload, '/api/upload')
+    api.add_resource(ResultData, '/api/data')
 
     # consumer
     threads = []
