@@ -61,6 +61,7 @@
             <div class="invoice-title">
                 <h2>Cobra</h2>
             </div>
+            <hr>
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#inf" data-toggle="tab">Information</a></li>
                 <li><a href="#tar" data-toggle="tab">Targets</a></li>
@@ -198,11 +199,9 @@
                             <div class="filter">
                                 <div class="col-md-12" style="margin-top: 10px">
                                     <label for="search_target" style="color: #aaaaaa;">Target</label>
-                                    <select id="search_target" class="form-control" style="height: 30px;"
-                                            onchange="self.location.href=options[selectedIndex].value">
-                                        <option value="all">All</option>
+                                    <select id="search_target" class="form-control" style="height: 30px;">
                                         {% for target_info in targets %}
-                                            <option value="./?sid={{ a_sid }}&s_sid={{ target_info.get('sid') }}">{{ target_info.get('target') }}</option>
+                                            <option value="{{ target_info.get('sid') }}">{{ target_info.get('target') }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -255,8 +254,7 @@
                 Solution: <span class="v-solution"></span>
             </li>
             <li class="hidden">
-                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank:
-                <span></span> Bounty:
+                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank: <span></span> Bounty:
                 <span></span>
             </li>
         </ul>

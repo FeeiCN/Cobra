@@ -57,7 +57,7 @@ class AddJob(Resource):
     def post():
         data = request.json
         if not data or data == "":
-            return {"code": 1003, "result": "Only support json, please post json data."}
+            return {"code": 1003, "msg": "Only support json, please post json data."}
 
         target = data.get("target")
         formatter = data.get("formatter")
@@ -70,7 +70,7 @@ class AddJob(Resource):
             return is_valid_key
 
         if not target or target == "":
-            return {"code": 1002, "result": "URL cannot be empty."}
+            return {"code": 1002, "msg": "URL cannot be empty."}
 
         if not formatter or formatter == '':
             formatter = 'json'
@@ -121,7 +121,7 @@ class JobStatus(Resource):
     def post():
         data = request.json
         if not data or data == "":
-            return {"code": 1003, "result": "Only support json, please post json data."}
+            return {"code": 1003, "msg": "Only support json, please post json data."}
 
         sid = data.get("sid")
 
@@ -130,7 +130,7 @@ class JobStatus(Resource):
             return is_valid_key
 
         if not sid or sid == "":
-            return {"code": 1002, "result": "sid is required."}
+            return {"code": 1002, "msg": "sid is required."}
 
         sid = str(data.get("sid"))  # 需要拼接入路径，转为字符串
         running = Running(sid)
@@ -189,7 +189,7 @@ class FileUpload(Resource):
             code, result = 1001, 222
             return {'code': code, 'result': result}
         else:
-            return {'code': 1002, 'result': "This extension can't support!"}
+            return {'code': 1002, 'msg': "This extension can't support!"}
 
 
 class ResultData(Resource):
@@ -201,19 +201,21 @@ class ResultData(Resource):
         """
         data = request.json
         if not data or data == "":
-            return {"code": 1003, "result": "Only support json, please post json data."}
+            return {"code": 1003, "msg": "Only support json, please post json data."}
 
         s_sid = data.get('sid')
         if not s_sid or s_sid == "":
-            return {"code": 1002, "result": "sid is required."}
+            return {"code": 1002, "msg": "sid is required."}
 
         s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
         if not os.path.exists(s_sid_file):
-            return {'code': 1002, 'result': 'No such target.'}
+            return {'code': 1002, 'msg': 'No such target.'}
 
         with open(s_sid_file, 'r') as f:
             scan_data = json.load(f)
-            if scan_data.get('code') != 1001:
+            if scan_data.get('code') == 1001:
+                scan_data = scan_data.get('result')
+            else:
                 return {
                     'code': scan_data.get('code'),
                     'msg': scan_data.get('msg'),
@@ -323,6 +325,8 @@ def report(a_sid, s_sid):
         scan_data = json.load(f)
         if scan_data.get('code') != 1001:
             return scan_data.get('msg')
+        else:
+            scan_data = scan_data.get('result')
     with open(scan_list_file, 'r') as f:
         scan_list = json.load(f).get('sids')
 
@@ -350,11 +354,11 @@ def key_verify(data):
     if _key == key:
         return True
     elif not _key or _key == "":
-        return {"code": 1002, "result": "Key cannot be empty."}
+        return {"code": 1002, "msg": "Key cannot be empty."}
     elif not _key == key:
-        return {"code": 4002, "result": "Key verify failed."}
+        return {"code": 4002, "msg": "Key verify failed."}
     else:
-        return {"code": 4002, "result": "Unknown key verify error."}
+        return {"code": 4002, "msg": "Unknown key verify error."}
 
 
 def start(host, port, debug):
