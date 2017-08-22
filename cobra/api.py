@@ -140,7 +140,7 @@ class JobStatus(Resource):
         if running.is_file() is not True:
             data = {
                 'code': 1004,
-                'msg': 'scan id not exist!',
+                'msg': 'scan id does not exist!',
                 'sid': sid,
                 'status': 'no such scan',
                 'report': ''

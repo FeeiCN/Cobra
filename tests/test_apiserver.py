@@ -56,11 +56,48 @@ def test_job_status():
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    assert "1001" in re.text
+    assert "1004" in re.text
     assert "msg" in re.text
     assert "sid" in re.text
     assert "status" in re.text
     assert "report" in re.text
+
+
+def test_result_data():
+    url = 'http://127.0.0.1:5000/api/list'
+    post_data = {
+        'sid': 24,
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
+    assert '1002' in re.text
+    assert 'No such target' in re.text
+
+
+def test_result_detail():
+    url = 'http://127.0.0.1:5000/api/detail'
+    post_data = {
+        'target': 'https://github.com/shadowsocks/shadowsocks.git',
+        'file_path': 'setup.py',
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
+    assert '1001' in re.text
+    assert 'clowwindy42@gmail.com' in re.text
+
+
+def test_index():
+    url = 'http://127.0.0.1:5000/'
+    re = requests.get(url=url)
+    assert 'Github / Gitlab / Subversion' in re.text
+
+    url = 'http://127.0.0.1:5000/?sid=abcde'
+    re = requests.get(url=url)
+    assert 'scan id does not exist!' in re.text
 
 
 def test_close_api():
