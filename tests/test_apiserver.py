@@ -86,8 +86,13 @@ def test_result_detail():
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    assert '1001' in re.text
-    assert 'clowwindy42@gmail.com' in re.text
+    filename = '/tmp/cobra/git/shadowsocks/shadowsocks/setup.py'
+    if os.path.exists(filename):
+        assert '1001' in re.text
+        assert 'clowwindy42@gmail.com' in re.text
+    else:
+        assert '1002' in re.text
+        assert 'No such file' in re.text
 
 
 def test_index():
