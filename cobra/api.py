@@ -15,8 +15,10 @@ import socket
 import errno
 import time
 import os
+import re
 import json
 import multiprocessing
+import subprocess
 import threading
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
@@ -25,7 +27,7 @@ from . import cli
 from .cli import get_sid
 from .engine import Running
 from .log import logger
-from .config import Config, running_path
+from .config import Config, running_path, code_path
 from .utils import allowed_file
 
 try:
@@ -150,7 +152,6 @@ class JobStatus(Resource):
                 for s_sid, git in r_data['sids'].items():
                     if Running(s_sid).is_file(True) is False:
                         result['still_running'].update({s_sid: git})
-                        print result['still_running']
                         ret = False
                 if ret:
                     result['status'] = 'done'
@@ -232,6 +233,48 @@ class ResultData(Resource):
                 'rule_filter': rule_filter,
             }
         }
+
+
+class ResultDetail(Resource):
+    @staticmethod
+    def post():
+        """
+        get vulnerable file content
+        :return:
+        """
+        data = request.json
+        if not data or data == "":
+            return {'code': 1003, 'msg': 'Only support json, please post json data.'}
+
+        target = data.get('target')
+        file_path = data.get('file_path')
+
+        if target.startswith('http'):
+            target = re.findall(r'(.*?\.git)', target)[0]
+            repo_user = target.split('/')[-2]
+            repo_name = target.split('/')[-1].replace('.git', '')
+            # repo_directory = os.path.join(os.path.join(os.path.join(code_path, 'git'), repo_user), repo_name)
+            repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
+
+            file_path = map(secure_filename, file_path.split('/'))
+
+            # 循环生成路径，避免文件越级读取
+            file_name = repo_directory
+            for _dir in file_path:
+                file_name = os.path.join(file_name, _dir)
+
+            if os.path.exists(file_name):
+                if is_text(file_name):
+                    with open(file_name, 'r') as f:
+                        file_content = f.read()
+                else:
+                    file_content = 'This is a binary file.'
+            else:
+                return {'code': 1002, 'msg': 'No such file.'}
+
+            return {'code': 1001, 'result': file_content}
+
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -361,6 +404,11 @@ def key_verify(data):
         return {"code": 4002, "msg": "Unknown key verify error."}
 
 
+def is_text(fn):
+    msg = subprocess.Popen(['file', fn], stdout=subprocess.PIPE).communicate()[0]
+    return 'text' in msg
+
+
 def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
     api = Api(app)
@@ -368,7 +416,8 @@ def start(host, port, debug):
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
     api.add_resource(FileUpload, '/api/upload')
-    api.add_resource(ResultData, '/api/data')
+    api.add_resource(ResultData, '/api/list')
+    api.add_resource(ResultDetail, '/api/detail')
 
     # consumer
     threads = []
