@@ -389,7 +389,7 @@ def key_verify(data):
 
 def is_text(fn):
     msg = subprocess.Popen(['file', fn], stdout=subprocess.PIPE).communicate()[0]
-    return 'text' in msg
+    return 'text' in msg.decode('utf-8')
 
 
 def start(host, port, debug):
