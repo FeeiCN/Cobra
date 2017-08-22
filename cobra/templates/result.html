@@ -74,10 +74,9 @@
                             <div class="filter">
                                 <div class="col-md-12" style="margin-top: 10px">
                                     <label for="search_target" style="color: #aaaaaa;">Target</label>
-                                    <select id="search_target" class="form-control" style="height: 30px;" onchange="self.location.href=options[selectedIndex].value">
-                                        <option value="all">All</option>
+                                    <select id="search_target" class="form-control" style="height: 30px;">
                                         {% for target in target_filter %}
-                                            <option value="./{{ target }}">{{ target_filter.get(target) }}</option>
+                                            <option value="{{ target }}">{{ target_filter.get(target) }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
