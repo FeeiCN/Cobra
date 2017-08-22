@@ -23,10 +23,17 @@ var score2level = {
     10: 'Critical'
 };
 
-var vul_list_origin = '';
-var rule_filter = {};
 
 $(function () {
+    var current_tab = '';
+    var c_tab = getParameterByName('t');
+    if (c_tab !== null && c_tab !== '' && ['inf', 'vul', 'ext'].indexOf(c_tab) >= 0) {
+        current_tab = c_tab;
+        $(".nav-tabs li").removeClass('active');
+        $("a[data-id=" + c_tab + "]").parent('li').addClass('active');
+        $(".tab-pane").removeClass('active');
+        $('#' + c_tab).addClass('active');
+    }
     var vulnerabilities_list = {
         page: 1,
         vid: null,
@@ -155,16 +162,17 @@ $(function () {
 
             var sid = '';
             if (sid !== null) {
-                sid = 'sid=' + getParameterByName('sid');
+                sid = '&sid=' + getParameterByName('sid');
             }
 
             var s_sid = '';
-            if(s_sid !== null) {
+            if (s_sid !== null) {
                 s_sid = '&s_sid=' + $('#search_target').val();
             }
-            var url = '';
-            var current_tab = 'vul';
-            url = '?' + sid + s_sid + vulnerabilities_list.filter_url() + v;
+            if (current_tab === '') {
+                current_tab = 'inf';
+            }
+            url = '?t=' + current_tab + sid + s_sid + vulnerabilities_list.filter_url() + v;
             window.history.pushState("CobraState", "Cobra", url);
         },
         get: function (on_filter) {
@@ -241,7 +249,7 @@ $(function () {
                 data: JSON.stringify({sid: getParameterByName('s_sid')}),
                 dataType: 'json',
                 async: false,
-                success: function(result) {
+                success: function (result) {
                     if (result.code === 1001) {
                         vul_list_origin = result.result.scan_data;
                         rule_filter = result.result.rule_filter;
@@ -283,7 +291,7 @@ $(function () {
             var list_html = '';
 
             var id = 0;
-            for (i = 0; i < list.length; i++) {
+            for (var i = 0; i < list.length; i++) {
                 // search rule
                 if (sr !== null && sr > 0) {
                     if (list[i].id !== sr) {
@@ -294,11 +302,9 @@ $(function () {
                 if (sl !== null && sl > 0) {
                     if (sl === 4) {
                         if (list[i].level < 9) {
-                            console.log(sl);
                             continue;
                         }
                     } else if (sl === 3) {
-                        console.log(sl);
                         if (list[i].level < 6 || list[i].level > 8) {
                             continue;
                         }
@@ -358,6 +364,17 @@ $(function () {
                 $('.filter').show();
             }
         }
-    }
+    };
     vulnerabilities_list.init();
-})
+
+    // tab
+    $(".nav-tabs li a").on('click', function () {
+        var id = $(this).attr('data-id');
+        current_tab = id;
+        $(".nav-tabs li").removeClass('active');
+        $(this).parent('li').addClass('active');
+        $(".tab-pane").removeClass('active');
+        $('#' + id).addClass('active');
+        vulnerabilities_list.pushState();
+    });
+});
