@@ -152,7 +152,6 @@ class JobStatus(Resource):
                 for s_sid, git in r_data['sids'].items():
                     if Running(s_sid).is_file(True) is False:
                         result['still_running'].update({s_sid: git})
-                        print result['still_running']
                         ret = False
                 if ret:
                     result['status'] = 'done'
