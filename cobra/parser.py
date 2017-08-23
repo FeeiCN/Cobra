@@ -11,7 +11,6 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import pprint
 from phply.phplex import lexer  # 词法分析
 from phply.phpparse import make_parser  # 语法分析
 from phply import phpast as php
@@ -57,6 +56,9 @@ def get_all_params(nodes):  # 用来获取调用函数的参数列表，nodes为
         if isinstance(node.node, php.BinaryOp):
             params = get_binaryop_params(node.node)
             params = export_list(params, export_params)
+
+        if isinstance(node.node, php.ArrayOffset):
+            params = get_node_name(node.node.node)
 
     return params
 
@@ -110,7 +112,7 @@ def get_expr_name(node):  # expr为'expr'中的值
     elif isinstance(node, php.FunctionCall):  # 当赋值表达式为函数
         param_expr = get_all_params(node.params)  # 返回函数参数列表
         param_lineno = node.lineno
-        is_re = is_repair(node.name)
+        is_re = is_repair(node.name)  # 调用了函数，判断调用的函数是否为修复函数
 
     else:
         param_expr = node
@@ -187,11 +189,9 @@ def parameters_back(param, nodes):  # 用来得到回溯过程中的被赋值的
     cp = None
     if len(nodes) != 0:
         node = nodes[len(nodes) - 1]
-
-        if isinstance(node, php.Assignment):
+        if isinstance(node, php.Assignment):  # 回溯的过程中，对出现赋值情况的节点进行跟踪
             param_node = get_node_name(node.node)  # param_node为被赋值的变量
             param_expr, expr_lineno, is_re = get_expr_name(node.expr)  # param_expr为赋值表达式,param_expr为变量或者列表
-
             if param == param_node and is_re is True:
                 return is_co, cp
 
@@ -202,9 +202,6 @@ def parameters_back(param, nodes):  # 用来得到回溯过程中的被赋值的
                     logger.warning("[USAGE-CONTROLLABLE] {cp} in line {expr_lineno}".format(cp=cp,
                                                                                             expr_lineno=expr_lineno))
 
-            if is_co is False:  # 当is_co为True时找到可控，停止递归
-                is_co, cp = parameters_back(param, nodes[:-1])  # 找到可控的输入时，停止递归
-
             if param == param_node and isinstance(param_expr, list):
                 for expr in param_expr:
                     param = expr
@@ -213,32 +210,91 @@ def parameters_back(param, nodes):  # 用来得到回溯过程中的被赋值的
                         is_co = _is_co
                         cp = _cp
 
+        if is_co is False:  # 当is_co为True时找到可控，停止递归
+            is_co, cp = parameters_back(param, nodes[:-1])  # 找到可控的输入时，停止递归
+
     return is_co, cp
 
 
-def analysis(nodes, vul_function):
+def get_function_params(nodes):
+    params = []
+    for node in nodes:
+
+        if isinstance(node, php.FormalParameter):
+            params.append(node.name)
+
+    return params
+
+
+def anlysis_function(node):
     """
-    找到敏感函数调用点-->取出敏感函数的参数-->循环判断参数是否可控
-    :param nodes: 所有节点
-    :param vul_function: 要判断的敏感函数名
+    对用户自定义的函数进行分析-->获取函数入参-->入参用经过赋值流程，进入sink函数-->此自定义函数为危险函数
+    :param node:
     :return:
     """
-    back_node = []
-    for node in nodes:
-        if isinstance(node, php.FunctionCall):
-            if node.name == vul_function:  # 定位到敏感函数
-                params = get_all_params(node.params)  # 开始取敏感函数中的参数列表
-                for param in params:
-                    is_co, cp = parameters_back(param, back_node)
-                    if is_co is True:
-                        logger.warning("[line] The parameters '{param}' from function '{function}' are controllable "
-                                       "in line {line}".format(param=param, function=node.name, line=node.lineno))
+    function_params = get_function_params(node.params)
+    print function_params
 
-                    else:
-                        logger.warning("[line] The function '{function}' --> '{param}' uncontrollable or vulnerability "
-                                       "is repaired".format(function=node.name, param=param))
-        else:
-            back_node.append(node)
+
+def analysis_functioncall(node, back_node, vul_function):
+    """
+    调用FunctionCall-->判断调用Function是否敏感-->get params获取所有参数-->开始递归判断
+    :param node:
+    :param back_node:
+    :param vul_function:
+    :return:
+    """
+    if node.name == vul_function:  # 定位到敏感函数
+        params = get_all_params(node.params)  # 开始取敏感函数中的参数列表
+        for param in params:
+            is_co, cp = parameters_back(param, back_node)
+            if is_co is True:
+                logger.warning("[line] The parameters '{param}' from function '{function}' are controllable "
+                               "in line {line}".format(param=param, function=node.name, line=node.lineno))
+
+            else:
+                logger.warning("[line] The function '{function}' --> '{param}' uncontrollable or vulnerability "
+                               "is repaired".format(function=node.name, param=param))
+
+
+def analysis(nodes, vul_function, back_node):
+    """
+    调用FunctionCall-->analysis_functioncall分析调用函数是否敏感
+    :param nodes: 所有节点
+    :param vul_function: 要判断的敏感函数名
+    :param back_node: 各种语法结构里面的语句
+    :return:
+    """
+    for node in nodes:
+        if isinstance(node, php.FunctionCall):  # 函数直接调用，不进行赋值
+            analysis_functioncall(node, back_node, vul_function)
+
+        elif isinstance(node, php.Assignment):  # 函数调用在赋值表达式中
+            if isinstance(node.expr, php.FunctionCall):
+                analysis_functioncall(node.expr, back_node, vul_function)
+
+        elif isinstance(node, php.If):  # 函数调用在if-else语句中时
+            if isinstance(node.node, php.Block):  # if语句中的sink点以及变量
+                analysis(node.node.nodes, vul_function, back_node)
+
+            if node.else_ is not None:  # else语句中的sink点以及变量
+                if isinstance(node.else_.node, php.Block):
+                    analysis(node.else_.node.nodes, vul_function, back_node)
+
+            if len(node.elseifs) != 0:  # elseif语句中的sink点以及变量
+                for i_node in node.elseifs:
+                    if i_node.node is not None:
+                        analysis(i_node.node.nodes, vul_function, back_node)
+
+        elif isinstance(node, php.While) or isinstance(node, php.For):  # 函数调用在循环中
+            if isinstance(node.node, php.Block):
+                analysis(node.node.nodes, vul_function, back_node)
+
+        elif isinstance(node, php.Function):
+            anlysis_function(node)
+            # analysis(node.nodes, vul_function, back_node)
+
+        back_node.append(node)
 
 
 def scan(code_content, sensitive_func):
@@ -248,27 +304,41 @@ def scan(code_content, sensitive_func):
     :param sensitive_func: 要检测的敏感函数,传入的为函数列表
     :return:
     """
+    back_node = []
     parser = make_parser()
     all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)
-    pprint.pprint(all_nodes)
     for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控
-        analysis(all_nodes, func)
+        analysis(all_nodes, func, back_node)
 
 
 # code_contents = """<?php
 # $e = $_GET['test'];
 # $d = $_GET['test'];
-# $cmd = escapeshellcmd($e);
-# $cmd1 = escapeshellcmd($d);
-# system($cmd,$cmd1);
+# a($e, $d);
+# $c = $_POST['test'];
+# system($d,$e);
+# shell_exec($c);
+#
 # """
 
-code_contents = """<?php
-if(a==1){
-shell_exec($target);
-} else {
-shell_exec($target);
+# code_contents = """<?php
+# a==1;
+# if(a==1){
+# $cmd = $_GET['test'];
+# $a = shell_exec($cmd);
+# }else{
+# $cmd1 = $_POST['test'];
+# $b = system($cmd1);
+# }
+# """
+
+code_contents = """
+<?php
+$url = $_GET['test'];
+function a($url) {
+    system($url);
 }
+?>
 """
 
 F_EXECS = [  # 命令执行的敏感函数
@@ -288,4 +358,3 @@ F_EXECS = [  # 命令执行的敏感函数
 ]
 
 scan(code_contents, F_EXECS)
-
