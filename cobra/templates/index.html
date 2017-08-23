@@ -204,7 +204,7 @@
                                             setTimeout(get_status, 3000);
                                         }
                                     } else {
-                                        alert(result.result);
+                                        alert(result.msg);
                                     }
                                 }
                             });
@@ -213,7 +213,7 @@
                         get_status();
                     } else {
                         $('.tab-content').plainOverlay('hide');
-                        alert(result.result);
+                        alert(result.msg);
                     }
                 }
             });

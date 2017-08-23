@@ -17,7 +17,7 @@ from .detection import Detection
 from .engine import scan, Running
 from .log import logger
 from .utils import md5, random_generator
-from .exceptions import NotExistException
+from .exceptions import PickupException
 
 
 def get_sid(target, is_a_sid=False):
@@ -63,7 +63,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     # target directory
     try:
         target_directory = pa.target_directory(target_mode)
-    except NotExistException as e:
+    except PickupException as e:
         result = {
             'code': 1002,
             'msg': 'Repository not exist!'

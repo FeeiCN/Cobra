@@ -15,8 +15,11 @@ import socket
 import errno
 import time
 import os
+import re
 import json
+import requests
 import multiprocessing
+import subprocess
 import threading
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
@@ -25,7 +28,7 @@ from . import cli
 from .cli import get_sid
 from .engine import Running
 from .log import logger
-from .config import Config, running_path
+from .config import Config, running_path, code_path
 from .utils import allowed_file
 
 try:
@@ -81,6 +84,21 @@ class AddJob(Resource):
 
         # Report All Id
         a_sid = get_sid(target, True)
+        a_sid_data = {
+            'sids': {}
+        }
+        running = Running(a_sid)
+
+        # Write a_sid running data
+        running.list(a_sid_data)
+
+        # Write a_sid running status
+        data = {
+            'status': 'running',
+            'report': ''
+        }
+        running.status(data)
+
         if isinstance(target, list):
             for t in target:
                 # Scan
@@ -99,20 +117,6 @@ class AddJob(Resource):
                 "sid": a_sid,
             }
 
-        a_sid_data = {
-            'sids': {}
-        }
-        running = Running(a_sid)
-
-        # Write a_sid running data
-        running.list(a_sid_data)
-
-        # Write a_sid running status
-        data = {
-            'status': 'running',
-            'report': ''
-        }
-        running.status(data)
         return {"code": 1001, "result": result}
 
 
@@ -136,11 +140,13 @@ class JobStatus(Resource):
         running = Running(sid)
         if running.is_file() is not True:
             data = {
-                'msg': 'scan id not exist!',
+                'code': 1004,
+                'msg': 'scan id does not exist!',
                 'sid': sid,
                 'status': 'no such scan',
                 'report': ''
             }
+            return data
         else:
             result = running.status()
             if result['status'] == 'running':
@@ -150,7 +156,6 @@ class JobStatus(Resource):
                 for s_sid, git in r_data['sids'].items():
                     if Running(s_sid).is_file(True) is False:
                         result['still_running'].update({s_sid: git})
-                        print result['still_running']
                         ret = False
                 if ret:
                     result['status'] = 'done'
@@ -234,117 +239,139 @@ class ResultData(Resource):
         }
 
 
+class ResultDetail(Resource):
+    @staticmethod
+    def post():
+        """
+        get vulnerable file content
+        :return:
+        """
+        data = request.json
+        if not data or data == "":
+            return {'code': 1003, 'msg': 'Only support json, please post json data.'}
+
+        target = data.get('target')
+        file_path = data.get('file_path')
+
+        if target.startswith('http'):
+            target = re.findall(r'(.*?\.git)', target)[0]
+            repo_user = target.split('/')[-2]
+            repo_name = target.split('/')[-1].replace('.git', '')
+            # repo_directory = os.path.join(os.path.join(os.path.join(code_path, 'git'), repo_user), repo_name)
+            repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
+
+            file_path = map(secure_filename, file_path.split('/'))
+
+            # 循环生成路径，避免文件越级读取
+            file_name = repo_directory
+            for _dir in file_path:
+                file_name = os.path.join(file_name, _dir)
+
+            if os.path.exists(file_name):
+                if is_text(file_name):
+                    with open(file_name, 'r') as f:
+                        file_content = f.read()
+                else:
+                    file_content = 'This is a binary file.'
+            else:
+                return {'code': 1002, 'msg': 'No such file.'}
+
+            return {'code': 1001, 'result': file_content}
+
+
 @app.route('/', methods=['GET', 'POST'])
 def summary():
     a_sid = request.args.get(key='sid')
+    key = Config(level1="cobra", level2="secret_key").value
     if a_sid is None:
-        key = Config(level1="cobra", level2="secret_key").value
         return render_template(template_name_or_list='index.html',
                                key=key)
 
-    scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
-    scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
-    if not os.path.isfile(scan_status_file):
-        return 'No such scan.'
+    status_url = request.url_root + 'api/status'
+    post_data = {
+        'key': key,
+        'sid': a_sid,
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    r = requests.post(url=status_url, headers=headers, data=json.dumps(post_data))
+    try:
+        scan_status = json.loads(r.text)
+    except ValueError as e:
+        return render_template(template_name_or_list='error.html',
+                               msg='Check scan status failed: {0}'.format(e))
 
-    with open(scan_status_file, 'r') as f:
-        scan_status = json.load(f).get('status')
-    with open(scan_list_file, 'r') as f:
-        scan_list = json.load(f).get('sids')
+    if scan_status.get('code') != 1001:
+        return render_template(template_name_or_list='error.html',
+                               msg=scan_status.get('msg'))
+    else:
+        if scan_status.get('result').get('status') == 'running':
+            return render_template(template_name_or_list='error.html',
+                                   msg='Scan job is still running.',
+                                   running=scan_status.get('result').get('still_running'))
 
-    if scan_status == 'running':
-        return 'Scan job is still running, Please check later.'
+        elif scan_status.get('result').get('status') == 'done':
+            scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
+            scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
 
-    start_time = os.path.getctime(filename=scan_status_file)
-    start_time = time.localtime(start_time)
-    start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
+            with open(scan_list_file, 'r') as f:
+                scan_list = json.load(f).get('sids')
 
-    total_targets_number = len(scan_list)
-    total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
-    rule_filter = dict()
-    targets = list()
-    for s_sid in scan_list.keys():
-        target_info = dict()
-        target_info.update({
-            'sid': s_sid,
-            'target': scan_list.get(s_sid),
-        })
-        s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
-        with open(s_sid_file, 'r') as f:
-            s_sid_data = json.load(f)
-            if s_sid_data.get('code') != 1001:
-                continue
-            else:
-                s_sid_data = s_sid_data.get('result')
-        total_vul_number += len(s_sid_data.get('vulnerabilities'))
+            start_time = os.path.getctime(filename=scan_status_file)
+            start_time = time.localtime(start_time)
+            start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
 
-        target_info.update({'total_vul_number': len(s_sid_data.get('vulnerabilities'))})
-        target_info.update(s_sid_data)
+            total_targets_number = len(scan_list)
+            total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
+            rule_filter = dict()
+            targets = list()
+            for s_sid in scan_list.keys():
+                target_info = dict()
+                target_info.update({
+                    'sid': s_sid,
+                    'target': scan_list.get(s_sid),
+                })
+                s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+                with open(s_sid_file, 'r') as f:
+                    s_sid_data = json.load(f)
+                    if s_sid_data.get('code') != 1001:
+                        continue
+                    else:
+                        s_sid_data = s_sid_data.get('result')
+                total_vul_number += len(s_sid_data.get('vulnerabilities'))
 
-        targets.append(target_info)
+                target_info.update({'total_vul_number': len(s_sid_data.get('vulnerabilities'))})
+                target_info.update(s_sid_data)
 
-        for vul in s_sid_data.get('vulnerabilities'):
-            if 9 <= int(vul.get('level')) <= 10:
-                critical_vul_number += 1
-            elif 6 <= int(vul.get('level')) <= 8:
-                high_vul_number += 1
-            elif 3 <= int(vul.get('level')) <= 5:
-                medium_vul_number += 1
-            elif 1 <= int(vul.get('level')) <= 2:
-                low_vul_number += 1
+                targets.append(target_info)
 
-            try:
-                rule_filter[vul.get('rule_name')] += 1
-            except KeyError:
-                rule_filter[vul.get('rule_name')] = 1
+                for vul in s_sid_data.get('vulnerabilities'):
+                    if 9 <= int(vul.get('level')) <= 10:
+                        critical_vul_number += 1
+                    elif 6 <= int(vul.get('level')) <= 8:
+                        high_vul_number += 1
+                    elif 3 <= int(vul.get('level')) <= 5:
+                        medium_vul_number += 1
+                    elif 1 <= int(vul.get('level')) <= 2:
+                        low_vul_number += 1
 
-    return render_template(template_name_or_list='summary.html',
-                           total_targets_number=total_targets_number,
-                           start_time=start_time,
-                           targets=targets,
-                           a_sid=a_sid,
-                           total_vul_number=total_vul_number,
-                           critical_vul_number=critical_vul_number,
-                           high_vul_number=high_vul_number,
-                           medium_vul_number=medium_vul_number,
-                           low_vul_number=low_vul_number,
-                           vuls=rule_filter, )
+                    try:
+                        rule_filter[vul.get('rule_name')] += 1
+                    except KeyError:
+                        rule_filter[vul.get('rule_name')] = 1
 
-
-@app.route('/report/<path:a_sid>/<path:s_sid>', methods=['GET'])
-def report(a_sid, s_sid):
-    if s_sid is None:
-        return 'No sid specified.'
-
-    scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
-    scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
-    if not os.path.isfile(scan_data_file):
-        return 'No such target.'
-
-    with open(scan_data_file, 'r') as f:
-        scan_data = json.load(f)
-        if scan_data.get('code') != 1001:
-            return scan_data.get('msg')
-        else:
-            scan_data = scan_data.get('result')
-    with open(scan_list_file, 'r') as f:
-        scan_list = json.load(f).get('sids')
-
-    project_name = scan_list.get(s_sid).split('/')[-1].replace('.git', '')
-
-    rule_filter = dict()
-    for vul in scan_data.get('vulnerabilities'):
-        rule_filter[vul.get('id')] = vul.get('rule_name')
-
-    with open(os.path.join(os.path.dirname(__file__), 'templates/asset/js/report.js')) as f:
-        report_js = f.read()
-
-    return render_template(template_name_or_list='result.html',
-                           scan_data=json.dumps(scan_data, ensure_ascii=False),
-                           report_js=report_js,
-                           target_filter=scan_list,
-                           project_name=project_name,
-                           rule_filter=rule_filter)
+            return render_template(template_name_or_list='summary.html',
+                                   total_targets_number=total_targets_number,
+                                   start_time=start_time,
+                                   targets=targets,
+                                   a_sid=a_sid,
+                                   total_vul_number=total_vul_number,
+                                   critical_vul_number=critical_vul_number,
+                                   high_vul_number=high_vul_number,
+                                   medium_vul_number=medium_vul_number,
+                                   low_vul_number=low_vul_number,
+                                   vuls=rule_filter, )
 
 
 def key_verify(data):
@@ -361,6 +388,11 @@ def key_verify(data):
         return {"code": 4002, "msg": "Unknown key verify error."}
 
 
+def is_text(fn):
+    msg = subprocess.Popen(['file', fn], stdout=subprocess.PIPE).communicate()[0]
+    return 'text' in msg.decode('utf-8')
+
+
 def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
     api = Api(app)
@@ -368,7 +400,8 @@ def start(host, port, debug):
     api.add_resource(AddJob, '/api/add')
     api.add_resource(JobStatus, '/api/status')
     api.add_resource(FileUpload, '/api/upload')
-    api.add_resource(ResultData, '/api/data')
+    api.add_resource(ResultData, '/api/list')
+    api.add_resource(ResultDetail, '/api/detail')
 
     # consumer
     threads = []
