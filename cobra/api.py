@@ -84,6 +84,21 @@ class AddJob(Resource):
 
         # Report All Id
         a_sid = get_sid(target, True)
+        a_sid_data = {
+            'sids': {}
+        }
+        running = Running(a_sid)
+
+        # Write a_sid running data
+        running.list(a_sid_data)
+
+        # Write a_sid running status
+        data = {
+            'status': 'running',
+            'report': ''
+        }
+        running.status(data)
+
         if isinstance(target, list):
             for t in target:
                 # Scan
@@ -102,20 +117,6 @@ class AddJob(Resource):
                 "sid": a_sid,
             }
 
-        a_sid_data = {
-            'sids': {}
-        }
-        running = Running(a_sid)
-
-        # Write a_sid running data
-        running.list(a_sid_data)
-
-        # Write a_sid running status
-        data = {
-            'status': 'running',
-            'report': ''
-        }
-        running.status(data)
         return {"code": 1001, "result": result}
 
 
