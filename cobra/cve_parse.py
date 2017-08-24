@@ -254,7 +254,7 @@ def rule_parse():
         un_gz(gz_files)
         pool = multiprocessing.Pool()
         for year in range(2002, datetime.datetime.now().year + 1):
-            cve_xml = "../rules/%d.xml" % year
+            cve_xml = project_directory + "/rules/%d.xml" % year
             pool.apply_async(rule_single, args=(cve_xml, year))
         pool.close()
         pool.join()
@@ -277,7 +277,6 @@ def download_rule_gz():
                                   args=(url, project_directory + "/rules/" + str(year) + ".xml.gz"))
         thread.start()
         threads.append(thread)
-        logger.info('CVE-' + str(year) + " is download success")
         files.append(project_directory + "/rules/" + str(year) + ".xml.gz")
     for t in threads:
         t.join()
@@ -307,6 +306,7 @@ def rule_single(target_directory, year):
 
 def is_update():
     url = "https://static.nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-modified.meta"
+    requests.packages.urllib3.disable_warnings()
     r = requests.get(url, verify=False)
     index = r.text.find('sha256:')
     sha256_now = r.text[index + 7:].strip()
