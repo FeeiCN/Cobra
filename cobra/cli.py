@@ -46,8 +46,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     # generate single scan id
     s_sid = get_sid(target)
     r = Running(a_sid)
-    data = r.list()
-    data['sids'][s_sid] = target
+    data = (s_sid, target)
     r.list(data)
 
     report = '?sid={a_sid}'.format(a_sid=a_sid)

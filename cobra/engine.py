@@ -14,6 +14,7 @@
 import os
 import re
 import json
+import fcntl
 import traceback
 import subprocess
 import multiprocessing
@@ -31,37 +32,55 @@ class Running:
     def __init__(self, sid):
         self.sid = sid
 
+    def init_list(self):
+        file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
+        with open(file_path, 'w') as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            f.write(json.dumps({
+                'sids': {}
+            }))
+
     def list(self, data=None):
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
         if data is None:
-            with open(file_path) as f:
+            with open(file_path, 'r') as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
                 result = f.readline()
-            return json.loads(result)
+                return json.loads(result)
         else:
-            data = json.dumps(data)
-            with open(file_path, 'w+') as f:
-                f.writelines(data)
+            with open(file_path, 'r+') as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
+                result = f.read()
+                result = json.loads(result)
+                result['sids'][data[0]] = data[1]
+                f.seek(0)
+                f.truncate()
+                f.write(json.dumps(result))
 
     def status(self, data=None):
         file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
         if data is None:
             with open(file_path) as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
                 result = f.readline()
             return json.loads(result)
         else:
             data = json.dumps(data)
             with open(file_path, 'w') as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
                 f.writelines(data)
 
     def data(self, data=None):
         file_path = os.path.join(running_path, '{sid}_data'.format(sid=self.sid))
         if data is None:
             with open(file_path) as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
                 result = f.readline()
             return json.loads(result)
         else:
             data = json.dumps(data, sort_keys=True)
             with open(file_path, 'w+') as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
                 f.writelines(data)
 
     def is_file(self, is_data=False):
