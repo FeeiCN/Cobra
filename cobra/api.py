@@ -84,13 +84,10 @@ class AddJob(Resource):
 
         # Report All Id
         a_sid = get_sid(target, True)
-        a_sid_data = {
-            'sids': {}
-        }
         running = Running(a_sid)
 
         # Write a_sid running data
-        running.list(a_sid_data)
+        running.init_list()
 
         # Write a_sid running status
         data = {
@@ -313,10 +310,8 @@ def summary():
 
         elif scan_status.get('result').get('status') == 'done':
             scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
-            scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
 
-            with open(scan_list_file, 'r') as f:
-                scan_list = json.load(f).get('sids')
+            scan_list = Running(a_sid).list().get('sids')
 
             start_time = os.path.getctime(filename=scan_status_file)
             start_time = time.localtime(start_time)
