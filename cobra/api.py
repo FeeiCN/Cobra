@@ -21,6 +21,7 @@ import requests
 import multiprocessing
 import subprocess
 import threading
+import traceback
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
 from werkzeug.utils import secure_filename
@@ -28,7 +29,7 @@ from . import cli
 from .cli import get_sid
 from .engine import Running
 from .log import logger
-from .config import Config, running_path, code_path
+from .config import Config, running_path, code_path, package_path
 from .utils import allowed_file
 
 try:
@@ -181,14 +182,20 @@ class FileUpload(Resource):
             return {'code': 1002, 'result': "File name can't empty!"}
         if file_instance and allowed_file(file_instance.filename):
             filename = secure_filename(file_instance.filename)
-
-            if not os.path.isdir(os.path.join(Config(level1='upload', level2='directory').value, 'uploads')):
-                os.mkdir(os.path.join(Config(level1='upload', level2='directory').value, 'uploads'))
-
-            file_instance.save(os.path.join(os.path.join(Config(level1='upload', level2='directory').value, 'uploads'),
-                                            filename))
+            dst_directory = os.path.join(package_path, filename)
+            file_instance.save(dst_directory)
             # Start scan
-            code, result = 1001, 222
+            a_sid = get_sid(dst_directory, True)
+            data = {
+                'status': 'running',
+                'report': ''
+            }
+            Running(a_sid).status(data)
+            try:
+                cli.start(dst_directory, None, 'stream', None, a_sid=a_sid)
+            except Exception as e:
+                traceback.print_exc()
+            code, result = 1001, {'sid': a_sid}
             return {'code': code, 'result': result}
         else:
             return {'code': 1002, 'msg': "This extension can't support!"}
@@ -263,7 +270,7 @@ class ResultDetail(Resource):
             file_name = repo_directory
             for _dir in file_path:
                 file_name = os.path.join(file_name, _dir)
-
+            print(file_name)
             if os.path.exists(file_name):
                 if is_text(file_name):
                     with open(file_name, 'r') as f:

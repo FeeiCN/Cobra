@@ -62,6 +62,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     # target directory
     try:
         target_directory = pa.target_directory(target_mode)
+        logger.info('[CLI] Target directory: {d}'.format(d=target_directory))
 
         # static analyse files info
         files, file_count, time_consume = Directory(target_directory).collect_files()

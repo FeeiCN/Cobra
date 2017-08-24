@@ -48,10 +48,13 @@ class Running:
                 result = f.readline()
                 return json.loads(result)
         else:
-            with open(file_path, 'r+') as f:
+            with open(file_path, 'w+') as f:
                 fcntl.flock(f, fcntl.LOCK_EX)
                 result = f.read()
-                result = json.loads(result)
+                if result == '':
+                    result = {'sids': {}}
+                else:
+                    result = json.loads(result)
                 result['sids'][data[0]] = data[1]
                 f.seek(0)
                 f.truncate()
