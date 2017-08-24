@@ -62,6 +62,24 @@ def start(target, formatter, output, special_rules, a_sid=None):
     # target directory
     try:
         target_directory = pa.target_directory(target_mode)
+
+        # static analyse files info
+        files, file_count, time_consume = Directory(target_directory).collect_files()
+
+        # detection main language and framework
+        dt = Detection(target_directory, files)
+        main_language = dt.language
+        main_framework = dt.framework
+
+        logger.info('[CLI] [STATISTIC] Language: {l} Framework: {f}'.format(l=main_language, f=main_framework))
+        logger.info('[CLI] [STATISTIC] Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
+
+        if pa.special_rules is not None:
+            logger.info('[CLI] [SPECIAL-RULE] only scan used by {r}'.format(r=','.join(pa.special_rules)))
+
+        # scan
+        scan(target_directory=target_directory, a_sid=a_sid, s_sid=s_sid, special_rules=pa.special_rules,
+             language=main_language, framework=main_framework, file_count=file_count, extension_count=len(files))
     except PickupException as e:
         result = {
             'code': 1002,
@@ -69,21 +87,10 @@ def start(target, formatter, output, special_rules, a_sid=None):
         }
         Running(s_sid).data(result)
         return
-
-    # static analyse files info
-    files, file_count, time_consume = Directory(target_directory).collect_files()
-
-    # detection main language and framework
-    dt = Detection(target_directory, files)
-    main_language = dt.language
-    main_framework = dt.framework
-
-    logger.info('[CLI] [STATISTIC] Language: {l} Framework: {f}'.format(l=main_language, f=main_framework))
-    logger.info('[CLI] [STATISTIC] Files: {fc}, Extensions:{ec}, Consume: {tc}'.format(fc=file_count, ec=len(files), tc=time_consume))
-
-    if pa.special_rules is not None:
-        logger.info('[CLI] [SPECIAL-RULE] only scan used by {r}'.format(r=','.join(pa.special_rules)))
-
-    # scan
-    scan(target_directory=target_directory, a_sid=a_sid, s_sid=s_sid, special_rules=pa.special_rules,
-         language=main_language, framework=main_framework, file_count=file_count, extension_count=len(files))
+    except Exception as e:
+        result = {
+            'code': 1002,
+            'msg': 'Exception'
+        }
+        Running(s_sid).data(result)
+        return
