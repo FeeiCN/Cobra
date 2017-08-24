@@ -400,7 +400,7 @@ def start(host, port, debug):
 
     # consumer
     threads = []
-    for i in range(10):
+    for i in range(5):
         threads.append(threading.Thread(target=consumer, args=()))
 
     for i in threads:
