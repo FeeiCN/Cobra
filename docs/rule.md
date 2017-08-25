@@ -142,7 +142,7 @@ print("Text: " + $content);
 | 210 | UR | Unvalidated Redirect | 未经验证的任意链接跳转 |
 | 220 | HRS | HTTP Response Splitting | HTTP响应拆分 |
 | 230 | SF | Session Fixation | SESSION固定 |
-| 240 | XI | Xpath Injection | Xpath注入 |
+| 240 | XpathI | Xpath Injection | Xpath注入 |
 | 250 | LDAP | LDAP Injection | LDAP注入 |
 | 260 | Unserialize | unserialize | 反序列化漏洞 |
 | 270 | XXEI| XML External Entity Injection  | XML实体注入 |
@@ -150,7 +150,7 @@ print("Text: " + $content);
 | 290 | LB | Logic Bug  | 逻辑错误 |
 | 320 | VO | Variables Override    | 变量覆盖漏洞 |
 | 330 | Encryption | Encryption    | 加密问题 |
-| 350 | VO | Weak Function  | 不安全的函数 |
+| 350 | WF | Weak Function  | 不安全的函数 |
 | 970 | AV | Android Vulnerabilities | Android漏洞 |
 | 980 | IV | iOS Vulnerabilities | iOS漏洞 |
 | 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
