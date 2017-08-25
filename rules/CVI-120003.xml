@@ -7,7 +7,11 @@
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[
-                $url = $_GET['test'];
+                $url = $_GET['url'];
+                echo get_headers($url);
+        ]]></case>
+         <case assert="false"><![CDATA[
+                $url = 'http://www.example.com';
                 echo get_headers($url);
         ]]></case>
     </test>

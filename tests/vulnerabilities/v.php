@@ -36,6 +36,13 @@ if (isset($_GET['sid']) {
 # CVI-190003
 phpinfo();
 
+# CVI-110003
+if(!file_exists('log/'.date("Y")))
+{
+    mkdir('log/'.date("Y"),0777);
+}
+chmod("move.php", 0777);
+
 # CVI-120001
 function curl($url){
     $ch = curl_init();
@@ -47,6 +54,14 @@ function curl($url){
 
 $url = $_GET['url'];
 curl($url);
+
+# CVI-120002
+$url = $_GET['url'];
+$content = file_get_contents($url)
+
+# CVI-120003
+$url = $_GET["url"];
+echo get_headers($url,1);
 
 # CVI-140003
 echo ("Hello " . $_GET['name']);
