@@ -97,6 +97,8 @@ $appKey = "C787AFE9D9E86A6A6C78ACE99CA778EE";
 # CVI-130001
 $password = "cobra123456!@#";
 
+# CVI-210001
+header("Location: ".$_GET["url"]);
 
 # CVI-260001
 $test = $_POST['test'];
