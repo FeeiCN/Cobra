@@ -72,19 +72,19 @@
 
         <div class="tab-content">
             <div class="tab-pane active" id="config">
-                <h3>Github / Gitlab / Subversion</h3>
+                <h3>Github / Gitlab</h3>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>GIT / SVN repository address (.git at the end) or local project path</label>
+                                <label>GIT repository address (.git at the end) or local project path</label>
                                 <input type="text" class="form-control" name="repository"
                                        placeholder="Ex:http://github.com/wufeifei/grw.git or /home/Feei/project_name">
                             </div>
                         </div>
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>Gitlab branch</label>
+                                <label>Branch</label>
                                 <input type="text" class="form-control" name="branch"
                                        placeholder="Default: master, optional" value="master">
                             </div>
@@ -199,7 +199,7 @@
                                     if (result.code == 1001) {
                                         if (result.result['status'] == 'done') {
                                             $('.tab-content').plainOverlay('hide');
-                                            window.location=result.result['report'];
+                                            window.location = result.result['report'];
                                         } else {
                                             setTimeout(get_status, 3000);
                                         }
@@ -224,9 +224,9 @@
             url: '/api/upload',
             dataType: 'json',
             done: function (e, result) {
-                if (result.result.code == 1001) {
-                    var scan_id = result.result.result['scan_id'];
-                    var data = {scan_id: scan_id, key: "{{ key }}"};
+                if (result.result.code === 1001) {
+                    var sid = result.result.result.sid;
+                    var data = {sid: sid, key: "{{ key }}"};
 
                     function get_status() {
                         $.ajax({
@@ -237,10 +237,10 @@
                             dataType: 'json',
                             async: false,
                             success: function (result) {
-                                if (result.status == 1001) {
-                                    if (result.result['status'] == 'done') {
+                                if (result.code === 1001) {
+                                    if (result.result.status === 'done') {
                                         $('.tab-content').plainOverlay('hide');
-                                        window.open(result.result['report'], '_blank');
+                                        window.location.href = window.location + result.result.report
                                         process_bar.css('width', '0%');
                                     } else {
                                         setTimeout(get_status, 3000);

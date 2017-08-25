@@ -20,17 +20,16 @@ import zipfile
 import tarfile
 import rarfile
 import subprocess
-from operator import itemgetter
 from . import config
 from .log import logger
-from .config import code_path
+from .config import package_path, source_path
+from shutil import copyfile
+from werkzeug.utils import secure_filename
 
 try:
     from urllib import quote
 except ImportError:
     from urllib.parse import quote
-
-support_extensions = ['.zip', '.rar', '.tgz', '.tar', '.gz']
 
 
 class Decompress(object):
@@ -50,10 +49,12 @@ class Decompress(object):
         """
         :param filename: a file name without path.
         """
-        self.upload_directory = os.path.join(code_path, 'upload')
+        self.package_path = package_path
+        self.filepath = os.path.join(package_path, secure_filename(filename))
         self.filename = filename
-        self.filepath = os.path.join(self.upload_directory, filename)
-        self.dir_name = os.path.splitext(self.filename)[0]
+        copyfile(os.path.abspath(filename), self.filepath)
+        self.dir_name = secure_filename(filename).split('.')[0]
+        print(self.dir_name)
 
     def decompress(self):
         """
@@ -86,7 +87,7 @@ class Decompress(object):
         :param:
         :return:
         """
-        directory = os.path.join(self.upload_directory, self.dir_name)
+        directory = os.path.join(self.package_path, self.dir_name)
         file_count = 0
         directory_path = None
         for filename in os.listdir(directory):
@@ -105,9 +106,9 @@ class Decompress(object):
         self.__check_filename_dir()
 
         # create the file directory to store the extract file.
-        os.mkdir(os.path.join(self.upload_directory, self.dir_name))
+        os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        zip_file.extractall(os.path.join(self.upload_directory, self.dir_name))
+        zip_file.extractall(os.path.join(self.package_path, self.dir_name))
         zip_file.close()
 
         return True
@@ -118,9 +119,9 @@ class Decompress(object):
         # check if there is a filename directory
         self.__check_filename_dir()
 
-        os.mkdir(os.path.join(self.upload_directory, self.dir_name))
+        os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        rar_file.extractall(os.path.join(self.upload_directory, self.dir_name))
+        rar_file.extractall(os.path.join(self.package_path, self.dir_name))
         rar_file.close()
         return True
 
@@ -130,15 +131,15 @@ class Decompress(object):
         # check if there is a filename directory
         self.__check_filename_dir()
 
-        os.mkdir(os.path.join(self.upload_directory, self.dir_name))
+        os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        tar_file.extractall(os.path.join(self.upload_directory, self.dir_name))
+        tar_file.extractall(os.path.join(self.package_path, self.dir_name))
         tar_file.close()
         return True
 
     def __check_filename_dir(self):
-        if os.path.isdir(os.path.join(self.upload_directory, self.dir_name)):
-            shutil.rmtree(os.path.join(self.upload_directory, self.dir_name))
+        if os.path.isdir(os.path.join(self.package_path, self.dir_name)):
+            shutil.rmtree(os.path.join(self.package_path, self.dir_name))
 
     def __repr__(self):
         return "<decompress - %r>" % self.filename
@@ -300,7 +301,7 @@ class Git(object):
     def __init__(self, repo_address, branch='master', username=None, password=None):
 
         # get upload directory
-        self.upload_directory = os.path.join(code_path, 'git')
+        self.upload_directory = source_path
         if os.path.isdir(self.upload_directory) is False:
             os.makedirs(self.upload_directory)
 
@@ -519,6 +520,7 @@ class Git(object):
         (?:.{8}\s\()(.*)\s(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})
         group #1: wufeifei
         group #2: 2016-09-10 12:19:44
+        :param directory:
         :param file_path:
         :param line_number:
         :param length:

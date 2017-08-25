@@ -18,11 +18,10 @@ import time
 import string
 import random
 import hashlib
-import locale
 from .log import logger
 from .config import Config
 from .exceptions import PickupException, NotExistException, AuthFailedException
-from .pickup import Git, NotExistError, AuthError, support_extensions, Decompress
+from .pickup import Git, NotExistError, AuthError, Decompress
 
 TARGET_MODE_GIT = 'git'
 TARGET_MODE_FILE = 'file'
@@ -82,6 +81,8 @@ class ParseArgs(object):
 
         if os.path.isfile(self.target):
             target_mode = TARGET_MODE_FILE
+            if self.target.split('.')[-1] in Config('upload', 'extensions').value.split('|'):
+                target_mode = TARGET_MODE_COMPRESS
         if os.path.isdir(self.target):
             target_mode = TARGET_MODE_FOLDER
         if target_mode is None:
@@ -137,10 +138,7 @@ class ParseArgs(object):
                 raise AuthFailedException('Git Authentication Failed')
             target_directory = gg.repo_directory
         elif target_mode == TARGET_MODE_COMPRESS:
-            extension = self.target.split('.')[-1]
-            if extension not in support_extensions:
-                logger.critical('Not support this compress extension: {extension}'.format(extension=extension))
-            target_directory = Decompress(self.target).decompress()
+            ret, target_directory = Decompress(self.target).decompress()
         elif target_mode == TARGET_MODE_FOLDER:
             target_directory = self.target
         elif target_mode == TARGET_MODE_FILE:
@@ -189,7 +187,8 @@ def convert_number(n):
     :param n:
     :return:
     """
-    if n is None: return '0'
+    if n is None:
+        return '0'
     n = str(n)
     if '.' in n:
         dollars, cents = n.split('.')
