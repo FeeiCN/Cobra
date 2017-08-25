@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="extract导致变量覆盖漏洞"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[extract]]></match>
+    <repair mode="in-current-line"><![CDATA[extract\s*\(\s*{{PARAM}}\s*,\s*(?:EXTR_SKIP|EXTR_PREFIX_SAME|EXTR_PREFIX_ALL|EXTR_PREFIX_IF_EXISTS|EXTR_IF_EXISTS)\s*[,\)]]]></repair>
+    <level value="4"/>
+    <test>
+         <case assert="true"><![CDATA[extract($_GET['var']);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        变量覆盖漏洞
+
+        ## 修复方案
+        在当前行通过flags修复(eg:调用extract()时使用EXTR_SKIP保证已有变量不会被覆盖)
+
+        ## 举例
+        ```php
+        <?php
+        $a = '0';
+        extract($_GET)；
+        if($a==1){echo "true!";}
+        else{echo "false!";}
+        ?>
+
+        构造 http://www.test.com/test.php?a=1时，会打印出true
+
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>
