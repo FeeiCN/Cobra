@@ -98,7 +98,7 @@ def test_result_detail():
 def test_index():
     url = 'http://127.0.0.1:5000/'
     re = requests.get(url=url)
-    assert 'Github / Gitlab / Subversion' in re.text
+    assert 'Github / Gitlab' in re.text
 
     url = 'http://127.0.0.1:5000/?sid=abcde'
     re = requests.get(url=url)
