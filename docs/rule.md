@@ -1,6 +1,11 @@
 # Rule（规则开发规范）
 
-## 一、Rule Template（规则模板）
+## 一、Flow（规则编写流程）
+1. 开发规则文件`CVI-XXXNNN.xml`
+2. 开发漏洞代码`tests/vulnerabilities/v.language`
+3. 测试规则扫描`./cobra.py -t tests/vulnerabilities/`
+
+## 二、Rule Template（规则模板）
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -31,14 +36,14 @@
 </cobra>
 ```
 
-## 二、规则文件命名规范
+## 三、规则文件命名规范
 `rules/CVI-100001.xml`
 - 统一存放在`rules`目录
 - 大写字母CVI（Cobra Vulnerability ID）开头，横杠（-）分割
 - 六位数字组成，前三位为Label ID，后三位为自增ID
 - 结尾以小写.xml结束
 
-## 三、规则编写规范
+## 四、规则编写规范
 
 |字段（英文）|字段（中文）|是否必填|类型|描述|例子|
 |---|---|---|---|---|---|
@@ -53,7 +58,7 @@
 |`status`|是否开启|是|`boolean`|是否开启该规则的扫描，使用`on`/`off`来标记|`<status value="1" />`|
 |`author`|规则作者|是|`attr`|规则作者的姓名和邮箱|`<author name="Feei" email="feei@feei.cn" />`|
 
-## 四、`<match>`/`<match2>`/`<repair>`编写规范
+## 五、`<match>`/`<match2>`/`<repair>`编写规范
 
 #### `<match>` Mode（`<match>`的规则模式）
 > 用来描述规则类型，只能用在`<match>`中。
@@ -79,7 +84,7 @@
 | in-file-down | 由第一条规则触发的所在行之下，所在文件之内 |
 
 
-## 五、Demo（例子）
+## 六、Demo（例子）
 > 把常见漏洞划分为四大类
 
 #### 1. 单一匹配: 仅匹配单次
@@ -124,7 +129,7 @@ print("Text: " + $content);
 ### 4. 依赖安全：当依赖了某个不安全版本的三方组件
 
 
-## 六、Labels（标签）
+## 七、Labels（标签）
 
 | ID | Label | Description(EN) | Description(CN) |
 |---|---|---|---|
@@ -146,7 +151,7 @@ print("Text: " + $content);
 | 970 | AV | Android Vulnerabilities | Android漏洞 |
 | 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
 
-## 七、Level（危害等级）
+## 八、Level（危害等级）
 
 | 等级 | 分值 | 描述 |
 |---|---|---|
