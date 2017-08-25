@@ -145,12 +145,12 @@ print("Text: " + $content);
 | 240 | XpathI | Xpath Injection | Xpath注入 |
 | 250 | LDAP | LDAP Injection | LDAP注入 |
 | 260 | Unserialize | unserialize | 反序列化漏洞 |
-| 270 | XXEI| XML External Entity Injection  | XML实体注入 |
-| 280 | DF |  Deprecated Function   | 废弃的函数 |
+| 270 | XXEI| XML External Entity Injection | XML实体注入 |
+| 280 | DF |  Deprecated Function  | 废弃的函数 |
 | 290 | LB | Logic Bug  | 逻辑错误 |
-| 320 | VO | Variables Override    | 变量覆盖漏洞 |
-| 330 | Encryption | Encryption    | 加密问题 |
-| 350 | WF | Weak Function  | 不安全的函数 |
+| 320 | VO | Variables Override | 变量覆盖漏洞 |
+| 330 | Encryption | 不安全的加密 |
+| 350 | WF | Weak Function | 不安全的函数 |
 | 970 | AV | Android Vulnerabilities | Android漏洞 |
 | 980 | IV | iOS Vulnerabilities | iOS漏洞 |
 | 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
