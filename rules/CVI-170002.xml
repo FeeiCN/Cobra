@@ -5,8 +5,8 @@
     <match mode="function-param-controllable"><![CDATA[include|include_once|require|require_once|parsekit_compile_file|php_check_syntax|runkit_import|virtual]]></match>
     <level value="7"/>
     <test>
-        <case assert="true"><![CDATA[include($_GET['test']);]]></case>
-        <case assert="true"><![CDATA[include_once($_GET['test']);]]></case>
+        <case assert="true"><![CDATA[include($_GET['file']);]]></case>
+        <case assert="true"><![CDATA[require_once($_GET['file']);]]></case>
     </test>
     <solution>
         ## 安全风险

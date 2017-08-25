@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="允许任意证书（CWE-295）"/>
     <language value="java"/>
@@ -14,34 +13,34 @@
     </solution>
     <test>
         <case assert="true"><![CDATA[
-class TrustAllManager implements X509TrustManager {
+            class TrustAllManager implements X509TrustManager {
 
-    @Override
-    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-        //Trust any client connecting (no certificate validation)
-    }
+                @Override
+                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    //Trust any client connecting (no certificate validation)
+                }
 
-    @Override
-    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-        //Trust any remote server (no certificate validation)
-    }
+                @Override
+                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    //Trust any remote server (no certificate validation)
+                }
 
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-        return null;
-    }
-}
-]]></case>
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+            }
+        ]]></case>
         <case assert="false"><![CDATA[
-KeyStore ks = //Load keystore containing the certificates trusted
+            KeyStore ks = //Load keystore containing the certificates trusted
 
-SSLContext sc = SSLContext.getInstance("TLS");
+            SSLContext sc = SSLContext.getInstance("TLS");
 
-TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-tmf.init(ks);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            tmf.init(ks);
 
-sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(),null);
-]]></case>
+            sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(),null);
+        ]]></case>
     </test>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
