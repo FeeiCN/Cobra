@@ -45,7 +45,6 @@
             eval("\$myvar" = \$x;");
         ?>
         提交 `/index.php?arg=1;phpinfo()` 便会产生代码注入
-
     </solution>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
