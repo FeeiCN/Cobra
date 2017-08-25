@@ -7,8 +7,11 @@
     <level value="3"/>
     <test>
         <case assert="true"><![CDATA[
-            $file_name = $_POST["file_name"];
-            $file = "/home/file/".$file_name;
+            $file = $_POST["file_name"];
+            unlink($file);
+        ]]></case>
+        <case assert="false"><![CDATA[
+            $file = "ping.txt";
             unlink($file);
         ]]></case>
     </test>
