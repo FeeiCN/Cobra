@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="get_headers导致的SSRF"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[get_headers]]></match>
+    <repair block="in-function-up"><![CDATA[in_array\s*\(\s*{{PARAM}}\s*,|preg_match(?:_all)?\s*\(\s*(?:.+?)\s*,\s*{{PARAM}}\s*[,\)]]]></repair>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+                $url = $_GET['url'];
+                echo get_headers($url);
+        ]]></case>
+         <case assert="false"><![CDATA[
+                $url = 'http://www.example.com';
+                echo get_headers($url);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        SSRF漏洞(Server-Side Request Forgery)
+
+        ### 形成原理
+        SSRF形成的原因大都是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制。
+
+        ### 风险
+        1、攻击者可以对外网、服务器所在内网、本地进行端口扫描，获取服务的banner信息。
+        2、攻击运行在内网或本地的应用程序。
+        3、对内网web应用进行指纹识别。
+        4、攻击内外网的web应用。
+        5、利用file协议读取本地文件等。
+
+        ## 修复方案
+        1. 限制协议为HTTP、HTTPS
+        2. 限制请求域名白名单
+        3. 禁止30x跳转
+
+        ## 举例
+        ```php
+        $url = $_GET['url'];
+        echo get_headers($url);//对用户可控的参数没有进行过滤，攻击者恶意构造输入就可能导致SSRF
+        ```
+    </solution>
+    <status value="on"/>
+    <author name="Lightless" email="viarus@qq.com"/>
+</cobra>

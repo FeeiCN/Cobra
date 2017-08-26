@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="XXE(XML实体注入)"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[simplexml_load_file|simplexml_load_string]]></match>
+    <repair block="in-function-up"><![CDATA[libxml_disable_entity_loader\s*\(\s*(true|.?)\s*\)]]></repair>
+    <level value="5"/>
+    <test>
+        <case assert="true"><![CDATA[
+        <?php
+            $xml = $_POST['xml'];
+            $data = simplexml_load_string($xml);
+        ?>
+        ]]></case>
+        <case assert="false"><![CDATA[
+        <?php
+            $xml = $_POST['xml'];
+            libxml_disable_entity_loader(true);
+            $data = simplexml_load_string($xml);
+        ?>
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        XXE(XML实体注入)
+
+        ### 形成原因
+        输入的XML中包含外部实体 + 解析程序没有正确过滤 -->
+        这种攻击会造成敏感信息泄露，DoS攻击，SSRF攻击，端口扫描等等。
+
+        ### 风险
+        敏感信息泄露
+        探测内网，获取服务器权限
+        进行拒绝服务攻击，影响正常业务
+        敏感数据被盗取。
+        造成服务宕机。
+
+        ## 修复方案
+        1. 使用 `libxml_disable_entity_loader(true);`
+        2. 过滤用户提交的XML数据，关键词：`DOCTYPE`和 `ENTITY`或者，`SYSTEM`和`PUBLIC`
+        3. 升级libxml至libxml2.9及以上，2.9版本已经默认关闭了XML外部实体的解析
+
+        ## 举例
+        ```php
+        <?php
+            $xml = $_POST['xml'];
+            $data = simplexml_load_string($xml);
+        ?>
+        ```
+        修改后代码
+        ```php
+        <?php
+            $xml = $_POST['xml'];
+            libxml_disable_entity_loader(true);
+            $data = simplexml_load_string($xml);
+        ?>
+    </solution>
+    <status value="on"/>
+    <author name="Lightless" email="root@lightless.me "/>
+</cobra>
+
