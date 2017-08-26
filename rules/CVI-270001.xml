@@ -37,7 +37,7 @@
 
         ## 修复方案
         1. 使用 `libxml_disable_entity_loader(true);`
-        2. 过滤用户提交的XML数据，关键词：`<!DOCTYPE`和 `<!ENTITY`或者，`SYSTEM`和`PUBLIC`
+        2. 过滤用户提交的XML数据，关键词：`DOCTYPE`和 `ENTITY`或者，`SYSTEM`和`PUBLIC`
         3. 升级libxml至libxml2.9及以上，2.9版本已经默认关闭了XML外部实体的解析
 
         ## 举例
