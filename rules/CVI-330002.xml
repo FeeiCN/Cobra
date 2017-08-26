@@ -14,15 +14,15 @@
     </solution>
     <test>
         <case assert="true"><![CDATA[
-Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
-c.init(Cipher.ENCRYPT_MODE, k, iv);
-byte[] cipherText = c.doFinal(plainText);
-]]></case>
+            Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
+            c.init(Cipher.ENCRYPT_MODE, k, iv);
+            byte[] cipherText = c.doFinal(plainText);
+        ]]></case>
         <case assert="false"><![CDATA[
-Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
-c.init(Cipher.ENCRYPT_MODE, k, iv);
-byte[] cipherText = c.doFinal(plainText);
-]]></case>
+            Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
+            c.init(Cipher.ENCRYPT_MODE, k, iv);
+            byte[] cipherText = c.doFinal(plainText);
+        ]]></case>
     </test>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
