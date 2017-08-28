@@ -83,10 +83,11 @@ $(function () {
                 dataType: 'json',
                 success: function (result) {
                     if (result.code === 1001) {
-                        data.code_content = result.result;
-                        // 对无代码内容的漏洞进行处理，避免 widget 的 bug
-                        if (data.code_content === "") {
-                            data.code_content = data.file_path;
+                        data.code_content = result.result.file_content;
+                        data.language = result.result.extension;
+                        // 对二进制文件情况进行处理，将行数置为 1
+                        if (data.code_content === "This is a binary file.") {
+                            data.line_number = 1;
                         }
                         $('#code').val(data.code_content);
                         // Highlighting param
