@@ -1,49 +1,16 @@
-# Rule（规则开发规范）
-
-## 一、Flow（规则编写流程）
+## Flow（规则编写流程）
 1. 开发规则文件`CVI-XXXNNN.xml`
 2. 开发漏洞代码`tests/vulnerabilities/v.language`
 3. 测试规则扫描`./cobra.py -t tests/vulnerabilities/`
 
-## 二、Rule Template（规则模板）
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-
-<cobra document="https://github.com/wufeifei/cobra">
-    <name value="硬编码Token/Key"/>
-    <language value="*"/>
-    <match><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
-    <level value="2"/>
-    <test>
-        <case assert="true" remark="sha1"><![CDATA["41a6bc4d9a033e1627f448f0b9593f9316d071c1"]]></case>
-        <case assert="true" remark="md5 lower"><![CDATA["d042343e49e40f16cb61bd203b0ce756"]]></case>
-        <case assert="true" remark="md5 upper"><![CDATA[C787AFE9D9E86A6A6C78ACE99CA778EE]]></case>
-        <case assert="false"><![CDATA[please like and subscribe to my]]></case>
-        <case assert="false"><![CDATA[A32efC32c79823a2123AA8cbDDd3231c]]></case>
-        <case assert="false"><![CDATA[ffffffffffffffffffffffffffffffff]]></case>
-        <case assert="false"><![CDATA[01110101001110011101011010101001]]></case>
-        <case assert="false"><![CDATA[00000000000000000000000000000000]]></case>
-    </test>
-    <solution>
-        ## 安全风险
-        硬编码密码
-
-        ## 修复方案
-        将密码抽出统一放在配置文件中，配置文件不放在git中
-    </solution>
-    <status value="on"/>
-    <author name="Feei" email="feei@feei.cn"/>
-</cobra>
-```
-
-## 三、规则文件命名规范
+## 规则文件命名规范
 `rules/CVI-100001.xml`
 - 统一存放在`rules`目录
 - 大写字母CVI（Cobra Vulnerability ID）开头，横杠（-）分割
 - 六位数字组成，前三位为Label ID，后三位为自增ID
 - 结尾以小写.xml结束
 
-## 四、规则编写规范
+## 规则编写规范
 
 |字段（英文）|字段（中文）|是否必填|类型|描述|例子|
 |---|---|---|---|---|---|
@@ -58,7 +25,7 @@
 |`status`|是否开启|是|`boolean`|是否开启该规则的扫描，使用`on`/`off`来标记|`<status value="1" />`|
 |`author`|规则作者|是|`attr`|规则作者的姓名和邮箱|`<author name="Feei" email="feei@feei.cn" />`|
 
-## 五、`<match>`/`<match2>`/`<repair>`编写规范
+## `<match>`/`<match2>`/`<repair>`编写规范
 
 #### `<match>` Mode（`<match>`的规则模式）
 > 用来描述规则类型，只能用在`<match>`中。
@@ -82,48 +49,3 @@
 | in-file | 由第一条规则触发的文件内 |
 | in-file-up | 由第一条规则触发的所在行之上，所在文件之内 |
 | in-file-down | 由第一条规则触发的所在行之下，所在文件之内 |
-
-
-## 六、Demo（例子）
-> 把常见漏洞划分为四大类
-
-#### 1. 单一匹配: 仅匹配单次
-**例子：错误的配置(使用了ECB模式)**
-```java
-Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
-```
-
-**Solution(规则写法)**
-
-可以通过配置一条match规则，规则mode设置为`regex`(仅匹配，通过正则模式匹配，匹配到则算作漏洞)，即可扫描这类问题。
-```xml
-<match mode="regex-only-match"><![CDATA[Cipher....Instance\s?\(\s?\".*ECB]]></match>
-```
-#### 2. 多次匹配：需要进行多次匹配
-**例子：不安全的随机数（首先需要匹配到生成了随机数`new Random`，然后要确保随机数是系统的随机数而非自定义函数）**
-```java
-import util.random;
-Random r = new Random();
-```
-**Solution(规则写法)**
-
-先配置一条`match`规则来匹配`new Random`，再配置一条`match`来匹配`import util.random`。
-```xml
-<match mode="regex-only-match"><![CDATA[new Random\s*\(|Random\.next]]></match>
-<match2 block="in-file-up"><![CDATA[java|scala)\.util\.Random]]></match2>
-```
-
-#### 3. 参数可控：只要判定参数是用户可控的则算作漏洞
-**例子：反射型XSS（直接输出入参）**
-```php
-$content = $_GET['content'];
-print("Text: " + $content);
-```
-
-**Solution(规则写法)**
-
-```xml
-<match mode="function-param-controllable"><![CDATA[print]]></match>
-```
-
-### 4. 依赖安全：当依赖了某个不安全版本的三方组件
