@@ -368,7 +368,7 @@ def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=
         elif isinstance(node, php.Assignment):  # 函数调用在赋值表达式中
             if isinstance(node.expr, php.FunctionCall):
                 if flag == 1:
-                    anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
+                    anlysis_function(node.expr, back_node, vul_function, function_params, vul_lineo)
 
                 else:
                     analysis_functioncall(node.expr, back_node, vul_function, vul_lineo)
