@@ -31,3 +31,6 @@ git clone https://github.com/wufeifei/cobra.git && cd cobra
 pip install -r requirements.txt
 ./cobra.py --help
 ```
+
+---
+下一章：[CLI模式使用方法](https://wufeifei.github.io/cobra/cli)

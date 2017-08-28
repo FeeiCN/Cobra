@@ -10,3 +10,6 @@
 - 大写字母CVI（Cobra Vulnerability ID）开头，横杠（-）分割
 - 六位数字组成，前三位为Label ID，后三位为自增ID
 - 结尾以小写.xml结束
+
+---
+下一章：[开发语言和文件类型定义](https://wufeifei.github.io/cobra/languages)

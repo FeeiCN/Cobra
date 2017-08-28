@@ -41,3 +41,5 @@
 |Thumb|否|.db/.DS_Store|
 |GIT|否|.pack/.idx/.sample|
 
+---
+下一章：[漏洞类型定义](https://wufeifei.github.io/cobra/labels)

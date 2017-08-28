@@ -28,3 +28,6 @@
 | 970 | AV | Android Vulnerabilities | Android漏洞 |
 | 980 | IV | iOS Vulnerabilities | iOS漏洞 |
 | 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
+
+---
+下一章：[危害等级定义](https://wufeifei.github.io/cobra/level)

@@ -52,3 +52,6 @@ print("Text: " + $content);
     <product>fastjson:1.2.24</product>
 </cve>
 ```
+
+---
+下一章：[规则开发流程](https://wufeifei.github.io/cobra/rule_flow)
