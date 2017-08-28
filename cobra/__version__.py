@@ -21,5 +21,5 @@ __epilog__ = """Usage:
   {m} -t {td} -f json -o /tmp/report.json 
   {m} -t {tg} -f json -o feei@feei.cn 
   {m} -t {tg} -f json -o http://push.to.com/api 
-  {m} -H 127.0.0.1 -P 80
+  sudo {m} -H 127.0.0.1 -P 80
 """.format(m='./cobra.py', td='tests/vulnerabilities', tg='https://github.com/wufeifei/vc.git')
