@@ -563,8 +563,8 @@ class Core(object):
                 try:
                     ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
-                    if '|' in self.rule_match:
-                        rule_match = self.rule_match.split('|')
+                    if self.rule_match_mode == const.mm_function_param_controllable:
+                        rule_match = self.rule_match.strip('()').split('|')
                         try:
                             with open(self.file_path, 'r') as fi:
                                 code_contents = fi.read()

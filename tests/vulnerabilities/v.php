@@ -25,7 +25,7 @@ eval($a);
 $cmd = $_GET['cmd'];
 system('ls' + $cmd);
 
-ssh2_exec($connection, '$_GET['pass']')
+#ssh2_exec($connection, "$_GET['pass']");
 
 # CVI-230001
 if (isset($_GET['sid'])) {
@@ -59,7 +59,7 @@ curl($url);
 
 # CVI-120002
 $url = $_GET['url'];
-$content = file_get_contents($url)
+$content = file_get_contents($url);
 
 # CVI-120003
 $url = $_GET["url"];
@@ -107,7 +107,7 @@ parse_str($_SERVER['QUERY_STRING']);
 
 # CVI-320002
 $a = '0';
-extract($_GET)；
+extract($_GET);
 if($a==1){
     echo "true!";
 }else{
