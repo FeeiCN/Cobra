@@ -288,6 +288,7 @@ def anlysis_function(node, back_node, vul_function, function_params, vul_lineno)
 
     try:
         if node.name == vul_function and node.lineno == vul_lineno:  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
+            logger.debug('{l}:{r}'.format(l=node.name, r=vul_function))
             params = get_all_params(node.params)
             function_lineno = function_params[len(function_params)-1]  # 获取自定义函数的行号
 
@@ -323,6 +324,8 @@ def analysis_functioncall(node, back_node, vul_function, vul_lineno):
 
     try:
         if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 定位到敏感函数
+            logger.debug('[VUL:VUL] {l}:{r}'.format(l=node.name, r=vul_function))
+            logger.debug('[LINENO] {l}:{r}'.format(l=node.lineno, r=vul_lineno))
             params = get_all_params(node.params)  # 开始取敏感函数中的参数列表
 
             for param in params:
@@ -349,40 +352,17 @@ def analysis_functioncall(node, back_node, vul_function, vul_lineno):
 def analysis_echo_print(node, back_node, vul_function, vul_lineo):
     results = []
     global scan_results
+    logger.debug('[TEST] {l}.{r}'.format(l=node.lineno, r=vul_lineo))
+    if vul_lineo == node.lineno:
+        logger.debug('[ECHO_LINENO] {l}:{r}'.format(l=node.lineno, r=vul_lineo))
+        if isinstance(node, php.Print):
+            if isinstance(node.node, php.FunctionCall):
+                j_nodes = []
+                j_nodes.append(node.node)
+                analysis(j_nodes, vul_function, back_node, vul_lineo)
 
-    if isinstance(node, php.Print):
-        if isinstance(node.node, php.FunctionCall):
-            j_nodes = []
-            j_nodes.append(node.node)
-            analysis(j_nodes, vul_function, back_node, vul_lineo)
-
-        if isinstance(node.node, php.Variable):  # 直接输出变量信息
-            k_node = get_node_name(node.node)
-            is_co, cp, expr_lineno = parameters_back(k_node, back_node)
-
-            result = {
-                'code': is_co,
-                'source': cp,
-                'source_lineno': expr_lineno,
-                'sink': 'echo',
-                'sink_param:': k_node,
-                'sink_lineno': vul_lineo
-            }
-            results.append(result)
-
-        scan_results += results
-
-    elif isinstance(node, php.Echo):
-        is_functioncall = 0
-        for k_node in node.nodes:
-            if isinstance(k_node, php.FunctionCall):  # 判断节点中是否有函数调用节点
-                is_functioncall = 1
-
-            if is_functioncall == 1:
-                analysis(node.nodes, vul_function, back_node, vul_lineo)  # 将含有函数调用的节点进行分析
-
-            if isinstance(k_node, php.Variable):
-                k_node = get_node_name(k_node)
+            if isinstance(node.node, php.Variable):  # 直接输出变量信息
+                k_node = get_node_name(node.node)
                 is_co, cp, expr_lineno = parameters_back(k_node, back_node)
 
                 result = {
@@ -396,6 +376,31 @@ def analysis_echo_print(node, back_node, vul_function, vul_lineo):
                 results.append(result)
 
             scan_results += results
+
+        elif isinstance(node, php.Echo):
+            is_functioncall = 0
+            for k_node in node.nodes:
+                if isinstance(k_node, php.FunctionCall):  # 判断节点中是否有函数调用节点
+                    is_functioncall = 1
+
+                if is_functioncall == 1:
+                    analysis(node.nodes, vul_function, back_node, vul_lineo)  # 将含有函数调用的节点进行分析
+
+                if isinstance(k_node, php.Variable):
+                    k_node = get_node_name(k_node)
+                    is_co, cp, expr_lineno = parameters_back(k_node, back_node)
+
+                    result = {
+                        'code': is_co,
+                        'source': cp,
+                        'source_lineno': expr_lineno,
+                        'sink': 'echo',
+                        'sink_param:': k_node,
+                        'sink_lineno': vul_lineo
+                    }
+                    results.append(result)
+
+                scan_results += results
 
 
 def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=None):
@@ -463,6 +468,8 @@ def scan_parser(code_content, sensitive_func, vul_lineno):
     :return:
     """
     try:
+        global scan_results
+        scan_results = []
         parser = make_parser()
         all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)
         for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控
