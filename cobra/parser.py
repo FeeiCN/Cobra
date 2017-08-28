@@ -230,12 +230,16 @@ def parameters_back(param, nodes, function_params=None, flag=0):  # 用来得到
                 param = param_expr  # 每次找到一个污点的来源时，开始跟踪新污点，覆盖旧污点
 
             if param == param_node and isinstance(param_expr, list):
-
                 for expr in param_expr:
                     param = expr
+                    is_co, cp = is_controllable(expr)
+
+                    if is_co == 1:
+                        return is_co, cp, expr_lineno
+
                     _is_co, _cp, expr_lineno = parameters_back(param, nodes[:-1], function_params, flag)
 
-                    if _is_co is True:  # 当参数可控时，值赋给is_co 和 cp，有一个参数可控，则认定这个函数可能可控
+                    if _is_co != -1:  # 当参数可控时，值赋给is_co 和 cp，有一个参数可控，则认定这个函数可能可控
                         is_co = _is_co
                         cp = _cp
 
@@ -267,20 +271,21 @@ def get_function_params(nodes):
     return params
 
 
-def anlysis_function(node, back_node, vul_function, function_params):
+def anlysis_function(node, back_node, vul_function, function_params, vul_lineno):
     """
     对用户自定义的函数进行分析-->获取函数入参-->入参用经过赋值流程，进入sink函数-->此自定义函数为危险函数
     :param node:
     :param back_node:
     :param vul_function:
     :param function_params:
+    :param vul_lineno:
     :return:
     """
     flag = 1
     results = []
     global scan_results
 
-    if node.name == vul_function:  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
+    if node.name == vul_function and node.lineno == vul_lineno:  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
         params = get_all_params(node.params)
         function_lineno = function_params[len(function_params)-1]  # 获取自定义函数的行号
         for param in params:
@@ -299,19 +304,21 @@ def anlysis_function(node, back_node, vul_function, function_params):
         scan_results += results
 
 
-def analysis_functioncall(node, back_node, vul_function):
+def analysis_functioncall(node, back_node, vul_function, vul_lineno):
     """
     调用FunctionCall-->判断调用Function是否敏感-->get params获取所有参数-->开始递归判断
     :param node:
     :param back_node:
     :param vul_function:
+    :param vul_lineno
     :return:
     """
     results = []
     global scan_results
 
-    if node.name == vul_function:  # 定位到敏感函数
+    if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 定位到敏感函数
         params = get_all_params(node.params)  # 开始取敏感函数中的参数列表
+
         for param in params:
             is_co, cp = is_controllable(param)
             expr_lineno = node.lineno
@@ -331,12 +338,13 @@ def analysis_functioncall(node, back_node, vul_function):
         scan_results += results
 
 
-def analysis(nodes, vul_function, back_node, flag=0, function_params=None):
+def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=None):
     """
     调用FunctionCall-->analysis_functioncall分析调用函数是否敏感
     :param nodes: 所有节点
     :param vul_function: 要判断的敏感函数名
     :param back_node: 各种语法结构里面的语句
+    :param vul_lineo: 漏洞函数所在行号
     :param flag: flag用来判断此时nodes来源是否是自定义函数体
     :param function_params: 自定义函数的所有参数列表
     :return:
@@ -345,86 +353,84 @@ def analysis(nodes, vul_function, back_node, flag=0, function_params=None):
 
         if isinstance(node, php.FunctionCall):  # 函数直接调用，不进行赋值
             if flag == 1:
-                anlysis_function(node, back_node, vul_function, function_params)
+                anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
 
             else:
-                analysis_functioncall(node, back_node, vul_function)
+                analysis_functioncall(node, back_node, vul_function, vul_lineo)
 
         elif isinstance(node, php.Assignment):  # 函数调用在赋值表达式中
             if isinstance(node.expr, php.FunctionCall):
                 if flag == 1:
-                    anlysis_function(node, back_node, vul_function, function_params)
+                    anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
 
                 else:
-                    analysis_functioncall(node.expr, back_node, vul_function)
+                    analysis_functioncall(node.expr, back_node, vul_function, vul_lineo)
 
         elif isinstance(node, php.If):  # 函数调用在if-else语句中时
             if isinstance(node.node, php.Block):  # if语句中的sink点以及变量
-                analysis(node.node.nodes, vul_function, back_node)
+                analysis(node.node.nodes, vul_function, back_node, vul_lineo)
 
             if node.else_ is not None:  # else语句中的sink点以及变量
                 if isinstance(node.else_.node, php.Block):
-                    analysis(node.else_.node.nodes, vul_function, back_node)
+                    analysis(node.else_.node.nodes, vul_function, back_node, vul_lineo)
 
             if len(node.elseifs) != 0:  # elseif语句中的sink点以及变量
                 for i_node in node.elseifs:
                     if i_node.node is not None:
-                        analysis(i_node.node.nodes, vul_function, back_node)
+                        analysis(i_node.node.nodes, vul_function, back_node, vul_lineo)
 
         elif isinstance(node, php.While) or isinstance(node, php.For):  # 函数调用在循环中
             if isinstance(node.node, php.Block):
-                analysis(node.node.nodes, vul_function, back_node)
+                analysis(node.node.nodes, vul_function, back_node, vul_lineo)
 
         elif isinstance(node, php.Function):
             function_body = []
             function_params = get_function_params(node.params)
             function_params.append(node.lineno)  # function_params为列表，放自定义函数参数和自定义函数行号
-            analysis(node.nodes, vul_function, function_body, flag=1, function_params=function_params)
+            analysis(node.nodes, vul_function, function_body, vul_lineo, flag=1, function_params=function_params)
 
         back_node.append(node)
 
 
-def scan(code_content, sensitive_func):
+def scan_parser(code_content, sensitive_func, vul_lineno):
     """
     开始检测函数
     :param code_content: 要检测的文件内容
     :param sensitive_func: 要检测的敏感函数,传入的为函数列表
+    :param vul_lineno: 漏洞函数所在行号
     :return:
     """
     parser = make_parser()
     all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)
     for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控
         back_node = []
-        analysis(all_nodes, func, back_node)
+        analysis(all_nodes, func, back_node, vul_lineno, flag=0, function_params=None)
 
     return scan_results
 
 
-code_contents = """<?php
-$cmd = $_GET['test'];
-system($cmd);
-function a($url){
-    $a = $b;
-}
-$c = $_GET['test'];
-system($c);
-?>
-"""
-
-F_EXECS = [  # 命令执行的敏感函数
-    'backticks',
-    'exec',
-    'expect_popen',
-    'passthru',
-    'pcntl_exec',
-    'popen',
-    'proc_open',
-    'shell_exec',
-    'system',
-    'mail',
-    'mb_send_mail',
-    'w32api_invoke_function',
-    'w32api_register_function',
-]
-
-vuls = scan(code_contents, F_EXECS)
+# code_contents = """function curl($url){
+#     $ch = curl_init();
+# """
+#
+# F_EXECS = [  # 命令执行的敏感函数
+#     'backticks',
+#     'exec',
+#     'expect_popen',
+#     'passthru',
+#     'pcntl_exec',
+#     'popen',
+#     'proc_open',
+#     'shell_exec',
+#     'system',
+#     'mail',
+#     'mb_send_mail',
+#     'w32api_invoke_function',
+#     'w32api_register_function',
+# ]
+#
+# vul_lineno = 6
+#
+# vuls = scan(code_contents, F_EXECS, vul_lineno)
+# for vul in vuls:
+#     print vul
