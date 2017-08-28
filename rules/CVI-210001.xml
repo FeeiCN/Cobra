@@ -2,8 +2,7 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="未经验证的任意链接跳转"/>
     <language value="php"/>
-    <match mode="regex-param-controllable"><![CDATA[header\s*\(\s*["']Location:\s*["']\s*\.\s*(.+)\s*(?:\);)]]></match>
-    <repair block="in-function-up"><![CDATA[in_array\s*\(\s*{{PARAM}}\s*,]]></repair>
+    <match mode="function-param-controllable"><![CDATA[header]]></match>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[header("Location: ".$_GET["url"]);]]></case>
