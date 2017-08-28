@@ -48,7 +48,7 @@
 |字段（英文）|字段（中文）|是否必填|类型|描述|例子|
 |---|---|---|---|---|---|
 |`name`|规则名称|是|`string`|描述规则名称|`<name value="Logger敏感信息" />`|
-|`language`|规则语言|是|`string`|设置规则针对的开发语言，参见`rules/languages.xml`|`<language value="php" />`|
+|`language`|规则语言|是|`string`|设置规则针对的开发语言，参见`languages`|`<language value="php" />`|
 |`match`|匹配规则1|是|`string`|匹配规则1|`<match mode="regex-only-match"><![CDATA[regex content]]></match>`|
 |`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 block="in-function-up"><![CDATA[regex content]]></match>`|
 |`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair block=""><![CDATA[regex content]]></match>`|
@@ -154,13 +154,57 @@ print("Text: " + $content);
 | 280 | DF |  Deprecated Function  | 废弃的函数 |
 | 290 | LB | Logic Bug  | 逻辑错误 |
 | 320 | VO | Variables Override | 变量覆盖漏洞 |
-| 330 | Encryption | 不安全的加密 |
+| 330 | WE |Weak Encryption | 不安全的加密 |
 | 350 | WF | Weak Function | 不安全的函数 |
 | 970 | AV | Android Vulnerabilities | Android漏洞 |
 | 980 | IV | iOS Vulnerabilities | iOS漏洞 |
 | 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |
 
-## 八、Level（危害等级）
+## 八、Languages（语言）
+
+|语言|主语言|后缀|
+|---|---|---|
+|PHP|是|.php/.php3/.php4/.php5|
+|Java|是|.java|
+|Python|是|.py|
+|JSP|否|.jsp|
+|C|否|.h/.c|
+|Ruby|否|.rb|
+|Perl|否|.pl|
+|Lua|否|.lua|
+|Go|否|.go|
+|Swift|否|.swift|
+|C++|否|.c/.cpp|
+|C#|否|.cs|
+|Header|否|.h|
+|Objective-C|否|.m|
+|Scale|否|.sbt/.scale|
+|Ceylon|否|.ceylon|
+|Kotlin|否|.kt|
+|SHELL|否|.sh|
+|BAT|否|.bat|
+|JavaScript|否|.js|
+|HTML|否|.html/.htm/.pthml|
+|CSS|否|.css/.less/.scss/.styl|
+|Image|否|.jpg/.png/.bmp/.gif/.ico/.cur|
+|Font|否|.eot/.otf/.svg/.ttf/.woff|
+|Conf|否|.properties/.conf/.ini/.cfg/.yml/.xml/.iml/.sfp/.manifest|
+|CMake|否|.cmake/.cmake.in|
+|SQL|否|.sql|
+|Compression|否|.zip/.tar/.tar.gz/.rar|
+|Executable|否|.exe|
+|LOG|否|.log|
+|Text|否|.txt/.text/.md/.rst/.csv|
+|Office|否|.doc/.docx/.wps/.rtf/.xls/.ppt|
+|Media|否|.mp3/.mp4/.swf/.flv|
+|Certificate|否|.p12/.crt/.key/.pfx/.csr|
+|Source|否|.psd/.ai/.axure/.xmind/.plan|
+|Thumb|否|.db/.DS_Store|
+|GIT|否|.pack/.idx/.sample|
+
+
+
+## 九、Level（危害等级）
 
 | 等级 | 分值 | 描述 |
 |---|---|---|
