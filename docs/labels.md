@@ -1,4 +1,4 @@
-## Labels（标签）
+# Labels（标签）
 
 | ID | Label | Description(EN) | Description(CN) |
 |---|---|---|---|

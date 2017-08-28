@@ -1,4 +1,4 @@
-## Rule Template（规则模板）
+# Rule Template（规则模板）
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
