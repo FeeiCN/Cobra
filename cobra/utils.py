@@ -18,8 +18,12 @@ import time
 import string
 import random
 import hashlib
+import urllib
+import urllib2
+import json
 from .log import logger
-from .config import Config
+from .config import Config, issue_history_path
+from .__version__ import __version__, __python_version__, __platform__, __url__
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, Decompress
 
@@ -317,6 +321,74 @@ def random_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
+def is_list(value):
+    """
+    Returns True if the given value is a list-like instance
+
+    >>> is_list([1, 2, 3])
+    True
+    >>> is_list(u'2')
+    False
+    """
+
+    return isinstance(value, (list, tuple, set))
+
+
+def get_unicode(value, encoding=None, none_to_null=False):
+    """
+    Return the unicode representation of the supplied value:
+
+    >>> get_unicode(u'test')
+    u'test'
+    >>> get_unicode('test')
+    u'test'
+    >>> get_unicode(1)
+    u'1'
+    """
+
+    if none_to_null and value is None:
+        return None
+
+    if isinstance(value, unicode):
+        return value
+    elif isinstance(value, basestring):
+        while True:
+            try:
+                return unicode(value, encoding)
+            except UnicodeDecodeError:
+                try:
+                    return unicode(value, 'utf8')
+                except:
+                    return None
+    elif is_list(value):
+        value = list(get_unicode(_, encoding, none_to_null) for _ in value)
+        return value
+    else:
+        try:
+            return unicode(value)
+        except UnicodeDecodeError:
+            return unicode(str(value), errors="ignore")  # encoding ignored for non-basestring instances
+
+
+def get_safe_ex_string(ex, encoding=None):
+    """
+    Safe way how to get the proper exception represtation as a string
+    (Note: errors to be avoided: 1) "%s" % Exception(u'\u0161') and 2) "%s" % str(Exception(u'\u0161'))
+
+    >>> get_safe_ex_string(Exception('foobar'))
+    u'foobar'
+    """
+
+    ret = ex
+
+    if getattr(ex, "message", None):
+        ret = ex.message
+    elif getattr(ex, "msg", None):
+        ret = ex.msg
+
+    return get_unicode(ret or "", encoding=encoding).strip()
+
+
 class Tool:
     def __init__(self):
         # `grep` (`ggrep` on Mac)
@@ -345,3 +417,89 @@ class Tool:
                 sys.exit(0)
             else:
                 self.find = gfind
+
+
+def unhandled_exception_message():
+    """
+    Returns detailed message about occurred unhandled exception
+    """
+    err_msg = """Cobra version: {cv}\nPython version: {pv}\nOperating system: {os}\nCommand line: {cl}""".format(
+        cv=__version__,
+        pv=__python_version__,
+        os=__platform__,
+        cl=re.sub(r".+?\bcobra.py\b", "cobra.py", get_unicode(" ".join(sys.argv), encoding=sys.stdin.encoding))
+    )
+    return err_msg
+
+
+def create_github_issue(err_msg, exc_msg):
+    """
+    Automatically create a Github issue with unhandled exception information
+    """
+    issues = []
+    try:
+        with open(issue_history_path, 'r') as f:
+            for line in f.readlines():
+                issues.append(line.strip())
+    except:
+        pass
+    finally:
+        # unique
+        issues = set(issues)
+    _ = re.sub(r"'[^']+'", "''", exc_msg)
+    _ = re.sub(r"\s+line \d+", "", _)
+    _ = re.sub(r'File ".+?/(\w+\.py)', "\g<1>", _)
+    _ = re.sub(r".+\Z", "", _)
+    key = hashlib.md5(_).hexdigest()[:8]
+
+    if key in issues:
+        logger.warning('issue already reported!')
+        return
+
+    ex = None
+
+    req = urllib2.Request(url="https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:wufeifei/cobra [AUTO] Unhandled exception (#{k})".format(k=key))))
+
+    try:
+        content = urllib2.urlopen(req).read()
+        _ = json.loads(content)
+        duplicate = _["total_count"] > 0
+        closed = duplicate and _["items"][0]["state"] == "closed"
+        if duplicate:
+            warn_msg = "issue seems to be already reported"
+            if closed:
+                warn_msg += " and resolved. Please update to the latest "
+                warn_msg += "development version from official GitHub repository at '{u}'".format(u=__url__)
+            logger.warning(warn_msg)
+            return
+    except:
+        pass
+
+    data = {
+        "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
+        "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
+    }
+    req = urllib2.Request(url="https://api.github.com/repos/wufeifei/cobra/issues", data=json.dumps(data), headers={"Authorization": "token {t}".format(t="NDhhZmJiNjE2OTNjZTE4NzYwNjM4ODg0MmFlMWNjYWE5YTg4YTEwYQ==".decode("base64"))})
+
+    try:
+        content = urllib2.urlopen(req).read()
+    except Exception, ex:
+        content = None
+
+    issue_url = re.search(r"https://github.com/wufeifei/cobra/issues/\d+", content or "")
+    if issue_url:
+        info_msg = "created Github issue can been found at the address '{u}'".format(u=issue_url.group(0))
+        logger.info(info_msg)
+
+        try:
+            with open(issue_history_path, "a+b") as f:
+                f.write("{k}\n".format(k=key))
+        except:
+            pass
+    else:
+        warn_msg = "something went wrong while creating a Github issue"
+        if ex:
+            warn_msg += " ('{m}')".format(m=get_safe_ex_string(ex))
+        if "Unauthorized" in warn_msg:
+            warn_msg += ". Please update to the latest revision"
+        logger.warning(warn_msg)
