@@ -143,6 +143,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         logger.critical('no rules!')
         return False
     logger.info('[PUSH] {rc} Rules'.format(rc=len(rules)))
+    push_rules = []
     for idx, single_rule in enumerate(rules):
         if single_rule['status'] is False:
             logger.info('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
@@ -156,6 +157,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         ))
         if single_rule['language'] in languages:
             single_rule['extensions'] = languages[single_rule['language']]['extensions']
+            push_rules.append(single_rule['id'])
             pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
         else:
             logger.critical('unset language, continue...')
@@ -187,11 +189,14 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         if x.id not in trigger_rules:
             logger.debug(' > trigger rule (CVI-{cvi})'.format(cvi=x.id))
             trigger_rules.append(x.id)
+    diff_rules = list(set(push_rules) - set(trigger_rules))
     vn = len(find_vulnerabilities)
     if vn == 0:
         logger.info('[SCAN] Not found vulnerability!')
     else:
         logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
+        if len(diff_rules) > 0:
+            logger.info('[SCAN] Not Trigger Rules ({l}): {r}'.format(l=len(diff_rules), r=','.join(diff_rules)))
 
     # completed running data
     if s_sid is not None:
@@ -569,6 +574,7 @@ class Core(object):
                             with open(self.file_path, 'r') as fi:
                                 code_contents = fi.read()
                                 result = scan_parser(code_contents, rule_match, self.line_number)
+                                logger.debug('[AST] {c}'.format(c=result))
                                 if result[0]['code'] == 1:  # 函数参数可控
                                     return True, 1001
 
@@ -580,6 +586,8 @@ class Core(object):
 
                                 if result[0]['code'] == -1:  # 函数参数不可控
                                     return False, 1002
+
+                                logger.debug('[AST] [CODE] {code}'.format(code=result[0]['code']))
 
                         except Exception as e:
                             logger.debug(e)
