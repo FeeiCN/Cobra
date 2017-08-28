@@ -10,16 +10,11 @@ $cmd = $_REQUEST['a'];
 
 print($callback);
 
-# CVI-220001
-if(isset($_GET['url'])) {
-    header("Location: ".$_GET["url"]);
-}
-
 # CVI-180001
 @array_map("ass\x65rt",(array)@$cmd);
 
-$a = base64_decode($_POST['test']);
-eval($a);
+$param = base64_decode($_POST['test']);
+eval($param);
 
 # CVI-181001
 $cmd = $_GET['cmd'];
@@ -30,14 +25,11 @@ if (!empty($cmd)){
 
 # CVI-230001
 if (isset($_GET['sid'])) {
-    setcookie("PHPSESSID", $_GET["sid"]);
+    setcookie("PHPSESSID", $param);
 }
 
 # CVI-190003
 phpinfo();
-
-# CVI-190008
-print_r($a);
 
 # CVI-110001
 if(!empty($url))
@@ -57,7 +49,7 @@ function curl($url){
 
 $url = $_GET['url'];
 if (!empty($url)){
-    curl($url);
+    curl($param);
 }
 
 # CVI-120002
@@ -74,10 +66,10 @@ if (!empty($url)){
 }
 
 # CVI-140003
-print_r ("Hello " . $_GET['name']);
+print_r ("Hello " . $param);
 
 # CVI-140004
-echo "Hello " . $_GET['name'];
+echo "Hello " . $param;
 
 # CVI-160002  CVI-160003
 $query = "SELECT * FROM users WHERE user = $username AND password = $password;";
@@ -86,8 +78,8 @@ $query = "SELECT * FROM users WHERE user = $username AND password = $password;";
 $query  = "SELECT id, name, inserted, size FROM products WHERE size = '$size' ORDER BY $order LIMIT $limit, $offset;";
 
 # CVI-170002
-if(!empty($_GET['file'])){
-    require_once($_GET['file']);
+if(!empty($a)){
+    require_once($a);
 }
 
 # CVI-200002
