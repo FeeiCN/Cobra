@@ -32,15 +32,34 @@ class Running:
     def __init__(self, sid):
         self.sid = sid
 
-    def init_list(self):
+    def init_list(self, data=None):
+        """
+        Initialize asid_list file.
+        :param data: list or a string
+        :return:
+        """
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
-        with open(file_path, 'w') as f:
-            fcntl.flock(f, fcntl.LOCK_EX)
-            f.write(json.dumps({
-                'sids': {}
-            }))
+        if isinstance(data, list):
+            with open(file_path, 'w') as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
+                f.write(json.dumps({
+                    'sids': {},
+                    'total_target_num': len(data),
+                }))
+        else:
+            with open(file_path, 'w') as f:
+                fcntl.flock(f, fcntl.LOCK_EX)
+                f.write(json.dumps({
+                    'sids': {},
+                    'total_target_num': 1,
+                }))
 
     def list(self, data=None):
+        """
+        Update asid_list file.
+        :param data: tuple (s_sid, target)
+        :return:
+        """
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
         if data is None:
             with open(file_path, 'r') as f:
@@ -48,7 +67,7 @@ class Running:
                 result = f.readline()
                 return json.loads(result)
         else:
-            with open(file_path, 'w+') as f:
+            with open(file_path, 'r+') as f:    # w+ causes a file reading bug
                 fcntl.flock(f, fcntl.LOCK_EX)
                 result = f.read()
                 if result == '':

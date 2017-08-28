@@ -88,7 +88,7 @@ class AddJob(Resource):
         running = Running(a_sid)
 
         # Write a_sid running data
-        running.init_list()
+        running.init_list(data=target)
 
         # Write a_sid running status
         data = {
@@ -104,15 +104,17 @@ class AddJob(Resource):
                 producer(task=arg)
 
             result = {
-                "msg": "Add scan job successfully.",
-                "sid": a_sid,
+                'msg': 'Add scan job successfully.',
+                'sid': a_sid,
+                'total_target_num': len(target),
             }
         else:
             arg = (target, formatter, output, rule, a_sid)
             producer(task=arg)
             result = {
-                "msg": "Add scan job successfully.",
-                "sid": a_sid,
+                'msg': 'Add scan job successfully.',
+                'sid': a_sid,
+                'total_target_num': 1,
             }
 
         return {"code": 1001, "result": result}
@@ -147,8 +149,8 @@ class JobStatus(Resource):
             return data
         else:
             result = running.status()
+            r_data = running.list()
             if result['status'] == 'running':
-                r_data = running.list()
                 ret = True
                 result['still_running'] = dict()
                 for s_sid, git in r_data['sids'].items():
@@ -163,7 +165,10 @@ class JobStatus(Resource):
                 'sid': sid,
                 'status': result.get('status'),
                 'report': result.get('report'),
-                'still_running': result.get('still_running')
+                'still_running': result.get('still_running'),
+                'total_target_num': r_data.get('total_target_num'),
+                'not_finished': int(r_data.get('total_target_num')) - len(r_data.get('sids'))
+                                + len(result.get('still_running')),
             }
         return {"code": 1001, "result": data}
 
