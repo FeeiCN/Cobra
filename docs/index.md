@@ -35,12 +35,20 @@
 2. 使用CLI模式，在命令行中进行扫描。
 
 # Cobra文档
-- [Cobra安装](https://wufeifei.github.io/cobra/installation)
+- 安装
+    - [Cobra安装](https://wufeifei.github.io/cobra/installation)
 - 使用方法
     - [CLI模式使用方法](https://wufeifei.github.io/cobra/cli)
     - [API模式使用方法](https://wufeifei.github.io/cobra/api)
-- [高级功能配置](https://wufeifei.github.io/cobra/config)
-- [升级框架和规则源](https://wufeifei.github.io/cobra/upgrade)
-- [扫描规则开发规范](https://wufeifei.github.io/cobra/rule)
+- 进阶
+    - [高级功能配置](https://wufeifei.github.io/cobra/config)
+    - [升级框架和规则源](https://wufeifei.github.io/cobra/upgrade)
+- 规则编写
+    - [扫描规则开发规范](https://wufeifei.github.io/cobra/rule)
+- 框架
+    - [开发语言和文件类型定义](https://wufeifei.github.io/cobra/languages)
+    - [漏洞类型定义](https://wufeifei.github.io/cobra/labels)
+    - [危害等级定义](https://wufeifei.github.io/cobra/level)
+    - [程序目录结构](https://wufeifei.github.io/cobra/tree)
 - 贡献代码
     - [单元测试](https://wufeifei.github.io/cobra/test)
