@@ -1,15 +1,14 @@
 # Flow（规则编写流程）
 
-1. 开发规则文件`CVI-XXXNNN.xml`
-2. 开发漏洞代码`tests/vulnerabilities/v.language`
-3. 测试规则扫描`./cobra.py -t tests/vulnerabilities/`
+#### 1. 编写规则文件`CVI-XXXNNN.xml`
+    参考[规则命名](https://wufeifei.github.io/cobra/rule_name)建立规则文件。
+    参考[规则模板](https://wufeifei.github.io/cobra/rule_template)和[规则样例](https://wufeifei.github.io/cobra/rule_demo)编写对应的规则、修复方案、测试用例等。
 
-## 规则文件命名规范
-`rules/CVI-100001.xml`
-- 统一存放在`rules`目录
-- 大写字母CVI（Cobra Vulnerability ID）开头，横杠（-）分割
-- 六位数字组成，前三位为Label ID，后三位为自增ID
-- 结尾以小写.xml结束
+#### 2. 编写漏洞代码`tests/vulnerabilities/v.language`
+    编写实际可能出现的业务场景代码（只需编写一处即可）。
+
+#### 3. 测试规则扫描`./cobra.py -t tests/vulnerabilities/`
+    测试扫描结果
 
 ---
 下一章：[开发语言和文件类型定义](https://wufeifei.github.io/cobra/languages)

@@ -54,6 +54,7 @@
 - 规则开发规范
     - [规则模板](https://wufeifei.github.io/cobra/rule_template)
     - [规则样例](https://wufeifei.github.io/cobra/rule_demo)
+    - [规则文件命名规范](https://wufeifei.github.io/cobra/rule_name)
     - [规则开发流程](https://wufeifei.github.io/cobra/rule_flow)
 - 框架引擎
     - [开发语言和文件类型定义](https://wufeifei.github.io/cobra/languages)
