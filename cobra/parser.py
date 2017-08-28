@@ -290,6 +290,7 @@ def anlysis_function(node, back_node, vul_function, function_params, vul_lineno)
         if node.name == vul_function and node.lineno == vul_lineno:  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
             params = get_all_params(node.params)
             function_lineno = function_params[len(function_params)-1]  # 获取自定义函数的行号
+
             for param in params:
                 is_co, cp, expr_lineno = parameters_back(param, back_node, function_params[:-1], flag)
                 expr_lineno = function_lineno  # expr_lineno为自定义函数行号
@@ -345,6 +346,58 @@ def analysis_functioncall(node, back_node, vul_function, vul_lineno):
         logger.debug(e)
 
 
+def analysis_echo_print(node, back_node, vul_function, vul_lineo):
+    results = []
+    global scan_results
+
+    if isinstance(node, php.Print):
+        if isinstance(node.node, php.FunctionCall):
+            j_nodes = []
+            j_nodes.append(node.node)
+            analysis(j_nodes, vul_function, back_node, vul_lineo)
+
+        if isinstance(node.node, php.Variable):  # 直接输出变量信息
+            k_node = get_node_name(node.node)
+            is_co, cp, expr_lineno = parameters_back(k_node, back_node)
+
+            result = {
+                'code': is_co,
+                'source': cp,
+                'source_lineno': expr_lineno,
+                'sink': 'echo',
+                'sink_param:': k_node,
+                'sink_lineno': vul_lineo
+            }
+            results.append(result)
+
+        scan_results += results
+
+    elif isinstance(node, php.Echo):
+        is_functioncall = 0
+        for k_node in node.nodes:
+            if isinstance(k_node, php.FunctionCall):  # 判断节点中是否有函数调用节点
+                is_functioncall = 1
+
+            if is_functioncall == 1:
+                analysis(node.nodes, vul_function, back_node, vul_lineo)  # 将含有函数调用的节点进行分析
+
+            if isinstance(k_node, php.Variable):
+                k_node = get_node_name(k_node)
+                is_co, cp, expr_lineno = parameters_back(k_node, back_node)
+
+                result = {
+                    'code': is_co,
+                    'source': cp,
+                    'source_lineno': expr_lineno,
+                    'sink': 'echo',
+                    'sink_param:': k_node,
+                    'sink_lineno': vul_lineo
+                }
+                results.append(result)
+
+            scan_results += results
+
+
 def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=None):
     """
     调用FunctionCall-->analysis_functioncall分析调用函数是否敏感
@@ -357,7 +410,6 @@ def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=
     :return:
     """
     for node in nodes:
-
         if isinstance(node, php.FunctionCall):  # 函数直接调用，不进行赋值
             if flag == 1:
                 anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
@@ -372,6 +424,9 @@ def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=
 
                 else:
                     analysis_functioncall(node.expr, back_node, vul_function, vul_lineo)
+
+        elif isinstance(node, php.Print) or isinstance(node, php.Echo):
+            analysis_echo_print(node, back_node, vul_function, vul_lineo)
 
         elif isinstance(node, php.If):  # 函数调用在if-else语句中时
             if isinstance(node.node, php.Block):  # if语句中的sink点以及变量
