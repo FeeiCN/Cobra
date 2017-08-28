@@ -8,18 +8,18 @@ $target = "10.11.2.220";
 
 $cmd = $_REQUEST['a'];
 
-print($callback);
+echo($callback . ";");
+
+extract($cmd);
 
 # CVI-180001
 @array_map("ass\x65rt",(array)@$cmd);
-
-$param = base64_decode($_POST['test']);
-eval($param);
 
 # CVI-181001
 $cmd = $_GET['cmd'];
 
 if (!empty($cmd)){
+    eval($cmd);
     system('ls' + $cmd);
 }
 
@@ -35,7 +35,6 @@ phpinfo();
 if(!empty($url))
 {
     mkdir('log/'.date("Y"),0777);
-    chmod("move.php", 0777);
 }
 
 # CVI-120001
@@ -65,22 +64,20 @@ if (!empty($url)){
     echo get_headers($url,1);
 }
 
-# CVI-140003
-print_r ("Hello " . $param);
-
 # CVI-140004
 echo "Hello " . $param;
 
-# CVI-160002  CVI-160003
-$query = "SELECT * FROM users WHERE user = $username AND password = $password;";
-
-# CVI-160002  CVI-160004
+# CVI-160002
 $query  = "SELECT id, name, inserted, size FROM products WHERE size = '$size' ORDER BY $order LIMIT $limit, $offset;";
+mysql_query($query);
+
 
 # CVI-170002
-if(!empty($a)){
-    require_once($a);
+if(!empty($cmd)){
+    require_once($cmd);
 }
+
+highlight_file($cmd);
 
 # CVI-200002
 $unique = uniqid();
