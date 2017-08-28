@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="MySQL Execute Functions可能导致SQL注入"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[(mysql_query|mysql_db_query)]]></match>
+    <repair block="in-function"><![CDATA[(?:mysql_real_escape_string|addslashes)\s*\(\s*{{PARAM}}\s*[\),]]]></repair>
+    <level value="8"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            $query = "SELECT * FROM users WHERE user = $username AND password = $password ";
+            mysql_query($query);
+        ]]></case>
+        <case assert="false"><![CDATA[
+            $username = "user";
+            $password = "cobra123";
+            $query = "SELECT * FROM users WHERE user = $username AND password = $password ";
+            mysql_query($query);
+        ]]></case>
+        <case assert="false"><![CDATA[
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            $username = mysql_real_escape_string($username); //转义
+            $password = mysql_real_escape_string($password); //转义
+            $query = "SELECT * FROM users WHERE user = $username AND password = $password ";
+            mysql_query($query);
+        ]]></case>
+
+    </test>
+    <solution>
+        ## 安全风险
+
+        ### SQL注入形成原因
+        SQL语句用户可控，若未对参数进行足够的过滤直接执行SQL语句，则可能发生SQL注入
+
+        ### 风险
+        - 用户信息被篡改
+        - 攻击者偷取代码和用户数据
+        - 业务运营的所有数据被恶意获取
+        - 线上代码被非法篡改，并造成为恶意攻击者输送流量或其他利益的影响
+
+        ## 修复方案
+        - 已不再使用的功能，可直接做下线处理
+        - 引入安全组件
+        - 代码层修复:对用户可控参数进行严格过滤
+            使用 `mysql_real_escape_string`转义 SQL 语句中使用的字符串中的特殊字符
+            若无转义函数并且使用 \ 来转义特殊字符，可以使用addslashes函数
+
+        ## 代码示例
+        ```
+        <?php
+            $username = $_POST['username'];
+            $password = $_POST['username'];
+            $username = mysql_real_escape_string($username); //转义
+            $password = mysql_real_escape_string($password); //转义
+            $query = "SELECT * FROM users WHERE user = $username AND password = $password ";
+            mysql_query($query);
+        ?>
+        ```
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

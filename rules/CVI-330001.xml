@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="DES加密模式"/>
+    <language value="java"/>
+    <match mode="regex-only-match"><![CDATA[Cipher....Instance\s?\(\s?\".*DES]]></match>
+    <level value="2"/>
+    <solution>
+        ## 安全风险
+        DES和DESede (3DES)存在安全问题
+
+        ## 修复方案
+        建议使用AES替换
+    </solution>
+    <test>
+        <case assert="true"><![CDATA[
+            Cipher c = Cipher.getInstance("DESede/CBC/PKCS5Padding");
+            c.init(Cipher.ENCRYPT_MODE, k, iv);
+            byte[] cipherText = c.doFinal(plainText);
+        ]]></case>
+        <case assert="false"><![CDATA[
+            Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
+            c.init(Cipher.ENCRYPT_MODE, k, iv);
+            byte[] cipherText = c.doFinal(plainText);
+        ]]></case>
+    </test>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

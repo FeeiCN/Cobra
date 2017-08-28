@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="文件包含漏洞"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[include|include_once|require|require_once|parsekit_compile_file|php_check_syntax|runkit_import|virtual]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[include($_GET['file']);]]></case>
+        <case assert="true"><![CDATA[require_once($_GET['file']);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        LFI/FRI(本地文件包含/远程文件包含)
+
+        ### 形成
+        在引入文件时，引用的文件名用户可控，若传入的参数没有限制过滤或者校验被绕过，从而导致意外的文件泄露甚至恶意代码注入。
+
+        ### 影响范围
+        当攻击者通过该漏洞包含特定文件时，该文件将为相应的代码执行。
+
+        ## 修复方案
+        1. 应尽量避免包含动态的变量，尤其是用户可以控制的变量。
+        2. 设置白名单(使用枚举)
+        ```php
+        <?php
+            $file = $_GET['file'];
+            //Whitelisting possible values
+            switch ($file) {
+                case 'main':
+                case 'foo':
+                case 'bar':
+                    include '/home/wwwroot/include/'.$file.'.php';
+                    break;
+                default:
+                    include '/home/wwwroot/include/main.php';
+            }
+        ?>
+        ```
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

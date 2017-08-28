@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="变量覆盖漏洞"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[import_request_variables|parse_str|mb_parse_str]]></match>
+    <level value="4"/>
+    <test>
+        <case assert="true"><![CDATA[import_request_variables('G');]]></case>
+        <case assert="true"><![CDATA[parse_str($_SERVER['QUERY_STRING']);]]></case>
+        <case assert="true"><![CDATA[
+            $encoded_string = $_POST['str'];
+            mb_parse_str($encoded_string, $result);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        变量覆盖漏洞
+
+        ## 修复方案
+        1、使用原始变量,不进行变量注册，直接使用原生的$_GET、$_POST等数组变量进行操作；
+        2、注册变量前判断变量是否存在。自行申明的变量一定要初始化，不然即使注册变量代码在执行流程最前面也能覆盖掉这些未初始化的变量。
+
+        ## 代码样例
+
+        ### 错误代码样例
+        ```php
+        <?php
+            $a = '0';
+            import_request_variables('G');
+            if($a == 1){
+              echo "true!";
+            }else{
+              echo "false!";
+            }
+        ?>
+        ```
+        构造 http://www.test.com/test.php?a=1时，会打印出true
+
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>
