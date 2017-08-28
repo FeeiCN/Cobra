@@ -14,6 +14,7 @@
 from phply.phplex import lexer  # 词法分析
 from phply.phpparse import make_parser  # 语法分析
 from phply import phpast as php
+from .log import logger
 
 
 with_line = True
@@ -285,23 +286,26 @@ def anlysis_function(node, back_node, vul_function, function_params, vul_lineno)
     results = []
     global scan_results
 
-    if node.name == vul_function and node.lineno == vul_lineno:  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
-        params = get_all_params(node.params)
-        function_lineno = function_params[len(function_params)-1]  # 获取自定义函数的行号
-        for param in params:
-            is_co, cp, expr_lineno = parameters_back(param, back_node, function_params[:-1], flag)
-            expr_lineno = function_lineno  # expr_lineno为自定义函数行号
-            result = {
-                'code': is_co,
-                'source': cp,
-                'source_lineno': expr_lineno,
-                'sink': node.name,
-                'sink_param:': param,
-                'sink_lineno': node.lineno
-            }
-            results.append(result)
+    try:
+        if node.name == vul_function and node.lineno == vul_lineno:  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
+            params = get_all_params(node.params)
+            function_lineno = function_params[len(function_params)-1]  # 获取自定义函数的行号
+            for param in params:
+                is_co, cp, expr_lineno = parameters_back(param, back_node, function_params[:-1], flag)
+                expr_lineno = function_lineno  # expr_lineno为自定义函数行号
+                result = {
+                    'code': is_co,
+                    'source': cp,
+                    'source_lineno': expr_lineno,
+                    'sink': node.name,
+                    'sink_param:': param,
+                    'sink_lineno': node.lineno
+                }
+                results.append(result)
 
-        scan_results += results
+            scan_results += results
+    except Exception as e:
+        logger.debug(e)
 
 
 def analysis_functioncall(node, back_node, vul_function, vul_lineno):
@@ -316,26 +320,29 @@ def analysis_functioncall(node, back_node, vul_function, vul_lineno):
     results = []
     global scan_results
 
-    if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 定位到敏感函数
-        params = get_all_params(node.params)  # 开始取敏感函数中的参数列表
+    try:
+        if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 定位到敏感函数
+            params = get_all_params(node.params)  # 开始取敏感函数中的参数列表
 
-        for param in params:
-            is_co, cp = is_controllable(param)
-            expr_lineno = node.lineno
+            for param in params:
+                is_co, cp = is_controllable(param)
+                expr_lineno = node.lineno
 
-            if is_co == -1:
-                is_co, cp, expr_lineno = parameters_back(param, back_node)
-            result = {
-                'code': is_co,
-                'source': cp,
-                'source_lineno': expr_lineno,
-                'sink': node.name,
-                'sink_param:': param,
-                'sink_lineno': node.lineno
-            }
-            results.append(result)
+                if is_co == -1:
+                    is_co, cp, expr_lineno = parameters_back(param, back_node)
+                result = {
+                    'code': is_co,
+                    'source': cp,
+                    'source_lineno': expr_lineno,
+                    'sink': node.name,
+                    'sink_param:': param,
+                    'sink_lineno': node.lineno
+                }
+                results.append(result)
 
-        scan_results += results
+            scan_results += results
+    except Exception as e:
+        logger.debug(e)
 
 
 def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=None):
@@ -361,7 +368,7 @@ def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=
         elif isinstance(node, php.Assignment):  # 函数调用在赋值表达式中
             if isinstance(node.expr, php.FunctionCall):
                 if flag == 1:
-                    anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
+                    anlysis_function(node.expr, back_node, vul_function, function_params, vul_lineo)
 
                 else:
                     analysis_functioncall(node.expr, back_node, vul_function, vul_lineo)
@@ -400,11 +407,14 @@ def scan_parser(code_content, sensitive_func, vul_lineno):
     :param vul_lineno: 漏洞函数所在行号
     :return:
     """
-    parser = make_parser()
-    all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)
-    for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控
-        back_node = []
-        analysis(all_nodes, func, back_node, vul_lineno, flag=0, function_params=None)
+    try:
+        parser = make_parser()
+        all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)
+        for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控
+            back_node = []
+            analysis(all_nodes, func, back_node, vul_lineno, flag=0, function_params=None)
+    except SyntaxError as e:
+        logger.debug(e)
 
     return scan_results
 

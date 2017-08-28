@@ -23,6 +23,7 @@ eval($a);
 
 # CVI-181001
 $cmd = $_GET['cmd'];
+
 if (!empty($cmd)){
     system('ls' + $cmd);
 }
@@ -61,6 +62,7 @@ if (!empty($url)){
 
 # CVI-120002
 $url = $_GET['url'];
+
 if (!empty($url)){
     $content = file_get_contents($url);
 }
@@ -116,6 +118,7 @@ parse_str($_SERVER['QUERY_STRING']);
 
 # CVI-320002
 $a = '0';
+
 if($a==1){
     echo "true!";
 }else{
