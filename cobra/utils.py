@@ -33,6 +33,7 @@ OUTPUT_MODE_MAIL = 'mail'
 OUTPUT_MODE_API = 'api'
 OUTPUT_MODE_FILE = 'file'
 OUTPUT_MODE_STREAM = 'stream'
+PY2 = sys.version_info[0] == 2
 
 
 class ParseArgs(object):
@@ -349,7 +350,6 @@ class Tool:
 
 
 def secure_filename(filename):
-    PY2 = sys.version_info[0] == 2
     _filename_utf8_strip_re = re.compile(u"[^\u4e00-\u9fa5A-Za-z0-9_.-]")
     _windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4', 'LPT1', 'LPT2', 'LPT3', 'PRN', 'NUL')
 

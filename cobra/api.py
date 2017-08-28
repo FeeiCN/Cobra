@@ -31,7 +31,7 @@ from .cli import get_sid
 from .config import Config, running_path, code_path, package_path
 from .engine import Running
 from .log import logger
-from .utils import allowed_file, secure_filename
+from .utils import allowed_file, secure_filename, PY2
 
 try:
     # Python 3
@@ -270,7 +270,11 @@ class ResultDetail(Resource):
             # repo_directory = os.path.join(os.path.join(os.path.join(code_path, 'git'), repo_user), repo_name)
             repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
 
-            file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
+            if PY2:
+                file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
+            else:
+                file_path = map(secure_filename, [path for path in file_path.split('/')])
+
 
             # 循环生成路径，避免文件越级读取
             file_name = repo_directory
