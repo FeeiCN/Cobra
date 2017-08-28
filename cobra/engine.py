@@ -258,11 +258,15 @@ class SingleRule(object):
             # -s Suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
             param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [match, self.target_directory]
         try:
-            p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            result, error = p.communicate()
+            if param:
+                p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                result, error = p.communicate()
+            else:
+                result = "NULL"
+                error = "error"
         except Exception as e:
-            traceback.print_exc()
-            logger.critical('match exception ({e})'.format(e=e.message))
+            # traceback.print_exc()
+            logger.debug('match exception ({e})'.format(e=e.message))
             return None
         try:
             result = result.decode('utf-8')
@@ -270,7 +274,7 @@ class SingleRule(object):
         except AttributeError as e:
             pass
         if len(error) is not 0:
-            logger.critical('[CVI-{cvi}] [ORIGIN] [ERROR] {err}'.format(cvi=self.sr['id'], err=error.strip()))
+            logger.warning('[CVI-{cvi}] [ORIGIN] [ERROR] {err}'.format(cvi=self.sr['id'], err=error.strip()))
         return result
 
     def process(self):

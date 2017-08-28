@@ -283,7 +283,7 @@ class CAST(object):
                         return False, self.data
                     logger.debug("[AST] Is assign out data: `No`")
                     return True, self.data
-                logger.critical("[AST] Not Java/PHP, can't parse")
+                logger.debug("[AST] Not Java/PHP, can't parse")
                 return False, self.data
         else:
             logger.warning("[AST] Can't get `param`, check built-in rule")
