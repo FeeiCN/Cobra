@@ -25,6 +25,7 @@ from .log import logger
 from .config import running_path
 from .result import VulnerabilityResult
 from .cast import CAST
+from .parser import scan_parser
 from prettytable import PrettyTable
 
 
@@ -558,10 +559,31 @@ class Core(object):
             #
             logger.debug('[CVI-{cvi}] match-mode {mm}'.format(cvi=self.cvi, mm=self.rule_match_mode))
             found_vul = False
-            if self.is_can_parse():
+            if self.file_path[-3:].lower() == 'php':
                 try:
                     ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
+                    if '|' in self.rule_match:
+                        rule_match = self.rule_match.split('|')
+                        try:
+                            with open(self.file_path, 'r') as fi:
+                                code_contents = fi.read()
+                                result = scan_parser(code_contents, rule_match, self.line_number)
+                                if result[0]['code'] == 1:  # 函数参数可控
+                                    return True, 1001
+
+                                if result[0]['code'] == 2:  # 函数为敏感函数
+                                    return True, 1001
+
+                                if result[0]['code'] == 0:  # 漏洞修复
+                                    return False, 1002
+
+                                if result[0]['code'] == -1:  # 函数参数不可控
+                                    return False, 1002
+
+                        except Exception as e:
+                            logger.debug(e)
+
                     if self.rule_match2 is not None:
                         is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
                         if is_match:

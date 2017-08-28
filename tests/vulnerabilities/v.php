@@ -1,10 +1,4 @@
 <?php
-/**
- * Cobra Vulnerabilities Examples
- *
- * @author Feei <feei#feei.cn>
- * @link   https://github.com/wufeifei/cobra
- */
 $username = $_POST['username'];
 $password = $_POST['password'];
 $callback = $_POST['callback'];
@@ -12,12 +6,12 @@ $callback = $_POST['callback'];
 # CVI-130005
 $target = "10.11.2.220";
 
-$cmd = $_REQUEST['a']
+$cmd = $_REQUEST['a'];
 
 print($callback);
 
 # CVI-220001
-if (isset($_GET['url']) {
+if(isset($_GET['url'])) {
     header("Location: ".$_GET["url"]);
 }
 
@@ -29,7 +23,7 @@ system('ls' + $cmd);
 @array_map("ass\x65rt",(array)@$cmd);
 
 # CVI-230001
-if (isset($_GET['sid']) {
+if (isset($_GET['sid'])) {
     setcookie("PHPSESSID", $_GET["sid"]);
 }
 
