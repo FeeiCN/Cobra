@@ -6,7 +6,8 @@
 > "源代码安全审计"是指通过审计发现源代码中的安全问题，而Cobra可将这个流程自动化。
 
 ## Cobra为什么能从源代码中扫描到漏洞？
-> Cobra基于Lex(Lexical Analyzer Generator, 词法分析生成器)和Yacc(Yet Another Compiler-Compiler, 编译器代码生成器)将源代码解析为AST(Abstract Syntax Tree, 抽象语法树)，通过预先将各类漏洞编写成对应的识别扫描规则添加到Cobra框架中，Cobra即可根据规则来识别代码中的漏洞。
+> 对于一些特征较为明显的可以使用正则规则来直接进行匹配出，比如硬编码密码、错误的配置等。
+> 对于一些需要判断参数是否可控的，Cobra通过预先梳理能造成危害的函数，并定位代码中所有出现该危害函数的地方，继而基于Lex(Lexical Analyzer Generator, 词法分析生成器)和Yacc(Yet Another Compiler-Compiler, 编译器代码生成器)将对应源代码解析为AST(Abstract Syntax Tree, 抽象语法树)，分析危害函数的入参是否可控来判断是否存在漏洞。
 
 ## Cobra和其它源代码审计系统有什么区别或优势？
 > 自动化扫描源码中大部分显著的安全问题。
