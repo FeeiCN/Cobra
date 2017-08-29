@@ -27,7 +27,7 @@ var score2level = {
 $(function () {
     var current_tab = '';
     var c_tab = getParameterByName('t');
-    if (c_tab !== null && c_tab !== '' && ['inf', 'vul', 'ext'].indexOf(c_tab) >= 0) {
+    if (c_tab !== null && c_tab !== '' && ['inf', 'tar', 'vul'].indexOf(c_tab) >= 0) {
         current_tab = c_tab;
         $(".nav-tabs li").removeClass('active');
         $("a[data-id=" + c_tab + "]").parent('li').addClass('active');
