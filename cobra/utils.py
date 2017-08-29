@@ -127,9 +127,13 @@ class ParseArgs(object):
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
             # branch or tag
-            branch_tag = r"(.*?.git):(\w+|[\w\d\.-]*)$"
-            target, branch = re.findall(branch_tag, self.target)[0] if re.findall(branch_tag, self.target) else (
-            self.target, "master")
+            split_target = self.target.split(':')
+            if len(split_target) == 3:
+                target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+            elif len(split_target) == 2:
+                target, branch = self.target, 'master'
+            else:
+                logger.critical('Target url exception: {u}'.format(u=self.target))
             if 'gitlab' in target:
                 username = Config('git', 'username').value
                 password = Config('git', 'password').value
