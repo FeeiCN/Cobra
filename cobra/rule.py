@@ -136,6 +136,7 @@ class Rule(object):
         Get all rules
         :return: dict
         """
+        logger.critical(rules)
         vulnerabilities = []
         if rules is not None and len(rules) > 0:
             files = rules
@@ -143,9 +144,9 @@ class Rule(object):
             files = os.listdir(self.rules_path)
         for vulnerability_name in files:
             # VN: CVI-190001.xml
-            v_path = os.path.join(self.rules_path, vulnerability_name)
+            v_path = os.path.join(self.rules_path, vulnerability_name.upper())
             if os.path.isfile(v_path) is not True or 'cvi-template' in v_path.lower() or vulnerability_name.lower()[0:7] == 'cvi-999' or 'cvi' not in v_path.lower() or '.xml' not in v_path.lower():
-                logger.debug('Not regular rule file {f}'.format(f=v_path))
+                logger.warning('Not regular rule file {f}'.format(f=v_path))
                 continue
 
             # rule information
