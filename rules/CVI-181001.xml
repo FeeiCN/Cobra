@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="远程命令执行"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[(system|passthru|exec|pcntl_exec|shell_exec|popen|proc_open|ob_start|expect_popen|mb_send_mail|w32api_register_function|w32api_invoke_function|ssh2_exec)]]></match>
+    <repair block="in-function"><![CDATA[escapeshellcmd\s*\(\s*(.+?)\s*\)|escapeshellarg\s*\(\s*(.+?)\s*\)]]></repair>
+    <level value="10"/>
+    <test>
+        <case assert="true"><![CDATA[system($_GET['pass']);]]></case>
+        <case assert="true"><![CDATA[passthru($_GET['pass']);]]></case>
+        <case assert="true"><![CDATA[exec($_GET['pass1'],$_GET['pass2']);]]></case>
+        <case assert="true"><![CDATA[pcntl_exec('$_GET['pass']');]]></case>
+        <case assert="true"><![CDATA[shell_exec('$_GET['pass']');]]></case>
+        <case assert="true"><![CDATA[popen('$_GET['pass']');]]></case>
+        <case assert="true"><![CDATA[proc_open('$_GET['pass']');]]></case>
+        <case assert="true"><![CDATA[ob_start('$_GET['pass']');]]></case>
+        <case assert="true"><![CDATA[expect_popen('$_GET['pass']');]]></case>
+        <case assert="true"><![CDATA[ssh2_exec($connection, '$_GET['pass']');]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        当应用需要调用一些外部程序去处理内容的情况下，就会用到一些执行系统命令的函数。
+        当用户可以控制命令执行函数中的参数时，将可以注入恶意系统命令到正常命令中，造成命令执行攻击。
+
+        ## 修复方案
+        1.尽量不用执行命令的函数.
+        2.外部可控制参数进入执行命令函数要进行严格的过滤（如使用escapeshellcmd或escapeshellarg过滤参数）
+        3.升级ImageMagick到最新版本
+
+        ## 代码样例
+
+        ```
+        <?php
+            $ip=$_GET['ip'];
+            system("ping"+$ip);
+        ?>
+        ```
+        构造 `http://www.test.com/test.php?ip=127.0.0.1|ifconfig` 即会发生命令注入攻击
+
+        正确代码示例
+        ```php
+        <?php
+            $command = './configure '.$_POST['configure_options'];// 允许任意数量的参数
+            $escaped_command = escapeshellcmd($command);
+            system($escaped_command);
+        ?>
+        ```
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="unlink删除文件"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[unlink]]></match>
+    <repair block="in-function-up"><![CDATA[in_array\s*\(\s*{{PARAM}}\s*,]]></repair>
+    <level value="3"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $file = $_POST["file_name"];
+            unlink($file);
+        ]]></case>
+        <case assert="false"><![CDATA[
+            $file = "ping.txt";
+            unlink($file);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        在使用unlink函数删除文件的时候没有考虑对该参数进行足够的过滤，导致存在多个任意文件删除的漏洞。
+
+        ## 修复方案
+        对用户输入的参数进行严格过滤(比如使用in_array设置允许的参数范围)。
+
+        ## 示例代码
+        ```php
+        f($post_submit_action == "delete_file"){
+            $file_name = $_POST["file_name"];
+            $file = "/home/file/".$file_name;
+            unlink($file);
+            return;
+        }
+        ```
+        POST参数作为unlink函数的参数，当我们提交 `file_name=../../index.php`就会导致任意文件删除漏洞。
+        应该按照实际需要设置严格的参数过滤。
+    </solution>
+    <status value="on"/>
+    <author name="Lightless" email="viarus@qq.com"/>
+</cobra>

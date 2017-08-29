@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="未经验证的任意链接跳转"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[header]]></match>
+    <level value="5"/>
+    <test>
+        <case assert="true"><![CDATA[header("Location: ".$_GET["url"]);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        UR(Unvalidated Redirect)
+
+        ### 形成原因
+        Web程序可进行URL跳转且参数用户可控 + 未对用户输入的URL进行足够的过滤限制 + 攻击者恶意构造输入参数
+
+        ### 风险
+        - 控制跳转链接跳转到恶意网站，或进行钓鱼攻击盗取用户信息。
+        - 绕过权限检查，到达受限页面并进行非法操。
+
+        ## 修复方案
+        1. 避免简单使用URL跳转函数。
+        2. 如果需要使用URL跳转功能，避免允许用户的输入作为跳转目标。
+        3. 若无法避免将用户的输入作为跳转目标，则须进行严格的限制和过滤，确保用户提供的URL是合法的、有权限访问的。
+        4. 设置URL跳转白名单。
+        5. 当用户跳转离开时，强制跳转到警告页面上，提示用户正在离开当前网站。
+
+        ## 修复方案
+        使用白名单判断
+        ```php
+        <?php if(!in_array($_GET["url"], $whitelist)) exit; ?>
+        ```
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="cURL导致的SSRF"/>
+    <language value="php"/>
+    <match mode="regex-param-controllable"><![CDATA[curl_setopt\s*\(.*,\s*CURLOPT_URL\s*,(.*)\)]]></match>
+    <repair block="in-function"><![CDATA[curl_setopt\s?\(.*,\s?CURLOPT_PROTOCOLS\s?,(.*)\)]]></repair>
+    <level value="6"/>
+    <test>
+        <case assert="true"><![CDATA[
+        function curl($url){
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_exec($ch);
+            curl_close($ch);
+        }
+        $url = $_GET['url'];
+        curl($url);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+
+        SSRF漏洞(Server-Side Request Forgery)
+
+        ### 形成原理
+        SSRF形成的原因大都是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制。
+
+        ### 风险
+        1、攻击者可以对外网、服务器所在内网、本地进行端口扫描，获取服务的banner信息。
+        2、攻击运行在内网或本地的应用程序。
+        3、对内网web应用进行指纹识别。
+        4、攻击内外网的web应用。
+        5、利用file协议读取本地文件等。
+
+        ### 举例
+        ```php
+        function curl($url){
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_exec($ch);
+            curl_close($ch);
+        }
+
+        $url = $_GET['url'];
+        curl($url);
+        ```
+        以上代码未做任何SSRF防御，风险举例如下：
+
+        ```
+        # 利用file协议任意文件读取
+        curl -v 'http://test.com:8082/ssrf.php?url=file:///etc/passwd'
+
+        # 利用dict协议查看端口
+        curl -v 'http://test.com:8082/ssrf.php?url=dict://127.0.0.1:22'
+        ```
+
+        ## 修复方案
+        1. 限制协议为HTTP、HTTPS
+            ```
+            curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+            ```
+        2. 限制请求域名白名单
+        3. 禁止30x跳转
+            ```
+            删掉 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            ```
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

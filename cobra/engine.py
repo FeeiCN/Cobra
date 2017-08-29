@@ -265,8 +265,8 @@ class SingleRule(object):
                 p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 result, error = p.communicate()
             else:
-                result = "NULL"
-                error = "error"
+                result = ""
+                error = ""
         except Exception as e:
             # traceback.print_exc()
             logger.debug('match exception ({e})'.format(e=e.message))
