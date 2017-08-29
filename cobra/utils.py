@@ -19,7 +19,7 @@ import string
 import random
 import hashlib
 import urllib
-import urllib2
+import requests
 import json
 from .log import logger
 from .config import Config, issue_history_path
@@ -348,26 +348,19 @@ def get_unicode(value, encoding=None, none_to_null=False):
 
     if none_to_null and value is None:
         return None
-
-    if isinstance(value, unicode):
+    if str(type(value)) == "<class 'bytes'>":
+        value = value.encode('utf8')
         return value
-    elif isinstance(value, basestring):
-        while True:
-            try:
-                return unicode(value, encoding)
-            except UnicodeDecodeError:
-                try:
-                    return unicode(value, 'utf8')
-                except:
-                    return None
+    elif str(type(value)) == "<type 'unicode'>":
+        return value
     elif is_list(value):
         value = list(get_unicode(_, encoding, none_to_null) for _ in value)
         return value
     else:
         try:
-            return unicode(value)
+            return value.encode('utf8')
         except UnicodeDecodeError:
-            return unicode(str(value), errors="ignore")  # encoding ignored for non-basestring instances
+            return value.encode('utf8', errors="ignore")
 
 
 def get_safe_ex_string(ex, encoding=None):
@@ -427,7 +420,7 @@ def unhandled_exception_message():
         cv=__version__,
         pv=__python_version__,
         os=__platform__,
-        cl=re.sub(r".+?\bcobra.py\b", "cobra.py", get_unicode(" ".join(sys.argv), encoding=sys.stdin.encoding))
+        cl=re.sub(r".+?\bcobra.py\b", "cobra.py", " ".join(sys.argv).encode('utf-8'))
     )
     return err_msg
 
@@ -458,31 +451,33 @@ def create_github_issue(err_msg, exc_msg):
 
     ex = None
 
-    req = urllib2.Request(url="https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:wufeifei/cobra [AUTO] Unhandled exception (#{k})".format(k=key))))
-
     try:
-        content = urllib2.urlopen(req).read()
-        _ = json.loads(content)
+        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:wufeifei/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
+        logger.debug(url)
+        resp = requests.get(url=url)
+        content = resp.json()
+        _ = content
         duplicate = _["total_count"] > 0
         closed = duplicate and _["items"][0]["state"] == "closed"
         if duplicate:
             warn_msg = "issue seems to be already reported"
             if closed:
-                warn_msg += " and resolved. Please update to the latest "
-                warn_msg += "development version from official GitHub repository at '{u}'".format(u=__url__)
+                warn_msg += " and resolved. Please update to the latest version from official GitHub repository at '{u}'".format(u=__url__)
             logger.warning(warn_msg)
             return
     except:
+        logger.warning('search github issue failed')
         pass
 
-    data = {
-        "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
-        "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
-    }
-    req = urllib2.Request(url="https://api.github.com/repos/wufeifei/cobra/issues", data=json.dumps(data), headers={"Authorization": "token {t}".format(t="NDhhZmJiNjE2OTNjZTE4NzYwNjM4ODg0MmFlMWNjYWE5YTg4YTEwYQ==".decode("base64"))})
-
     try:
-        content = urllib2.urlopen(req).read()
+        url = "https://api.github.com/repos/wufeifei/cobra/issues"
+        data = {
+            "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
+            "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
+        }
+        headers = {"Authorization": "token {t}".format(t='48afbb61693ce187606388842ae1ccaa9a88a10a')}
+        resp = requests.post(url=url, data=json.dumps(data), headers=headers)
+        content = resp.text
     except Exception as ex:
         content = None
 
