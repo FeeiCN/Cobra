@@ -12,13 +12,9 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 import os
-import sys
-import re
-import subprocess
 import logging
 import colorlog
 import time
-from logging import handlers
 
 # stream handle
 #
