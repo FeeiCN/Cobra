@@ -224,7 +224,7 @@ class SingleRule(object):
         """
         self.rule_vulnerabilities = []
 
-        logger.info("[!] Start scan [{sr}]".format(sr = self.sr))
+        logger.info("[!] Start scan [CVI-{sr_id}]".format(sr_id=self.sr['id']))
 
     def origin_results(self):
         logger.debug('[ENGINE] [ORIGIN] match-mode {m}'.format(m=self.sr['match-mode']))
