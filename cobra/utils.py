@@ -21,7 +21,10 @@ import sys
 import time
 import urllib
 import requests
+import json
 
+from .log import logger
+from .config import Config, issue_history_path
 from .__version__ import __version__, __python_version__, __platform__, __url__
 from .config import Config, issue_history_path
 from .exceptions import PickupException, NotExistException, AuthFailedException
