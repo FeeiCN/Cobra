@@ -6,6 +6,8 @@
 
 当前版本非正式版本，正式版本正在做最后的内测中，建议等正式版本出来后再使用，敬请期待！
 [![asciicast](https://asciinema.org/a/132572.png)](https://asciinema.org/a/132572)
+[![report01](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_01.jpg)](https://wufeifei.github.io/cobra/api)
+[![report02](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_02.jpg)](https://wufeifei.github.io/cobra/api)
 
 ## Introduction（介绍）
 Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的大部分显著的安全问题和漏洞。
