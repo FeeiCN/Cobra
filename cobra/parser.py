@@ -11,11 +11,11 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+import pprint
 from phply.phplex import lexer  # 词法分析
 from phply.phpparse import make_parser  # 语法分析
 from phply import phpast as php
 from .log import logger
-
 
 with_line = True
 scan_results = []
@@ -51,7 +51,6 @@ def export_list(params, export_params):
 def get_all_params(nodes):  # 用来获取调用函数的参数列表，nodes为参数列表
     params = []
     export_params = []  # 定义空列表，用来给export_list中使用
-
     for node in nodes:
         if isinstance(node.node, php.FunctionCall):  # 函数参数来自另一个函数的返回值
             params = get_all_params(node.node.params)
@@ -68,10 +67,52 @@ def get_all_params(nodes):  # 用来获取调用函数的参数列表，nodes为
                 param = get_node_name(node.node.node)
                 params.append(param)
 
+            if isinstance(node.node, php.Cast):
+                param = get_cast_params(node.node.expr)
+                params.append(param)
+
+            if isinstance(node.node, php.Silence):
+                param = get_silence_params(node.node)
+                params.append(param)
+
     return params
 
 
+def get_silence_params(node):
+    """
+    用来提取Silence类型中的参数
+    :param node:
+    :return:
+    """
+    param = []
+    if isinstance(node.expr, php.Variable):
+        param = get_node_name(node.expr)
+
+    if isinstance(node.expr, php.FunctionCall):
+        param.append(node.expr)
+
+    return param
+
+
+def get_cast_params(node):
+    """
+    用来提取Cast类型中的参数
+    :param node:
+    :return:
+    """
+    param = []
+    if isinstance(node, php.Silence):
+        param = get_node_name(node.expr)
+
+    return param
+
+
 def get_binaryop_params(node):  # 当为BinaryOp类型时，分别对left和right进行处理，取出需要的变量
+    """
+    用来提取Binaryop中的参数
+    :param node:
+    :return:
+    """
     params = []
     if isinstance(node.left, php.Variable) and isinstance(node.right, php.Variable):  # left, right都为变量直接取值
         params.append(node.left.name)
@@ -209,6 +250,7 @@ def parameters_back(param, nodes, function_params=None, flag=0):  # 用来得到
     is_co = -1
     cp = None
     expr_lineno = 0
+
     if len(nodes) != 0:
         node = nodes[len(nodes) - 1]
 
@@ -283,29 +325,31 @@ def anlysis_function(node, back_node, vul_function, function_params, vul_lineno)
     :return:
     """
     flag = 1
-    results = []
     global scan_results
 
     try:
-        if node.name == vul_function and node.lineno == vul_lineno:  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
+        logger.debug(
+            '[AST] node.name:{}, type:{}, vul_function:{}, type:{},node.lineno:{}, vul_lineno:{}'.format(node.name,
+                                                                                                         type(
+                                                                                                            node.name
+                                                                                                         ),
+                                                                                                         vul_function,
+                                                                                                         type(
+                                                                                                            vul_function
+                                                                                                         ),
+                                                                                                         node.lineno,
+                                                                                                         vul_lineno,)
+        )
+        if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
             logger.debug('{l}:{r}'.format(l=node.name, r=vul_function))
             params = get_all_params(node.params)
-            function_lineno = function_params[len(function_params)-1]  # 获取自定义函数的行号
+            function_lineno = function_params[len(function_params) - 1]  # 获取自定义函数的行号
 
             for param in params:
                 is_co, cp, expr_lineno = parameters_back(param, back_node, function_params[:-1], flag)
                 expr_lineno = function_lineno  # expr_lineno为自定义函数行号
-                result = {
-                    'code': is_co,
-                    'source': cp,
-                    'source_lineno': expr_lineno,
-                    'sink': node.name,
-                    'sink_param:': param,
-                    'sink_lineno': node.lineno
-                }
-                results.append(result)
+                set_scan_results(is_co, cp, expr_lineno, node.name, param, node.lineno)
 
-            scan_results += results
     except Exception as e:
         logger.debug(e)
 
@@ -319,10 +363,9 @@ def analysis_functioncall(node, back_node, vul_function, vul_lineno):
     :param vul_lineno
     :return:
     """
-    results = []
     global scan_results
-
     try:
+        logger.debug('[FUNCTIONCALL] {l}:{r}'.format(l=node.name, r=vul_function))
         if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 定位到敏感函数
             logger.debug('[VUL:VUL] {l}:{r}'.format(l=node.name, r=vul_function))
             logger.debug('[LINENO] {l}:{r}'.format(l=node.lineno, r=vul_lineno))
@@ -334,26 +377,17 @@ def analysis_functioncall(node, back_node, vul_function, vul_lineno):
 
                 if is_co == -1:
                     is_co, cp, expr_lineno = parameters_back(param, back_node)
-                result = {
-                    'code': is_co,
-                    'source': cp,
-                    'source_lineno': expr_lineno,
-                    'sink': node.name,
-                    'sink_param:': param,
-                    'sink_lineno': node.lineno
-                }
-                results.append(result)
 
-            scan_results += results
+                set_scan_results(is_co, cp, expr_lineno, node.name, param, node.lineno)
+
     except Exception as e:
         logger.debug(e)
 
 
 def analysis_echo_print(node, back_node, vul_function, vul_lineo):
-    results = []
     global scan_results
-    logger.debug('[TEST] {l}.{r}'.format(l=node.lineno, r=vul_lineo))
-    if vul_lineo == node.lineno:
+
+    if int(vul_lineo) == int(node.lineno):
         logger.debug('[ECHO_LINENO] {l}:{r}'.format(l=node.lineno, r=vul_lineo))
         if isinstance(node, php.Print):
             if isinstance(node.node, php.FunctionCall):
@@ -361,21 +395,10 @@ def analysis_echo_print(node, back_node, vul_function, vul_lineo):
                 j_nodes.append(node.node)
                 analysis(j_nodes, vul_function, back_node, vul_lineo)
 
-            if isinstance(node.node, php.Variable):  # 直接输出变量信息
+            if isinstance(node.node, php.Variable) and vul_function == 'print':  # 直接输出变量信息
                 k_node = get_node_name(node.node)
                 is_co, cp, expr_lineno = parameters_back(k_node, back_node)
-
-                result = {
-                    'code': is_co,
-                    'source': cp,
-                    'source_lineno': expr_lineno,
-                    'sink': 'echo',
-                    'sink_param:': k_node,
-                    'sink_lineno': vul_lineo
-                }
-                results.append(result)
-
-            scan_results += results
+                set_scan_results(is_co, cp, expr_lineno, 'print', k_node, vul_lineo)
 
         elif isinstance(node, php.Echo):
             is_functioncall = 0
@@ -386,21 +409,92 @@ def analysis_echo_print(node, back_node, vul_function, vul_lineo):
                 if is_functioncall == 1:
                     analysis(node.nodes, vul_function, back_node, vul_lineo)  # 将含有函数调用的节点进行分析
 
-                if isinstance(k_node, php.Variable):
+                if isinstance(k_node, php.Variable) and vul_function == 'echo':
                     k_node = get_node_name(k_node)
                     is_co, cp, expr_lineno = parameters_back(k_node, back_node)
+                    set_scan_results(is_co, cp, expr_lineno, 'echo', k_node, vul_lineo)
 
-                    result = {
-                        'code': is_co,
-                        'source': cp,
-                        'source_lineno': expr_lineno,
-                        'sink': 'echo',
-                        'sink_param:': k_node,
-                        'sink_lineno': vul_lineo
-                    }
-                    results.append(result)
 
-                scan_results += results
+def analysis_eval(node, vul_function, back_node, vul_lineno):
+    global scan_results
+
+    if vul_function == 'eval' and int(node.lineno) == int(vul_lineno):
+        if isinstance(node.expr, php.Variable):
+            param = get_node_name(node.expr)
+            is_co, cp, expr_lineno = parameters_back(param, back_node)
+            set_scan_results(is_co, cp, expr_lineno, 'eval', param, vul_lineno)
+
+        if isinstance(node.expr, php.FunctionCall):
+            params = get_all_params(node.expr.params)
+            for param in params:
+                is_co, cp, expr_lineno = parameters_back(param, back_node)
+
+                if is_co != -1:
+                    set_scan_results(is_co, cp, expr_lineno, 'eval', param, vul_lineno)
+
+        if isinstance(node.expr, php.BinaryOp):
+            params = get_binaryop_params(node.expr)
+            params = export_list(params, export_params=[])
+
+            for param in params:
+                is_co, cp, expr_lineno = parameters_back(param, back_node)
+
+                if is_co != -1:
+                    set_scan_results(is_co, cp, expr_lineno, 'eval', param, vul_lineno)
+
+        if isinstance(node.expr, php.ArrayOffset):
+            param = get_node_name(node.expr.node)
+            expr_lineno = node.expr.lineno
+            is_co, cp = is_controllable(param)
+
+            if is_co != -1:
+                set_scan_results(is_co, cp, expr_lineno, 'eval', param, vul_lineno)
+
+
+def analysis_file_inclusion(node, vul_function, back_node, vul_lineno):
+    global scan_results
+    include_fs = ['include', 'include_once', 'require', 'require_once']
+
+    if vul_function in include_fs and int(node.lineno) == int(vul_lineno):
+        logger.debug('[AST-INCLUDE] {l}-->{r}'.format(l=vul_function, r=vul_lineno))
+
+        if isinstance(node.expr, php.Variable):
+            params = get_node_name(node.expr)
+            is_co, cp, expr_lineno = parameters_back(params, back_node)
+
+            set_scan_results(is_co, cp, expr_lineno, vul_function, params, vul_lineno)
+
+        if isinstance(node.expr, php.FunctionCall):
+            params = get_all_params(node.expr.params)
+
+            for param in params:
+                is_co, cp, expr_lineno = parameters_back(param, back_node)
+
+                set_scan_results(is_co, cp, expr_lineno, vul_function, param, vul_lineno)
+
+        if isinstance(node.expr, php.BinaryOp):
+            params = get_binaryop_params(node.expr)
+            params = export_list(params, export_params=[])
+
+            for param in params:
+                is_co, cp, expr_lineno = parameters_back(param, back_node)
+                set_scan_results(is_co, cp, expr_lineno, vul_lineno, param, vul_lineno)
+
+
+def set_scan_results(is_co, cp, expr_lineno, sink, param, vul_lineno):
+    results = []
+    global scan_results
+
+    result = {
+        'code': is_co,
+        'source': cp,
+        'source_lineno': expr_lineno,
+        'sink': sink,
+        'sink_param:': param,
+        'sink_lineno': vul_lineno
+    }
+    results.append(result)
+    scan_results += results
 
 
 def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=None):
@@ -432,6 +526,16 @@ def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=
 
         elif isinstance(node, php.Print) or isinstance(node, php.Echo):
             analysis_echo_print(node, back_node, vul_function, vul_lineo)
+
+        elif isinstance(node, php.Silence):
+            nodes = get_silence_params(node)
+            analysis(nodes, vul_function, back_node, vul_lineo)
+
+        elif isinstance(node, php.Eval):
+            analysis_eval(node, vul_function, back_node, vul_lineo)
+
+        elif isinstance(node, php.Include) or isinstance(node, php.Require):
+            analysis_file_inclusion(node, vul_function, back_node, vul_lineo)
 
         elif isinstance(node, php.If):  # 函数调用在if-else语句中时
             if isinstance(node.node, php.Block):  # if语句中的sink点以及变量
@@ -472,14 +576,13 @@ def scan_parser(code_content, sensitive_func, vul_lineno):
         scan_results = []
         parser = make_parser()
         all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)
-        for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控
+        for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控;对文件内容循环判断多次
             back_node = []
-            analysis(all_nodes, func, back_node, vul_lineno, flag=0, function_params=None)
+            analysis(all_nodes, func, back_node, int(vul_lineno), flag=0, function_params=None)
     except SyntaxError as e:
         logger.debug(e)
 
     return scan_results
-
 
 # code_contents = """function curl($url){
 #     $ch = curl_init();

