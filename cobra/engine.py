@@ -617,7 +617,7 @@ class Core(object):
 
                                     logger.debug('[AST] [CODE] {code}'.format(code=result[0]['code']))
                                 else:
-                                    logger.warning('[AST] Parser failed {r}'.format(r=result))
+                                    logger.warning('[AST] Parser failed / vulnerability parameter is not controllable {r}'.format(r=result))
                         except Exception as e:
                             logger.warning(traceback.format_exc())
                             raise
