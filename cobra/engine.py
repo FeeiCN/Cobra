@@ -224,6 +224,8 @@ class SingleRule(object):
         """
         self.rule_vulnerabilities = []
 
+        logger.info("[!] Start scan [{sr}]".format(sr = self.sr))
+
     def origin_results(self):
         logger.debug('[ENGINE] [ORIGIN] match-mode {m}'.format(m=self.sr['match-mode']))
         if self.sr['match-mode'] == const.mm_find_extension:
