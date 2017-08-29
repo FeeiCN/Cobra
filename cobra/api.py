@@ -339,11 +339,24 @@ def summary():
             total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
             rule_filter = dict()
             targets = list()
-            for s_sid in scan_list.keys():
+
+            for s_sid, target_str in scan_list.items():
                 target_info = dict()
+
+                # 分割项目地址与分支，默认 master
+                split_target = target_str.split(':')
+                if len(split_target) == 3:
+                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                elif len(split_target) == 2:
+                    target, branch = target_str, 'master'
+                else:
+                    logger.critical('Target url exception: {u}'.format(u=target_str))
+                    target, branch = target_str, 'master'
+
                 target_info.update({
                     'sid': s_sid,
-                    'target': scan_list.get(s_sid),
+                    'target': target,
+                    'branch': branch,
                 })
                 s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
                 with open(s_sid_file, 'r') as f:

@@ -114,6 +114,7 @@
                                                 <thead>
                                                 <tr>
                                                     <th>Target</th>
+                                                    <th>Branch / Tag</th>
                                                     <th>Language</th>
                                                     <th>Framework</th>
                                                     <th>Files</th>
@@ -130,6 +131,7 @@
                                                             <a href="javascript:void(0);"
                                                                onclick="$('.nav-tabs li a[data-id=vul]').click();$('.filter_setting').click();$('#search_target').val('{{ target_info.get('sid') }}');$('.filter_btn').click();">{{ target_info.get('target') }}</a>
                                                         </td>
+                                                        <td>{{ target_info.get('branch') }}</td>
                                                         <td>{{ target_info.get('language') }}</td>
                                                         <td>{{ target_info.get('framework') }}</td>
                                                         <td>{{ target_info.get('file') }}</td>
