@@ -136,7 +136,6 @@ class Rule(object):
         Get all rules
         :return: dict
         """
-        logger.critical(rules)
         vulnerabilities = []
         if rules is not None and len(rules) > 0:
             files = rules
