@@ -145,7 +145,6 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
             return False
         logger.info('[PUSH] {rc} Rules'.format(rc=len(rules)))
         push_rules = []
-        xs = []
         for idx, single_rule in enumerate(rules):
             if single_rule['status'] is False:
                 logger.info('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
@@ -160,16 +159,12 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
             if single_rule['language'] in languages:
                 single_rule['extensions'] = languages[single_rule['language']]['extensions']
                 push_rules.append(single_rule['id'])
-                x = pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
-                xs.append(x)
+                pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
             else:
                 logger.critical('unset language, continue...')
                 continue
         pool.close()
         pool.join()
-
-        for x in xs:
-            x.get()
     except Exception:
         raise
 
