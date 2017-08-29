@@ -385,9 +385,9 @@ def get_safe_ex_string(ex, encoding=None):
 class Tool:
     def __init__(self):
         # `grep` (`ggrep` on Mac)
-        self.grep = '/bin/grep'
+        self.grep = '/usr/bin/grep'
         # `find` (`gfind` on Mac)
-        self.find = '/bin/find'
+        self.find = '/usr/bin/find'
 
         if 'darwin' == sys.platform:
             ggrep = ''
