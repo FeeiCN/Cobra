@@ -11,20 +11,23 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import os
-import sys
-import re
-import time
-import string
-import random
 import hashlib
+import json
+import os
+import random
+import re
+import string
+import sys
+import time
 import urllib
 import requests
 import json
 from .log import logger
 from .config import Config, issue_history_path
 from .__version__ import __version__, __python_version__, __platform__, __url__
+from .config import Config, issue_history_path
 from .exceptions import PickupException, NotExistException, AuthFailedException
+from .log import logger
 from .pickup import Git, NotExistError, AuthError, Decompress
 
 TARGET_MODE_GIT = 'git'
@@ -36,6 +39,7 @@ OUTPUT_MODE_MAIL = 'mail'
 OUTPUT_MODE_API = 'api'
 OUTPUT_MODE_FILE = 'file'
 OUTPUT_MODE_STREAM = 'stream'
+PY2 = sys.version_info[0] == 2
 
 
 class ParseArgs(object):
@@ -410,6 +414,37 @@ class Tool:
                 sys.exit(0)
             else:
                 self.find = gfind
+
+
+def secure_filename(filename):
+    _filename_utf8_strip_re = re.compile(u"[^\u4e00-\u9fa5A-Za-z0-9_.-]")
+    _windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4', 'LPT1', 'LPT2', 'LPT3', 'PRN', 'NUL')
+
+    if PY2:
+        text_type = unicode
+    else:
+        text_type = str
+
+    if isinstance(filename, text_type):
+        from unicodedata import normalize
+        filename = normalize('NFKD', filename).encode('utf-8', 'ignore')
+        if not PY2:
+            filename = filename.decode('utf-8')
+    for sep in os.path.sep, os.path.altsep:
+        if sep:
+            filename = filename.replace(sep, ' ')
+    if PY2:
+        filename = filename.decode('utf-8')
+    filename = _filename_utf8_strip_re.sub('', '_'.join(filename.split()))
+
+    # on nt a couple of special files are present in each folder.  We
+    # have to ensure that the target file is not such a filename.  In
+    # this case we prepend an underline
+    if os.name == 'nt' and filename and \
+                    filename.split('.')[0].upper() in _windows_device_files:
+        filename = '_' + filename
+
+    return filename
 
 
 def unhandled_exception_message():
