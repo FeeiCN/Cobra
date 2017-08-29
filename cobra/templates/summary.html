@@ -124,8 +124,10 @@
                                                 <tbody>
                                                 {% for target_info in targets %}
                                                     <tr>
-                                                        <td><a href="/?t=vul&sid={{ a_sid }}&s_sid={{ target_info.get('sid') }}"
-                                                               target="_blank">{{ target_info.get('target') }}</a></td>
+                                                        <td>
+                                                            <a href="javascript:void(0);"
+                                                               onclick="window.history.pushState('CobraState','cobra','?t=vul&sid={{ a_sid }}&s_sid={{ target_info.get('sid') }}');$('.nav-tabs li a[data-id=vul]').click();">{{ target_info.get('target') }}</a>
+                                                        </td>
                                                         <td>{{ target_info.get('language') }}</td>
                                                         <td>{{ target_info.get('framework') }}</td>
                                                         <td>{{ target_info.get('file') }}</td>
