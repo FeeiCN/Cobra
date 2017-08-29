@@ -144,7 +144,10 @@ class Rule(object):
         for vulnerability_name in files:
             # VN: CVI-190001.xml
             v_path = os.path.join(self.rules_path, vulnerability_name.replace('cvi', 'CVI'))
-            if os.path.isfile(v_path) is not True or 'cvi-template' in v_path.lower() or vulnerability_name.lower()[0:7] == 'cvi-999' or 'cvi' not in v_path.lower() or '.xml' not in v_path.lower():
+            if vulnerability_name.lower()[0:7] == 'cvi-999' or 'cvi' not in v_path.lower():
+                logger.debug('filter dep rules')
+                continue
+            if os.path.isfile(v_path) is not True or '.xml' not in v_path.lower():
                 logger.warning('Not regular rule file {f}'.format(f=v_path))
                 continue
 

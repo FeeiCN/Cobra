@@ -589,12 +589,14 @@ class Core(object):
             #
             logger.debug('[CVI-{cvi}] match-mode {mm}'.format(cvi=self.cvi, mm=self.rule_match_mode))
             found_vul = False
+            result = []
             if self.file_path[-3:].lower() == 'php':
                 try:
                     ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     # Match2
                     if self.rule_match_mode == const.mm_function_param_controllable:
                         rule_match = self.rule_match.strip('()').split('|')
+                        logger.debug('[RULE_MATCH] {r}'.format(r=rule_match))
                         try:
                             with open(self.file_path, 'r') as fi:
                                 code_contents = fi.read()
@@ -615,7 +617,7 @@ class Core(object):
 
                                     logger.debug('[AST] [CODE] {code}'.format(code=result[0]['code']))
                                 else:
-                                    logger.warning('[AST] Parser failed {r}'.format(r=result))
+                                    logger.warning('[AST] Parser failed / vulnerability parameter is not controllable {r}'.format(r=result))
                         except Exception as e:
                             logger.warning(traceback.format_exc())
                             raise
