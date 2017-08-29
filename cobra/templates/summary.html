@@ -91,11 +91,13 @@
                         <div class="col-md-8">
                             <h4>Vulnerability distribution statistics</h4>
                             <div id="vul_distributing" style="height:400px;">
+                                {% if vuls | length == 0 %}
                                 <img src="{{ url_for('static', filename='img/congratulations.jpg') }}"
                                      class="congratulations"
                                      alt="">
                                 <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no
                                     vulnerability was detected :)</h3>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -291,8 +293,10 @@
                 }
             ]
         };
+        {% if vuls | length > 0 %}
         var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
         vul_distributing.setOption(option);
+        {% endif %}
     </script>
     <!--CodeMirror-->
     <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
