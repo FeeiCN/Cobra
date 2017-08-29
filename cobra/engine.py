@@ -40,20 +40,21 @@ class Running:
         :return:
         """
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
-        if isinstance(data, list):
-            with open(file_path, 'w') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
-                f.write(json.dumps({
-                    'sids': {},
-                    'total_target_num': len(data),
-                }))
-        else:
-            with open(file_path, 'w') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
-                f.write(json.dumps({
-                    'sids': {},
-                    'total_target_num': 1,
-                }))
+        if not os.path.exists(file_path):
+            if isinstance(data, list):
+                with open(file_path, 'w') as f:
+                    fcntl.flock(f, fcntl.LOCK_EX)
+                    f.write(json.dumps({
+                        'sids': {},
+                        'total_target_num': len(data),
+                    }))
+            else:
+                with open(file_path, 'w') as f:
+                    fcntl.flock(f, fcntl.LOCK_EX)
+                    f.write(json.dumps({
+                        'sids': {},
+                        'total_target_num': 1,
+                    }))
 
     def list(self, data=None):
         """

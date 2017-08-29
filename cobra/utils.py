@@ -22,6 +22,7 @@ import time
 import urllib
 import requests
 import json
+
 from .log import logger
 from .config import Config, issue_history_path
 from .__version__ import __version__, __python_version__, __platform__, __url__
@@ -66,7 +67,8 @@ class ParseArgs(object):
                         special_rules += extension
                     self.special_rules = [special_rules]
                 else:
-                    logger.critical('[PARSE-ARGS] Exception special rule name(e.g: CVI-110001): {sr}'.format(sr=special_rules))
+                    logger.critical(
+                        '[PARSE-ARGS] Exception special rule name(e.g: CVI-110001): {sr}'.format(sr=special_rules))
         else:
             self.special_rules = None
         self.sid = a_sid
@@ -126,7 +128,8 @@ class ParseArgs(object):
             logger.debug('GIT Project')
             # branch or tag
             branch_tag = r"(.*?.git):(\w+|[\w\d\.-]*)$"
-            target, branch = re.findall(branch_tag, self.target)[0] if re.findall(branch_tag, self.target) else (self.target, "master")
+            target, branch = re.findall(branch_tag, self.target)[0] if re.findall(branch_tag, self.target) else (
+            self.target, "master")
             if 'gitlab' in target:
                 username = Config('git', 'username').value
                 password = Config('git', 'password').value
