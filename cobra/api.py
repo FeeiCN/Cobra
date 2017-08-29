@@ -264,10 +264,15 @@ class ResultDetail(Resource):
         file_path = data.get('file_path')
 
         if target.startswith('http'):
-            target = re.findall(r'(.*?\.git)', target)[0]
             repo_user = target.split('/')[-2]
-            repo_name = target.split('/')[-1].replace('.git', '')
-            # repo_directory = os.path.join(os.path.join(os.path.join(code_path, 'git'), repo_user), repo_name)
+
+            split_target = target.split(':')
+            if len(split_target) == 3:
+                repo_name = split_target[1].split('/')[-1].replace('.git', '')
+            elif len(split_target) == 2:
+                repo_name = split_target[1].split('/')[-1].replace('.git', '')
+            else:
+                return {'code': 1002, 'msg': 'Invalid target.'}
             repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
 
             if PY2:
