@@ -16,7 +16,7 @@
 - 支持开发语言多（支持十多种开发语言和文件类型）
 - 支持漏洞类型多（支持数十种漏洞类型）
 - 支持各种场景集成（提供API也可以命令行使用）
-- 多家企业使用，专业支持维护（由白帽子、开发工程师和安全工程师一起持续维护更新，并在多家企业内部使用）
+- 专业支持，持续维护（由白帽子、开发工程师和安全工程师一起持续维护更新，并在多家企业内部使用）
 
 ## Cobra支持哪些开发语言？
 > 目前Cobra主要支持PHP、Java等主要开发语言及其它数十种文件类型，并持续更新规则和引擎以支持更多开发语言，具体见支持的[开发语言和文件类型](https://wufeifei.github.io/cobra/languages)。
@@ -54,6 +54,7 @@
 - 规则开发规范
     - [规则模板](https://wufeifei.github.io/cobra/rule_template)
     - [规则样例](https://wufeifei.github.io/cobra/rule_demo)
+    - [规则文件命名规范](https://wufeifei.github.io/cobra/rule_name)
     - [规则开发流程](https://wufeifei.github.io/cobra/rule_flow)
 - 框架引擎
     - [开发语言和文件类型定义](https://wufeifei.github.io/cobra/languages)

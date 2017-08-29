@@ -1,7 +1,13 @@
+import sys
+import platform
+
 __title__ = 'cobra'
 __description__ = 'Code Security Audit'
 __url__ = 'https://github.com/wufeifei/cobra'
-__version__ = '2.0.0'
+__issue_page__ = 'https://github.com/wufeifei/cobra/issues/new'
+__python_version__ = sys.version.split()[0]
+__platform__ = platform.platform()
+__version__ = '2.0.0-beta.4'
 __author__ = 'Feei'
 __author_email__ = 'feei@feei.cn'
 __license__ = 'MIT License'

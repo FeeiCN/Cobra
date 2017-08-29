@@ -136,8 +136,8 @@ def score2level(score):
 def scan_single(target_directory, single_rule):
     try:
         return SingleRule(target_directory, single_rule).process()
-    except Exception as e:
-        traceback.print_exc()
+    except Exception:
+        raise
 
 
 def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=None, framework=None, file_count=0,
@@ -157,32 +157,42 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
 
-    pool = multiprocessing.Pool()
-    if len(rules) == 0:
-        logger.critical('no rules!')
-        return False
-    logger.info('[PUSH] {rc} Rules'.format(rc=len(rules)))
-    for idx, single_rule in enumerate(rules):
-        if single_rule['status'] is False:
-            logger.info('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
-            continue
-        # SR(Single Rule)
-        logger.debug("""[PUSH] [CVI-{cvi}] {idx}.{name}({language})""".format(
-            cvi=single_rule['id'],
-            idx=idx,
-            name=single_rule['name'],
-            language=single_rule['language']
-        ))
-        if single_rule['language'] in languages:
-            single_rule['extensions'] = languages[single_rule['language']]['extensions']
-            pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
-        else:
-            logger.critical('unset language, continue...')
-            continue
-    pool.close()
-    pool.join()
+    try:
+        pool = multiprocessing.Pool()
+        if len(rules) == 0:
+            logger.critical('no rules!')
+            return False
+        logger.info('[PUSH] {rc} Rules'.format(rc=len(rules)))
+        push_rules = []
+        xs = []
+        for idx, single_rule in enumerate(rules):
+            if single_rule['status'] is False:
+                logger.info('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
+                continue
+            # SR(Single Rule)
+            logger.debug("""[PUSH] [CVI-{cvi}] {idx}.{name}({language})""".format(
+                cvi=single_rule['id'],
+                idx=idx,
+                name=single_rule['name'],
+                language=single_rule['language']
+            ))
+            if single_rule['language'] in languages:
+                single_rule['extensions'] = languages[single_rule['language']]['extensions']
+                push_rules.append(single_rule['id'])
+                x = pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
+                xs.append(x)
+            else:
+                logger.critical('unset language, continue...')
+                continue
+        pool.close()
+        pool.join()
 
-    # print
+        for x in xs:
+            x.get()
+    except Exception:
+        raise
+
+        # print
     data = []
     table = PrettyTable(['#', 'CVI', 'VUL', 'Rule(ID/Name)', 'Lang', 'Level-Score', 'Target-File:Line-Number', 'Commit(Author/Time)', 'Source Code Content'])
     table.align = 'l'
@@ -206,11 +216,14 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         if x.id not in trigger_rules:
             logger.debug(' > trigger rule (CVI-{cvi})'.format(cvi=x.id))
             trigger_rules.append(x.id)
+    diff_rules = list(set(push_rules) - set(trigger_rules))
     vn = len(find_vulnerabilities)
     if vn == 0:
         logger.info('[SCAN] Not found vulnerability!')
     else:
         logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
+        if len(diff_rules) > 0:
+            logger.info('[SCAN] Not Trigger Rules ({l}): {r}'.format(l=len(diff_rules), r=','.join(diff_rules)))
 
     # completed running data
     if s_sid is not None:
@@ -265,6 +278,8 @@ class SingleRule(object):
                     match = const.fpc_multi.replace('[f]', self.sr['match'])
                 else:
                     match = const.fpc_single.replace('[f]', self.sr['match'])
+            else:
+                logger.warning('Exception match mode: {m}'.format(m=self.sr['match-mode']))
 
             filters = []
             for e in self.sr['extensions']:
@@ -323,8 +338,8 @@ class SingleRule(object):
                     self.rule_vulnerabilities.append(vulnerability)
                 else:
                     logger.debug('Not vulnerability: {code}'.format(code=status_code))
-            except Exception as e:
-                traceback.print_exc()
+            except Exception:
+                raise
         logger.debug('[CVI-{cvi}] {vn} Vulnerabilities: {count}'.format(cvi=self.sr['id'], vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
         return self.rule_vulnerabilities
 
@@ -341,7 +356,7 @@ class SingleRule(object):
             try:
                 mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
                 mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
-            except Exception as e:
+            except Exception:
                 logger.warning('match line parse exception')
                 mr.file_path = ''
                 mr.code_content = ''
@@ -588,20 +603,26 @@ class Core(object):
                             with open(self.file_path, 'r') as fi:
                                 code_contents = fi.read()
                                 result = scan_parser(code_contents, rule_match, self.line_number)
-                                if result[0]['code'] == 1:  # 函数参数可控
-                                    return True, 1001
+                                logger.debug('[AST] [RET] {c}'.format(c=result))
+                                if len(result) > 0:
+                                    if result[0]['code'] == 1:  # 函数参数可控
+                                        return True, 1001
 
-                                if result[0]['code'] == 2:  # 函数为敏感函数
-                                    return True, 1001
+                                    if result[0]['code'] == 2:  # 函数为敏感函数
+                                        return True, 1001
 
-                                if result[0]['code'] == 0:  # 漏洞修复
-                                    return False, 1002
+                                    if result[0]['code'] == 0:  # 漏洞修复
+                                        return False, 1002
 
-                                if result[0]['code'] == -1:  # 函数参数不可控
-                                    return False, 1002
+                                    if result[0]['code'] == -1:  # 函数参数不可控
+                                        return False, 1002
 
+                                    logger.debug('[AST] [CODE] {code}'.format(code=result[0]['code']))
+                                else:
+                                    logger.warning('[AST] Parser failed {r}'.format(r=result))
                         except Exception as e:
-                            logger.debug(e)
+                            logger.warning(traceback.format_exc())
+                            raise
 
                     if self.rule_match2 is not None:
                         is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
@@ -628,7 +649,7 @@ class Core(object):
                         logger.debug('[CVI-{cvi}] [PARAM-CONTROLLABLE] Param Not Controllable'.format(cvi=self.cvi))
                         return False, 4002
                 except Exception as e:
-                    traceback.print_exc()
+                    logger.debug(traceback.format_exc())
                     return False, 4004
 
         if found_vul:
