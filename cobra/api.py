@@ -11,26 +11,27 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import socket
 import errno
-import time
+import json
+import multiprocessing
 import os
 import re
-import json
-import requests
-import multiprocessing
+import socket
 import subprocess
 import threading
+import time
 import traceback
+
+import requests
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
-from werkzeug.utils import secure_filename
+
 from . import cli
 from .cli import get_sid
+from .config import Config, running_path, code_path, package_path
 from .engine import Running
 from .log import logger
-from .config import Config, running_path, code_path, package_path
-from .utils import allowed_file
+from .utils import allowed_file, secure_filename, PY2
 
 try:
     # Python 3
@@ -88,7 +89,7 @@ class AddJob(Resource):
         running = Running(a_sid)
 
         # Write a_sid running data
-        running.init_list()
+        running.init_list(data=target)
 
         # Write a_sid running status
         data = {
@@ -104,15 +105,17 @@ class AddJob(Resource):
                 producer(task=arg)
 
             result = {
-                "msg": "Add scan job successfully.",
-                "sid": a_sid,
+                'msg': 'Add scan job successfully.',
+                'sid': a_sid,
+                'total_target_num': len(target),
             }
         else:
             arg = (target, formatter, output, rule, a_sid)
             producer(task=arg)
             result = {
-                "msg": "Add scan job successfully.",
-                "sid": a_sid,
+                'msg': 'Add scan job successfully.',
+                'sid': a_sid,
+                'total_target_num': 1,
             }
 
         return {"code": 1001, "result": result}
@@ -147,8 +150,8 @@ class JobStatus(Resource):
             return data
         else:
             result = running.status()
+            r_data = running.list()
             if result['status'] == 'running':
-                r_data = running.list()
                 ret = True
                 result['still_running'] = dict()
                 for s_sid, git in r_data['sids'].items():
@@ -163,7 +166,10 @@ class JobStatus(Resource):
                 'sid': sid,
                 'status': result.get('status'),
                 'report': result.get('report'),
-                'still_running': result.get('still_running')
+                'still_running': result.get('still_running'),
+                'total_target_num': r_data.get('total_target_num'),
+                'not_finished': int(r_data.get('total_target_num')) - len(r_data.get('sids'))
+                                + len(result.get('still_running')),
             }
         return {"code": 1001, "result": data}
 
@@ -258,20 +264,29 @@ class ResultDetail(Resource):
         file_path = data.get('file_path')
 
         if target.startswith('http'):
-            target = re.findall(r'(.*?\.git)', target)[0]
             repo_user = target.split('/')[-2]
-            repo_name = target.split('/')[-1].replace('.git', '')
-            # repo_directory = os.path.join(os.path.join(os.path.join(code_path, 'git'), repo_user), repo_name)
+
+            split_target = target.split(':')
+            if len(split_target) == 3:
+                repo_name = split_target[1].split('/')[-1].replace('.git', '')
+            elif len(split_target) == 2:
+                repo_name = split_target[1].split('/')[-1].replace('.git', '')
+            else:
+                return {'code': 1002, 'msg': 'Invalid target.'}
             repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
 
-            file_path = map(secure_filename, file_path.split('/'))
+            if PY2:
+                file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
+            else:
+                file_path = map(secure_filename, [path for path in file_path.split('/')])
+
 
             # 循环生成路径，避免文件越级读取
             file_name = repo_directory
             for _dir in file_path:
                 file_name = os.path.join(file_name, _dir)
-            print(file_name)
             if os.path.exists(file_name):
+                extension = guess_type(file_name)
                 if is_text(file_name):
                     with open(file_name, 'r') as f:
                         file_content = f.read()
@@ -280,7 +295,8 @@ class ResultDetail(Resource):
             else:
                 return {'code': 1002, 'msg': 'No such file.'}
 
-            return {'code': 1001, 'result': file_content}
+            return {'code': 1001, 'result': {'file_content': file_content,
+                                             'extension': extension}}
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -328,11 +344,24 @@ def summary():
             total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
             rule_filter = dict()
             targets = list()
-            for s_sid in scan_list.keys():
+
+            for s_sid, target_str in scan_list.items():
                 target_info = dict()
+
+                # 分割项目地址与分支，默认 master
+                split_target = target_str.split(':')
+                if len(split_target) == 3:
+                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                elif len(split_target) == 2:
+                    target, branch = target_str, 'master'
+                else:
+                    logger.critical('Target url exception: {u}'.format(u=target_str))
+                    target, branch = target_str, 'master'
+
                 target_info.update({
                     'sid': s_sid,
-                    'target': scan_list.get(s_sid),
+                    'target': target,
+                    'branch': branch,
                 })
                 s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
                 with open(s_sid_file, 'r') as f:
@@ -393,6 +422,26 @@ def key_verify(data):
 def is_text(fn):
     msg = subprocess.Popen(['file', fn], stdout=subprocess.PIPE).communicate()[0]
     return 'text' in msg.decode('utf-8')
+
+
+def guess_type(fn):
+    import mimetypes
+    extension = mimetypes.guess_type(fn)[0]
+    if extension:
+        """text/x-python or text/x-java-source"""
+        # extension = extension.split('/')[1]
+        extension = extension.replace('-source', '')
+    else:
+        extension = fn.split('/')[-1].split('.')[-1]
+
+    custom_ext = {
+        'html': 'htmlmixed',
+        'md': 'markdown',
+    }
+    if custom_ext.get(extension) is not None:
+        extension = custom_ext.get(extension)
+
+    return extension.lower()
 
 
 def start(host, port, debug):

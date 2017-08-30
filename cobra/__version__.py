@@ -1,7 +1,13 @@
+import sys
+import platform
+
 __title__ = 'cobra'
 __description__ = 'Code Security Audit'
 __url__ = 'https://github.com/wufeifei/cobra'
-__version__ = '2.0.0'
+__issue_page__ = 'https://github.com/wufeifei/cobra/issues/new'
+__python_version__ = sys.version.split()[0]
+__platform__ = platform.platform()
+__version__ = '2.0.0-beta.4'
 __author__ = 'Feei'
 __author_email__ = 'feei@feei.cn'
 __license__ = 'MIT License'
@@ -21,5 +27,5 @@ __epilog__ = """Usage:
   {m} -t {td} -f json -o /tmp/report.json 
   {m} -t {tg} -f json -o feei@feei.cn 
   {m} -t {tg} -f json -o http://push.to.com/api 
-  {m} -H 127.0.0.1 -P 80
-""".format(m='./cobra.py', td='tests/vulnerabilities', tg='https://github.com/wufeifei/vc.git')
+  sudo {m} -H 127.0.0.1 -P 80
+""".format(m='./cobra.py', td='tests/vulnerabilities', tg='https://github.com/ethicalhack3r/DVWA')

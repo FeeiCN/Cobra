@@ -91,11 +91,13 @@
                         <div class="col-md-8">
                             <h4>Vulnerability distribution statistics</h4>
                             <div id="vul_distributing" style="height:400px;">
+                                {% if vuls | length == 0 %}
                                 <img src="{{ url_for('static', filename='img/congratulations.jpg') }}"
                                      class="congratulations"
                                      alt="">
                                 <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no
                                     vulnerability was detected :)</h3>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -112,6 +114,7 @@
                                                 <thead>
                                                 <tr>
                                                     <th>Target</th>
+                                                    <th>Branch / Tag</th>
                                                     <th>Language</th>
                                                     <th>Framework</th>
                                                     <th>Files</th>
@@ -124,8 +127,11 @@
                                                 <tbody>
                                                 {% for target_info in targets %}
                                                     <tr>
-                                                        <td><a href="/?t=vul&sid={{ a_sid }}&s_sid={{ target_info.get('sid') }}"
-                                                               target="_blank">{{ target_info.get('target') }}</a></td>
+                                                        <td>
+                                                            <a href="javascript:void(0);"
+                                                               onclick="$('.nav-tabs li a[data-id=vul]').click();$('.filter_setting').click();$('#search_target').val('{{ target_info.get('sid') }}');$('.filter_btn').click();">{{ target_info.get('target') }}</a>
+                                                        </td>
+                                                        <td>{{ target_info.get('branch') }}</td>
                                                         <td>{{ target_info.get('language') }}</td>
                                                         <td>{{ target_info.get('framework') }}</td>
                                                         <td>{{ target_info.get('file') }}</td>
@@ -289,8 +295,10 @@
                 }
             ]
         };
+        {% if vuls | length > 0 %}
         var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
         vul_distributing.setOption(option);
+        {% endif %}
     </script>
     <!--CodeMirror-->
     <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
@@ -337,6 +345,7 @@
     <script src="{{ url_for('static', filename='codemirror/mode/shell/shell.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/mode/sql/sql.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/mode/clike/clike.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/properties/properties.js') }}"></script>
     <script src="{{ url_for('static', filename='js/report.js') }}"></script>
 </div>
 </body>

@@ -33,6 +33,10 @@ if os.path.isdir(package_path) is not True:
 source_path = os.path.join(code_path, 'git')
 if os.path.isdir(source_path) is not True:
     os.mkdir(source_path)
+issue_path = os.path.join(code_path, 'issue')
+if os.path.isdir(issue_path) is not True:
+    os.mkdir(issue_path)
+issue_history_path = os.path.join(issue_path, 'history')
 cobra_main = os.path.join(project_directory, 'cobra.py')
 core_path = os.path.join(project_directory, 'cobra')
 tests_path = os.path.join(project_directory, 'tests')

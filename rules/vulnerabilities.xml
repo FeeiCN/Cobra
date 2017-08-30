@@ -7,13 +7,24 @@
     <vulnerability name="XSS" vid="140"/>
     <vulnerability name="CSRF" vid="150"/>
     <vulnerability name="SQLI" vid="160"/>
-    <vulnerability name="RFI" vid="170"/>
-    <vulnerability name="RCE" vid="180"/>
-    <vulnerability name="RCE" vid="181"/>
-    <vulnerability name="SIL" vid="190"/>
-    <vulnerability name="PPH" vid="200"/>
+    <vulnerability name="XI" vid="163"/>
+    <vulnerability name="LI" vid="165"/>
+    <vulnerability name="XEI" vid="167"/>
+    <vulnerability name="FI" vid="170"/>
+    <vulnerability name="CI" vid="180"/>
+    <vulnerability name="CI" vid="181"/>
+    <vulnerability name="IE" vid="190"/>
+    <vulnerability name="PPG" vid="200"/>
     <vulnerability name="UR" vid="210"/>
     <vulnerability name="HRS" vid="220"/>
     <vulnerability name="SF" vid="230"/>
+    <vulnerability name="US" vid="260"/>
+    <vulnerability name="DF" vid="280"/>
+    <vulnerability name="LB" vid="290"/>
+    <vulnerability name="VO" vid="320"/>
+    <vulnerability name="WF" vid="350"/>
+    <vulnerability name="WE" vid="355"/>
+    <vulnerability name="AV" vid="970"/>
+    <vulnerability name="IV" vid="980"/>
     <vulnerability name="IC" vid="999"/>
 </cobra>
