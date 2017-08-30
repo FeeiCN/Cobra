@@ -283,7 +283,29 @@ class CAST(object):
                         return False, self.data
                     logger.debug("[AST] Is assign out data: `No`")
                     return True, self.data
-                logger.debug("[AST] Not Java/PHP, can't parse")
+                if self.language == "php":
+                    param_block_code = self.block_code(0)
+                    if param_block_code is False:
+                        logger.debug("Can't get block code")
+                        return True, self.data
+                    logger.debug("[AST] Block code: ```{language}\r\n{code}```".format(language=self.language,
+                                                                                       code=param_block_code))
+                    regex_assign_string = self.regex[self.language]['assign_string'].format(re.escape(param_name))
+                    string = re.findall(regex_assign_string, param_block_code)
+                    if len(string) >= 1 and string[0] != '':
+                        logger.debug("[AST] Is assign string: `Yes`")
+                        return False, self.data
+                    logger.debug("[AST] Is assign string: `No`")
+
+                    # Is assign out data
+                    regex_get_param = r'String\s{0}\s=\s\w+\.getParameter(.*)'.format(re.escape(param_name))
+                    get_param = re.findall(regex_get_param, param_block_code)
+                    if len(get_param) >= 1 and get_param[0] != '':
+                        logger.debug("[AST] Is assign out data: `Yes`")
+                        return False, self.data
+                    logger.debug("[AST] Is assign out data: `No`")
+                    return True, self.data
+                logger.critical("[AST] Not Java/PHP, can't parse")
                 return False, self.data
         else:
             logger.warning("[AST] Can't get `param`, check built-in rule")
