@@ -11,35 +11,57 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-from .config import Config
-from .log import logger
-import requests
 import json
+import os
+import time
+
+import requests
+
+from .config import Config, running_path
+from .log import logger
 
 
 class PushBase(object):
-    def __init__(self):
-        self.api = Config("third_party_vulnerabilities", "api").value
+    def __init__(self, url):
+        self.api = str(url)
         self.token = Config("third_party_vulnerabilities", "key").value
-        logger.info("Start pushing to third party API: {0}".format(self.api))
+        logger.info('[PUSH API] Start pushing to third party API: {0}'.format(self.api))
 
 
 class PushToThird(PushBase):
-    def __init__(self):
-        PushBase.__init__(self)
-        self.post_data = None
+    def __init__(self, url):
+        PushBase.__init__(self, url)
+        self.post_data = list()
 
-    def add_data(self, target, find_vul):
-        self.post_data = []
-        for i, vul in enumerate(find_vul):
+    def add_data(self, target, sid):
+        """
+        Add scan result to post data.
+        :param target: scan target
+        :param sid: scan data s_sid
+        :return:
+        """
+        scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+        if not os.path.exists(scan_data_file):
+            logger.warning('[PUSH API] No such sid.')
+            return False
+
+        with open(scan_data_file, 'r') as f:
+            scan_data = json.load(f).get('result')
+
+        scan_time = os.path.getctime(filename=scan_data_file)
+        scan_time = time.localtime(scan_time)
+        scan_time = time.strftime('%Y-%m-%d %H:%M:%S', scan_time)
+
+        for i, vul in enumerate(scan_data.get('vulnerabilities')):
             self.post_data.append({
                 "name": "Target-" + str(target) + '-' + str(i),
-                "time": vul.get("commit_time"),
+                "time": scan_time,
                 "vuln_type": vul.get("rule_name"),
                 "summitid": self.token,
-                "signid": str(i),
-                "description": vul.get("rule_name")
+                "signid": vul.get('id'),
+                "description": '\n'.join(['{key}: {value}'.format(key=key, value=value) for key, value in vul.items()]),
             })
+        return True
 
     def push(self):
         """
@@ -48,18 +70,18 @@ class PushToThird(PushBase):
         """
 
         try:
-            re = requests.post(url=self.api, data={"info": json.dumps(self.post_data)})
+            re = requests.post(url=self.api, data={"info": json.dumps(self.post_data, ensure_ascii=False)})
 
             result = re.json()
             if result.get("vul_pdf", "") != "":
-                logger.info("Push success!")
+                logger.info('[PUSH API] Push success!')
                 return True
             else:
-                logger.debug("Push result error: {0}".format(re.text))
+                logger.warning('[PUSH API] Push result error: {0}'.format(re.text))
                 return False
-        except (requests.ConnectionError, requests.HTTPError)as error:
-            logger.critical("Network error: {0}".format(str(error)))
+        except (requests.ConnectionError, requests.HTTPError) as error:
+            logger.critical('[PUSH API] Network error: {0}'.format(str(error)))
             return False
         except ValueError as error:
-            logger.critical("Response error: {0}".format(str(error)))
+            logger.critical('[PUSH API] Response error: {0}'.format(str(error)))
             return False
