@@ -15,7 +15,6 @@ import errno
 import json
 import multiprocessing
 import os
-import re
 import socket
 import subprocess
 import threading
