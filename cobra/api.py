@@ -20,6 +20,7 @@ import subprocess
 import threading
 import time
 import traceback
+from urlparse import unquote
 
 import requests
 from flask import Flask, request, render_template
@@ -260,7 +261,7 @@ class ResultDetail(Resource):
             return {'code': 1003, 'msg': 'Only support json, please post json data.'}
 
         sid = data.get('sid')
-        file_path = data.get('file_path')
+        file_path = unquote(data.get('file_path'))
 
         if not sid or sid == '':
             return {"code": 1002, "msg": "sid is required."}
