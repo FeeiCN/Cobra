@@ -233,7 +233,9 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
                 'extension': extension_count,
                 'file': file_count,
                 'push_rules': len(rules),
-                'trigger_rules': len(trigger_rules)}
+                'trigger_rules': len(trigger_rules),
+                'target_directory': target_directory,
+            }
         })
     return True
 
@@ -566,6 +568,16 @@ class Core(object):
             #
             logger.debug("[CVI-{cvi}] [ONLY-MATCH]".format(cvi=self.cvi))
             found_vul = True
+            if self.rule_match2 is not None:
+                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
+                if is_match:
+                    logger.debug('[CVI-{cvi}] [MATCH2] True'.format(cvi=self.cvi))
+                    return True, 1001
+                else:
+                    logger.debug('[CVI-{cvi}] [MATCH2] False'.format(cvi=self.cvi))
+                    return False, 1002
+
             if self.rule_repair is not None:
                 logger.debug('[VERIFY-REPAIR]')
                 ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
@@ -617,7 +629,7 @@ class Core(object):
 
                                     logger.debug('[AST] [CODE] {code}'.format(code=result[0]['code']))
                                 else:
-                                    logger.warning('[AST] Parser failed / vulnerability parameter is not controllable {r}'.format(r=result))
+                                    logger.debug('[AST] Parser failed / vulnerability parameter is not controllable {r}'.format(r=result))
                         except Exception as e:
                             logger.warning(traceback.format_exc())
                             raise

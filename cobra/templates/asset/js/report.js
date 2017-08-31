@@ -72,14 +72,14 @@ $(function () {
             // hide loading
             $('.CodeMirror .cm-loading').hide();
             vid = Number(vid);
-            var target = $('#search_target').find('option:selected').text();
+            var sid = $('#search_target').val();
             var data = vul_list_origin.vulnerabilities[vid - 1];
 
             $.ajax({
                 type: 'POST',
                 url: '/api/detail',
                 contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({target: target, file_path: data.file_path}),
+                data: JSON.stringify({sid: sid, file_path: data.file_path}),
                 dataType: 'json',
                 success: function (result) {
                     if (result.code === 1001) {
