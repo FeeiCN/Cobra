@@ -3,24 +3,19 @@
     <name value="webshell1"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[
-    \b(assert|eval|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)\b[/*\s]*\(+[/*\s]*((\$_(GET|POST|REQUEST|COOKIE).{0,25})|(base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]*(\$_(GET|POST|REQUEST|COOKIE).{0,25}))
+        \b(assert|eval|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)\b[/*\s]*\(+[/*\s]*((\$_(GET|POST|REQUEST|COOKIE).{0,25})|(base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]*(\$_(GET|POST|REQUEST|COOKIE).{0,25}))
     ]]></match>
     <level value="7"/>
+    <test>
+         <case assert="true"><![CDATA[eval($_POST['C']);]]></case>
+    </test>
     <solution>
         ## 安全风险
-        10101 代码中存在webShell
-
+        代码中存在webshell
 
         ## 修复方案
-
+        删除
     </solution>
-    <test>
-        <case assert="true"><![CDATA[
-        <?php
-            eval($_POST['C']);
-        ?>
-        ]]></case>
-    </test>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>

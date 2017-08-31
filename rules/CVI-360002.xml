@@ -6,18 +6,19 @@
         \s*\b(include|require)(_once)?\b[\s\(]*['\"][^\n'\"]{1,100}((\.(jpg|png|txt|jpeg|log|tmp|db|cache)|\_(tmp|log))|((http|https|file|php|data|ftp)\://.{0,25}))['\"][\s\)]*[\r\n;/\*]+
     ]]></match>
     <level value="7"/>
-    <solution>
-        ## 安全风险
-        10102
-
-        ## 修复方案
-    </solution>
     <test>
         <case assert="true"><![CDATA[
-        ]]></case>
-        <case assert="false"><![CDATA[
+            $a="ss";
+            include("sss.jpg");
         ]]></case>
     </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
     <status value="on"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>
