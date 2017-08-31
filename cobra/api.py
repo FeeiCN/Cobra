@@ -15,7 +15,6 @@ import errno
 import json
 import multiprocessing
 import os
-import re
 import socket
 import subprocess
 import threading
@@ -28,7 +27,7 @@ from flask_restful import Api, Resource
 
 from . import cli
 from .cli import get_sid
-from .config import Config, running_path, code_path, package_path
+from .config import Config, running_path, package_path
 from .engine import Running
 from .log import logger
 from .utils import allowed_file, secure_filename, PY2
@@ -260,43 +259,45 @@ class ResultDetail(Resource):
         if not data or data == "":
             return {'code': 1003, 'msg': 'Only support json, please post json data.'}
 
-        target = data.get('target')
+        sid = data.get('sid')
         file_path = data.get('file_path')
 
-        if target.startswith('http'):
-            repo_user = target.split('/')[-2]
+        if not sid or sid == '':
+            return {"code": 1002, "msg": "sid is required."}
 
-            split_target = target.split(':')
-            if len(split_target) == 3:
-                repo_name = split_target[1].split('/')[-1].replace('.git', '')
-            elif len(split_target) == 2:
-                repo_name = split_target[1].split('/')[-1].replace('.git', '')
+        if not file_path or file_path == '':
+            return {'code': 1002, 'msg': 'file_path is required.'}
+
+        s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+        if not os.path.exists(s_sid_file):
+            return {'code': 1002, 'msg': 'No such target.'}
+
+        with open(s_sid_file, 'r') as f:
+            target_directory = json.load(f).get('result').get('target_directory')
+
+        if not target_directory or target_directory == '':
+            return {'code': 1002, 'msg': 'No such directory'}
+
+        if PY2:
+            file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
+        else:
+            file_path = map(secure_filename, [path for path in file_path.split('/')])
+
+        filename = target_directory
+        for _dir in file_path:
+            filename = os.path.join(filename, _dir)
+        if os.path.exists(filename):
+            extension = guess_type(filename)
+            if is_text(filename):
+                with open(filename, 'r') as f:
+                    file_content = f.read()
             else:
-                return {'code': 1002, 'msg': 'Invalid target.'}
-            repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
+                file_content = 'This is a binary file.'
+        else:
+            return {'code': 1002, 'msg': 'No such file.'}
 
-            if PY2:
-                file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
-            else:
-                file_path = map(secure_filename, [path for path in file_path.split('/')])
-
-
-            # 循环生成路径，避免文件越级读取
-            file_name = repo_directory
-            for _dir in file_path:
-                file_name = os.path.join(file_name, _dir)
-            if os.path.exists(file_name):
-                extension = guess_type(file_name)
-                if is_text(file_name):
-                    with open(file_name, 'r') as f:
-                        file_content = f.read()
-                else:
-                    file_content = 'This is a binary file.'
-            else:
-                return {'code': 1002, 'msg': 'No such file.'}
-
-            return {'code': 1001, 'result': {'file_content': file_content,
-                                             'extension': extension}}
+        return {'code': 1001, 'result': {'file_content': file_content,
+                                         'extension': extension}}
 
 
 @app.route('/', methods=['GET', 'POST'])
