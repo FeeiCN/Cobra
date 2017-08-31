@@ -133,8 +133,8 @@ def write_to_file(target, sid, output_format='', filename=None):
         logger.info('[EXPORT] No filename given, nothing exported.')
         return False
 
-    data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
-    with open(data_file, 'r') as f:
+    scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+    with open(scan_data_file, 'r') as f:
         scan_data = json.load(f).get('result')
 
     os.chdir(export_path)
