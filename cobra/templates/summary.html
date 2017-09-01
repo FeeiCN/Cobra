@@ -1,7 +1,14 @@
 <!DOCTYPE html>
+<!--[if IE 8]>
+<html class="ie ie8"> <![endif]-->
+<!--[if IE 9]>
+<html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
@@ -9,6 +16,12 @@
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <title>Task Information</title>
+
+    <!--[if lt IE 9]>
+    <script src="asset/js/html5shiv.min.js"></script>
+    <script src="asset/js/respond.min.js"></script>
+    <![endif]-->
+
 </head>
 <body>
 <div class="container-fluid">
