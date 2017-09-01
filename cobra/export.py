@@ -140,7 +140,7 @@ def write_to_file(target, sid, output_format='', filename=None):
     os.chdir(export_path)
     scan_data['target'] = target
 
-    if output_format == '':
+    if output_format == '' or output_format == 'stream':
         logger.info('Vulnerabilities\n' + str(dict_to_pretty_table(scan_data.get('vulnerabilities'))))
 
     elif output_format == 'json' or output_format == 'JSON':
