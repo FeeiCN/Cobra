@@ -20,7 +20,13 @@ import subprocess
 import threading
 import time
 import traceback
-from urlparse import unquote
+
+try:
+    # Python 2
+    from urlparse import unquote
+except ImportError:
+    # Python 3
+    from urllib.parse import unquote
 
 import requests
 from flask import Flask, request, render_template
