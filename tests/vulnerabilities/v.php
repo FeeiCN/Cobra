@@ -79,6 +79,9 @@ if (!empty($url)) {
     header("Location: ".$url);
 }
 
+header(trim($a).$_GET["url"]);
+header("Location:".$_GET["url"]);
+
 $test = $_POST['test'];
 $test_uns = unserialize($test);
 

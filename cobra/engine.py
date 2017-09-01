@@ -26,6 +26,7 @@ from .config import running_path
 from .result import VulnerabilityResult
 from .cast import CAST
 from .parser import scan_parser
+from .cve_parse import scan_cve
 from prettytable import PrettyTable
 
 
@@ -150,6 +151,9 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     rules = r.rules(special_rules)
     find_vulnerabilities = []
 
+    cve_vuls = scan_cve(target_directory)
+    find_vulnerabilities += cve_vuls
+
     def store(result):
         if result is not None and isinstance(result, list) is True:
             for res in result:
@@ -190,7 +194,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
 
         # print
     data = []
-    table = PrettyTable(['#', 'CVI', 'VUL', 'Rule(ID/Name)', 'Lang', 'Level-Score', 'Target-File:Line-Number', 'Commit(Author/Time)', 'Source Code Content'])
+    table = PrettyTable(['#', 'CVI', 'VUL', 'Rule(ID/Name)', 'Lang/CVE-id', 'Level-Score', 'Target-File:Line-Number/Module:Version', 'Commit(Author/Time)', 'Source Code Content'])
     table.align = 'l'
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):

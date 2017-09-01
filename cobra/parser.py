@@ -120,6 +120,7 @@ def get_binaryop_params(node):  # 当为BinaryOp类型时，分别对left和righ
     """
     logger.debug('[AST] Binaryop --> {node}'.format(node=node))
     params = []
+    pprint.pprint(node.generic())
     if isinstance(node.left, php.Variable) and isinstance(node.right, php.Variable):  # left, right都为变量直接取值
         params.append(node.left.name)
         params.append(node.right.name)
