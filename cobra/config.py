@@ -21,7 +21,7 @@ except ImportError:
     from ConfigParser import ConfigParser
 
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-code_path = '/tmp/cobra'
+code_path = './tmp'
 if os.path.isdir(code_path) is not True:
     os.mkdir(code_path)
 running_path = os.path.join(code_path, 'running')

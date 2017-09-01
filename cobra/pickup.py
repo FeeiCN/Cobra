@@ -20,6 +20,7 @@ import zipfile
 import tarfile
 import rarfile
 import subprocess
+import traceback
 from . import config
 from .log import logger
 from .config import package_path, source_path
@@ -203,6 +204,7 @@ class Directory(object):
                     if os.path.isfile(directory):
                         self.file_info(directory, filename)
         except OSError as e:
+            traceback.print_exc()
             logger.critical('[PICKUP] {msg}'.format(msg=e))
             exit()
 
