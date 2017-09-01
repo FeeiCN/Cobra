@@ -35,7 +35,7 @@ def test_add_job():
     url = "http://127.0.0.1:5000/api/add"
     post_data = {
         "key": "your_secret_key",
-        "target": ["https://github.com/shadowsocks/shadowsocks.git"],
+        "target": ["tests/vulnerabilities"],
     }
     headers = {
         "Content-Type": "application/json",
