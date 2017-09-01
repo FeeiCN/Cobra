@@ -329,25 +329,38 @@ def summary():
                                msg=scan_status.get('msg'))
     else:
         if scan_status.get('result').get('status') == 'running':
-            return render_template(template_name_or_list='error.html',
-                                   msg='Scan job is still running.',
-                                   running=scan_status.get('result').get('still_running'))
+            still_running = scan_status.get('result').get('still_running')
+            for s_sid, target_str in still_running.items():
+                split_target = target_str.split(':')
+                if len(split_target) == 3:
+                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                elif len(split_target) == 2:
+                    target, branch = target_str, 'master'
+                else:
+                    logger.critical('[API] Target url exception: {u}'.format(u=target_str))
+                    target, branch = target_str, 'master'
+                still_running[s_sid] = {'target': target,
+                                        'branch': branch}
+        else:
+            still_running = dict()
 
-        elif scan_status.get('result').get('status') == 'done':
-            scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
+        scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
 
-            scan_list = Running(a_sid).list().get('sids')
+        scan_list = Running(a_sid).list()
 
-            start_time = os.path.getctime(filename=scan_status_file)
-            start_time = time.localtime(start_time)
-            start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
+        start_time = os.path.getctime(filename=scan_status_file)
+        start_time = time.localtime(start_time)
+        start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
 
-            total_targets_number = len(scan_list)
-            total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
-            rule_filter = dict()
-            targets = list()
+        total_targets_number = scan_status.get('result').get('total_target_num')
+        not_finished_number = scan_status.get('result').get('not_finished')
 
-            for s_sid, target_str in scan_list.items():
+        total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
+        rule_filter = dict()
+        targets = list()
+
+        for s_sid, target_str in scan_list.get('sids').items():
+            if s_sid not in still_running:
                 target_info = dict()
 
                 # 分割项目地址与分支，默认 master
@@ -394,17 +407,19 @@ def summary():
                     except KeyError:
                         rule_filter[vul.get('rule_name')] = 1
 
-            return render_template(template_name_or_list='summary.html',
-                                   total_targets_number=total_targets_number,
-                                   start_time=start_time,
-                                   targets=targets,
-                                   a_sid=a_sid,
-                                   total_vul_number=total_vul_number,
-                                   critical_vul_number=critical_vul_number,
-                                   high_vul_number=high_vul_number,
-                                   medium_vul_number=medium_vul_number,
-                                   low_vul_number=low_vul_number,
-                                   vuls=rule_filter, )
+        return render_template(template_name_or_list='summary.html',
+                               total_targets_number=total_targets_number,
+                               not_finished_number=not_finished_number,
+                               start_time=start_time,
+                               targets=targets,
+                               a_sid=a_sid,
+                               total_vul_number=total_vul_number,
+                               critical_vul_number=critical_vul_number,
+                               high_vul_number=high_vul_number,
+                               medium_vul_number=medium_vul_number,
+                               low_vul_number=low_vul_number,
+                               vuls=rule_filter,
+                               running=still_running,)
 
 
 def key_verify(data):
