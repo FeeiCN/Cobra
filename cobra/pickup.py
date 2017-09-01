@@ -55,7 +55,6 @@ class Decompress(object):
         self.filename = filename
         copyfile(os.path.abspath(filename), self.filepath)
         self.dir_name = secure_filename(filename).split('.')[0]
-        print(self.dir_name)
 
     def decompress(self):
         """
@@ -204,7 +203,6 @@ class Directory(object):
                     if os.path.isfile(directory):
                         self.file_info(directory, filename)
         except OSError as e:
-            traceback.print_exc()
             logger.critical('[PICKUP] {msg}'.format(msg=e))
             exit()
 

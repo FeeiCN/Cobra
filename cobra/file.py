@@ -31,7 +31,7 @@ def file_list_parse(filelist):
 
 class File:
     def __init__(self, filelist, target):
-        self.filelist = filelist[0]
+        self.filelist =  file_list_parse(filelist)[0]
         self.target = target
 
     def grep(self, reg):
@@ -57,7 +57,6 @@ class File:
 target_directory = os.path.abspath('./tests/vulnerabilities')
 files, file_count, time_consume = Directory(target_directory).collect_files()
 
-f_filelist = file_list_parse(files)
-f = File(f_filelist, target_directory)
+f = File(files, target_directory)
 
 print f.grep("(\"\s*(select|SELECT|insert|INSERT|update|UPDATE)\s*(([^;]\s*)*)?\$(.+?);?\")")
