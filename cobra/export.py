@@ -149,7 +149,6 @@ def write_to_file(target, sid, output_format='', filename=None):
                 json_data = {
                     sid: scan_data,
                 }
-                print(json_data)
                 f.write(dict_to_json(json_data))
         else:
             with open(filename, 'r+', encoding='utf-8') as f:
