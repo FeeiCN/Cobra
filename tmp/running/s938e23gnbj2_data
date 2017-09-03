@@ -1,0 +1,1 @@
+{"code": 1001, "msg": "scan finished", "result": {"extension": 12, "file": 12, "framework": "Spring", "language": "php", "push_rules": 21, "trigger_rules": 0, "vulnerabilities": []}}

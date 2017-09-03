@@ -14,7 +14,7 @@
 import os
 import re
 import json
-import fcntl
+import portalocker
 import traceback
 import subprocess
 import multiprocessing
@@ -36,7 +36,7 @@ class Running:
     def init_list(self):
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
         with open(file_path, 'w') as f:
-            fcntl.flock(f, fcntl.LOCK_EX)
+            portalocker.lock(f, portalocker.LOCK_EX)
             f.write(json.dumps({
                 'sids': {}
             }))
@@ -45,12 +45,12 @@ class Running:
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
         if data is None:
             with open(file_path, 'r') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.readline()
                 return json.loads(result)
         else:
             with open(file_path, 'w+') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.read()
                 if result == '':
                     result = {'sids': {}}
@@ -65,26 +65,26 @@ class Running:
         file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
         if data is None:
             with open(file_path) as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.readline()
             return json.loads(result)
         else:
             data = json.dumps(data)
             with open(file_path, 'w') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 f.writelines(data)
 
     def data(self, data=None):
         file_path = os.path.join(running_path, '{sid}_data'.format(sid=self.sid))
         if data is None:
             with open(file_path) as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.readline()
             return json.loads(result)
         else:
             data = json.dumps(data, sort_keys=True)
             with open(file_path, 'w+') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 f.writelines(data)
 
     def is_file(self, is_data=False):
@@ -268,7 +268,7 @@ class SingleRule(object):
                 result = ""
                 error = ""
         except Exception as e:
-            # traceback.print_exc()
+            traceback.print_exc()
             logger.debug('match exception ({e})'.format(e=e.message))
             return None
         try:

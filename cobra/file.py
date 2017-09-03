@@ -64,10 +64,3 @@ class File:
             if file[0] == ext:
                 return file[1]['list']
 
-target_directory = os.path.abspath('./tests/vulnerabilities')
-files, file_count, time_consume = Directory(target_directory).collect_files()
-
-f = File(files, target_directory)
-
-# print f.grep("(\"\s*(select|SELECT|insert|INSERT|update|UPDATE)\s*(([^;]\s*)*)?\$(.+?);?\")")
-print f.find(".m")
