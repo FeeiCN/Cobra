@@ -67,5 +67,8 @@ target/
 config
 *.log*
 
+# tmp
+tmp/
+
 # Cobra automation report image file
 scheduler/reports/
