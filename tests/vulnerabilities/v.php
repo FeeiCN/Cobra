@@ -100,3 +100,42 @@ if (!empty($file)){
     unlink($file);
 }
 
+
+header("Location: ".$_GET["url"]);
+
+$host = $_POST['host'];
+$port = $_POST['port'];
+function GetFile($host,$port,$link)
+{
+    $fp = fsockopen($host, intval($port), $errno, $errstr, 30);
+    if (!$fp)
+    {
+        echo "$errstr (error number $errno) \n";
+    }
+    else
+    {
+        $out = "GET $link HTTP/1.1\r\n";
+        $out .= "Host: $host\r\n";
+        $out .= "Connection: Close\r\n\r\n";
+        $out .= "\r\n";
+        fwrite($fp, $out);
+        $contents='';
+        while (!feof($fp))
+        {
+            $contents.= fgets($fp, 1024);
+        }
+        fclose($fp);
+        return $contents;
+    }
+}
+
+
+$surname=$_GET['surname'];
+$filter = "(sn=" . $surname . ")";
+$sr=ldap_search($ds, "o=My Company, c=US", $filter);
+$info = ldap_get_entries($ds, $sr);
+
+
+$redis = new Redis();
+$redis->connect('192.168.1.2', 6379);
+$redis->auth('passwd123!#');

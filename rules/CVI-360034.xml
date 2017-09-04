@@ -3,11 +3,10 @@
     <name value="webshell12"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[
-        \$(\w*)\s*=\s*\bcreate_function\b\s*\([^;]*;[\s\S]*\$\1\s*\([^\)]*(['\"]\s*[^;\n\r\)]{0,100}(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|poc_open|pcntl_exec).{1,600}\s*['\"]|[^;\n\r]{0,100}(\$_(GET|POST|REQUEST|COOKIE|SERVER).{1,})|[^;\n\r\)]{0,100}file_get_contents.{1,})
-]]></match>
+        \$(\w+)[\s]*\=[\s]*\$_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}[\s\S]*\$(?:\1\(\s*\$_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}\s*\)|(\w+)\s*\=\s*\$_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}[\s\S]*\$(\1\(\s*\$\2|\2\(\s*\$\1)\s*\)|_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}\(\s*\$\1\s*\))|\$_(?:POST|GET|REQUEST|COOKIE|SERVER)\[(['\"]\w+['\"]|\d+)\]\(\s*\$_(?:POST|GET|REQUEST|COOKIE|SERVER)\[(['\"]\w+['\"]|\d+)\]\s*\)
+    ]]></match>
     <level value="7"/>
     <test>
-        <case assert="true"><![CDATA[$newfunc = create_function('str','return str');$newfunc("$_POST['c']");]]></case>
     </test>
     <solution>
         ## 安全风险
