@@ -119,6 +119,7 @@ def get_binaryop_params(node):  # 当为BinaryOp类型时，分别对left和righ
     """
     logger.debug('[AST] Binaryop --> {node}'.format(node=node))
     params = []
+    buffer_ = []
 
     if isinstance(node.left, php.Variable) or isinstance(node.right, php.Variable):  # left, right都为变量直接取值
         if isinstance(node.left, php.Variable):
@@ -133,6 +134,7 @@ def get_binaryop_params(node):  # 当为BinaryOp类型时，分别对left和righ
 
         params = params_left + params_right
 
+    params = export_list(params, buffer_)
     return params
 
 
@@ -177,6 +179,10 @@ def get_expr_name(node):  # expr为'expr'中的值
         param_expr = get_all_params(node.params)  # 返回函数参数列表
         param_lineno = node.lineno
         is_re = is_repair(node.name)  # 调用了函数，判断调用的函数是否为修复函数
+
+    elif isinstance(node, php.BinaryOp):  # 当赋值表达式为BinaryOp
+        param_expr = get_binaryop_params(node)
+        param_lineno = node.lineno
 
     else:
         param_expr = node
