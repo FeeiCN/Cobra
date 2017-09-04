@@ -237,7 +237,9 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
                 'extension': extension_count,
                 'file': file_count,
                 'push_rules': len(rules),
-                'trigger_rules': len(trigger_rules)}
+                'trigger_rules': len(trigger_rules),
+                'target_directory': target_directory,
+            }
         })
     return True
 

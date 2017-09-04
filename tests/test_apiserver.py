@@ -35,7 +35,7 @@ def test_add_job():
     url = "http://127.0.0.1:5000/api/add"
     post_data = {
         "key": "your_secret_key",
-        "target": ["https://github.com/shadowsocks/shadowsocks.git"],
+        "target": ["tests/vulnerabilities"],
     }
     headers = {
         "Content-Type": "application/json",
@@ -79,20 +79,15 @@ def test_result_data():
 def test_result_detail():
     url = 'http://127.0.0.1:5000/api/detail'
     post_data = {
-        'target': 'https://github.com/shadowsocks/shadowsocks.git',
+        'sid': 'abcdeft',
         'file_path': 'setup.py',
     }
     headers = {
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    filename = '/tmp/cobra/git/shadowsocks/shadowsocks/setup.py'
-    if os.path.exists(filename):
-        assert '1001' in re.text
-        assert 'clowwindy42@gmail.com' in re.text
-    else:
-        assert '1002' in re.text
-        assert 'No such file' in re.text
+    assert '1002' in re.text
+    assert 'No such target' in re.text
 
 
 def test_index():

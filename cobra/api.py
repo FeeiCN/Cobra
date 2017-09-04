@@ -15,12 +15,18 @@ import errno
 import json
 import multiprocessing
 import os
-import re
 import socket
 import subprocess
 import threading
 import time
 import traceback
+
+try:
+    # Python 2
+    from urlparse import unquote
+except ImportError:
+    # Python 3
+    from urllib.parse import unquote
 
 import requests
 from flask import Flask, request, render_template
@@ -28,7 +34,7 @@ from flask_restful import Api, Resource
 
 from . import cli
 from .cli import get_sid
-from .config import Config, running_path, code_path, package_path
+from .config import Config, running_path, package_path
 from .engine import Running
 from .log import logger
 from .utils import allowed_file, secure_filename, PY2
@@ -260,43 +266,45 @@ class ResultDetail(Resource):
         if not data or data == "":
             return {'code': 1003, 'msg': 'Only support json, please post json data.'}
 
-        target = data.get('target')
-        file_path = data.get('file_path')
+        sid = data.get('sid')
+        file_path = unquote(data.get('file_path'))
 
-        if target.startswith('http'):
-            repo_user = target.split('/')[-2]
+        if not sid or sid == '':
+            return {"code": 1002, "msg": "sid is required."}
 
-            split_target = target.split(':')
-            if len(split_target) == 3:
-                repo_name = split_target[1].split('/')[-1].replace('.git', '')
-            elif len(split_target) == 2:
-                repo_name = split_target[1].split('/')[-1].replace('.git', '')
+        if not file_path or file_path == '':
+            return {'code': 1002, 'msg': 'file_path is required.'}
+
+        s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+        if not os.path.exists(s_sid_file):
+            return {'code': 1002, 'msg': 'No such target.'}
+
+        with open(s_sid_file, 'r') as f:
+            target_directory = json.load(f).get('result').get('target_directory')
+
+        if not target_directory or target_directory == '':
+            return {'code': 1002, 'msg': 'No such directory'}
+
+        if PY2:
+            file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
+        else:
+            file_path = map(secure_filename, [path for path in file_path.split('/')])
+
+        filename = target_directory
+        for _dir in file_path:
+            filename = os.path.join(filename, _dir)
+        if os.path.exists(filename):
+            extension = guess_type(filename)
+            if is_text(filename):
+                with open(filename, 'r') as f:
+                    file_content = f.read()
             else:
-                return {'code': 1002, 'msg': 'Invalid target.'}
-            repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
+                file_content = 'This is a binary file.'
+        else:
+            return {'code': 1002, 'msg': 'No such file.'}
 
-            if PY2:
-                file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
-            else:
-                file_path = map(secure_filename, [path for path in file_path.split('/')])
-
-
-            # 循环生成路径，避免文件越级读取
-            file_name = repo_directory
-            for _dir in file_path:
-                file_name = os.path.join(file_name, _dir)
-            if os.path.exists(file_name):
-                extension = guess_type(file_name)
-                if is_text(file_name):
-                    with open(file_name, 'r') as f:
-                        file_content = f.read()
-                else:
-                    file_content = 'This is a binary file.'
-            else:
-                return {'code': 1002, 'msg': 'No such file.'}
-
-            return {'code': 1001, 'result': {'file_content': file_content,
-                                             'extension': extension}}
+        return {'code': 1001, 'result': {'file_content': file_content,
+                                         'extension': extension}}
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -327,25 +335,38 @@ def summary():
                                msg=scan_status.get('msg'))
     else:
         if scan_status.get('result').get('status') == 'running':
-            return render_template(template_name_or_list='error.html',
-                                   msg='Scan job is still running.',
-                                   running=scan_status.get('result').get('still_running'))
+            still_running = scan_status.get('result').get('still_running')
+            for s_sid, target_str in still_running.items():
+                split_target = target_str.split(':')
+                if len(split_target) == 3:
+                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                elif len(split_target) == 2:
+                    target, branch = target_str, 'master'
+                else:
+                    logger.critical('[API] Target url exception: {u}'.format(u=target_str))
+                    target, branch = target_str, 'master'
+                still_running[s_sid] = {'target': target,
+                                        'branch': branch}
+        else:
+            still_running = dict()
 
-        elif scan_status.get('result').get('status') == 'done':
-            scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
+        scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
 
-            scan_list = Running(a_sid).list().get('sids')
+        scan_list = Running(a_sid).list()
 
-            start_time = os.path.getctime(filename=scan_status_file)
-            start_time = time.localtime(start_time)
-            start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
+        start_time = os.path.getctime(filename=scan_status_file)
+        start_time = time.localtime(start_time)
+        start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
 
-            total_targets_number = len(scan_list)
-            total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
-            rule_filter = dict()
-            targets = list()
+        total_targets_number = scan_status.get('result').get('total_target_num')
+        not_finished_number = scan_status.get('result').get('not_finished')
 
-            for s_sid, target_str in scan_list.items():
+        total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
+        rule_filter = dict()
+        targets = list()
+
+        for s_sid, target_str in scan_list.get('sids').items():
+            if s_sid not in still_running:
                 target_info = dict()
 
                 # 分割项目地址与分支，默认 master
@@ -392,17 +413,19 @@ def summary():
                     except KeyError:
                         rule_filter[vul.get('rule_name')] = 1
 
-            return render_template(template_name_or_list='summary.html',
-                                   total_targets_number=total_targets_number,
-                                   start_time=start_time,
-                                   targets=targets,
-                                   a_sid=a_sid,
-                                   total_vul_number=total_vul_number,
-                                   critical_vul_number=critical_vul_number,
-                                   high_vul_number=high_vul_number,
-                                   medium_vul_number=medium_vul_number,
-                                   low_vul_number=low_vul_number,
-                                   vuls=rule_filter, )
+        return render_template(template_name_or_list='summary.html',
+                               total_targets_number=total_targets_number,
+                               not_finished_number=not_finished_number,
+                               start_time=start_time,
+                               targets=targets,
+                               a_sid=a_sid,
+                               total_vul_number=total_vul_number,
+                               critical_vul_number=critical_vul_number,
+                               high_vul_number=high_vul_number,
+                               medium_vul_number=medium_vul_number,
+                               low_vul_number=low_vul_number,
+                               vuls=rule_filter,
+                               running=still_running,)
 
 
 def key_verify(data):
