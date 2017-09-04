@@ -12,8 +12,6 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 
-from .pickup import Directory
-import os
 import re
 
 ext_list = ['.php', '.php3', '.php4', '.php5', '.php7', '.pht', '.phs', '.phtml']
@@ -25,6 +23,27 @@ def file_list_parse(filelist):
         for file in filelist:
             if file[0] == ext:
                 result.append(file[1]['list'])
+
+    return result
+
+
+def get_line(file_path, line_rule):
+    """
+    搜索指定文件的指定行到指定行的内容
+    :param file_path: 指定文件
+    :param line_rule: 指定行规则
+    :return: 
+    """
+    s_line = int(line_rule.split(',')[0])
+    e_line = int(line_rule.split(',')[1][:-1])
+    result = []
+
+    with open(file_path) as file:
+        line_numer = 0
+        for line in file:
+            line_numer += 1
+            if s_line <= line_numer <= e_line:
+                result.append(line)
 
     return result
 

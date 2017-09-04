@@ -18,6 +18,8 @@ from .utils import Tool
 from .log import logger
 from .rule import block
 from .pickup import File
+from .file import File as File_init
+from .pickup import Directory
 
 
 class CAST(object):
@@ -75,21 +77,26 @@ class CAST(object):
         get all functions in this file
         :return:
         """
-        grep = Tool().grep
+        # grep = Tool().grep
         if self.language not in self.regex:
             logger.info("[AST] Undefined language's functions regex {0}".format(self.language))
             return False
         regex_functions = self.regex[self.language]['functions']
-        param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result, error = p.communicate()
+        # param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
+        # p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # result, error = p.communicate()
+        files, file_count, time_consume = Directory(self.target_directory).collect_files()
+        f = File_init(files, self.target_directory)
+        result = f.grep(regex_functions)
+        result = "".join(result)
+
         try:
             result = result.decode('utf-8')
-            error = error.decode('utf-8')
+            # error = error.decode('utf-8')
         except AttributeError as e:
             pass
-        if len(error) is not 0:
-            logger.critical('[AST] {err}'.format(err=error.strip()))
+        # if len(error) is not 0:
+        #     logger.critical('[AST] {err}'.format(err=error.strip()))
         if len(result):
             functions = {}
             lines = result.strip().split("\n")
