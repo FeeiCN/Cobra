@@ -664,5 +664,7 @@ def scan_parser(code_content, sensitive_func, vul_lineno):
             analysis(all_nodes, func, back_node, int(vul_lineno), flag=0, function_params=None)
     except SyntaxError as e:
         logger.debug(e)
+    except Exception as e:
+        logger.debug(e)
 
     return scan_results
