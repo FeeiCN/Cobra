@@ -11,7 +11,6 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import pprint
 from phply.phplex import lexer  # 词法分析
 from phply.phpparse import make_parser  # 语法分析
 from phply import phpast as php
@@ -120,17 +119,19 @@ def get_binaryop_params(node):  # 当为BinaryOp类型时，分别对left和righ
     """
     logger.debug('[AST] Binaryop --> {node}'.format(node=node))
     params = []
-    if isinstance(node.left, php.Variable) and isinstance(node.right, php.Variable):  # left, right都为变量直接取值
-        params.append(node.left.name)
-        params.append(node.right.name)
 
-    elif isinstance(node.left, php.Variable) and not isinstance(node.right, php.Variable):  # right不为变量时
-        params.append(node.left.name)
-        params = get_binaryop_deep_params(node.right, params)
+    if isinstance(node.left, php.Variable) or isinstance(node.right, php.Variable):  # left, right都为变量直接取值
+        if isinstance(node.left, php.Variable):
+            params.append(node.left.name)
 
-    elif not isinstance(node.left, php.Variable) and isinstance(node.right, php.Variable):  # left不为变量时
-        params.append(node.right.name)
-        params = get_binaryop_deep_params(node.left, params)
+        if isinstance(node.right, php.Variable):
+            params.append(node.right.name)
+
+    elif not isinstance(node.right, php.Variable) or not isinstance(node.left, php.Variable):  # right不为变量时
+        params_right = get_binaryop_deep_params(node.right, params)
+        params_left = get_binaryop_deep_params(node.left, params)
+
+        params = params_left + params_right
 
     return params
 
@@ -149,6 +150,9 @@ def get_binaryop_deep_params(node, params):  # 取出right，left不为变量时
     if isinstance(node, php.BinaryOp):  # node为BinaryOp，递归取出其中变量
         param = get_binaryop_params(node)
         params.append(param)
+
+    if isinstance(node, php.FunctionCall):  # node为FunctionCall，递归取出其中变量名
+        params = get_all_params(node.params)
 
     return params
 
@@ -254,11 +258,10 @@ def parameters_back(param, nodes, function_params=None):  # 用来得到回溯�
     :param function_params:
     :return:
     """
-    is_co = -1
-    cp = None
-    expr_lineno = 0
+    expr_lineno = 0  # source所在行号
+    is_co, cp = is_controllable(param)
 
-    if len(nodes) != 0:
+    if len(nodes) != 0 and is_co == -1:
         node = nodes[len(nodes) - 1]
 
         if isinstance(node, php.Assignment):  # 回溯的过程中，对出现赋值情况的节点进行跟踪
@@ -330,7 +333,6 @@ def anlysis_function(node, back_node, vul_function, function_params, vul_lineno)
     :return:
     """
     global scan_results
-
     try:
         if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 函数体中存在敏感函数，开始对敏感函数前的代码进行检测
             for param in node.params:
@@ -350,33 +352,33 @@ def anlysis_function(node, back_node, vul_function, function_params, vul_lineno)
         logger.debug(e)
 
 
-def analysis_functioncall(node, back_node, vul_function, vul_lineno):
-    """
-    调用FunctionCall-->判断调用Function是否敏感-->get params获取所有参数-->开始递归判断
-    :param node:
-    :param back_node:
-    :param vul_function:
-    :param vul_lineno
-    :return:
-    """
-    global scan_results
-    try:
-        if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 定位到敏感函数
-            for param in node.params:
-                if isinstance(param.node, php.Variable):
-                    analysis_variable_node(param.node, back_node, vul_function, vul_lineno)
-
-                if isinstance(param.node, php.FunctionCall):
-                    analysis_functioncall_node(param.node, back_node, vul_function, vul_lineno)
-
-                if isinstance(param.node, php.BinaryOp):
-                    analysis_binaryop_node(param.node, back_node, vul_function, vul_lineno)
-
-                if isinstance(param.node, php.ArrayOffset):
-                    analysis_arrayoffset_node(param.node, vul_function, vul_lineno)
-
-    except Exception as e:
-        logger.debug(e)
+# def analysis_functioncall(node, back_node, vul_function, vul_lineno):
+#     """
+#     调用FunctionCall-->判断调用Function是否敏感-->get params获取所有参数-->开始递归判断
+#     :param node:
+#     :param back_node:
+#     :param vul_function:
+#     :param vul_lineno
+#     :return:
+#     """
+#     global scan_results
+#     try:
+#         if node.name == vul_function and int(node.lineno) == int(vul_lineno):  # 定位到敏感函数
+#             for param in node.params:
+#                 if isinstance(param.node, php.Variable):
+#                     analysis_variable_node(param.node, back_node, vul_function, vul_lineno)
+#
+#                 if isinstance(param.node, php.FunctionCall):
+#                     analysis_functioncall_node(param.node, back_node, vul_function, vul_lineno)
+#
+#                 if isinstance(param.node, php.BinaryOp):
+#                     analysis_binaryop_node(param.node, back_node, vul_function, vul_lineno)
+#
+#                 if isinstance(param.node, php.ArrayOffset):
+#                     analysis_arrayoffset_node(param.node, vul_function, vul_lineno)
+#
+#     except Exception as e:
+#         logger.debug(e)
 
 
 def analysis_binaryop_node(node, back_node, vul_function, vul_lineno, function_params=None):
@@ -447,33 +449,34 @@ def analysis_variable_node(node, back_node, vul_function, vul_lineno, function_p
     set_scan_results(is_co, cp, expr_lineno, vul_function, params, vul_lineno)
 
 
-def analysis_if_else(node, back_node, vul_function, vul_lineno):
+def analysis_if_else(node, back_node, vul_function, vul_lineno, function_params=None):
     nodes = []
     if isinstance(node.node, php.Block):  # if语句中的sink点以及变量
-        analysis(node.node.nodes, vul_function, back_node, vul_lineno)
+        analysis(node.node.nodes, vul_function, back_node, vul_lineno, function_params)
 
     if node.else_ is not None:  # else语句中的sink点以及变量
         if isinstance(node.else_.node, php.Block):
-            analysis(node.else_.node.nodes, vul_function, back_node, vul_lineno)
+            analysis(node.else_.node.nodes, vul_function, back_node, vul_lineno, function_params)
 
     if len(node.elseifs) != 0:  # elseif语句中的sink点以及变量
         for i_node in node.elseifs:
             if i_node.node is not None:
                 if isinstance(i_node.node, php.Block):
-                    analysis(i_node.node.nodes, vul_function, back_node, vul_lineno)
+                    analysis(i_node.node.nodes, vul_function, back_node, vul_lineno, function_params)
 
                 else:
                     nodes.append(i_node.node)
-                    analysis(nodes, vul_function, back_node, vul_lineno)
+                    analysis(nodes, vul_function, back_node, vul_lineno, function_params)
 
 
-def analysis_echo_print(node, back_node, vul_function, vul_lineno):
+def analysis_echo_print(node, back_node, vul_function, vul_lineno, function_params=None):
     """
     处理echo/print类型节点-->判断节点类型-->不同If分支回溯判断参数是否可控-->输出结果
     :param node:
     :param back_node:
     :param vul_function:
     :param vul_lineno:
+    :param function_params:
     :return:
     """
     global scan_results
@@ -481,13 +484,13 @@ def analysis_echo_print(node, back_node, vul_function, vul_lineno):
     if int(vul_lineno) == int(node.lineno):
         if isinstance(node, php.Print):
             if isinstance(node.node, php.FunctionCall):
-                analysis_functioncall_node(node.node, back_node, vul_function, vul_lineno)
+                analysis_functioncall_node(node.node, back_node, vul_function, vul_lineno, function_params)
 
             if isinstance(node.node, php.Variable) and vul_function == 'print':  # 直接输出变量信息
-                analysis_variable_node(node.node, back_node, vul_function, vul_lineno)
+                analysis_variable_node(node.node, back_node, vul_function, vul_lineno, function_params)
 
             if isinstance(node.node, php.BinaryOp) and vul_function == 'print':
-                analysis_binaryop_node(node.node, back_node, vul_function, vul_lineno)
+                analysis_binaryop_node(node.node, back_node, vul_function, vul_lineno, function_params)
 
             if isinstance(node.node, php.ArrayOffset) and vul_function == 'print':
                 analysis_arrayoffset_node(node.node, vul_function, vul_lineno)
@@ -495,50 +498,52 @@ def analysis_echo_print(node, back_node, vul_function, vul_lineno):
         elif isinstance(node, php.Echo):
             for k_node in node.nodes:
                 if isinstance(k_node, php.FunctionCall):  # 判断节点中是否有函数调用节点
-                    analysis_functioncall_node(k_node, back_node, vul_function, vul_lineno)  # 将含有函数调用的节点进行分析
+                    analysis_functioncall_node(k_node, back_node, vul_function, vul_lineno, function_params)  # 将含有函数调用的节点进行分析
 
                 if isinstance(k_node, php.Variable) and vul_function == 'echo':
-                    analysis_variable_node(k_node, back_node, vul_function, vul_lineno)
+                    analysis_variable_node(k_node, back_node, vul_function, vul_lineno), function_params
 
                 if isinstance(k_node, php.BinaryOp) and vul_function == 'echo':
-                    analysis_binaryop_node(k_node, back_node, vul_function, vul_lineno)
+                    analysis_binaryop_node(k_node, back_node, vul_function, vul_lineno, function_params)
 
                 if isinstance(k_node, php.ArrayOffset) and vul_function == 'echo':
                     analysis_arrayoffset_node(k_node, vul_function, vul_lineno)
 
 
-def analysis_eval(node, vul_function, back_node, vul_lineno):
+def analysis_eval(node, vul_function, back_node, vul_lineno, function_params=None):
     """
     处理eval类型节点-->判断节点类型-->不同If分支回溯判断参数是否可控-->输出结果
     :param node:
     :param vul_function:
     :param back_node:
     :param vul_lineno:
+    :param function_params:
     :return:
     """
     global scan_results
 
     if vul_function == 'eval' and int(node.lineno) == int(vul_lineno):
         if isinstance(node.expr, php.Variable):
-            analysis_variable_node(node.expr, back_node, vul_function, vul_lineno)
+            analysis_variable_node(node.expr, back_node, vul_function, vul_lineno, function_params)
 
         if isinstance(node.expr, php.FunctionCall):
-            analysis_functioncall_node(node.expr, back_node, vul_function, vul_lineno)
+            analysis_functioncall_node(node.expr, back_node, vul_function, vul_lineno, function_params)
 
         if isinstance(node.expr, php.BinaryOp):
-            analysis_binaryop_node(node.expr, back_node, vul_function, vul_lineno)
+            analysis_binaryop_node(node.expr, back_node, vul_function, vul_lineno, function_params)
 
         if isinstance(node.expr, php.ArrayOffset):
             analysis_arrayoffset_node(node.expr, vul_function, vul_lineno)
 
 
-def analysis_file_inclusion(node, vul_function, back_node, vul_lineno):
+def analysis_file_inclusion(node, vul_function, back_node, vul_lineno, function_params=None):
     """
     处理include/require类型节点-->判断节点类型-->不同If分支回溯判断参数是否可控-->输出结果
     :param node:
     :param vul_function:
     :param back_node:
     :param vul_lineno:
+    :param function_params:
     :return:
     """
     global scan_results
@@ -548,13 +553,13 @@ def analysis_file_inclusion(node, vul_function, back_node, vul_lineno):
         logger.debug('[AST-INCLUDE] {l}-->{r}'.format(l=vul_function, r=vul_lineno))
 
         if isinstance(node.expr, php.Variable):
-            analysis_variable_node(node.expr, back_node, vul_function, vul_lineno)
+            analysis_variable_node(node.expr, back_node, vul_function, vul_lineno, function_params)
 
         if isinstance(node.expr, php.FunctionCall):
-            analysis_functioncall_node(node.expr, back_node, vul_function, vul_lineno)
+            analysis_functioncall_node(node.expr, back_node, vul_function, vul_lineno, function_params)
 
         if isinstance(node.expr, php.BinaryOp):
-            analysis_binaryop_node(node.expr, back_node, vul_function, vul_lineno)
+            analysis_binaryop_node(node.expr, back_node, vul_function, vul_lineno, function_params)
 
         if isinstance(node.expr, php.ArrayOffset):
             analysis_arrayoffset_node(node.expr, vul_function, vul_lineno)
@@ -587,61 +592,54 @@ def set_scan_results(is_co, cp, expr_lineno, sink, param, vul_lineno):
         scan_results += results
 
 
-def analysis(nodes, vul_function, back_node, vul_lineo, flag=0, function_params=None):
+def analysis(nodes, vul_function, back_node, vul_lineo, function_params=None):
     """
     调用FunctionCall-->analysis_functioncall分析调用函数是否敏感
     :param nodes: 所有节点
     :param vul_function: 要判断的敏感函数名
     :param back_node: 各种语法结构里面的语句
     :param vul_lineo: 漏洞函数所在行号
-    :param flag: flag用来判断此时nodes来源是否是自定义函数体
     :param function_params: 自定义函数的所有参数列表
     :return:
     """
     for node in nodes:
         if isinstance(node, php.FunctionCall):  # 函数直接调用，不进行赋值
-            if flag == 1:
-                anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
-
-            else:
-                analysis_functioncall(node, back_node, vul_function, vul_lineo)
+            anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
 
         elif isinstance(node, php.Assignment):  # 函数调用在赋值表达式中
             if isinstance(node.expr, php.FunctionCall):
-                if flag == 1:
-                    anlysis_function(node.expr, back_node, vul_function, function_params, vul_lineo)
+                anlysis_function(node.expr, back_node, vul_function, function_params, vul_lineo)
 
-                else:
-                    analysis_functioncall(node.expr, back_node, vul_function, vul_lineo)
+            if isinstance(node.expr, php.Eval):
+                analysis_eval(node.expr, vul_function, back_node, vul_lineo, function_params)
 
         elif isinstance(node, php.Print) or isinstance(node, php.Echo):
-            analysis_echo_print(node, back_node, vul_function, vul_lineo)
+            analysis_echo_print(node, back_node, vul_function, vul_lineo, function_params)
 
         elif isinstance(node, php.Silence):
             nodes = get_silence_params(node)
             analysis(nodes, vul_function, back_node, vul_lineo)
 
         elif isinstance(node, php.Eval):
-            analysis_eval(node, vul_function, back_node, vul_lineo)
+            analysis_eval(node, vul_function, back_node, vul_lineo, function_params)
 
         elif isinstance(node, php.Include) or isinstance(node, php.Require):
-            analysis_file_inclusion(node, vul_function, back_node, vul_lineo)
+            analysis_file_inclusion(node, vul_function, back_node, vul_lineo, function_params)
 
         elif isinstance(node, php.If):  # 函数调用在if-else语句中时
-            analysis_if_else(node, back_node, vul_function, vul_lineo)
+            analysis_if_else(node, back_node, vul_function, vul_lineo, function_params)
 
         elif isinstance(node, php.While) or isinstance(node, php.For):  # 函数调用在循环中
             if isinstance(node.node, php.Block):
-                analysis(node.node.nodes, vul_function, back_node, vul_lineo)
+                analysis(node.node.nodes, vul_function, back_node, vul_lineo, function_params)
 
         elif isinstance(node, php.Function) or isinstance(node, php.Method):
             function_body = []
             function_params = get_function_params(node.params)
-            function_params.append(node.lineno)  # function_params为列表，放自定义函数参数和自定义函数行号
-            analysis(node.nodes, vul_function, function_body, vul_lineo, flag=1, function_params=function_params)
+            analysis(node.nodes, vul_function, function_body, vul_lineo, function_params=function_params)
 
         elif isinstance(node, php.Class):
-            analysis(node.nodes, vul_function, back_node, vul_lineo)
+            analysis(node.nodes, vul_function, back_node, vul_lineo, function_params)
 
         back_node.append(node)
 
@@ -661,8 +659,8 @@ def scan_parser(code_content, sensitive_func, vul_lineno):
         all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)
         for func in sensitive_func:  # 循环判断代码中是否存在敏感函数，若存在，递归判断参数是否可控;对文件内容循环判断多次
             back_node = []
-            analysis(all_nodes, func, back_node, int(vul_lineno), flag=0, function_params=None)
+            analysis(all_nodes, func, back_node, int(vul_lineno), function_params=None)
     except SyntaxError as e:
-        logger.debug(e)
+        logger.warning('[AST] [ERROR]:{e}'.format(e=e))
 
     return scan_results

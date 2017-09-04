@@ -29,7 +29,7 @@ class Dependencies(object):
     def dependencies(self):
         file_path, flag = self.find_file()
         if flag == 0:  # flag == 0
-            logger.warning('Dependency analysis cannot be done without finding dependency files')
+            logger.debug('Dependency analysis cannot be done without finding dependency files')
             return False
         if flag == 1:
             self.find_python_pip(file_path)
