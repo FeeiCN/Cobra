@@ -136,9 +136,9 @@ def test_is_update():
 
 def test_scan():
     res = scan_cve(target_directory)
-    assert res is True
+    assert isinstance(res, list)
 
 
 def test_scan_single():
     res = scan_single(target_directory, rule_cve_path)
-    assert res is True
+    assert isinstance(res[0], dict)
