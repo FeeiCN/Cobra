@@ -8,40 +8,21 @@
 [![asciicast](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_03.jpg)](https://asciinema.org/a/132572)
 
 ## Introduction（介绍）
-Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的大部分显著的安全问题和漏洞。
+Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的**大部分显著**的安全问题和漏洞。
 
 ## Features（特点）
-#### Multi-language support（支持多种开发语言）
+#### Multi-language Supported（支持多种开发语言）
 > 支持PHP、Java等开发语言，并支持数十种类型文件。
 
-#### Supported Multi-Vulnerabilities（支持多种漏洞类型）
+#### Multi-Vulnerabilities Supported（支持多种漏洞类型）
 > 首批开放数万条不安全的依赖检查规则和数十条代码安全扫描规则，后续将持续开放更多扫描规则。
 
-#### GUI、CLI、API（命令行模式和API模式）
+#### GUI/CLI/API Mode（命令行模式和API模式）
 > 提供本地Web Server服务，可使用GUI可视化操作，也可支持本地API接口，方便和其它系统（发布系统、CI等）对接扩展。
 
-## Snapshot（截图）
+## Screenshot（截图）
 [![report01](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_01.jpg)](https://wufeifei.github.io/cobra/api)
 [![report02](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_02.jpg)](https://wufeifei.github.io/cobra/api)
 
-## Documents（文档）
-- 安装
-    - [Cobra安装](https://wufeifei.github.io/cobra/installation)
-- 基础使用
-    - [CLI模式使用方法](https://wufeifei.github.io/cobra/cli)
-    - [API模式使用方法](https://wufeifei.github.io/cobra/api)
-- 进阶使用
-    - [高级功能配置](https://wufeifei.github.io/cobra/config)
-    - [升级框架和规则源](https://wufeifei.github.io/cobra/upgrade)
-- 规则开发规范
-    - [规则模板](https://wufeifei.github.io/cobra/rule_template)
-    - [规则样例](https://wufeifei.github.io/cobra/rule_demo)
-    - [规则开发流程](https://wufeifei.github.io/cobra/rule_flow)
-- 框架引擎
-    - [开发语言和文件类型定义](https://wufeifei.github.io/cobra/languages)
-    - [漏洞类型定义](https://wufeifei.github.io/cobra/labels)
-    - [危害等级定义](https://wufeifei.github.io/cobra/level)
-    - [程序目录结构](https://wufeifei.github.io/cobra/tree)
-- 贡献代码
-    - [单元测试](https://wufeifei.github.io/cobra/test)
-    - [贡献者](https://wufeifei.github.io/cobra/contributors)
+## Links（链接）
+- [Cobra文档](https://wufeifei.github.io/cobra/)
