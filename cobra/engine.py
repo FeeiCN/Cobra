@@ -16,7 +16,6 @@ import re
 import json
 import portalocker
 import traceback
-import multiprocessing
 from . import const
 from .rule import Rule
 from .utils import Tool
@@ -139,7 +138,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
 
-    pool = multiprocessing.Pool()
+    # pool = multiprocessing.Pool()
     if len(rules) == 0:
         logger.critical('no rules!')
         return False
@@ -157,12 +156,12 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         ))
         if single_rule['language'] in languages:
             single_rule['extensions'] = languages[single_rule['language']]['extensions']
-            pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
+            result = scan_single(target_directory, single_rule)
+            store(result)
         else:
             logger.critical('unset language, continue...')
             continue
-    pool.close()
-    pool.join()
+
 
     # print
     data = []
