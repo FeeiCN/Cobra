@@ -21,16 +21,10 @@ import threading
 import time
 import traceback
 
-try:
-    # Python 2
-    from urlparse import unquote
-except ImportError:
-    # Python 3
-    from urllib.parse import unquote
-
 import requests
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
+from werkzeug.urls import url_unquote
 
 from . import cli
 from .cli import get_sid
@@ -267,7 +261,7 @@ class ResultDetail(Resource):
             return {'code': 1003, 'msg': 'Only support json, please post json data.'}
 
         sid = data.get('sid')
-        file_path = unquote(data.get('file_path'))
+        file_path = url_unquote(data.get('file_path'))
 
         if not sid or sid == '':
             return {"code": 1002, "msg": "sid is required."}
