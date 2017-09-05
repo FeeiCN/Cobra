@@ -235,12 +235,6 @@ class File(object):
         :param line_rule:
         :return:
         """
-        # param = ['sed', "-n", line_rule, self.file_path]
-        # p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # result, err = p.communicate()
-        # if len(err) is not 0:
-        #     logger.critical('[PICKUP] {err}'.format(err=err.strip()))
-
         result = get_line(self.file_path, line_rule)
         result = "\n".join(result)
 

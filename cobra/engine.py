@@ -274,30 +274,20 @@ class SingleRule(object):
             explode_dirs = ['.svn', '.cvs', '.hg', '.git', '.bzr']
             for explode_dir in explode_dirs:
                 filters.append('--exclude-dir={0}'.format(explode_dir))
-
-            # -s Suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
-            # param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [match, self.target_directory]
-            # files, file_count, time_consume = Directory(self.target_directory).collect_files()
         try:
             if match:
-                # p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                # result, error = p.communicate()
                 f = File(self.files, self.target_directory)
                 result = f.grep(match)
             else:
                 result = ""
-                # error = ""
         except Exception as e:
             traceback.print_exc()
             logger.debug('match exception ({e})'.format(e=e.message))
             return None
         try:
             result = result.decode('utf-8')
-            # error = error.decode('utf-8')
         except AttributeError as e:
             pass
-        # if len(error) is not 0:
-        #     logger.warning('[CVI-{cvi}] [ORIGIN] [ERROR] {err}'.format(cvi=self.sr['id'], err=error.strip()))
 
         return "".join(result)
 

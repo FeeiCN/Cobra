@@ -81,21 +81,14 @@ class CAST(object):
             logger.info("[AST] Undefined language's functions regex {0}".format(self.language))
             return False
         regex_functions = self.regex[self.language]['functions']
-        # param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
-        # p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # result, error = p.communicate()
-        # files, file_count, time_consume = Directory(self.target_directory).collect_files()
         f = File_init(self.files, self.target_directory)
         result = f.grep(regex_functions)
         result = "".join(result)
 
         try:
             result = result.decode('utf-8')
-            # error = error.decode('utf-8')
         except AttributeError as e:
             pass
-        # if len(error) is not 0:
-        #     logger.critical('[AST] {err}'.format(err=error.strip()))
         if len(result):
             functions = {}
             lines = result.strip().split("\n")
@@ -131,7 +124,7 @@ class CAST(object):
                         'end': None  # next function's start
                     }
                 else:
-                    logger.info("[AST] Can't get function name: {0}".format(line))
+                    logger.warning("[AST] Can't get function name: {0}".format(line))
             end = sum(1 for l in open(self.file_path))
             for name, value in functions.items():
                 if value['end'] is None:
