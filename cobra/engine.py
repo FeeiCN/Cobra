@@ -329,7 +329,7 @@ class SingleRule(object):
     def parse_match(self, single_match):
         mr = VulnerabilityResult()
         # grep result
-        if ':' in single_match:
+        if '||' in single_match:
             #
             # Rules
             #
