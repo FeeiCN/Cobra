@@ -147,4 +147,10 @@ def test_close_api():
     while not os.path.exists(s_sid_file):
         time.sleep(1)
 
+    # wait for port closed
+    s = socket.socket()
+    s.settimeout(0.5)
+    while s.connect_ex(('localhost', 5000)) == 0:
+        time.sleep(0.5)
+
     assert not os.path.exists(config_path)
