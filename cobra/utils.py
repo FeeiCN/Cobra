@@ -395,10 +395,28 @@ def get_safe_ex_string(ex, encoding=None):
 
 class Tool:
     def __init__(self):
+
         # `grep` (`ggrep` on Mac)
-        self.grep = '/bin/grep'
+        if os.path.isfile('/bin/grep'):
+            self.grep = '/bin/grep'
+        elif os.path.isfile('/usr/bin/grep'):
+            self.grep = '/usr/bin/grep'
+        elif os.path.isfile('/usr/local/bin/grep'):
+            self.grep='/usr/local/bin/grep'
+        else:
+            self.grep = 'grep'
+
+
         # `find` (`gfind` on Mac)
-        self.find = '/bin/find'
+        if os.path.isfile('/bin/find'):
+            self.find = '/bin/find'
+        elif os.path.isfile('/usr/bin/find'):
+            self.find = '/usr/bin/find'
+        elif os.path.isfile('/usr/local/bin/find'):
+            self.find='/usr/local/bin/find'
+        else:
+            self.find = 'find'
+
 
         if 'darwin' == sys.platform:
             ggrep = ''
