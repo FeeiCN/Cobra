@@ -147,8 +147,4 @@ def test_close_api():
     while not os.path.exists(s_sid_file):
         time.sleep(1)
 
-    # whether port 5000 is closed
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(0.5)
-    assert s.connect_ex(('localhost', 5000)) != 0
     assert not os.path.exists(config_path)
