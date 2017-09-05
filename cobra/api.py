@@ -204,7 +204,7 @@ class FileUpload(Resource):
             code, result = 1001, {'sid': a_sid}
             return {'code': code, 'result': result}
         else:
-            return {'code': 1002, 'msg': "This extension can't support!"}
+            return {'code': 1002, 'result': "This extension can't support!"}
 
 
 class ResultData(Resource):
