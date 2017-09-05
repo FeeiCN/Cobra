@@ -35,7 +35,7 @@ def test_add_job():
     url = "http://127.0.0.1:5000/api/add"
     post_data = {
         "key": "your_secret_key",
-        "target": ["tests/vulnerabilities"],
+        "target": [os.path.join(project_directory, 'tests/vulnerabilities')]
     }
     headers = {
         "Content-Type": "application/json",
@@ -106,22 +106,11 @@ def test_close_api():
     p.join()
 
     # wait for scan process
-    while True:
-        cobra_process = os.popen('ps aux | grep python').read()
-        cobra_process_num = len(cobra_process.strip().split('\n'))
-        if cobra_process_num <= 3:
-            # grep python
-            # sh -c ps aux | grep python
-            # python pytest
-            break
+    s = socket.socket()
+    s.settimeout(0.5)
+    while s.connect_ex(('localhost', 5000)) == 0:
         time.sleep(1)
 
     # whether port 5000 is closed
-    s = socket.socket()
-    s.settimeout(0.5)
-    try:
-        assert s.connect_ex(('localhost', 5000)) != 0
-    finally:
-        s.close()
-
+    assert s.connect_ex(('localhost', 5000)) != 0
     assert not os.path.exists(config_path)
