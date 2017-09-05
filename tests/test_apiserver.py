@@ -19,7 +19,7 @@ import time
 import os
 import shutil
 import socket
-from cobra.config import project_directory
+from cobra.config import project_directory, running_path
 from cobra.api import start
 
 p = multiprocessing.Process(target=start, args=('127.0.0.1', 5000, False))
@@ -29,6 +29,9 @@ time.sleep(1)
 config_path = os.path.join(project_directory, 'config')
 template_path = os.path.join(project_directory, 'config.template')
 shutil.copyfile(template_path, config_path)
+
+a_sid = ''
+s_sid = ''
 
 
 def test_add_job():
@@ -41,6 +44,17 @@ def test_add_job():
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
+    result = json.loads(re.text)
+
+    global a_sid
+    a_sid = result.get('result').get('sid')
+
+    a_sid_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
+    with open(a_sid_file, 'r') as f:
+        scan_list = json.load(f)
+    global s_sid
+    s_sid = scan_list.get('sids').keys()[0]
+
     assert "1001" in re.text
     assert "Add scan job successfully" in re.text
     assert "sid" in re.text
@@ -50,15 +64,15 @@ def test_job_status():
     url = "http://127.0.0.1:5000/api/status"
     post_data = {
         "key": "your_secret_key",
-        "sid": 24,
+        "sid": a_sid,
     }
     headers = {
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    assert "1004" in re.text
+    assert "1001" in re.text
     assert "msg" in re.text
-    assert "sid" in re.text
+    assert a_sid in re.text
     assert "status" in re.text
     assert "report" in re.text
 
@@ -66,28 +80,41 @@ def test_job_status():
 def test_result_data():
     url = 'http://127.0.0.1:5000/api/list'
     post_data = {
-        'sid': 24,
+        'sid': s_sid,
     }
     headers = {
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    assert '1002' in re.text
-    assert 'No such target' in re.text
+
+    s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+    if os.path.exists(s_sid_file):
+        assert '1001' in re.text
+        assert 'result' in re.text
+        assert 'rule_filter' in re.text
+    else:
+        assert '1002' in re.text
+        assert 'No such target' in re.text
 
 
 def test_result_detail():
     url = 'http://127.0.0.1:5000/api/detail'
     post_data = {
-        'sid': 'abcdeft',
-        'file_path': 'setup.py',
+        'sid': s_sid,
+        'file_path': 'v.php',
     }
     headers = {
         "Content-Type": "application/json",
     }
     re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
-    assert '1002' in re.text
-    assert 'No such target' in re.text
+
+    s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+    if os.path.exists(s_sid_file):
+        assert '1001' in re.text
+        assert 'file_content' in re.text
+    else:
+        assert '1002' in re.text
+        assert 'No such target' in re.text
 
 
 def test_index():
@@ -105,12 +132,13 @@ def test_close_api():
     p.terminate()
     p.join()
 
-    # wait for scan process
-    s = socket.socket()
-    s.settimeout(0.5)
-    while s.connect_ex(('localhost', 5000)) == 0:
+    # wait for scan data
+    s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+    while not os.path.exists(s_sid_file):
         time.sleep(1)
 
     # whether port 5000 is closed
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(0.5)
     assert s.connect_ex(('localhost', 5000)) != 0
     assert not os.path.exists(config_path)
