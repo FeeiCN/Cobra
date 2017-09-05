@@ -20,7 +20,6 @@ from . import const
 from .rule import Rule
 from .utils import Tool
 from .log import logger
-from .pickup import Directory
 from .config import running_path
 from .result import VulnerabilityResult
 from .cast import CAST
@@ -75,7 +74,10 @@ class Running:
                 f.writelines(data)
 
     def data(self, data=None):
-        file_path = os.path.join(running_path, '{sid}_data'.format(sid=self.sid))
+
+        file_path = os.path.abspath(running_path + '/{sid}_data'.format(sid=self.sid))
+        print file_path
+
         if data is None:
             with open(file_path) as f:
                 portalocker.lock(f, portalocker.LOCK_EX)
@@ -114,15 +116,15 @@ def score2level(score):
         return '{l}-{s}: {ast}'.format(l=level[:1], s=score, ast='☆' * score)
 
 
-def scan_single(target_directory, single_rule):
+def scan_single(target_directory, single_rule, files=None):
     try:
-        return SingleRule(target_directory, single_rule).process()
+        return SingleRule(target_directory, single_rule, files).process()
     except Exception as e:
         traceback.print_exc()
 
 
 def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=None, framework=None, file_count=0,
-         extension_count=0):
+         extension_count=0, files=None):
     r = Rule()
     vulnerabilities = r.vulnerabilities
     languages = r.languages
@@ -156,7 +158,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         ))
         if single_rule['language'] in languages:
             single_rule['extensions'] = languages[single_rule['language']]['extensions']
-            result = scan_single(target_directory, single_rule)
+            result = scan_single(target_directory, single_rule, files)
             store(result)
         else:
             logger.critical('unset language, continue...')
@@ -211,11 +213,12 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
 
 
 class SingleRule(object):
-    def __init__(self, target_directory, single_rule):
+    def __init__(self, target_directory, single_rule, files):
         self.target_directory = target_directory
         self.find = Tool().find
         self.grep = Tool().grep
         self.sr = single_rule
+        self.files = files
         # Single Rule Vulnerabilities
         """
         [
@@ -260,12 +263,12 @@ class SingleRule(object):
 
             # -s Suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
             # param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [match, self.target_directory]
-            files, file_count, time_consume = Directory(self.target_directory).collect_files()
+            # files, file_count, time_consume = Directory(self.target_directory).collect_files()
         try:
             if match:
                 # p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 # result, error = p.communicate()
-                f = File(files, self.target_directory)
+                f = File(self.files, self.target_directory)
                 result = f.grep(match)
             else:
                 result = ""
@@ -308,7 +311,7 @@ class SingleRule(object):
                 continue
             is_test = False
             try:
-                is_vulnerability, status_code = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+                is_vulnerability, status_code = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index, files=self.files).scan()
                 if is_vulnerability:
                     logger.debug('[CVI-{cvi}] [RET] Found {code}'.format(cvi=self.sr['id'], code=status_code))
                     self.rule_vulnerabilities.append(vulnerability)
@@ -362,7 +365,7 @@ class SingleRule(object):
 
 
 class Core(object):
-    def __init__(self, target_directory, vulnerability_result, single_rule, project_name, white_list, test=False, index=None):
+    def __init__(self, target_directory, vulnerability_result, single_rule, project_name, white_list, test=False, index=None, files=None):
         """
         Initialize
         :param: target_directory:
@@ -372,6 +375,7 @@ class Core(object):
         :param white_list: white-list
         :param test: is test
         :param index: vulnerability index
+        :param files: core file list
         """
         self.data = []
 
@@ -380,6 +384,7 @@ class Core(object):
         self.file_path = vulnerability_result.file_path.strip()
         self.line_number = vulnerability_result.line_number
         self.code_content = vulnerability_result.code_content.strip()
+        self.files = files
 
         self.rule_match = single_rule['match']
         self.rule_match_mode = single_rule['match-mode']
@@ -548,7 +553,7 @@ class Core(object):
             found_vul = True
             if self.rule_repair is not None:
                 logger.debug('[VERIFY-REPAIR]')
-                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content, files=self.files)
                 is_repair, data = ast.match(self.rule_repair, self.repair_block)
                 if is_repair:
                     # fixed
@@ -571,7 +576,7 @@ class Core(object):
             found_vul = False
             if self.file_path[-3:].lower() == 'php':
                 try:
-                    ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                    ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content, files=self.files)
                     # Match2
                     if self.rule_match_mode == const.mm_function_param_controllable:
                         rule_match = self.rule_match.strip('()').split('|')

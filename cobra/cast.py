@@ -13,8 +13,6 @@
 """
 import os
 import re
-import subprocess
-from .utils import Tool
 from .log import logger
 from .rule import block
 from .pickup import File
@@ -25,13 +23,14 @@ from .pickup import Directory
 class CAST(object):
     languages = ['php', 'java', 'm']
 
-    def __init__(self, rule, target_directory, file_path, line, code, ):
+    def __init__(self, rule, target_directory, file_path, line, code, files=None):
         self.target_directory = target_directory
         self.data = []
         self.rule = rule
         self.file_path = file_path
         self.line = line
         self.code = code
+        self.files = files
         self.param_name = None
         self.param_value = None
         self.language = None
@@ -85,8 +84,8 @@ class CAST(object):
         # param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
         # p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         # result, error = p.communicate()
-        files, file_count, time_consume = Directory(self.target_directory).collect_files()
-        f = File_init(files, self.target_directory)
+        # files, file_count, time_consume = Directory(self.target_directory).collect_files()
+        f = File_init(self.files, self.target_directory)
         result = f.grep(regex_functions)
         result = "".join(result)
 

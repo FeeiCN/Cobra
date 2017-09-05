@@ -80,7 +80,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
 
         # scan
         scan(target_directory=target_directory, a_sid=a_sid, s_sid=s_sid, special_rules=pa.special_rules,
-             language=main_language, framework=main_framework, file_count=file_count, extension_count=len(files))
+             language=main_language, framework=main_framework, file_count=file_count, extension_count=len(files), files=files)
     except KeyboardInterrupt as e:
         logger.critical("[!] KeyboardInterrupt, exit...")
         exit()
