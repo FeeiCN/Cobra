@@ -92,3 +92,4 @@
 - 贡献代码
     - [单元测试](https://wufeifei.github.io/cobra/test)
     - [贡献者](https://wufeifei.github.io/cobra/contributors)
+    - [如何贡献代码？](https://github.com/wufeifei/cobra/blob/master/CONTRIBUTING.md)
