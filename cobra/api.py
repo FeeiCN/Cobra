@@ -42,6 +42,8 @@ except ImportError:
 
 q = queue.Queue()
 app = Flask(__name__, static_folder='templates/asset')
+running_host = '0.0.0.0'
+running_port = 5000
 
 
 def producer(task):
@@ -309,7 +311,8 @@ def summary():
         return render_template(template_name_or_list='index.html',
                                key=key)
 
-    status_url = request.url_root + 'api/status'
+    status_url = 'http://{host}:{port}/api/status'.format(host=running_host, port=running_port)
+    logger.critical(status_url)
     post_data = {
         'key': key,
         'sid': a_sid,
@@ -481,6 +484,9 @@ def start(host, port, debug):
         i.start()
 
     try:
+        global running_port, running_host
+        running_host = host if host != '0.0.0.0' else '127.0.0.1'
+        running_port = port
         app.run(debug=debug, host=host, port=int(port), threaded=True, processes=1)
     except socket.error as v:
         if v.errno == errno.EACCES:
