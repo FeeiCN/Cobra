@@ -82,6 +82,11 @@ class Detection(object):
         return 'Unknown Framework'
 
     def dependency_scan(self, root):
+        """
+        根据三方依赖识别项目使用框架类型
+        :param root:
+        :return:
+        """
         framework_infos = self.dependency_framework(root)
         dependencies = Dependencies(self.target_directory)
         dependencies_info = dependencies.get_framework
@@ -96,6 +101,11 @@ class Detection(object):
 
     @staticmethod
     def dependency_framework(root):
+        """
+
+        :param root:
+        :return:
+        """
         framework_infos = {}
         for framework in root:
             rule_info = {

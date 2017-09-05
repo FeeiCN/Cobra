@@ -69,8 +69,6 @@ $(function () {
         detail: function (vid) {
             $('.vulnerabilities_list li').removeClass('active');
             $('li[data-id=' + vid + ']').addClass('active');
-            // hide loading
-            $('.CodeMirror .cm-loading').hide();
             vid = Number(vid);
             var sid = $('#search_target').val();
             var data = vul_list_origin.vulnerabilities[vid - 1];
@@ -82,6 +80,8 @@ $(function () {
                 data: JSON.stringify({sid: sid, file_path: data.file_path}),
                 dataType: 'json',
                 success: function (result) {
+                    // hide loading
+                    $('.CodeMirror .cm-loading').hide();
                     if (result.code === 1001) {
                         data.code_content = result.result.file_content;
                         data.language = result.result.extension;
@@ -145,6 +145,10 @@ $(function () {
                     } else {
                         alert(result.msg);
                     }
+                },
+                error: function (result) {
+                    alert('Fetch detail failed.');
+                    $('.CodeMirror .cm-loading').hide();
                 }
             });
         },

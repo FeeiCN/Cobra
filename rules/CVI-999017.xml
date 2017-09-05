@@ -16084,7 +16084,8 @@
 		<product>nfsen:1.3.7</product>
 	</cve>
 	<cve id="CVE-2017-9138" level="LOW">
-		<product>f1200_firmware:1.2.0.19</product>
+
+        <product>f1200_firmware:1.2.0.19</product>
 		<product>fh1202_firmware:1.2.0.19</product>
 		<product>f1202_firmware:1.2.0.19</product>
 	</cve>
