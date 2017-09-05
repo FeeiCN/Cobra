@@ -427,10 +427,10 @@ def secure_filename(filename):
     _filename_utf8_strip_re = re.compile(u"[^\u4e00-\u9fa5A-Za-z0-9_.\-\+]")
     _windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4', 'LPT1', 'LPT2', 'LPT3', 'PRN', 'NUL')
 
-    if PY2:
-        text_type = unicode
-    else:
-        text_type = str
+    try:
+        text_type = unicode  # Python 2
+    except NameError:
+        text_type = str      # Python 3
 
     if isinstance(filename, text_type):
         from unicodedata import normalize
