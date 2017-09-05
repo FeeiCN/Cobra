@@ -98,7 +98,7 @@ class CAST(object):
                 if line == '':
                     logger.info('[AST] Empty')
                     continue
-                line_arr = line.split(':')
+                line_arr = line.split('||')
                 if len(line_arr) < 2:
                     logger.info("[AST] Not found(:)")
 
@@ -107,7 +107,7 @@ class CAST(object):
                 if len(string) >= 1 and string[0] != '':
                     logger.info("[AST] This function is annotation")
 
-                function_name = re.findall(regex_functions, line_arr[1].strip())
+                function_name = re.findall(regex_functions, line_arr[2].strip())
                 if len(function_name) >= 1:
                     if len(function_name) == 2:
                         if function_name[0] != '':
@@ -117,10 +117,10 @@ class CAST(object):
                     else:
                         function_name = function_name[0]
                     if index > 0 and prev_function_name in functions:
-                        functions[prev_function_name]['end'] = line_arr[0]
+                        functions[prev_function_name]['end'] = line_arr[1]
                     prev_function_name = function_name
                     functions[function_name] = {
-                        'start': line_arr[0],
+                        'start': line_arr[1],
                         'end': None  # next function's start
                     }
                 else:

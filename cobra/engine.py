@@ -337,8 +337,8 @@ class SingleRule(object):
             # v.php:2:$password 2017:01:01
             # v.exe Binary file
             try:
-                mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
-                mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
+                mr.line_number, mr.code_content = re.findall(r'\|\|(\d+)\|\|(.*)', single_match)[0]
+                mr.file_path = single_match.split(u'||{n}||'.format(n=mr.line_number))[0]
             except Exception as e:
                 logger.warning('match line parse exception')
                 mr.file_path = ''

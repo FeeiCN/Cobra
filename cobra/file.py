@@ -69,7 +69,7 @@ class File:
                     line_number += 1
                     # print line, line_number
                     if re.search(reg, line, re.I):
-                        result.append(self.target + ffile + ':' + str(line_number) + ':' + line)
+                        result.append(self.target + ffile + '||' + str(line_number) + '||' + line)
 
         return result
 
