@@ -12,15 +12,17 @@
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
 
-import requests
 import json
 import multiprocessing
-import time
 import os
 import shutil
 import socket
-from cobra.config import project_directory, running_path
+import time
+
+import requests
+
 from cobra.api import start
+from cobra.config import project_directory, running_path
 
 p = multiprocessing.Process(target=start, args=('127.0.0.1', 5000, False))
 p.start()
@@ -50,10 +52,18 @@ def test_add_job():
     a_sid = result.get('result').get('sid')
 
     a_sid_file = os.path.join(running_path, '{sid}_list'.format(sid=a_sid))
-    with open(a_sid_file, 'r') as f:
-        scan_list = json.load(f)
+
+    # wait writing scan_list
+    while True:
+        with open(a_sid_file, 'r') as f:
+            scan_list = json.load(f)
+            print(scan_list)
+        if len(scan_list.get('sids')) > 0:
+            break
+        time.sleep(0.1)
+
     global s_sid
-    s_sid = scan_list.get('sids').keys()[0]
+    s_sid = list(scan_list.get('sids').keys())[0]
 
     assert "1001" in re.text
     assert "Add scan job successfully" in re.text
