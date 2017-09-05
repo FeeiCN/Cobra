@@ -81,6 +81,7 @@
     border-top: 1px solid #282828;
     padding: 5px;
     min-height: 75px;
+    word-wrap: break-word;
 }
 
 .vulnerabilities_list > li.critical {
