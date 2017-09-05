@@ -95,6 +95,12 @@ def get_silence_params(node):
     if isinstance(node.expr, php.FunctionCall):
         param.append(node.expr)
 
+    if isinstance(node.expr, php.Eval):
+        param.append(node.expr)
+
+    if isinstance(node.expr, php.Assignment):
+        param.append(node.expr)
+
     return param
 
 
@@ -608,6 +614,7 @@ def analysis(nodes, vul_function, back_node, vul_lineo, function_params=None):
     :param function_params: 自定义函数的所有参数列表
     :return:
     """
+    buffer_ = []
     for node in nodes:
         if isinstance(node, php.FunctionCall):  # 函数直接调用，不进行赋值
             anlysis_function(node, back_node, vul_function, function_params, vul_lineo)
@@ -618,6 +625,10 @@ def analysis(nodes, vul_function, back_node, vul_lineo, function_params=None):
 
             if isinstance(node.expr, php.Eval):
                 analysis_eval(node.expr, vul_function, back_node, vul_lineo, function_params)
+
+            if isinstance(node.expr, php.Silence):
+                buffer_.append(node.expr)
+                analysis(buffer_, vul_function, back_node, vul_lineo, function_params)
 
         elif isinstance(node, php.Print) or isinstance(node, php.Echo):
             analysis_echo_print(node, back_node, vul_function, vul_lineo, function_params)
