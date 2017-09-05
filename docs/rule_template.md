@@ -69,3 +69,6 @@
 | in-file | 由第一条规则触发的文件内 |
 | in-file-up | 由第一条规则触发的所在行之上，所在文件之内 |
 | in-file-down | 由第一条规则触发的所在行之下，所在文件之内 |
+
+---
+下一章：[规则样例](https://wufeifei.github.io/cobra/rule_demo)

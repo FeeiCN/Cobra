@@ -1,13 +1,27 @@
 <!DOCTYPE html>
+<!--[if IE 8]>
+<html class="ie ie8"> <![endif]-->
+<!--[if IE 9]>
+<html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
     <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <title>Task Information</title>
+
+    <!--[if lt IE 9]>
+    <script src="asset/js/html5shiv.min.js"></script>
+    <script src="asset/js/respond.min.js"></script>
+    <![endif]-->
+
 </head>
 <body>
 <div class="container-fluid">
@@ -46,6 +60,10 @@
                                             <tr>
                                                 <td>Total number of targets</td>
                                                 <td>{{ total_targets_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Number of unfinished targets</td>
+                                                <td>{{ not_finished_number }}</td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -89,13 +107,15 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <h4>Vulnerability distribution statistics</h4>
+                            <h4>Top 10 vulnerability distribution statistics</h4>
                             <div id="vul_distributing" style="height:400px;">
-                                <img src="{{ url_for('static', filename='img/congratulations.jpg') }}"
-                                     class="congratulations"
-                                     alt="">
-                                <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no
-                                    vulnerability was detected :)</h3>
+                                {% if vuls | length == 0 %}
+                                    <img src="{{ url_for('static', filename='img/congratulations.jpg') }}"
+                                         class="congratulations"
+                                         alt="">
+                                    <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no
+                                        vulnerability was detected :)</h3>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -112,6 +132,7 @@
                                                 <thead>
                                                 <tr>
                                                     <th>Target</th>
+                                                    <th>Branch / Tag</th>
                                                     <th>Language</th>
                                                     <th>Framework</th>
                                                     <th>Files</th>
@@ -124,8 +145,11 @@
                                                 <tbody>
                                                 {% for target_info in targets %}
                                                     <tr>
-                                                        <td><a href="/?t=vul&sid={{ a_sid }}&s_sid={{ target_info.get('sid') }}"
-                                                               target="_blank">{{ target_info.get('target') }}</a></td>
+                                                        <td>
+                                                            <a href="javascript:void(0);"
+                                                               onclick="$('.nav-tabs li a[data-id=vul]').click();$('.filter_setting').click();$('#search_target').val('{{ target_info.get('sid') }}');$('.filter_btn').click();">{{ target_info.get('target') }}</a>
+                                                        </td>
+                                                        <td>{{ target_info.get('branch') }}</td>
                                                         <td>{{ target_info.get('language') }}</td>
                                                         <td>{{ target_info.get('framework') }}</td>
                                                         <td>{{ target_info.get('file') }}</td>
@@ -141,6 +165,33 @@
                                     </address>
                                 </div>
                             </div>
+                            {% if running %}
+                                <h4>Running Targets</h4>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <address>
+                                            <table class="table table-striped table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>sid</th>
+                                                    <th>Target</th>
+                                                    <th>Branch / Tag</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for sid in running.keys() %}
+                                                    <tr>
+                                                        <td>{{ sid }}</td>
+                                                        <td>{{ running.get(sid).get('target') }}</td>
+                                                        <td>{{ running.get(sid).get('branch') }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </address>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -164,9 +215,6 @@
                                     <label for="search_rule" style="color: #aaaaaa;">Mode</label>
                                     <select id="search_rule" class="form-control" style="height: 30px;">
                                         <option value="all">All</option>
-                                        {% for rule in rule_filter %}
-                                            <option value="{{ rule }}">{{ rule_filter.get(rule) }}</option>
-                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-12" style="margin-top: 10px;">
@@ -236,10 +284,16 @@
     <script>
         var types = [];
         var vuls = [];
-        {% for vul in vuls.keys() %}
-            types.push('{{ vul }}');
-            vuls.push({value: {{ vuls.get(vul) }}, name: '{{ vul }}'});
+        {% for type, num in vuls | dictsort(by='value') %}
+            // 取漏洞数量前十
+            {% if loop.revindex <= 10 %}
+                types.push('{{ type }}');
+                vuls.push({value: {{ num }}, name: '{{ type }}'});
+            {% endif %}
         {% endfor %}
+        // 数量大的靠前
+        types.reverse();
+        vuls.reverse();
         option = {
             tooltip: {
                 trigger: 'item',
@@ -289,8 +343,10 @@
                 }
             ]
         };
-        var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
-        vul_distributing.setOption(option);
+        {% if vuls | length > 0 %}
+            var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+            vul_distributing.setOption(option);
+        {% endif %}
     </script>
     <!--CodeMirror-->
     <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
@@ -337,6 +393,7 @@
     <script src="{{ url_for('static', filename='codemirror/mode/shell/shell.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/mode/sql/sql.js') }}"></script>
     <script src="{{ url_for('static', filename='codemirror/mode/clike/clike.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/properties/properties.js') }}"></script>
     <script src="{{ url_for('static', filename='js/report.js') }}"></script>
 </div>
 </body>

@@ -20,6 +20,7 @@ import multiprocessing
 from .config import project_directory, Config, config_path
 from .log import logger
 from .dependencies import Dependencies
+from .result import VulnerabilityResult
 
 try:
     from urllib import urlretrieve  # Python2
@@ -327,8 +328,20 @@ def is_update():
     return False
 
 
-def scan(target_directory):
+def scan_cve(target_directory):
+    cve_vuls = []
     cve_files = []
+
+    def store(results):
+        if len(results[0]) != 0:
+            for module_ in results[0]:
+                for cve_id, cve_level in results[0][module_].items():
+                    cve_path = results[1]
+                    cve_vul = parse_math(cve_path, cve_id, cve_level, module_)
+                    cve_vuls.append(cve_vul)
+        else:
+            logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
+
     rule_path = os.path.join(project_directory, 'rules')
     files = os.listdir(rule_path)
     for cvi_file in files:
@@ -341,10 +354,10 @@ def scan(target_directory):
     logger.info('[PUSH] {rc} CVE Rules'.format(rc=len(cve_files)))
     for cve_file in cve_files:
         cve_path = os.path.join(rule_path, cve_file)
-        pool.apply_async(scan_single, args=(target_directory, cve_path))
+        pool.apply_async(scan_single, args=(target_directory, cve_path), callback=store)
     pool.close()
     pool.join()
-    return True
+    return cve_vuls
 
 
 def scan_single(target_directory, cve_path):
@@ -353,5 +366,35 @@ def scan_single(target_directory, cve_path):
     :param cve_path: CVI-999***.xml
     :return:
     """
-    CveParse('.', target_directory).scan_cve(cve_path)
-    return True
+    cve = CveParse('.', target_directory)
+    cve.scan_cve(cve_path)
+    return cve.get_scan_result(), cve_path
+
+
+def parse_math(cve_path, cve_id, cve_level, module_):
+    mr = VulnerabilityResult()
+    module_name, module_version = module_.split(':')
+    cvi = cve_path.lower().split('cvi-')[1][:6]
+    rule_name = '引用了存在漏洞的三方组件'
+    if cve_level == 'LOW':
+        cve_level = 2
+
+    elif cve_level == 'MEDIUM':
+        cve_level = 5
+
+    elif cve_level == 'HIGH':
+        cve_level = 8
+
+    mr.language = cve_id
+    mr.id = cvi
+    mr.rule_name = rule_name
+    mr.level = cve_level
+    mr.file_path = module_name
+    mr.line_number = 1
+    mr.code_content = module_name + ':' + module_version
+
+    logger.debug('[CVE {i}] {r}:Find {n}:{v} have vul {c} and level is {l}'.format(i=mr.id, r=mr.rule_name,
+                                                                                   n=mr.file_path, v=mr.line_number,
+                                                                                   c=mr.language, l=mr.level))
+
+    return mr

@@ -1,4 +1,5 @@
 # Languages（语言）
+> 语言用来标记扫描规则对应需要扫描的后缀。
 > Cobra支持以下开发语言和文件类型，支持程度取决于对应开发语言或文件类型的规则数量。
 
 |语言|主语言|后缀|
@@ -41,3 +42,5 @@
 |Thumb|否|.db/.DS_Store|
 |GIT|否|.pack/.idx/.sample|
 
+---
+下一章：[漏洞类型定义](https://wufeifei.github.io/cobra/labels)

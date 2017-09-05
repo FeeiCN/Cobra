@@ -39,7 +39,6 @@ port:
 username:
 password:
 sender:
-receiver:
 # use ssl, True / False
 ssl:
 

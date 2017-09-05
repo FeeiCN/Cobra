@@ -88,3 +88,5 @@ http://127.0.0.1/?sid=afbe69p7dxva
 ```
 http://127.0.0.1/report/afbe69p7dxva/sfbe69plo5qs
 ```
+---
+下一章：[高级功能配置](https://wufeifei.github.io/cobra/config)

@@ -11,26 +11,27 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
-import socket
 import errno
-import time
-import os
-import re
 import json
-import requests
 import multiprocessing
+import os
+import socket
 import subprocess
 import threading
+import time
 import traceback
+
+import requests
 from flask import Flask, request, render_template
 from flask_restful import Api, Resource
-from werkzeug.utils import secure_filename
+from werkzeug.urls import url_unquote
+
 from . import cli
 from .cli import get_sid
+from .config import Config, running_path, package_path
 from .engine import Running
 from .log import logger
-from .config import Config, running_path, code_path, package_path
-from .utils import allowed_file
+from .utils import allowed_file, secure_filename, PY2
 
 try:
     # Python 3
@@ -88,7 +89,7 @@ class AddJob(Resource):
         running = Running(a_sid)
 
         # Write a_sid running data
-        running.init_list()
+        running.init_list(data=target)
 
         # Write a_sid running status
         data = {
@@ -104,15 +105,17 @@ class AddJob(Resource):
                 producer(task=arg)
 
             result = {
-                "msg": "Add scan job successfully.",
-                "sid": a_sid,
+                'msg': 'Add scan job successfully.',
+                'sid': a_sid,
+                'total_target_num': len(target),
             }
         else:
             arg = (target, formatter, output, rule, a_sid)
             producer(task=arg)
             result = {
-                "msg": "Add scan job successfully.",
-                "sid": a_sid,
+                'msg': 'Add scan job successfully.',
+                'sid': a_sid,
+                'total_target_num': 1,
             }
 
         return {"code": 1001, "result": result}
@@ -147,8 +150,8 @@ class JobStatus(Resource):
             return data
         else:
             result = running.status()
+            r_data = running.list()
             if result['status'] == 'running':
-                r_data = running.list()
                 ret = True
                 result['still_running'] = dict()
                 for s_sid, git in r_data['sids'].items():
@@ -163,7 +166,10 @@ class JobStatus(Resource):
                 'sid': sid,
                 'status': result.get('status'),
                 'report': result.get('report'),
-                'still_running': result.get('still_running')
+                'still_running': result.get('still_running'),
+                'total_target_num': r_data.get('total_target_num'),
+                'not_finished': int(r_data.get('total_target_num')) - len(r_data.get('sids'))
+                                + len(result.get('still_running')),
             }
         return {"code": 1001, "result": data}
 
@@ -254,33 +260,45 @@ class ResultDetail(Resource):
         if not data or data == "":
             return {'code': 1003, 'msg': 'Only support json, please post json data.'}
 
-        target = data.get('target')
-        file_path = data.get('file_path')
+        sid = data.get('sid')
+        file_path = url_unquote(data.get('file_path'))
 
-        if target.startswith('http'):
-            target = re.findall(r'(.*?\.git)', target)[0]
-            repo_user = target.split('/')[-2]
-            repo_name = target.split('/')[-1].replace('.git', '')
-            # repo_directory = os.path.join(os.path.join(os.path.join(code_path, 'git'), repo_user), repo_name)
-            repo_directory = os.path.join(code_path, 'git', repo_user, repo_name)
+        if not sid or sid == '':
+            return {"code": 1002, "msg": "sid is required."}
 
-            file_path = map(secure_filename, file_path.split('/'))
+        if not file_path or file_path == '':
+            return {'code': 1002, 'msg': 'file_path is required.'}
 
-            # 循环生成路径，避免文件越级读取
-            file_name = repo_directory
-            for _dir in file_path:
-                file_name = os.path.join(file_name, _dir)
-            print(file_name)
-            if os.path.exists(file_name):
-                if is_text(file_name):
-                    with open(file_name, 'r') as f:
-                        file_content = f.read()
-                else:
-                    file_content = 'This is a binary file.'
+        s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+        if not os.path.exists(s_sid_file):
+            return {'code': 1002, 'msg': 'No such target.'}
+
+        with open(s_sid_file, 'r') as f:
+            target_directory = json.load(f).get('result').get('target_directory')
+
+        if not target_directory or target_directory == '':
+            return {'code': 1002, 'msg': 'No such directory'}
+
+        if PY2:
+            file_path = map(secure_filename, [path.decode('utf-8') for path in file_path.split('/')])
+        else:
+            file_path = map(secure_filename, [path for path in file_path.split('/')])
+
+        filename = target_directory
+        for _dir in file_path:
+            filename = os.path.join(filename, _dir)
+        if os.path.exists(filename):
+            extension = guess_type(filename)
+            if is_text(filename):
+                with open(filename, 'r') as f:
+                    file_content = f.read()
             else:
-                return {'code': 1002, 'msg': 'No such file.'}
+                file_content = 'This is a binary file.'
+        else:
+            return {'code': 1002, 'msg': 'No such file.'}
 
-            return {'code': 1001, 'result': file_content}
+        return {'code': 1001, 'result': {'file_content': file_content,
+                                         'extension': extension}}
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -311,28 +329,54 @@ def summary():
                                msg=scan_status.get('msg'))
     else:
         if scan_status.get('result').get('status') == 'running':
-            return render_template(template_name_or_list='error.html',
-                                   msg='Scan job is still running.',
-                                   running=scan_status.get('result').get('still_running'))
+            still_running = scan_status.get('result').get('still_running')
+            for s_sid, target_str in still_running.items():
+                split_target = target_str.split(':')
+                if len(split_target) == 3:
+                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                elif len(split_target) == 2:
+                    target, branch = target_str, 'master'
+                else:
+                    logger.critical('[API] Target url exception: {u}'.format(u=target_str))
+                    target, branch = target_str, 'master'
+                still_running[s_sid] = {'target': target,
+                                        'branch': branch}
+        else:
+            still_running = dict()
 
-        elif scan_status.get('result').get('status') == 'done':
-            scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
+        scan_status_file = os.path.join(running_path, '{sid}_status'.format(sid=a_sid))
 
-            scan_list = Running(a_sid).list().get('sids')
+        scan_list = Running(a_sid).list()
 
-            start_time = os.path.getctime(filename=scan_status_file)
-            start_time = time.localtime(start_time)
-            start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
+        start_time = os.path.getctime(filename=scan_status_file)
+        start_time = time.localtime(start_time)
+        start_time = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
 
-            total_targets_number = len(scan_list)
-            total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
-            rule_filter = dict()
-            targets = list()
-            for s_sid in scan_list.keys():
+        total_targets_number = scan_status.get('result').get('total_target_num')
+        not_finished_number = scan_status.get('result').get('not_finished')
+
+        total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
+        rule_filter = dict()
+        targets = list()
+
+        for s_sid, target_str in scan_list.get('sids').items():
+            if s_sid not in still_running:
                 target_info = dict()
+
+                # 分割项目地址与分支，默认 master
+                split_target = target_str.split(':')
+                if len(split_target) == 3:
+                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                elif len(split_target) == 2:
+                    target, branch = target_str, 'master'
+                else:
+                    logger.critical('Target url exception: {u}'.format(u=target_str))
+                    target, branch = target_str, 'master'
+
                 target_info.update({
                     'sid': s_sid,
-                    'target': scan_list.get(s_sid),
+                    'target': target,
+                    'branch': branch,
                 })
                 s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
                 with open(s_sid_file, 'r') as f:
@@ -363,17 +407,19 @@ def summary():
                     except KeyError:
                         rule_filter[vul.get('rule_name')] = 1
 
-            return render_template(template_name_or_list='summary.html',
-                                   total_targets_number=total_targets_number,
-                                   start_time=start_time,
-                                   targets=targets,
-                                   a_sid=a_sid,
-                                   total_vul_number=total_vul_number,
-                                   critical_vul_number=critical_vul_number,
-                                   high_vul_number=high_vul_number,
-                                   medium_vul_number=medium_vul_number,
-                                   low_vul_number=low_vul_number,
-                                   vuls=rule_filter, )
+        return render_template(template_name_or_list='summary.html',
+                               total_targets_number=total_targets_number,
+                               not_finished_number=not_finished_number,
+                               start_time=start_time,
+                               targets=targets,
+                               a_sid=a_sid,
+                               total_vul_number=total_vul_number,
+                               critical_vul_number=critical_vul_number,
+                               high_vul_number=high_vul_number,
+                               medium_vul_number=medium_vul_number,
+                               low_vul_number=low_vul_number,
+                               vuls=rule_filter,
+                               running=still_running,)
 
 
 def key_verify(data):
@@ -393,6 +439,26 @@ def key_verify(data):
 def is_text(fn):
     msg = subprocess.Popen(['file', fn], stdout=subprocess.PIPE).communicate()[0]
     return 'text' in msg.decode('utf-8')
+
+
+def guess_type(fn):
+    import mimetypes
+    extension = mimetypes.guess_type(fn)[0]
+    if extension:
+        """text/x-python or text/x-java-source"""
+        # extension = extension.split('/')[1]
+        extension = extension.replace('-source', '')
+    else:
+        extension = fn.split('/')[-1].split('.')[-1]
+
+    custom_ext = {
+        'html': 'htmlmixed',
+        'md': 'markdown',
+    }
+    if custom_ext.get(extension) is not None:
+        extension = custom_ext.get(extension)
+
+    return extension.lower()
 
 
 def start(host, port, debug):

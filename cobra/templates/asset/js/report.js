@@ -27,7 +27,7 @@ var score2level = {
 $(function () {
     var current_tab = '';
     var c_tab = getParameterByName('t');
-    if (c_tab !== null && c_tab !== '' && ['inf', 'vul', 'ext'].indexOf(c_tab) >= 0) {
+    if (c_tab !== null && c_tab !== '' && ['inf', 'tar', 'vul'].indexOf(c_tab) >= 0) {
         current_tab = c_tab;
         $(".nav-tabs li").removeClass('active');
         $("a[data-id=" + c_tab + "]").parent('li').addClass('active');
@@ -69,24 +69,25 @@ $(function () {
         detail: function (vid) {
             $('.vulnerabilities_list li').removeClass('active');
             $('li[data-id=' + vid + ']').addClass('active');
-            // hide loading
-            $('.CodeMirror .cm-loading').hide();
             vid = Number(vid);
-            var target = $('#search_target').find('option:selected').text();
+            var sid = $('#search_target').val();
             var data = vul_list_origin.vulnerabilities[vid - 1];
 
             $.ajax({
                 type: 'POST',
                 url: '/api/detail',
                 contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({target: target, file_path: data.file_path}),
+                data: JSON.stringify({sid: sid, file_path: data.file_path}),
                 dataType: 'json',
                 success: function (result) {
+                    // hide loading
+                    $('.CodeMirror .cm-loading').hide();
                     if (result.code === 1001) {
-                        data.code_content = result.result;
-                        // 对无代码内容的漏洞进行处理，避免 widget 的 bug
-                        if (data.code_content === "") {
-                            data.code_content = data.file_path;
+                        data.code_content = result.result.file_content;
+                        data.language = result.result.extension;
+                        // 对二进制文件情况进行处理，将行数置为 1
+                        if (data.code_content === "This is a binary file.") {
+                            data.line_number = 1;
                         }
                         $('#code').val(data.code_content);
                         // Highlighting param
@@ -144,6 +145,10 @@ $(function () {
                     } else {
                         alert(result.msg);
                     }
+                },
+                error: function (result) {
+                    alert('Fetch detail failed.');
+                    $('.CodeMirror .cm-loading').hide();
                 }
             });
         },

@@ -25,7 +25,7 @@
 
     <style>
         .bar {
-            width: 0%;
+            width: 0;
             height: 30px;
             background: #18cc18;
             line-height: 30px;
@@ -84,7 +84,7 @@
                         </div>
                         <div class="col-md-12" style="padding-left:0;padding-right:0;">
                             <div class="form-group">
-                                <label>Branch</label>
+                                <label>Branch / Tag</label>
                                 <input type="text" class="form-control" name="branch"
                                        placeholder="Default: master, optional" value="master">
                             </div>
@@ -168,11 +168,17 @@
             $('.tab-content').plainOverlay('show');
             var url = $("input[name=repository]").val();
             var branch = $("input[name=branch]").val();
+            if (url.substring(0, 4) === 'http') {
+                var target = url + ':' + branch;
+            } else {
+                target = url;
+            }
+
             var old_version = $("input[name=old_version]").val();
             var new_version = $("input[name=new_version]").val();
 
             var data = {
-                'target': url + ':' + branch,
+                'target': target,
                 'key': "{{ key }}"
             };
             $.ajax({
@@ -183,7 +189,7 @@
                 dataType: 'json',
                 async: true,
                 success: function (result) {
-                    if (result.code == 1001) {
+                    if (result.code === 1001) {
                         var sid = result.result.sid;
                         var data = {sid: sid, key: "{{ key }}"};
 
@@ -196,8 +202,8 @@
                                 dataType: 'json',
                                 async: false,
                                 success: function (result) {
-                                    if (result.code == 1001) {
-                                        if (result.result['status'] == 'done') {
+                                    if (result.code === 1001) {
+                                        if (result.result['status'] === 'done') {
                                             $('.tab-content').plainOverlay('hide');
                                             window.location = result.result['report'];
                                         } else {
@@ -240,7 +246,7 @@
                                 if (result.code === 1001) {
                                     if (result.result.status === 'done') {
                                         $('.tab-content').plainOverlay('hide');
-                                        window.location.href = window.location + result.result.report
+                                        window.location.href = window.location + result.result.report;
                                         process_bar.css('width', '0%');
                                     } else {
                                         setTimeout(get_status, 3000);

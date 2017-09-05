@@ -75,3 +75,5 @@ Usage:
   ./cobra.py -t https://github.com/wufeifei/vc.git -f json -o http://push.to.com/api
   sudo ./cobra.py -H 127.0.0.1 -P 80
 ```
+---
+下一章：[API模式使用方法](https://wufeifei.github.io/cobra/api)

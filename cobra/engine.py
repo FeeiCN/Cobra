@@ -32,13 +32,28 @@ class Running:
     def __init__(self, sid):
         self.sid = sid
 
-    def init_list(self):
+    def init_list(self, data=None):
+        """
+        Initialize asid_list file.
+        :param data: list or a string
+        :return:
+        """
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
-        with open(file_path, 'w') as f:
-            portalocker.lock(f, portalocker.LOCK_EX)
-            f.write(json.dumps({
-                'sids': {}
-            }))
+        if not os.path.exists(file_path):
+            if isinstance(data, list):
+                with open(file_path, 'w') as f:
+                    portalocker.lock(f, portalocker.LOCK_EX)
+                    f.write(json.dumps({
+                        'sids': {},
+                        'total_target_num': len(data),
+                    }))
+            else:
+                with open(file_path, 'w') as f:
+                    portalocker.lock(f, portalocker.LOCK_EX)
+                    f.write(json.dumps({
+                        'sids': {},
+                        'total_target_num': 1,
+                    }))
 
     def list(self, data=None):
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
