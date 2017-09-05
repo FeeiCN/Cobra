@@ -76,7 +76,6 @@ class Running:
     def data(self, data=None):
 
         file_path = os.path.abspath(running_path + '/{sid}_data'.format(sid=self.sid))
-        print file_path
 
         if data is None:
             with open(file_path) as f:
