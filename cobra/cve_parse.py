@@ -390,8 +390,8 @@ def parse_math(cve_path, cve_id, cve_level, module_):
     mr.rule_name = rule_name
     mr.level = cve_level
     mr.file_path = module_name
-    mr.line_number = module_version
-    mr.code_content = 'Module:' + mr.file_path
+    mr.line_number = 1
+    mr.code_content = module_name + ':' + module_version
 
     logger.debug('[CVE {i}] {r}:Find {n}:{v} have vul {c} and level is {l}'.format(i=mr.id, r=mr.rule_name,
                                                                                    n=mr.file_path, v=mr.line_number,
