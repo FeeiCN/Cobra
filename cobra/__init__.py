@@ -37,7 +37,7 @@ except NameError as e:
 def main():
     try:
         # arg parse
-        t1 = time.clock()
+        t1 = time.time()
         parser = argparse.ArgumentParser(prog=__title__, description=__introduction__, epilog=__epilog__, formatter_class=argparse.RawDescriptionHelpFormatter)
 
         parser_group_scan = parser.add_argument_group('Scan')
@@ -80,7 +80,7 @@ def main():
                 # API call CLI mode
                 a_sid = args.sid
             cli.start(args.target, args.format, args.output, args.special_rules, a_sid)
-        t2 = time.clock()
+        t2 = time.time()
         logger.info('[INIT] Done! Consume Time:{ct}s'.format(ct=t2 - t1))
     except Exception as e:
         err_msg = unhandled_exception_message()
