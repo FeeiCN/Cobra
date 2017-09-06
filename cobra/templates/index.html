@@ -125,6 +125,8 @@
 <script src="{{ url_for('static', filename='js/jquery.ui.widget.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.iframe-transport.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.fileupload.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.fileupload-process.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.fileupload-validate.js') }}"></script>
 <script>
 
     // drag and drop upload file
@@ -229,6 +231,10 @@
         $('#uploadFile').fileupload({
             url: '/api/upload',
             dataType: 'json',
+            acceptFileTypes: /(\.|\/)(bz2|tar|gz|tgz|rar|zip)$/i,
+            processfail: function (e, result) {
+                alert("不支持的文件类型")
+            },
             done: function (e, result) {
                 if (result.result.code === 1001) {
                     var sid = result.result.result.sid;
