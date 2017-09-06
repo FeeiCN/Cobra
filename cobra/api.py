@@ -167,7 +167,7 @@ class JobStatus(Resource):
                 'msg': 'success',
                 'sid': sid,
                 'status': result.get('status'),
-                'report': result.get('report'),
+                'report': request.url_root + result.get('report'),
                 'still_running': result.get('still_running'),
                 'total_target_num': r_data.get('total_target_num'),
                 'not_finished': int(r_data.get('total_target_num')) - len(r_data.get('sids'))
