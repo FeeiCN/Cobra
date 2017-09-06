@@ -31,7 +31,7 @@ match_modes = [
 # eval ($test + $test2);
 # call_function ($exp);
 #
-fpc = '\s*\((.*)(?:\))'
+fpc = '(\s*\((.*)(?:\))|\s*(.*\.)*\$.+)'
 fpc_single = '[f]{fpc}'.format(fpc=fpc)
 fpc_multi = '(?:[f]){fpc}'.format(fpc=fpc)
 
