@@ -20,7 +20,8 @@
     "code": 1001, # 状态码为1001则表示逻辑处理正常
     "result": {
         "msg": "Add scan job successfully.", # 消息
-        "sid": "afbe69gxpy6h" # 扫描的任务ID（调用任务状态查询时需要用到）
+        "sid": "a938e2y2vnkf", # 扫描的任务ID（调用任务状态查询时需要用到）
+        "total_target_num": 1 # 扫描任务的项目总数
     }
 }
 ```
@@ -45,9 +46,12 @@
     "code": 1001, # 状态码为1001则表示逻辑处理正常
     "result": {
         "msg": "success", # 消息
+        "not_finished": 0, # 未完成的项目数
+        "report": "http://127.0.0.1/?sid=ae3ea90pkoo5", # 扫描报告页
+        "sid": "ae3ea90pkoo5", # 扫描的任务ID
         "status": "done", # 扫描状态
-        "report": "?sid=afbe69v8jjme", # 扫描报告页
-        "sid": "sfbe69y2sjge" # 扫描的任务ID
+        "still_running": {}, # 正在扫描的项目
+        "total_target_num": 1, # 扫描任务的项目总数
     }
 }
 ```
@@ -69,24 +73,14 @@ curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "
 
 ## 查询任务状态
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","sid": "e3ea91nd1f4"}' http://127.0.0.1/api/status
-```
-
-## 查询扫描报告
-```bash
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","task_id": "your_task_id"}' http://127.0.0.1/api/report
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","sid": "a938e29vdse8"}' http://127.0.0.1/api/status
 ```
 
 # Web 报告页
 
-## 任务汇总报告
 ```
 http://127.0.0.1/?sid=afbe69p7dxva
 ```
 
-## 扫描详情报告
-```
-http://127.0.0.1/report/afbe69p7dxva/sfbe69plo5qs
-```
 ---
 下一章：[高级功能配置](https://wufeifei.github.io/cobra/config)
