@@ -3,36 +3,36 @@
 ## Examples（使用例子）
 ```bash
 # 扫描一个文件夹的代码
-$ ./cobra.py -t tests/vulnerabilities
+$ python cobra.py -t tests/vulnerabilities
 
 # 扫描一个Git项目代码
-$ ./cobra.py -t https://github.com/wufeifei/grw.git
+$ python cobra.py -t https://github.com/wufeifei/grw.git
 
 # 扫描一个文件夹，并将扫描结果导出为JSON文件
-$ ./cobra.py -t tests/vulnerabilities -f json -o /tmp/report.json
+$ python cobra.py -t tests/vulnerabilities -f json -o /tmp/report.json
 
 # 扫描一个Git项目，并将扫描结果JSON文件推送到API上
-$ ./cobra.py -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
+$ python cobra.py -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
 
 # 扫描一个Git项目，并将扫描结果JSON文件发送到邮箱中
-$ ./cobra.py -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
+$ python cobra.py -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
 
 # 扫描一个文件夹代码的某两种漏洞
-$ ./cobra.py -t tests/vulnerabilities -r cvi-190001,cvi-190002
+$ python cobra.py -t tests/vulnerabilities -r cvi-190001,cvi-190002
 
 # 开启一个Cobra HTTP Server，然后可以使用API接口来添加扫描任务
-$ ./cobra.py -H 127.0.0.1 -P 80
+$ python cobra.py -H 127.0.0.1 -P 80
 
 # 查看版本
-$ ./cobra.py --version
+$ python cobra.py --version
 
 # 查看帮助
-$ ./cobra.py --help
+$ python cobra.py --help
 ```
 
 ## Help（帮助）
 ```bash
-➜  cobra git:(master) ✗ ./cobra.py --help
+➜  cobra git:(master) ✗ python cobra.py --help
 usage: cobra [-h] [-t <target>] [-f <format>] [-o <output>] [-r <rule_id>]
              [-d] [-sid SID] [-H <host>] [-P <port>]
 
@@ -68,12 +68,12 @@ RESTful:
                         REST-JSON API Service Port
 
 Usage:
-  ./cobra.py -t tests/vulnerabilities
-  ./cobra.py -t tests/vulnerabilities -r cvi-190001,cvi-190002
-  ./cobra.py -t tests/vulnerabilities -f json -o /tmp/report.json
-  ./cobra.py -t https://github.com/wufeifei/vc.git -f json -o feei@feei.cn
-  ./cobra.py -t https://github.com/wufeifei/vc.git -f json -o http://push.to.com/api
-  sudo ./cobra.py -H 127.0.0.1 -P 80
+  python cobra.py -t tests/vulnerabilities
+  python cobra.py -t tests/vulnerabilities -r cvi-190001,cvi-190002
+  python cobra.py -t tests/vulnerabilities -f json -o /tmp/report.json
+  python cobra.py -t https://github.com/ethicalhack3r/DVWA -f json -o feei@feei.cn
+  python cobra.py -t https://github.com/ethicalhack3r/DVWA -f json -o http://push.to.com/api
+  sudo python cobra.py -H 127.0.0.1 -P 80
 ```
 ---
 下一章：[API模式使用方法](https://wufeifei.github.io/cobra/api)

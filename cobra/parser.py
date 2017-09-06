@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-    cobra
-    ~~~~~
+    parser
+    ~~~~~~
 
-    Implements cobra main
+    Implements Code Parser
 
     :author:    BlBana <635373043@qq.com>
     :homepage:  https://github.com/wufeifei/cobra

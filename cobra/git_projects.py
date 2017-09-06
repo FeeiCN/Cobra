@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
     cobra
     ~~~~~
@@ -17,6 +17,7 @@ import re
 import threading
 from .log import logger
 from .config import code_path, Config
+
 try:
     # Python 3
     import queue
@@ -36,7 +37,7 @@ def start():
     result_path = code_path + '/result_sid'
     fi = open(result_path, 'w+')
     for i in range(int(pages)):
-        q_pages.put(i+1)
+        q_pages.put(i + 1)
 
     for i in range(10):
         thread = threading.Thread(target=get_git_urls, args=(url, private_token, cobra_ip, key, q_pages, fi))
@@ -74,7 +75,7 @@ def get_git_urls(url, private_token, cobra_ip, key, q_pages, fi):
                 git_branch = data[j]['default_branch']
 
                 if git_branch is not None:
-                    request_url = git_url+':'+git_branch
+                    request_url = git_url + ':' + git_branch
 
                 else:
                     request_url = git_url

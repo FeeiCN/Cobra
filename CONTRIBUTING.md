@@ -5,8 +5,9 @@
 仔细描述问题的复现步骤，并提供对应的运行环境信息（Python版本、系统版本）
 
 ## 提交代码
-- Fork项目，切换到`develop`分支开发，或新建分支`feature-xxx`
+- Fork项目，切换到`develop`分支开发
 - 按照PEP8格式
 - 所有代码都需要有对应的单元测试用例
 - 运行所有测试用例
-- 提交Pull Request
+- 提交Pull Request到`develop`分支
+- 等待测试稳定后合并到`master`分支
