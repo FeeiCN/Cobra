@@ -395,10 +395,28 @@ def get_safe_ex_string(ex, encoding=None):
 
 class Tool:
     def __init__(self):
+
         # `grep` (`ggrep` on Mac)
-        self.grep = '/bin/grep'
+        if os.path.isfile('/bin/grep'):
+            self.grep = '/bin/grep'
+        elif os.path.isfile('/usr/bin/grep'):
+            self.grep = '/usr/bin/grep'
+        elif os.path.isfile('/usr/local/bin/grep'):
+            self.grep='/usr/local/bin/grep'
+        else:
+            self.grep = 'grep'
+
+
         # `find` (`gfind` on Mac)
-        self.find = '/bin/find'
+        if os.path.isfile('/bin/find'):
+            self.find = '/bin/find'
+        elif os.path.isfile('/usr/bin/find'):
+            self.find = '/usr/bin/find'
+        elif os.path.isfile('/usr/local/bin/find'):
+            self.find='/usr/local/bin/find'
+        else:
+            self.find = 'find'
+
 
         if 'darwin' == sys.platform:
             ggrep = ''
@@ -427,10 +445,10 @@ def secure_filename(filename):
     _filename_utf8_strip_re = re.compile(u"[^\u4e00-\u9fa5A-Za-z0-9_.\-\+]")
     _windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4', 'LPT1', 'LPT2', 'LPT3', 'PRN', 'NUL')
 
-    if PY2:
-        text_type = unicode
-    else:
-        text_type = str
+    try:
+        text_type = unicode  # Python 2
+    except NameError:
+        text_type = str      # Python 3
 
     if isinstance(filename, text_type):
         from unicodedata import normalize

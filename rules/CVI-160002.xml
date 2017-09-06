@@ -51,6 +51,6 @@
         尽量不要使用拼接的SQL语句。若不得不使用，尽量不要用户可控SQL语句的参数。
         若必须用户可控，请对用户输入的参数进行严格的限制和过滤。
     </solution>
-    <status value="on"/>
+    <status value="off"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>

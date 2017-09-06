@@ -55,7 +55,7 @@
 # 完整的例子
 ## 启动HTTP服务
 ```bash
-sudo ./cobra.py -H 127.0.0.1 -P 80
+sudo python cobra.py -H 127.0.0.1 -P 80
 ```
 
 ## 添加扫描任务

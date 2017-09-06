@@ -7,7 +7,7 @@
 #### 2. 编写漏洞代码`tests/vulnerabilities/v.language`
     编写实际可能出现的业务场景代码（只需编写一处即可）。
 
-#### 3. 测试规则扫描`./cobra.py -t tests/vulnerabilities/`
+#### 3. 测试规则扫描`python cobra.py -t tests/vulnerabilities/`
     测试扫描结果
 
 ---
