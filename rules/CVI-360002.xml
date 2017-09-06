@@ -3,14 +3,13 @@
     <name value="webshell2"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[
-        \s*\b(include|require)(_once)?\b[\s\(]*['\"][^\n'\"]{1,100}((\.(jpg|png|txt|jpeg|log|tmp|db|cache)|\_(tmp|log))|((http|https|file|php|data|ftp)\://.{0,25}))['\"][\s\)]*[\r\n;/\*]+
+        \s*\b(include|require)(_once)?\b[\s\(]*['\"][^\n'\"]{0,100}((\.(jpg|png|txt|jpeg|log|tmp|db|cache)|\_(tmp|log))|((http|https|file|php|data|ftp)\://.{0,25}))['\"][\s\)]*[\r\n;/\*]+
     ]]></match>
     <level value="7"/>
     <test>
-        <case assert="true"><![CDATA[
-            $a="ss";
-            include("sss.jpg");
-        ]]></case>
+        <case assert="true"><![CDATA[include "sss.jpg";]]></case>
+        <case assert="true"><![CDATA[include("sss_tmp");]]></case>
+        <case assert="true"><![CDATA[require_once "http://www.test.com/sss.php";]]></case>
     </test>
     <solution>
         ## 安全风险

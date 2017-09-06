@@ -64,6 +64,9 @@ mysqli_query($query);
 
 if(!empty($cmd)){
     require_once($cmd);
+
+    // 这种扫不出来
+    require $cmd;
 }
 
 highlight_file($cmd);
@@ -116,6 +119,7 @@ function GetFile($host,$port,$link)
     {
         $out = "GET $link HTTP/1.1\r\n";
         $out .= "Host: $host\r\n";
+        $out .= "Connection: Close\r\n\r\n";
         $out .= "Connection: Close\r\n\r\n";
         $out .= "\r\n";
         fwrite($fp, $out);

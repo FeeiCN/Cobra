@@ -3,7 +3,7 @@
     <name value="webshell10"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[
-        \$\s*(\w+)\s*=[\s\(\{]*((\$_(GET|POST|REQUEST|COOKIE).{0,25})|['\"]\\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec|[^,;]*?\\x|[^,;]*?['\"]\s*\.\s*['\"]))[\s\S]{0,1000}((array_filter|array_reduce|array_diff_ukey|array_udiff|array_walk|uasort|uksort|usort|new\s*SQLite3[\s\S]*->\s*createFunction)\s*\(+[^,]*\$[^,]*|PDO::FETCH_FUNC\s*),\s*(\$\s*\1\s*\)|((base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]*\$\s*\1))
+        \$\s*(\w+)\s*=[\s\(\{]*((\$_(GET|POST|REQUEST|COOKIE).{0,25})|['\"]\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec|[^,;]*?\x|[^,;]*?['\"]\s*\.\s*['\"]))[\s\S]{0,1000}((array_filter|array_reduce|array_diff_ukey|array_udiff|array_walk|uasort|uksort|usort|new\s*SQLite3[\s\S]*->\s*createFunction)\s*\(+[^,]*\$[^,]*|PDO::FETCH_FUNC\s*),\s*(\$\s*\1\s*\)|((base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]*\$\s*\1))
     ]]></match>
     <level value="7"/>
     <test>
