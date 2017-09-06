@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""
-    cobra
-    ~~~~~
 
-    Implements cobra main
+"""
+    CVE
+    ~~~
+
+    Implements CVE Rules Parser
 
     :author:    BlBana <635373043@qq.com>
     :homepage:  https://github.com/wufeifei/cobra

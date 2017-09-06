@@ -26,7 +26,7 @@ from .config import running_path
 from .result import VulnerabilityResult
 from .cast import CAST
 from .parser import scan_parser
-from .cve_parse import scan_cve
+from .cve import scan_cve
 from prettytable import PrettyTable
 
 

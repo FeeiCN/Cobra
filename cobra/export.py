@@ -2,7 +2,7 @@
 
 """
     export
-    ~~~~~~~~~~~~~~~~~~~
+    ~~~~~~
 
     Export scan result to files or console
 
