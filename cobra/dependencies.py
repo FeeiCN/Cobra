@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-    cobra
-    ~~~~~
+    dependencies
+    ~~~~~~~~~~~~
 
-    Implements cobra main
+    Implements Dependencies Check
 
     :author:    BlBana <635373043@qq.com>
     :homepage:  https://github.com/wufeifei/cobra

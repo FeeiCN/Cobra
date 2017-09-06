@@ -29,7 +29,7 @@ brew install grep findutils
 ```bash
 git clone https://github.com/wufeifei/cobra.git && cd cobra
 pip install -r requirements.txt
-./cobra.py --help
+python cobra.py --help
 ```
 
 ---
