@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    pickup
+    file
     ~~~~~~
 
     readfile by open/read for windows
