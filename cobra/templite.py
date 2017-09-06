@@ -2,7 +2,7 @@
 
 """
     templite
-    ~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~
 
     A simple template engine
 
