@@ -62,7 +62,7 @@ def main():
             parser.print_help()
             exit()
 
-        if args.host is not None and args.port is not None:
+        if args.host and args.port:
             logger.debug('[INIT] start RESTful Server...')
             api.start(args.host, args.port, args.debug)
         else:
@@ -82,6 +82,9 @@ def main():
             cli.start(args.target, args.format, args.output, args.special_rules, a_sid)
         t2 = time.clock()
         logger.info('[INIT] Done! Consume Time:{ct}s'.format(ct=t2 - t1))
+    except KeyboardInterrupt:
+        logger.error('KeyboardInterrupt')
+        exit()
     except Exception as e:
         err_msg = unhandled_exception_message()
         exc_msg = traceback.format_exc()

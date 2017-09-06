@@ -183,7 +183,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
             if single_rule['language'] in languages:
                 single_rule['extensions'] = languages[single_rule['language']]['extensions']
                 push_rules.append(single_rule['id'])
-                pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
+                pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store).get(1)
             else:
                 logger.critical('unset language, continue...')
                 continue
