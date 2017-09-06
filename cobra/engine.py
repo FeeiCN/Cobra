@@ -193,7 +193,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     data = []
     table = PrettyTable(
         ['#', 'CVI', 'VUL', 'Rule(ID/Name)', 'Lang/CVE-id', 'Level-Score', 'Target-File:Line-Number/Module:Version',
-         'Commit(Author/Time)', 'Source Code Content'])
+         'Commit(Author/Time)', 'Source Code Content', 'Analysis'])
     table.align = 'l'
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
@@ -336,7 +336,7 @@ class SingleRule(object):
                 continue
             is_test = False
             try:
-                is_vulnerability, status_code = Core(self.target_directory, vulnerability, self.sr, 'project name',
+                is_vulnerability, reason = Core(self.target_directory, vulnerability, self.sr, 'project name',
                                                      ['whitelist1', 'whitelist2'], test=is_test, index=index,
                                                      files=self.files).scan()
                 if is_vulnerability:
