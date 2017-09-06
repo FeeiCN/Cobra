@@ -20,7 +20,6 @@ import zipfile
 import tarfile
 import rarfile
 import subprocess
-import traceback
 from . import config
 from .log import logger
 from .file import get_line

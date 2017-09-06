@@ -1,0 +1,14 @@
+<cobra document="https://github.com/wufeifei/cobra">
+	<cve id="flask vul" level="HIGH">
+        <product>Flask:3.2</product>
+        <product>Flask:0.10.1</product>
+	</cve>
+    <cve id="flask vul1" level="HIGH">
+        <product>Flask:3.2</product>
+        <product>Flask:0.10.1</product>
+	</cve>
+    <cve id="flask vul2" level="HIGH">
+        <product>Flask:3.2</product>
+        <product>Flask:0.10.1</product>
+	</cve>
+</cobra>
