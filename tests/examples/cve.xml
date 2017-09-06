@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<nvd xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" nvd_xml_version="2.0" pub_date="2017-07-25T03:00:00" xsi:schemaLocation="http://scap.nist.gov/schema/patch/0.1 https://scap.nist.gov/schema/nvd/patch_0.1.xsd http://scap.nist.gov/schema/feed/vulnerability/2.0 https://scap.nist.gov/schema/nvd/nvd-cve-feed_2.0.xsd http://scap.nist.gov/schema/scap-core/0.1 https://scap.nist.gov/schema/nvd/scap-core_0.1.xsd">
+    <entry id="CVE-1999-0026">
+    <vuln:vulnerable-configuration id="http://nvd.nist.gov/">
+      <cpe-lang:logical-test operator="OR" negate="false">
+        <cpe-lang:fact-ref name="cpe:/o:sgi:irix"/>
+      </cpe-lang:logical-test>
+    </vuln:vulnerable-configuration>
+    <vuln:vulnerable-software-list>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:windows:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+      <vuln:product>cpe:/o:sgi:log4j:1.0</vuln:product>
+    </vuln:vulnerable-software-list>
+    <vuln:cve-id>CVE-1999-0026</vuln:cve-id>
+    <vuln:published-datetime>1997-07-16T00:00:00.000-04:00</vuln:published-datetime>
+    <vuln:last-modified-datetime>2008-09-09T08:33:35.307-04:00</vuln:last-modified-datetime>
+    <vuln:cvss>
+      <cvss:base_metrics>
+        <cvss:score>4.6</cvss:score>
+        <cvss:access-vector>LOCAL</cvss:access-vector>
+        <cvss:access-complexity>LOW</cvss:access-complexity>
+        <cvss:authentication>NONE</cvss:authentication>
+        <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
+        <cvss:integrity-impact>PARTIAL</cvss:integrity-impact>
+        <cvss:availability-impact>PARTIAL</cvss:availability-impact>
+        <cvss:source>http://nvd.nist.gov</cvss:source>
+        <cvss:generated-on-datetime>2004-01-01T00:00:00.000-05:00</cvss:generated-on-datetime>
+      </cvss:base_metrics>
+    </vuln:cvss>
+    <vuln:security-protection>ALLOWS_USER_ACCESS</vuln:security-protection>
+    <vuln:summary>root privileges via buffer overflow in pset command on SGI IRIX systems.</vuln:summary>
+  </entry>
+    <entry id="CVE-2017-5645">
+        <vuln:vulnerable-configuration id="http://nvd.nist.gov/">
+          <cpe-lang:logical-test operator="OR" negate="false">
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0.1"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0.2"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.1"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.2"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.3"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.4"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.4.1"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.5"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.6"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.6.1"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.6.2"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.7"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.8"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.8.1"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:alpha2"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta1"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta2"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta3"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta4"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta5"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta6"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta7"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta8"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:beta9"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:rc1"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:rc2"/>
+            <cpe-lang:fact-ref name="cpe:/a:apache:log4j:2.0:alpha1"/>
+          </cpe-lang:logical-test>
+        </vuln:vulnerable-configuration>
+        <vuln:vulnerable-software-list>
+          <vuln:product>cpe:/a:apache:log4j:2.0.1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.5</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.6</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.7</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.4</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta9</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta8</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.8</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta5</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.2</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta4</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.3</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.4.1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta7</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta6</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.8.1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0.2</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.6.1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta3</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.6.2</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:beta2</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:rc1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:rc2</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:alpha1</vuln:product>
+          <vuln:product>cpe:/a:apache:log4j:2.0:alpha2</vuln:product>
+        </vuln:vulnerable-software-list>
+        <vuln:cve-id>CVE-2017-5645</vuln:cve-id>
+        <vuln:published-datetime>2017-04-17T17:59:00.373-04:00</vuln:published-datetime>
+        <vuln:last-modified-datetime>2017-04-24T20:32:01.507-04:00</vuln:last-modified-datetime>
+        <vuln:cvss>
+          <cvss:base_metrics>
+            <cvss:score>7.5</cvss:score>
+            <cvss:access-vector>NETWORK</cvss:access-vector>
+            <cvss:authentication>NONE</cvss:authentication>
+            <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
+            <cvss:integrity-impact>PARTIAL</cvss:integrity-impact>
+            <cvss:availability-impact>PARTIAL</cvss:availability-impact>
+            <cvss:source>http://nvd.nist.gov</cvss:source>
+            <cvss:generated-on-datetime>2017-04-24T13:37:07.967-04:00</cvss:generated-on-datetime>
+          </cvss:base_metrics>
+        </vuln:cvss>
+        <vuln:cwe id="CWE-502"/>
+        <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+          <vuln:source>BID</vuln:source>
+          <vuln:reference href="http://www.securityfocus.com/bid/97702" xml:lang="en">97702</vuln:reference>
+        </vuln:references>
+        <vuln:references xml:lang="en" reference_type="UNKNOWN">
+          <vuln:source>CONFIRM</vuln:source>
+          <vuln:reference href="https://issues.apache.org/jira/browse/LOG4J2-1863" xml:lang="en">https://issues.apache.org/jira/browse/LOG4J2-1863</vuln:reference>
+        </vuln:references>
+        <vuln:summary>In Apache Log4j 2.x before 2.8.2, when using the TCP socket server or UDP socket server to receive serialized log events from another application, a specially crafted binary payload can be sent that, when deserialized, can execute arbitrary code.</vuln:summary>
+      </entry>
+      <entry id="CVE-2017-9994">
+    <vuln:vulnerable-configuration id="http://nvd.nist.gov/">
+      <cpe-lang:logical-test operator="OR" negate="false">
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.3"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.2.2"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.2.3"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.2.4"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1.6"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1.7"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0.5"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0.6"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0.7"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:2.8.11"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0.1"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0.2"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0.3"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.0.4"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1.1"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1.2"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1.3"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1.4"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.1.5"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.2"/>
+        <cpe-lang:fact-ref name="cpe:/a:ffmpeg:ffmpeg:3.2.1"/>
+      </cpe-lang:logical-test>
+    </vuln:vulnerable-configuration>
+    <vuln:vulnerable-software-list>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.2</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.2.3</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0.5</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1.4</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.2.2</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0.4</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1.3</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.3</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0.2</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1.1</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0.3</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1.2</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.2.1</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1.7</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0.1</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.2.4</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0.6</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1.5</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.1.6</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:3.0.7</vuln:product>
+      <vuln:product>cpe:/a:ffmpeg:ffmpeg:2.8.11</vuln:product>
+    </vuln:vulnerable-software-list>
+    <vuln:cve-id>CVE-2017-9994</vuln:cve-id>
+    <vuln:published-datetime>2017-06-28T02:29:00.550-04:00</vuln:published-datetime>
+    <vuln:last-modified-datetime>2017-07-05T10:50:59.413-04:00</vuln:last-modified-datetime>
+    <vuln:cvss>
+      <cvss:base_metrics>
+        <cvss:score>6.8</cvss:score>
+        <cvss:access-vector>NETWORK</cvss:access-vector>
+        <cvss:access-complexity>MEDIUM</cvss:access-complexity>
+        <cvss:authentication>NONE</cvss:authentication>
+        <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
+        <cvss:integrity-impact>PARTIAL</cvss:integrity-impact>
+        <cvss:availability-impact>PARTIAL</cvss:availability-impact>
+        <cvss:source>http://nvd.nist.gov</cvss:source>
+        <cvss:generated-on-datetime>2017-07-03T20:10:33.313-04:00</cvss:generated-on-datetime>
+      </cvss:base_metrics>
+    </vuln:cvss>
+    <vuln:cwe id="CWE-119"/>
+    <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+      <vuln:source>BID</vuln:source>
+      <vuln:reference href="http://www.securityfocus.com/bid/99317" xml:lang="en">99317</vuln:reference>
+    </vuln:references>
+    <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+      <vuln:source>MISC</vuln:source>
+      <vuln:reference href="https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=1434" xml:lang="en">https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=1434</vuln:reference>
+    </vuln:references>
+    <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+      <vuln:source>MISC</vuln:source>
+      <vuln:reference href="https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=1435" xml:lang="en">https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=1435</vuln:reference>
+    </vuln:references>
+    <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+      <vuln:source>MISC</vuln:source>
+      <vuln:reference href="https://github.com/FFmpeg/FFmpeg/commit/6b5d3fb26fb4be48e4966e4b1d97c2165538d4ef" xml:lang="en">https://github.com/FFmpeg/FFmpeg/commit/6b5d3fb26fb4be48e4966e4b1d97c2165538d4ef</vuln:reference>
+    </vuln:references>
+    <vuln:summary>libavcodec/webp.c in FFmpeg before 2.8.12, 3.0.x before 3.0.8, 3.1.x before 3.1.8, 3.2.x before 3.2.5, and 3.3.x before 3.3.1 does not ensure that pix_fmt is set, which allows remote attackers to cause a denial of service (heap-based buffer overflow and application crash) or possibly have unspecified other impact via a crafted file, related to the vp8_decode_mb_row_no_filter and pred8x8_128_dc_8_c functions.</vuln:summary>
+  </entry>
+    <entry id="CVE-2017-5338">
+        <vuln:cve-id>CVE-2017-5338</vuln:cve-id>
+        <vuln:published-datetime>2017-04-11T12:59:00.267-04:00</vuln:published-datetime>
+        <vuln:last-modified-datetime>2017-04-11T12:59:00.280-04:00</vuln:last-modified-datetime>
+        <vuln:summary>** REJECT **  DO NOT USE THIS CANDIDATE NUMBER. ConsultIDs: none. Reason: This candidate was withdrawn by its CNA. Further investigation showed that it was not a security issue. Notes: none.</vuln:summary>
+    </entry>
+    <entry id="CVE-2017-8564">
+    <vuln:vulnerable-configuration id="http://nvd.nist.gov/">
+      <cpe-lang:logical-test operator="OR" negate="false">
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_10:1607"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_10:1703"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_server_2012:-"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_server_2012:r2"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_server_2016"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_7::sp1"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_rt_8.1"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_server_2008::sp2"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_server_2008:r2:sp1"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_8.1"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_10:-"/>
+        <cpe-lang:fact-ref name="cpe:/o:microsoft:windows_10:1511"/>
+      </cpe-lang:logical-test>
+    </vuln:vulnerable-configuration>
+    <vuln:vulnerable-software-list>
+      <vuln:product>cpe:/o:microsoft:windows_10:1607</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_server_2012:-</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_8.1</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_7::sp1</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_10:1703</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_server_2008::sp2</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_server_2008:r2:sp1</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_10:-</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_10:1511</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_rt_8.1</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_server_2016</vuln:product>
+      <vuln:product>cpe:/o:microsoft:windows_server_2012:r2</vuln:product>
+    </vuln:vulnerable-software-list>
+    <vuln:cve-id>CVE-2017-8564</vuln:cve-id>
+    <vuln:published-datetime>2017-07-11T17:29:01.107-04:00</vuln:published-datetime>
+    <vuln:last-modified-datetime>2017-07-20T11:08:53.613-04:00</vuln:last-modified-datetime>
+    <vuln:cvss>
+      <cvss:base_metrics>
+        <cvss:score>2.1</cvss:score>
+        <cvss:access-vector>LOCAL</cvss:access-vector>
+        <cvss:access-complexity>LOW</cvss:access-complexity>
+        <cvss:authentication>NONE</cvss:authentication>
+        <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
+        <cvss:integrity-impact>NONE</cvss:integrity-impact>
+        <cvss:availability-impact>NONE</cvss:availability-impact>
+        <cvss:source>http://nvd.nist.gov</cvss:source>
+        <cvss:generated-on-datetime>2017-07-17T22:54:53.257-04:00</cvss:generated-on-datetime>
+      </cvss:base_metrics>
+    </vuln:cvss>
+    <vuln:cwe id="CWE-200"/>
+    <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+      <vuln:source>BID</vuln:source>
+      <vuln:reference href="http://www.securityfocus.com/bid/99428" xml:lang="en">99428</vuln:reference>
+    </vuln:references>
+    <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+      <vuln:source>SECTRACK</vuln:source>
+      <vuln:reference href="http://www.securitytracker.com/id/1038853" xml:lang="en">1038853</vuln:reference>
+    </vuln:references>
+    <vuln:references xml:lang="en" reference_type="VENDOR_ADVISORY">
+      <vuln:source>CONFIRM</vuln:source>
+      <vuln:reference href="https://portal.msrc.microsoft.com/en-us/security-guidance/advisory/CVE-2017-8564" xml:lang="en">https://portal.msrc.microsoft.com/en-us/security-guidance/advisory/CVE-2017-8564</vuln:reference>
+    </vuln:references>
+    <vuln:summary>Windows kernel in Microsoft Windows Server 2008 SP2 and R2 SP1, Windows 7 SP1, Windows 8.1, Windows Server 2012 Gold and R2, Windows RT 8.1, Windows 10 Gold, 1511, 1607, and 1703, and Windows Server 2016 allows an information disclosure vulnerability when it fails to properly initialize a memory address, aka "Windows Kernel Information Disclosure Vulnerability".</vuln:summary>
+  </entry>
+
+</nvd>

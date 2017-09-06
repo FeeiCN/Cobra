@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html class="ie ie8"> <![endif]-->
+<!--[if IE 9]>
+<html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <title>Task Information</title>
+
+    <!--[if lt IE 9]>
+    <script src="asset/js/html5shiv.min.js"></script>
+    <script src="asset/js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="invoice-title">
+                <h2>Cobra</h2>
+            </div>
+            <hr>
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-id="inf" data-toggle="tab">Information</a></li>
+                <li><a data-id="tar" data-toggle="tab">Targets</a></li>
+                <li><a data-id="vul" data-toggle="tab">Vulnerabilities</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="inf">
+                    <div class="row">
+                        <div class="col-md-4 column">
+                            <h4>Welcome to Cobra!</h4>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <address>
+                                        <h5>Information summary</h5>
+                                        <table class="table table-striped table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>Report time</td>
+                                                <td>{{ start_time }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total number of targets</td>
+                                                <td>{{ total_targets_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Number of unfinished targets</td>
+                                                <td>{{ not_finished_number }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </address>
+                                </div>
+                                <div class="col-xs-12">
+                                    <address>
+                                        <h5>Number of vulnerabilities</h5>
+                                        <table class="table table-striped table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Level</th>
+                                                <th>Number</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="n-o-v">
+                                            <tr>
+                                                <td>Critical</td>
+                                                <td>{{ critical_vul_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>High</td>
+                                                <td>{{ high_vul_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Medium</td>
+                                                <td>{{ medium_vul_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Low</td>
+                                                <td>{{ low_vul_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total</td>
+                                                <td>{{ total_vul_number }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </address>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h4>Top 10 vulnerability distribution statistics</h4>
+                            <div id="vul_distributing" style="height:400px;">
+                                {% if vuls | length == 0 %}
+                                    <img src="{{ url_for('static', filename='img/congratulations.jpg') }}"
+                                         class="congratulations"
+                                         alt="">
+                                    <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no
+                                        vulnerability was detected :)</h3>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tar">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Targets Information</h4>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <address>
+                                        <div id="table">
+                                            <table class="table table-striped table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>Target</th>
+                                                    <th>Branch / Tag</th>
+                                                    <th>Language</th>
+                                                    <th>Framework</th>
+                                                    <th>Files</th>
+                                                    <th>Extensions</th>
+                                                    <th>Pushed Rules</th>
+                                                    <th>Trigger Rules</th>
+                                                    <th>Vulnerabilities</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for target_info in targets %}
+                                                    <tr>
+                                                        <td>
+                                                            <a href="javascript:void(0);"
+                                                               onclick="$('.nav-tabs li a[data-id=vul]').click();$('.filter_setting').click();$('#search_target').val('{{ target_info.get('sid') }}');$('.filter_btn').click();">{{ target_info.get('target') }}</a>
+                                                        </td>
+                                                        <td>{{ target_info.get('branch') }}</td>
+                                                        <td>{{ target_info.get('language') }}</td>
+                                                        <td>{{ target_info.get('framework') }}</td>
+                                                        <td>{{ target_info.get('file') }}</td>
+                                                        <td>{{ target_info.get('extension') }}</td>
+                                                        <td>{{ target_info.get('push_rules') }}</td>
+                                                        <td>{{ target_info.get('trigger_rules') }}</td>
+                                                        <td>{{ target_info.get('total_vul_number') }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </address>
+                                </div>
+                            </div>
+                            {% if running %}
+                                <h4>Running Targets</h4>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <address>
+                                            <table class="table table-striped table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>sid</th>
+                                                    <th>Target</th>
+                                                    <th>Branch / Tag</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for sid in running.keys() %}
+                                                    <tr>
+                                                        <td>{{ sid }}</td>
+                                                        <td>{{ running.get(sid).get('target') }}</td>
+                                                        <td>{{ running.get(sid).get('branch') }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </address>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="vul">
+                    <div class="row">
+                        <div class="col-md-3 p0">
+                            <div id="panel-2" class="vl_panel"><strong>Vulnerabilities</strong><a
+                                    title="Setting vulnerabilities filter" class="cog-panel filter_setting"><img
+                                    class="icon" src="{{ url_for('static', filename='icon/funnel.png') }}" alt="1"></a>
+                            </div>
+                            <div class="filter">
+                                <div class="col-md-12" style="margin-top: 10px">
+                                    <label for="search_target" style="color: #aaaaaa;">Target</label>
+                                    <select id="search_target" class="form-control" style="height: 30px;">
+                                        {% for target_info in targets %}
+                                            <option value="{{ target_info.get('sid') }}">{{ target_info.get('target') }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px">
+                                    <label for="search_rule" style="color: #aaaaaa;">Mode</label>
+                                    <select id="search_rule" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_level" style="color: #aaaaaa;">Level</label>
+                                    <select id="search_level" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        <option value="4">Critical</option>
+                                        <option value="3">High</option>
+                                        <option value="2">Medium</option>
+                                        <option value="1">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="padding:20px 30%">
+                                    <button class="btn btn-success filter_btn" style="">Summit filter</button>
+                                </div>
+                            </div>
+                            <ul class="vulnerabilities_list scroll"></ul>
+                        </div>
+                        <div class='col-md-9 p0 form_code'>
+                            <textarea id='code'>// This is a demo code</textarea>
+                            <div class='cm-loading' style='display:none;'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="widget-list">
+        <ul class="widget-trigger">
+            <li>
+                <img class="icon" src="{{ url_for('static', filename='icon/v-card.png') }}" alt="Commit Author">
+                <span class="commit-author"></span>
+                <img class="icon" src="{{ url_for('static', filename='icon/calendar.png') }}" alt="Commit Time">
+                <span class="commit-time"></span>
+            </li>
+            <li>
+                Level: <span class="v-level"></span> <span class="v-type"></span><span class="v-rule"></span>
+            </li>
+            <li>
+                Solution: <span class="v-solution"></span>
+            </li>
+            <li class="hidden">
+                Score: <span></span> CWE: <span></span> OWASP Top10: <span></span> SANA 25 Rank: <span></span> Bounty:
+                <span></span>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div>
+                <p style="float:left;">
+                    Copyright &copy; 2017 <a href="https://github.com/wufeifei/cobra" target="_blank">Cobra</a>. All
+                    rights reserved
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <p style="float:right;">
+                    <a href="https://github.com/wufeifei/cobra" target="_blank">Github</a> -
+                    <a href="http://cobra-docs.readthedocs.io/" target="_blank">Documents</a> -
+                    <a href="http://cobra.feei.cn/" target="_blank">About</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <script>
+        var types = [];
+        var vuls = [];
+        {% for type, num in vuls | dictsort(by='value') %}
+            // 取漏洞数量前十
+            {% if loop.revindex <= 10 %}
+                types.push('{{ type }}');
+                vuls.push({value: {{ num }}, name: '{{ type }}'});
+            {% endif %}
+        {% endfor %}
+        // 数量大的靠前
+        types.reverse();
+        vuls.reverse();
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: types
+            },
+            series: [
+                {
+                    name: 'Vulnerability hazard ratio',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    radius: [0, '30%'],
+                    label: {
+                        normal: {
+                            position: 'inner'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: [
+                        {%  if critical_vul_number != 0 %}
+                            {value: {{ critical_vul_number }}, name: 'Critical'},
+                        {% endif %}
+                        {%  if high_vul_number != 0 %}
+                            {value: {{ high_vul_number }}, name: 'High', selected: true},
+                        {% endif %}
+                        {%  if medium_vul_number != 0 %}
+                            {value: {{ medium_vul_number }}, name: 'Medium'},
+                        {% endif %}
+                        {%  if low_vul_number != 0 %}
+                            {value: {{ low_vul_number }}, name: 'Low'},
+                        {% endif %}
+                    ]
+                },
+                {
+                    name: 'Vulnerability type accounting',
+                    type: 'pie',
+                    radius: ['40%', '55%'],
+                    data: vuls
+                }
+            ]
+        };
+        {% if vuls | length > 0 %}
+            var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+            vul_distributing.setOption(option);
+        {% endif %}
+    </script>
+    <!--CodeMirror-->
+    <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/theme/material.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/dialog/dialog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/search/matchesonscrollbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/scroll/simplescrollbars.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='codemirror/addon/display/fullscreen.css') }}">
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldcode.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/foldgutter.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/markdown-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/comment-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/xml-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/fold/brace-fold.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/placeholder.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/fullscreen.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/display/panel.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/edit/matchbrackets.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/edit/matchtags.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/dialog/dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/searchcursor.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/scroll/annotatescrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/matchesonscrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/jump-to-line.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/search/match-highlighter.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/scroll/simplescrollbars.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/addon/selection/active-line.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/markdown/markdown.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/yaml/yaml.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/php/php.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/python/python.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/ruby/ruby.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/perl/perl.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/lua/lua.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/go/go.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/cmake/cmake.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/shell/shell.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/sql/sql.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/clike/clike.js') }}"></script>
+    <script src="{{ url_for('static', filename='codemirror/mode/properties/properties.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/report.js') }}"></script>
+</div>
+</body>
+</html>

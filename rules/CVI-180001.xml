@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="远程代码执行"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[(array_map|create_function|call_user_func|call_user_func_array|assert|eval|dl|register_tick_function|register_shutdown_function|preg_replace)]]></match>
+    <level value="10"/>
+    <test>
+        <case assert="true"><![CDATA[array_map($_GET['pass'],$array);]]></case>
+        <case assert="true"><![CDATA[create_function('$_GET['pass']',"echo $a");]]></case>
+        <case assert="true"><![CDATA[call_user_func($_GET['pass1'],$_GET['pass2']);]]></case>
+        <case assert="true"><![CDATA[call_user_func_array($_GET['pass1'],$array);]]></case>
+        <case assert="true"><![CDATA[assert($_GET['pass']);]]></case>
+        <case assert="true"><![CDATA[eval($_GET['pass']);]]></case>
+        <case assert="true"><![CDATA[dl($_GET['pass']);]]></case>
+        <case assert="true"><![CDATA[register_tick_function($_GET['pass']);]]></case>
+        <case assert="true"><![CDATA[register_shutdown_function($_GET['pass']);]]></case>
+        <case assert="true"><![CDATA[
+            $a = base64_decode($_POST['test']);
+            eval($a);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码注入(Code Injection)
+        没有对用户输入的参数进行足够的过滤，可能导致攻击者传入的恶意代码执行。
+        因此危险函数应该尽量避免在开发中使用。
+
+        ## 修复方案
+        禁用以下危险函数
+        - array_map
+        - create_function
+        - call_user_func
+        - call_user_func_array
+        - assert
+        - eval
+        - dl
+        - register_tick_function
+        - register_shutdown_function
+        - preg_replace
+
+        ## 举例
+        <?php
+            $myvar = "varname";
+            $x = $_GET['arg'];
+            eval("\$myvar" = \$x;");
+        ?>
+        提交 `/index.php?arg=1;phpinfo()` 便会产生代码注入
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

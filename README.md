@@ -1,57 +1,27 @@
 # Cobra
- [![Cobra Release](https://img.shields.io/github/release/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/releases)
- [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
- [![Cobra Open Issue](https://img.shields.io/github/issues-raw/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/issues)
- [![Cobra Close Issue](https://img.shields.io/github/issues-closed-raw/wufeifei/cobra.svg)](https://github.com/wufeifei/cobra/issues?q=is%3Aissue+is%3Aclosed)
- [![GitHub stars](https://img.shields.io/github/stars/wufeifei/cobra.svg?style=social&label=Star)](https://github.com/wufeifei/cobra/stargazers)
- [![GitHub followers](https://img.shields.io/github/followers/wufeifei.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/wufeifei)
+[![Build Status](https://travis-ci.org/wufeifei/cobra.svg?branch=master)](https://travis-ci.org/wufeifei/cobra)
+[![Coverage Status](https://coveralls.io/repos/github/wufeifei/cobra/badge.svg?branch=master)](https://coveralls.io/github/wufeifei/cobra?branch=master)
+[![GitHub (pre-)release](https://img.shields.io/github/release/wufeifei/cobra/all.svg)](https://github.com/wufeifei/cobra/releases)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
 
----
-[English](https://github.com/wufeifei/cobra) | [简体中文](https://github.com/wufeifei/cobra/blob/master/README_zh-CN.md)
+[![asciicast](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_03.jpg)](https://asciinema.org/a/132572)
 
----
+## Introduction（介绍）
+Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的**大部分显著**的安全问题和漏洞。
 
-## Introduction
-Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
+## Features（特点）
+#### Multi-language Supported（支持多种开发语言）
+> 支持PHP、Java等开发语言，并支持数十种类型文件。
 
-## Features
-- Multi-language support
-- Multiple code support
-- Compatibility
-- API
-- Automation
+#### Multi-Vulnerabilities Supported（支持多种漏洞类型）
+> 首批开放数万条不安全的依赖检查规则和数十条代码安全扫描规则，后续将持续开放更多扫描规则。
 
-## Target Audience
-**1. IT/Network Company**
+#### GUI/CLI/API Mode（命令行模式和API模式）
+> 提供本地Web Server服务，可使用GUI可视化操作，也可支持本地API接口，方便和其它系统（发布系统、CI等）对接扩展。
 
-Internet companies can deploy Cobra within the enterprise for developers to use to scan for project risks.
-It can also be integrated into an internal code distribution system that allows Cobra to become a part of the distribution system by scanning developers for security of code submitted to the line, thereby limiting unsafe code to go online and reducing online risk.
+## Screenshot（截图）
+[![report01](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_01.jpg)](https://wufeifei.github.io/cobra/api)
+[![report02](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_02.jpg)](https://wufeifei.github.io/cobra/api)
 
-**2. Security Company**
-
-Security companies for Internet companies for security testing, you can Cobra's global project scanning capabilities of all items of Party A automatic code security audit.
-
-**3. White Hat**
-
-White Hat can be customized private Cobra scanning rules, open source project code audit, found the vulnerability.
-
-
-## Screenshot
-##### Cobra Manual Scan
-![Cobra Manual Scan](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANUAL.png)
-##### Cobra Report
-![Cobra report overview](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/REPORT.png)
-![Cobra report vulnerability](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_vulnerability.png)
-![Cobra report extension](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_extension.png)
-##### Cobra Manage
-![Cobra manage overview](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/MANAGE.png)
-![Cobra manage rule](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/manage_rule.png)
-
-## Beta version
-Cobra is currently a beta version, there are some imperfections and bugs, so we need your contribution, whether it is testing, development, vulnerability scanning rules or advice.
-
-## References
-- Documents - [http://cobra-docs.readthedocs.io](http://cobra-docs.readthedocs.io)
-- Website - Coming soon!
-- Online Demo - Coming soon!
-
+## Links（链接）
+- [Cobra文档](https://wufeifei.github.io/cobra/)

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="SQL Execute Functions可能导致SQL注入"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[(mysqli_query|pg_execute|pg_insert|pg_query|pg_select|pg_update|sqlite_query|msql_query|mssql_query|odbc_exec|fbsql_query|sybase_query|ibase_query|dbx_query|ingres_query|ifx_query|oci_parse|sqlsrv_query|maxdb_query|db2_exec)\s?\(]]></match>
+    <level value="8"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            $query = "SELECT * FROM users WHERE user = $username AND password = $password ";
+            mysqli_query($query);
+        ]]></case>
+        <case assert="false"><![CDATA[
+            $username = "user";
+            $password = "cobra123";
+            $query = "SELECT * FROM users WHERE user = $username AND password = $password ";
+            mysqli_query($query);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+
+        ### SQL注入形成原因
+        SQL语句用户可控，若未对参数进行足够的过滤则会导致SQL注入
+
+        ### 风险
+        - 用户信息被篡改
+        - 攻击者偷取代码和用户数据
+        - 业务运营的所有数据被恶意获取
+        - 线上代码被非法篡改，并造成为恶意攻击者输送流量或其他利益的影响
+
+        ## 修复方案
+        - 已不再使用的功能，直接做下线处理
+        - 引入安全组件
+        - 代码层修复:对用户可控参数进行严格过滤
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

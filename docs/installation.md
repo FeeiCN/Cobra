@@ -1,69 +1,36 @@
-## Download source code
+# Installation（安装）
+
+## 系统支持
+
+|系统|支持情况|
+|---|---|
+| mac OS | 支持 |
+| Linux | 支持 |
+| Windows | 暂不支持 |
+
+## Python版本
+Cobra可运行在以下Python版本
+  - 2.6
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
+  - 3.6+
+
+## 特殊依赖
+
+#### macOS系统依赖
 ```
-git clone https://github.com/wufeifei/cobra.git
-cd cobra/
+brew install grep findutils
 ```
 
-## Install system dependencies
-```
-# Python
-[sudo] yum install Python-devel
-
-# MySQL
-[sudo] yum install MySQL-python
-[sudo] yum install mysql-devel
-
-# PIP
-[sudo] yum install epel-release
-[sudo] yum install python-pip
-
-# gcc-c++
-[sudo] yum install gcc-c++
-
-# Cloc
-npm install -g cloc                    # https://www.npmjs.com/package/cloc
-sudo apt-get install cloc              # Debian, Ubuntu
-sudo yum install cloc                  # Red Hat, Fedora
-sudo pacman -S cloc                    # Arch
-sudo pkg install cloc                  # FreeBSD
-sudo port install cloc                 # Mac OS X with MacPorts
-```
-
-## extra install on macOS
-```
-# grep(gnu)
-brew install homebrew/dupes/grep
-
-# find(gnu)
-brew install findutils
-```
-
-## Install Python dependencies
-```
-# on Cobra root
-[sudo] pip install -r requirements.txt
-```
-
-## [Cobra configuration](http://cobra-docs.readthedocs.io/en/latest/configuration/)
-```
-cp config.example config
-vim config
-```
-
-## Initialization database structure and base data
-```
-python cobra.py install
-```
-
-## Start Cobra
-```
-python cobra.py start
-```
-
-## Log
+## 安装方法
 ```bash
-tail -f logs/cobra.log
+git clone https://github.com/wufeifei/cobra.git && cd cobra
+pip install -r requirements.txt
+./cobra.py --help
 ```
 
-## FAQ
-- [http://cobra-docs.readthedocs.io/en/latest/FAQ/](http://cobra-docs.readthedocs.io/en/latest/FAQ/)
+---
+下一章：[CLI模式使用方法](https://wufeifei.github.io/cobra/cli)

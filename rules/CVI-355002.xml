@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="ECB加密模式"/>
+    <language value="java"/>
+    <match mode="regex-only-match"><![CDATA[Cipher....Instance\s?\(\s?\".*ECB]]></match>
+    <level value="2"/>
+    <solution>
+        ## 安全风险
+        ECB模式是不安全的
+
+        ## 修复方案
+        建议使用GCM模式
+    </solution>
+    <test>
+        <case assert="true"><![CDATA[
+            Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
+            c.init(Cipher.ENCRYPT_MODE, k, iv);
+            byte[] cipherText = c.doFinal(plainText);
+        ]]></case>
+        <case assert="false"><![CDATA[
+            Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
+            c.init(Cipher.ENCRYPT_MODE, k, iv);
+            byte[] cipherText = c.doFinal(plainText);
+        ]]></case>
+    </test>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

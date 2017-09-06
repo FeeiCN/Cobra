@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="直接输出入参可能导致XSS"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[(echo|print|print_r|exit|die|printf|vprintf|trigger_error|user_error|odbc_result_all|ovrimos_result_all|ifx_htmltbl_result)]]></match>
+    <repair block="in-function"><![CDATA[(htmlspecialchars\s*\(\s*{{PARAM}}\s*)]]></repair>
+    <level value="4"/>
+    <test>
+        <case assert="true"><![CDATA[print_r ($_GET['test']);]]></case>
+        <case assert="true"><![CDATA[
+            $filename = $_POST['filename'];
+            $file = fopen($filename, 'r')
+                or exit("unable to open file ($filename)");
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        直接输出入参会导致XSS
+
+        ## 修复方案
+        1. 使用`htmlentities`函数进行转义
+        2. 使用Begis安全组件对参数进行过滤后使用
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

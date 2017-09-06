@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="信息泄露"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[(print_r|var_dump|show_source|highlight_file)\s*\(]]></match>
+    <level value="2"/>
+    <test>
+        <case assert="true"><![CDATA[print_r($a);]]></case>
+        <case assert="true"><![CDATA[var_dump($a);]]></case>
+        <case assert="true"><![CDATA[highlight_file($file);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        可能导致信息泄露
+
+        ## 修复方案
+        删除代码
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

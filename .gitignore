@@ -48,9 +48,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-
 # Sphinx documentation
 docs/_build/
 
@@ -68,9 +65,16 @@ target/
 
 # Cobra config file
 config
+*.log*
 
-# Cobra logs
-logs/
+# tmp
+tmp/
 
 # Cobra automation report image file
 scheduler/reports/
+
+# venv
+cobra-venv/*
+
+# phply
+parsetab.py
