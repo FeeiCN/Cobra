@@ -72,3 +72,6 @@ tmp/
 
 # Cobra automation report image file
 scheduler/reports/
+
+# phply
+parsetab.py
