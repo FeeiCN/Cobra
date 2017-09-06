@@ -108,7 +108,7 @@ $(function () {
                                 $('.commit-author').text('@' + data.commit_author);
                                 $('.commit-time').text('@' + data.commit_time);
                                 $('.v-level').text(score2level[data.level]);
-                                $('.v-type').text(data.rule_name);
+                                $('.v-type').text('CVI-' + data.id + ' ' + data.rule_name);
                                 $('.v-solution').text(data.solution);
                                 // $('.v-rule').text(data.match_result);
                             }
@@ -341,8 +341,8 @@ $(function () {
                                 ' data-start="1" data-line="1">' +
                                 '<strong>MVE-' + (i + 1) + '</strong><br><span>' + list[i].file_path + line + '</span><br>' +
                                 '<span class="issue-information">' +
-                                '<small>' +
-                                ' => ' + list[i].commit_time +
+                                '<small>' + 'CVI-' + list[i].id +
+                                ' => ' + list[i].rule_name +
                                 '</small>' +
                                 '</span>' +
                                 '</li>';

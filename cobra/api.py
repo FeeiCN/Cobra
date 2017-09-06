@@ -312,7 +312,6 @@ def summary():
                                key=key)
 
     status_url = 'http://{host}:{port}/api/status'.format(host=running_host, port=running_port)
-    logger.critical(status_url)
     post_data = {
         'key': key,
         'sid': a_sid,
@@ -340,7 +339,6 @@ def summary():
                 elif len(split_target) == 2:
                     target, branch = target_str, 'master'
                 else:
-                    logger.critical('[API] Target url exception: {u}'.format(u=target_str))
                     target, branch = target_str, 'master'
                 still_running[s_sid] = {'target': target,
                                         'branch': branch}
@@ -373,7 +371,6 @@ def summary():
                 elif len(split_target) == 2:
                     target, branch = target_str, 'master'
                 else:
-                    logger.critical('Target url exception: {u}'.format(u=target_str))
                     target, branch = target_str, 'master'
 
                 target_info.update({
