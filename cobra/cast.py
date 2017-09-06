@@ -13,23 +13,24 @@
 """
 import os
 import re
-import subprocess
-from .utils import Tool
 from .log import logger
 from .rule import block
 from .pickup import File
+from .file import File as File_init
+from .pickup import Directory
 
 
 class CAST(object):
     languages = ['php', 'java', 'm']
 
-    def __init__(self, rule, target_directory, file_path, line, code, ):
+    def __init__(self, rule, target_directory, file_path, line, code, files=None):
         self.target_directory = target_directory
         self.data = []
         self.rule = rule
         self.file_path = file_path
         self.line = line
         self.code = code
+        self.files = files
         self.param_name = None
         self.param_value = None
         self.language = None
@@ -75,21 +76,19 @@ class CAST(object):
         get all functions in this file
         :return:
         """
-        grep = Tool().grep
+        # grep = Tool().grep
         if self.language not in self.regex:
             logger.info("[AST] Undefined language's functions regex {0}".format(self.language))
             return False
         regex_functions = self.regex[self.language]['functions']
-        param = [grep, "-s", "-n", "-r", "-P"] + [regex_functions, self.file_path]
-        p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result, error = p.communicate()
+        f = File_init(self.files, self.target_directory)
+        result = f.grep(regex_functions)
+        result = "".join(result)
+
         try:
             result = result.decode('utf-8')
-            error = error.decode('utf-8')
         except AttributeError as e:
             pass
-        if len(error) is not 0:
-            logger.critical('[AST] {err}'.format(err=error.strip()))
         if len(result):
             functions = {}
             lines = result.strip().split("\n")
@@ -99,7 +98,7 @@ class CAST(object):
                 if line == '':
                     logger.info('[AST] Empty')
                     continue
-                line_arr = line.split(':')
+                line_arr = line.split('||')
                 if len(line_arr) < 2:
                     logger.info("[AST] Not found(:)")
 
@@ -108,7 +107,7 @@ class CAST(object):
                 if len(string) >= 1 and string[0] != '':
                     logger.info("[AST] This function is annotation")
 
-                function_name = re.findall(regex_functions, line_arr[1].strip())
+                function_name = re.findall(regex_functions, line_arr[2].strip())
                 if len(function_name) >= 1:
                     if len(function_name) == 2:
                         if function_name[0] != '':
@@ -118,14 +117,14 @@ class CAST(object):
                     else:
                         function_name = function_name[0]
                     if index > 0 and prev_function_name in functions:
-                        functions[prev_function_name]['end'] = line_arr[0]
+                        functions[prev_function_name]['end'] = line_arr[1]
                     prev_function_name = function_name
                     functions[function_name] = {
-                        'start': line_arr[0],
+                        'start': line_arr[1],
                         'end': None  # next function's start
                     }
                 else:
-                    logger.info("[AST] Can't get function name: {0}".format(line))
+                    logger.warning("[AST] Can't get function name: {0}".format(line))
             end = sum(1 for l in open(self.file_path))
             for name, value in functions.items():
                 if value['end'] is None:

@@ -14,10 +14,8 @@
 import os
 import re
 import json
-import fcntl
+import portalocker
 import traceback
-import subprocess
-import multiprocessing
 from . import const
 from .rule import Rule
 from .utils import Tool
@@ -26,7 +24,8 @@ from .config import running_path
 from .result import VulnerabilityResult
 from .cast import CAST
 from .parser import scan_parser
-from .cve import scan_cve
+from .cve_parse import scan_cve
+from .file import File
 from prettytable import PrettyTable
 
 
@@ -44,34 +43,30 @@ class Running:
         if not os.path.exists(file_path):
             if isinstance(data, list):
                 with open(file_path, 'w') as f:
-                    fcntl.flock(f, fcntl.LOCK_EX)
+                    portalocker.lock(f, portalocker.LOCK_EX)
                     f.write(json.dumps({
                         'sids': {},
                         'total_target_num': len(data),
                     }))
             else:
                 with open(file_path, 'w') as f:
-                    fcntl.flock(f, fcntl.LOCK_EX)
+                    portalocker.lock(f, portalocker.LOCK_EX)
                     f.write(json.dumps({
                         'sids': {},
                         'total_target_num': 1,
                     }))
 
     def list(self, data=None):
-        """
-        Update asid_list file.
-        :param data: tuple (s_sid, target)
-        :return:
-        """
         file_path = os.path.join(running_path, '{sid}_list'.format(sid=self.sid))
         if data is None:
             with open(file_path, 'r') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.readline()
                 return json.loads(result)
         else:
-            with open(file_path, 'r+') as f:  # w+ causes a file reading bug
-                fcntl.flock(f, fcntl.LOCK_EX)
+            with open(file_path, 'w+') as f:
+                portalocker.lock(f, portalocker.LOCK_EX)
+
                 result = f.read()
                 if result == '':
                     result = {'sids': {}}
@@ -86,26 +81,28 @@ class Running:
         file_path = os.path.join(running_path, '{sid}_status'.format(sid=self.sid))
         if data is None:
             with open(file_path) as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.readline()
             return json.loads(result)
         else:
             data = json.dumps(data)
             with open(file_path, 'w') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 f.writelines(data)
 
     def data(self, data=None):
-        file_path = os.path.join(running_path, '{sid}_data'.format(sid=self.sid))
+
+        file_path = os.path.abspath(running_path + '/{sid}_data'.format(sid=self.sid))
+
         if data is None:
             with open(file_path) as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.readline()
             return json.loads(result)
         else:
             data = json.dumps(data, sort_keys=True)
             with open(file_path, 'w+') as f:
-                fcntl.flock(f, fcntl.LOCK_EX)
+                portalocker.lock(f, portalocker.LOCK_EX)
                 f.writelines(data)
 
     def is_file(self, is_data=False):
@@ -141,15 +138,15 @@ def score2level(score):
         return '{l}-{s}: {ast}'.format(l=level[:1], s=score_full, ast=a)
 
 
-def scan_single(target_directory, single_rule):
+def scan_single(target_directory, single_rule, files=None):
     try:
-        return SingleRule(target_directory, single_rule).process()
+        return SingleRule(target_directory, single_rule, files).process()
     except Exception:
         raise
 
 
 def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=None, framework=None, file_count=0,
-         extension_count=0):
+         extension_count=0, files=None):
     r = Rule()
     vulnerabilities = r.vulnerabilities
     languages = r.languages
@@ -168,39 +165,36 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
 
-    try:
-        pool = multiprocessing.Pool()
-        if len(rules) == 0:
-            logger.critical('no rules!')
-            return False
-        logger.info('[PUSH] {rc} Rules'.format(rc=len(rules)))
-        push_rules = []
-        for idx, single_rule in enumerate(rules):
-            if single_rule['status'] is False:
-                logger.info('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
-                continue
-            # SR(Single Rule)
-            logger.debug("""[PUSH] [CVI-{cvi}] {idx}.{name}({language})""".format(
-                cvi=single_rule['id'],
-                idx=idx,
-                name=single_rule['name'],
-                language=single_rule['language']
-            ))
-            if single_rule['language'] in languages:
-                single_rule['extensions'] = languages[single_rule['language']]['extensions']
-                push_rules.append(single_rule['id'])
-                pool.apply_async(scan_single, args=(target_directory, single_rule), callback=store)
-            else:
-                logger.critical('unset language, continue...')
-                continue
-        pool.close()
-        pool.join()
-    except Exception:
-        raise
+    # pool = multiprocessing.Pool()
+    if len(rules) == 0:
+        logger.critical('no rules!')
+        return False
+    logger.info('[PUSH] {rc} Rules'.format(rc=len(rules)))
+    push_rules = []
+    for idx, single_rule in enumerate(rules):
+        if single_rule['status'] is False:
+            logger.info('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
+            continue
+        # SR(Single Rule)
+        logger.debug("""[PUSH] [CVI-{cvi}] {idx}.{name}({language})""".format(
+            cvi=single_rule['id'],
+            idx=idx,
+            name=single_rule['name'],
+            language=single_rule['language']
+        ))
+        if single_rule['language'] in languages:
+            single_rule['extensions'] = languages[single_rule['language']]['extensions']
+            result = scan_single(target_directory, single_rule, files)
+            store(result)
+        else:
+            logger.critical('unset language, continue...')
+            continue
 
-        # print
+    # print
     data = []
-    table = PrettyTable(['#', 'CVI', 'VUL', 'Rule', 'Lang', 'Level-Score', 'Target', 'Commit(Time, Author)', 'Source Code Content', 'Analysis'])
+    table = PrettyTable(
+        ['#', 'CVI', 'VUL', 'Rule(ID/Name)', 'Lang/CVE-id', 'Level-Score', 'Target-File:Line-Number/Module:Version',
+         'Commit(Author/Time)', 'Source Code Content'])
     table.align = 'l'
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
@@ -227,10 +221,12 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     if vn == 0:
         logger.info('[SCAN] Not found vulnerability!')
     else:
-        logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
+        logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules),
+                                                                                          vn=len(find_vulnerabilities),
+                                                                                          table=table))
         if len(diff_rules) > 0:
-            logger.info('[SCAN] Not Trigger Rules ({l}): {r}'.format(l=len(diff_rules), r=','.join(diff_rules)))
-
+            logger.info(
+                '[SCAN] Not Trigger Rules ({l}): {r}'.format(l=len(diff_rules), r=','.join(diff_rules)))
     # completed running data
     if s_sid is not None:
         Running(s_sid).data({
@@ -244,18 +240,19 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
                 'file': file_count,
                 'push_rules': len(rules),
                 'trigger_rules': len(trigger_rules),
-                'target_directory': target_directory,
+                'target_directory': target_directory
             }
         })
     return True
 
 
 class SingleRule(object):
-    def __init__(self, target_directory, single_rule):
+    def __init__(self, target_directory, single_rule, files):
         self.target_directory = target_directory
         self.find = Tool().find
         self.grep = Tool().grep
         self.sr = single_rule
+        self.files = files
         # Single Rule Vulnerabilities
         """
         [
@@ -263,6 +260,8 @@ class SingleRule(object):
         ]
         """
         self.rule_vulnerabilities = []
+
+        logger.info("[!] Start scan [CVI-{sr_id}]".format(sr_id=self.sr['id']))
 
     def origin_results(self):
         logger.debug('[ENGINE] [ORIGIN] match-mode {m}'.format(m=self.sr['match-mode']))
@@ -286,9 +285,9 @@ class SingleRule(object):
                     match = const.fpc_multi.replace('[f]', self.sr['match'])
                 else:
                     match = const.fpc_single.replace('[f]', self.sr['match'])
+
             else:
                 logger.warning('Exception match mode: {m}'.format(m=self.sr['match-mode']))
-
             filters = []
             for e in self.sr['extensions']:
                 filters.append('--include=*' + e)
@@ -297,24 +296,22 @@ class SingleRule(object):
             explode_dirs = ['.svn', '.cvs', '.hg', '.git', '.bzr']
             for explode_dir in explode_dirs:
                 filters.append('--exclude-dir={0}'.format(explode_dir))
-
-            # -s Suppress error messages / -n Show Line number / -r Recursive / -P Perl regular expression
-            param = [self.grep, "-s", "-n", "-r", "-P"] + filters + [match, self.target_directory]
         try:
-            p = subprocess.Popen(param, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            result, error = p.communicate()
+            if match:
+                f = File(self.files, self.target_directory)
+                result = f.grep(match)
+            else:
+                result = ""
         except Exception as e:
             traceback.print_exc()
-            logger.critical('match exception ({e})'.format(e=e.message))
+            logger.debug('match exception ({e})'.format(e=e.message))
             return None
         try:
             result = result.decode('utf-8')
-            error = error.decode('utf-8')
         except AttributeError as e:
             pass
-        if len(error) is not 0:
-            logger.critical('[CVI-{cvi}] [ORIGIN] [ERROR] {err}'.format(cvi=self.sr['id'], err=error.strip()))
-        return result
+
+        return "".join(result)
 
     def process(self):
         """
@@ -340,7 +337,9 @@ class SingleRule(object):
                 continue
             is_test = False
             try:
-                is_vulnerability, reason = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+                is_vulnerability, status_code = Core(self.target_directory, vulnerability, self.sr, 'project name',
+                                                     ['whitelist1', 'whitelist2'], test=is_test, index=index,
+                                                     files=self.files).scan()
                 if is_vulnerability:
                     logger.debug('[CVI-{cvi}] [RET] Found {code}'.format(cvi=self.sr['id'], code=reason))
                     vulnerability.analysis = reason
@@ -349,13 +348,14 @@ class SingleRule(object):
                     logger.debug('Not vulnerability: {code}'.format(code=reason))
             except Exception:
                 raise
-        logger.debug('[CVI-{cvi}] {vn} Vulnerabilities: {count}'.format(cvi=self.sr['id'], vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
+        logger.debug('[CVI-{cvi}] {vn} Vulnerabilities: {count}'.format(cvi=self.sr['id'], vn=self.sr['name'],
+                                                                        count=len(self.rule_vulnerabilities)))
         return self.rule_vulnerabilities
 
     def parse_match(self, single_match):
         mr = VulnerabilityResult()
         # grep result
-        if ':' in single_match:
+        if '||' in single_match:
             #
             # Rules
             #
@@ -363,9 +363,9 @@ class SingleRule(object):
             # v.php:2:$password 2017:01:01
             # v.exe Binary file
             try:
-                mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
-                mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
-            except Exception:
+                mr.line_number, mr.code_content = re.findall(r'\|\|(\d+)\|\|(.*)', single_match)[0]
+                mr.file_path = single_match.split(u'||{n}||'.format(n=mr.line_number))[0]
+            except Exception as e:
                 logger.warning('match line parse exception')
                 mr.file_path = ''
                 mr.code_content = ''
@@ -395,7 +395,8 @@ class SingleRule(object):
 
 
 class Core(object):
-    def __init__(self, target_directory, vulnerability_result, single_rule, project_name, white_list, test=False, index=None):
+    def __init__(self, target_directory, vulnerability_result, single_rule, project_name, white_list, test=False,
+                 index=None, files=None):
         """
         Initialize
         :param: target_directory:
@@ -405,6 +406,7 @@ class Core(object):
         :param white_list: white-list
         :param test: is test
         :param index: vulnerability index
+        :param files: core file list
         """
         self.data = []
 
@@ -413,6 +415,7 @@ class Core(object):
         self.file_path = vulnerability_result.file_path.strip()
         self.line_number = vulnerability_result.line_number
         self.code_content = vulnerability_result.code_content.strip()
+        self.files = files
 
         self.rule_match = single_rule['match']
         self.rule_match_mode = single_rule['match-mode']
@@ -584,7 +587,7 @@ class Core(object):
             #
             logger.debug("[CVI-{cvi}] [ONLY-MATCH]".format(cvi=self.cvi))
             if self.rule_match2 is not None:
-                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number,self.code_content)
                 is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
                 if is_match:
                     logger.debug('[CVI-{cvi}] [MATCH2] True'.format(cvi=self.cvi))
@@ -595,7 +598,8 @@ class Core(object):
 
             if self.rule_repair is not None:
                 logger.debug('[VERIFY-REPAIR]')
-                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content,
+                           files=self.files)
                 is_repair, data = ast.match(self.rule_repair, self.repair_block)
                 if is_repair:
                     # fixed
@@ -619,7 +623,9 @@ class Core(object):
             logger.debug('[CVI-{cvi}] match-mode {mm}'.format(cvi=self.cvi, mm=self.rule_match_mode))
             if self.file_path[-3:].lower() == 'php':
                 try:
-                    ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
+                    ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number,
+                               self.code_content, files=self.files)
+                    # Match2
                     if self.rule_match_mode == const.mm_function_param_controllable:
                         rule_match = self.rule_match.strip('()').split('|')
                         logger.debug('[RULE_MATCH] {r}'.format(r=rule_match))
