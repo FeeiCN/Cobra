@@ -378,7 +378,6 @@ def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
     mr = VulnerabilityResult()
     module_name, module_version = module_.split(':')
     cvi = cve_path.lower().split('cvi-')[1][:6]
-    rule_name = '引用了存在漏洞的三方组件'
     if cve_level == 'LOW':
         cve_level = 2
 
@@ -405,11 +404,12 @@ def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
 
     else:
         mr.file_path = 'unkown'
-    mr.language = cve_id
+    mr.language = '*'
     mr.id = cvi
-    mr.rule_name = rule_name
+    mr.rule_name = cve_id
     mr.level = cve_level
     mr.line_number = 1
+    mr.analysis = 'Dependencies Matched(依赖匹配)'
     mr.code_content = module_name + ':' + module_version
     mr.solution = """
         三方依赖**""" + module_name + """:""" + module_version + """**存在CVE漏洞，CVE漏洞编号为: **""" + cve_id + """**
