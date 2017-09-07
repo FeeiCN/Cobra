@@ -102,8 +102,11 @@
                         <h4><span>Drag and drop</span> upload</h4>
                         <div align="center" id="selectFile"></div>
                         <hr>
-                        <input type="file" class="btn_1" id="uploadFile" name="file" style="width: 100%;">
+                        <input type="file" class="btn_1" id="uploadFile" name="file" style="width: 100%;" accept="application/bacnet-xdd+zip,.tar,.gz,.rar,.zip,.tgz,.bz2">
+                        <br>
                         <small>Support for upload extensions: tar.bz2|tar|gz|tgz|tar.gz|rar|zip</small>
+                        <small>只允许单文件上传，不允许文件夹拖拽</small>
+
                         <div id="progress">
                             <div class="bar"></div>
                         </div>
@@ -129,29 +132,11 @@
 <script src="{{ url_for('static', filename='js/jquery.fileupload-validate.js') }}"></script>
 <script>
 
-    // drag and drop upload file
-    // prevent browser default action
-    $(document).on({
-        dragleave: function (e) {
-            e.preventDefault();
-        },
-        drop: function (e) {
-            e.preventDefault();
-        },
-        dragenter: function (e) {
-            e.preventDefault();
-        },
-        dragover: function (e) {
-            e.preventDefault();
-        }
-    });
-
+    var fileList;
     var dropbox = document.getElementById('dropbox');
-    var fileList = null;
     dropbox.addEventListener("drop", function (e) {
         e.preventDefault();
         fileList = e.dataTransfer.files;
-        $('#selectFile').html(fileList[0].name);
     });
 
     // click and select file to upload
@@ -163,7 +148,6 @@
     }
 
     $(function () {
-
         // Tab1
         $("#scan").on('click', function (e) {
             e.preventDefault();
@@ -232,8 +216,10 @@
             url: '/api/upload',
             dataType: 'json',
             acceptFileTypes: /(\.|\/)(bz2|tar|gz|tgz|rar|zip)$/i,
+            maxNumberOfFiles: 1,
             processfail: function (e, result) {
-                alert("不支持的文件类型")
+                $('#progress').empty();
+                $('#progress').html('文件类型错误！');
             },
             done: function (e, result) {
                 if (result.result.code === 1001) {

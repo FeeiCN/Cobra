@@ -1122,8 +1122,9 @@
                     }, errorHandler);
                 }
             } else if (entry.isDirectory) {
-                dirReader = entry.createReader();
-                readEntries();
+                $('#progress').empty();
+                $('#progress').html('禁止文件夹上传！');
+                return;
             } else {
                 // Return an empy list for file system items
                 // other than files or directories:
