@@ -5,7 +5,7 @@
     <match mode="regex-only-match"><![CDATA[\$\s*(\w+)\s*=[\s\(\{]*(['\"]\s*.{0,100}(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec).{1,100}\s*['\"]|file_get_contents)[\s\S]{0,200}create_function\s*\(+[^,]{1,100},['\"\s]*(\$\s*\1['\"\s]*\)|((base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]*\$\s*\1))]]></match>
     <level value="7"/>
     <test>
-        <case assert="true"><![CDATA[]]></case>
+        <case assert="true"><![CDATA[$sa = "eval()"; create_function('xxx', $sa);]]></case>
     </test>
     <solution>
         ## 安全风险

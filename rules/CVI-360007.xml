@@ -6,6 +6,7 @@
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[call_user_func('assert', $arr);]]></case>
+        <case assert="true"><![CDATA[@array_map("ass\x65rt", (array) @$cmd);]]></case>
     </test>
     <solution>
         ## 安全风险

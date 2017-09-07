@@ -5,7 +5,13 @@
     <match mode="regex-only-match"><![CDATA[sqlite_create_function\s*\([\s\S]{0,200}(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)|(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)[\s\S]{0,200}sqlite_create_function\s*\(]]></match>
     <level value="7"/>
     <test>
-        <case assert="true"><![CDATA[]]></case>
+        <case assert="true"><![CDATA[
+            if ($dbhandle = sqlite_open('mysqlitedb', 0666, $sqliteerror)) {
+                sqlite_create_function($dbhandle, 'func', 'eval($cmd);', 1);
+            } else {
+                echo 'Error opening sqlite db: ' . $sqliteerror;exit;
+            }
+        ]]></case>
     </test>
     <solution>
         ## 安全风险
