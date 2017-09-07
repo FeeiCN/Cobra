@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""
-    cobra
-    ~~~~~
 
-    Implements cobra main
+"""
+    CVE
+    ~~~
+
+    Implements CVE Rules Parser
 
     :author:    BlBana <635373043@qq.com>
     :homepage:  https://github.com/wufeifei/cobra
@@ -241,9 +242,9 @@ class CveParse(object):
             for cve_child in self._scan_result[module_]:
                 cve_id = cve_child
                 level = self._scan_result[module_][cve_id]
-                logger.warning('Find the module ' + module_ + ' have ' + cve_id + ',level: ' + level)
+                logger.debug('Find the module ' + module_ + ' have ' + cve_id + ',level: ' + level)
             count = len(self._scan_result[module_])
-            logger.warning('The ' + module_ + ' module have ' + str(count) + ' CVE Vul(s)')
+            logger.debug('The ' + module_ + ' module have ' + str(count) + ' CVE Vul(s)')
 
     def get_scan_result(self):
         return self._scan_result
@@ -337,7 +338,7 @@ def scan_cve(target_directory):
             for module_ in results[0]:
                 for cve_id, cve_level in results[0][module_].items():
                     cve_path = results[1]
-                    cve_vul = parse_math(cve_path, cve_id, cve_level, module_)
+                    cve_vul = parse_math(cve_path, cve_id, cve_level, module_, target_directory)
                     cve_vuls.append(cve_vul)
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
@@ -371,11 +372,12 @@ def scan_single(target_directory, cve_path):
     return cve.get_scan_result(), cve_path
 
 
-def parse_math(cve_path, cve_id, cve_level, module_):
+def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
+    flag = 0
+    file_path = 'unkown'
     mr = VulnerabilityResult()
     module_name, module_version = module_.split(':')
     cvi = cve_path.lower().split('cvi-')[1][:6]
-    rule_name = '引用了存在漏洞的三方组件'
     if cve_level == 'LOW':
         cve_level = 2
 
@@ -385,13 +387,37 @@ def parse_math(cve_path, cve_id, cve_level, module_):
     elif cve_level == 'HIGH':
         cve_level = 8
 
-    mr.language = cve_id
+    for root, dirs, filenames in os.walk(target_directory):
+        for filename in filenames:
+            if filename == 'pom.xml' and flag != 2:
+                file_path = os.path.join(root, filename)
+                file_path = file_path.replace(target_directory, '')
+                flag = 1
+
+            elif filename == 'requirements.txt' and flag != 1:
+                file_path = os.path.join(root, filename)
+                file_path = file_path.replace(target_directory, '')
+                flag = 2
+
+    if flag != 0:
+        mr.file_path = file_path
+
+    else:
+        mr.file_path = 'unkown'
+    mr.language = '*'
     mr.id = cvi
-    mr.rule_name = rule_name
+    mr.rule_name = cve_id
     mr.level = cve_level
-    mr.file_path = module_name
     mr.line_number = 1
+    mr.analysis = 'Dependencies Matched(依赖匹配)'
     mr.code_content = module_name + ':' + module_version
+    mr.solution = """
+        三方依赖**""" + module_name + """:""" + module_version + """**存在CVE漏洞，CVE漏洞编号为: **""" + cve_id + """**
+        ## 安全风险
+        
+        ## 安全修复
+        请根据对应厂商公告，及时更新三方依赖至安全版本
+    """
 
     logger.debug('[CVE {i}] {r}:Find {n}:{v} have vul {c} and level is {l}'.format(i=mr.id, r=mr.rule_name,
                                                                                    n=mr.file_path, v=mr.line_number,
