@@ -6,10 +6,8 @@
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[
-        <?php
             $test = $_POST['test'];
             $test_uns = unserialize($test);
-        ?>
         ]]></case>
     </test>
     <solution>

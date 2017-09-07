@@ -6,6 +6,9 @@
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[eval(base64_decode(ZXZhbChiYXNlNjRfZGVjb2RlKFpYWmhiQ2hpWVhObE5qUmZaR1ZqYjJSbEtFeDVPRGhRTTBKdlkwRndiR1J0Um5OTFExSm1WVVU1VkZaR2RHdGlNamw1V0ZOclMweDVPQzVqYUhJb05EY3BMbEJuS1NrNykpOw));]]></case>
+        <case assert="true"><![CDATA[
+            eval(gzinflate(base64_decode('s7ezsS/IKFBwSC1LzNFQiQ/wDw6JVlcpL9a1CyrNU4/VtE7OyM1PUQBKBbsGhbkGRSsFOwd5BoTEu3n6uPo5+roqxeoYmJiYaFrbA40CAA==')));
+        ]]></case>
     </test>
     <solution>
         ## 安全风险

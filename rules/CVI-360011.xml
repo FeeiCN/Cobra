@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell11"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\$(\w*)\s*=\s*create_function\s*\(+\s*[^;\n\r\)]{1,100},\s*(['\"]\s*[^;\n\r\)]{0,100}(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|poc_open|pcntl_exec).{1,600}\s*['\"]|[^,\n\r\)]{0,100}file_get_contents.{1,})\s*\)[\s\S]+\$\1\s*\([^\)]*\)]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[$sa = create_function('xxx', "eval($_POST['sb']");$sa();]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>
+
