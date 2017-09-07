@@ -621,12 +621,13 @@ class Core(object):
                 try:
                     ast = CAST(self.rule_match, self.target_directory, self.file_path, self.line_number, self.code_content)
                     if self.rule_match_mode == const.mm_function_param_controllable:
-                        rule_match = self.rule_match.strip('()').split('|')
+                        rule_match = self.rule_match.strip('()').split('|')  # 漏洞规则整理为列表
+                        rule_repair = self.rule_repair.strip('()').split('|')  # 修复规则整理为列表
                         logger.debug('[RULE_MATCH] {r}'.format(r=rule_match))
                         try:
                             with open(self.file_path, 'r') as fi:
                                 code_contents = fi.read()
-                                result = scan_parser(code_contents, rule_match, self.line_number)
+                                result = scan_parser(code_contents, rule_match, self.line_number, rule_repair)
                                 logger.debug('[AST] [RET] {c}'.format(c=result))
                                 if len(result) > 0:
                                     if result[0]['code'] == 1:  # 函数参数可控
