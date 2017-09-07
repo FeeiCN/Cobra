@@ -19,6 +19,10 @@ ext_list = ['.php', '.php3', '.php4', '.php5', '.php7', '.pht', '.phs', '.phtml'
 
 def file_list_parse(filelist):
     result = []
+
+    if not filelist:
+        return result
+
     for ext in ext_list:
         for file in filelist:
             if file[0] == ext:

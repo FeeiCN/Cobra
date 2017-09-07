@@ -303,7 +303,7 @@ class SingleRule(object):
                 result = ""
         except Exception as e:
             traceback.print_exc()
-            logger.debug('match exception ({e})'.format(e=e.message))
+            logger.debug('match exception ({e})'.format(e=e))
             return None
         try:
             result = result.decode('utf-8')
