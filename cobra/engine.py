@@ -64,7 +64,7 @@ class Running:
                 result = f.readline()
                 return json.loads(result)
         else:
-            with open(file_path, 'w+') as f:
+            with open(file_path, 'r+') as f:
                 portalocker.lock(f, portalocker.LOCK_EX)
                 result = f.read()
                 if result == '':
