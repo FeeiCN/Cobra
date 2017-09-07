@@ -135,7 +135,7 @@ def get_binaryop_params(node):  # 当为BinaryOp类型时，分别对left和righ
         if isinstance(node.right, php.Variable):
             params.append(node.right.name)
 
-    elif not isinstance(node.right, php.Variable) or not isinstance(node.left, php.Variable):  # right不为变量时
+    if not isinstance(node.right, php.Variable) or not isinstance(node.left, php.Variable):  # right不为变量时
         params_right = get_binaryop_deep_params(node.right, params)
         params_left = get_binaryop_deep_params(node.left, params)
 
