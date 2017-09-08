@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="LDAP注入"/>
+    <language value="php"/>
+    <match mode="function-param-controllable"><![CDATA[(ldap_add|ldap_delete|ldap_list|ldap_read|ldap_search|ldap_bind)]]></match>
+    <repair block="in-function-up"><![CDATA[ldap_escape\s*\(\s*.+?\s*,\s*.+?\s*,\s*LDAP_ESCAPE_FILTER\s*\)]]></repair>
+    <level value="5"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $surname=$_GET['surname'];
+            $filter = "(sn=" . $surname . ")";
+            $sr=ldap_search($ds, "o=My Company, c=US", $filter);
+            $info = ldap_get_entries($ds, $sr);
+       ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+
+        LDAP Injection
+        允许进行LDAP查询 + 输入未进行过滤 ---> LDAP注入
+        这种威胁可以让攻击者能够从LADP树中提取到很多很重要的信息
+
+        ## 修复方案
+        对用户输入数据中包含的”语言本身的保留字符”进行转义(例如可以使用`ldap_escape`)
+
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>
+

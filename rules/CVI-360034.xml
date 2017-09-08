@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell34"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\$(\w+)[\s]*\=[\s]*\$_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}[\s\S]*\$(?:\1\(\s*\$_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}\s*\)|(\w+)\s*\=\s*\$_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}[\s\S]*\$(\1\(\s*\$\2|\2\(\s*\$\1)\s*\)|_(?:POST|GET|REQUEST|COOKIE|SERVER).{0,25}\(\s*\$\1\s*\))|\$_(?:POST|GET|REQUEST|COOKIE|SERVER)\[(['\"]\w+['\"]|\d+)\]\(\s*\$_(?:POST|GET|REQUEST|COOKIE|SERVER)\[(['\"]\w+['\"]|\d+)\]\s*]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[$_POST['sa']($_POST['sb']);]]></case>
+        <case assert="true"><![CDATA[$_POST['sa']($_POST['sb'],$_POST['sc']);]]></case>
+        <case assert="true"><![CDATA[
+            $sa = $_POST['sa'];
+            $sa($_POST['sb']);
+        ]]></case>
+        <case assert="true"><![CDATA[
+            $sa = $_POST['sa'];
+            $sb = $_POST['sb'];
+            $sa($sb);
+        ]]></case>
+        <case assert="true"><![CDATA[
+            $sa = $_POST['sa'];
+            $_POST($sa );
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

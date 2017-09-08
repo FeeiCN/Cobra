@@ -10,12 +10,12 @@ String generateSecretToken() {
 }
 
 try:
-    # CVI-110001
+    # CVI-330001
     Cipher c = Cipher.getInstance("DESede/CBC/PKCS5Padding");
     c.init(Cipher.ENCRYPT_MODE, k, iv);
     byte[] cipherText = c.doFinal(plainText);
 
-    # CVI-110002
+    # CVI-330002
     Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
     c.init(Cipher.ENCRYPT_MODE, k, iv);
     byte[] cipherText = c.doFinal(plainText);

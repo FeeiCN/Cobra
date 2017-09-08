@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cobra document="https://github.com/wufeifei/cobra">
-    <name value="get_headers导致的SSRF"/>
+    <name value="fsockopen造成的SSRF"/>
     <language value="php"/>
-    <match mode="function-param-controllable"><![CDATA[get_headers]]></match>
-    <repair block="in-function-up"><![CDATA[in_array\s*\(\s*{{PARAM}}\s*,|preg_match(?:_all)?\s*\(\s*(?:.+?)\s*,\s*{{PARAM}}\s*[,\)]]]></repair>
+    <match mode="function-param-controllable"><![CDATA[fsockopen]]></match>
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[
-                $url = $_GET['url'];
-                echo get_headers($url);
-        ]]></case>
-         <case assert="false"><![CDATA[
-                $url = 'http://www.example.com';
-                echo get_headers($url);
+        $host = $_GET['host'];
+        $fp = fsockopen($host, intval($port), $errno, $errstr, 30);
         ]]></case>
     </test>
     <solution>
@@ -34,12 +29,7 @@
         2. 限制请求域名白名单
         3. 禁止30x跳转
 
-        ## 举例
-        ```php
-        $url = $_GET['url'];
-        echo get_headers($url);//对用户可控的参数没有进行过滤，攻击者恶意构造输入就可能导致SSRF
-        ```
     </solution>
     <status value="on"/>
-    <author name="Lightless" email="root@lightless.me"/>
+    <author name="JoyChou" email="viarus@qq.com"/>
 </cobra>

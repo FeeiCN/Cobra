@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell31"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[ini_get\s*\(\s*\"disable_functions\"\s*\)|\d\s*=>\s*array\s*\(\s*['\"]\s*pipe\s*['\"]|gzuncompress\(base64_decode\(|crypt\(\$_SERVER\['HTTP_H0ST'\],\d+\)==|if\(file_exists\(\$settings\['STOPFILE'\]\)\)]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            function zWM($NXlKO){
+                $NXlKO=gzuncompress(base64_decode($NXlKO));
+                for($i=0;$i<strlen($NXlKO);$i++){
+                    $NXlKO[$i] = chr(ord($NXlKO[$i])-1);
+                }
+                return $NXlKO;
+            }
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        特征 `gzuncompress\(base64_decode` 对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/php/BNKQbAKQ.txt)
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

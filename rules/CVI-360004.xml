@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell4"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[(preg_replace|preg_filter)[/*\s]*\(+[/*\s]*((\$_(GET|POST|REQUEST|COOKIE).{0,25})|[^,]{0,250}chr[\s\(](101|0x65|0145|\d+)[^,]{0,25}\s*|['\"]\s*(([^\s])[^,]{0,20}\7['\"]*|[\(\}\[].{0,20}[\(\}\]])\w*e\w*['\"])\s*,\s*([^\),]*(assert|eval|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)|((\$_(GET|POST|REQUEST|COOKIE).{0,25})))]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[echo @preg_replace('/xx/e', $_POST[sss],axxa);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>
