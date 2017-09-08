@@ -16,7 +16,7 @@ from cobra.parser import scan_parser
 from cobra.config import project_directory
 
 
-target_projects = project_directory + '/tests/vulnerabilities/v_parser.php'
+target_projects = project_directory + '/tests/examples/v_parser.php'
 with open(target_projects, 'r') as fi:
     code_contents = fi.read()
 

@@ -3,6 +3,16 @@ Cobra Changelog
 
 Here you can see the full list of changes between each Cobra release.
 
+Version 2.0.0-alpha.3
+---------------------
+
+Released on Sep 07 2017
+
+- 漏洞详情中增加CVI编号显示 #552
+- 支持非函数体预发解析（print/echo/eval/include）#551
+- 文件上传取消选择目录
+- 优化API文档
+
 Version 2.0.0-alpha.2
 ---------------------
 
