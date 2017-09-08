@@ -14,7 +14,7 @@
 import csv
 import json
 import os
-from codecs import open,BOM_UTF8
+from codecs import open, BOM_UTF8
 
 from prettytable import PrettyTable
 
