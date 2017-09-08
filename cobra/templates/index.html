@@ -238,7 +238,7 @@
                                 if (result.code === 1001) {
                                     if (result.result.status === 'done') {
                                         $('.tab-content').plainOverlay('hide');
-                                        window.location.href = window.location + result.result.report;
+                                        window.location = result.result['report'];
                                         process_bar.css('width', '0%');
                                     } else {
                                         setTimeout(get_status, 3000);
