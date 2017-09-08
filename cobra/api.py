@@ -299,8 +299,48 @@ class ResultDetail(Resource):
         else:
             return {'code': 1002, 'msg': 'No such file.'}
 
-        return {'code': 1001, 'result': {'file_content': file_content,
-                                         'extension': extension}}
+        return {'code': 1001, 'result': {'file_content': file_content, 'extension': extension}}
+
+
+class Search(Resource):
+    @staticmethod
+    def post():
+        """
+        Search specific rule.
+        :return:
+        """
+        data = request.json
+        if not data or data == "":
+            return {'code': 1003, 'msg': 'Only support json, please post json data.'}
+
+        sid = data.get('sid')
+        if not sid or sid == '':
+            return {'code': 1002, 'msg': 'sid is required.'}
+
+        rule_name = data.get('rule_name')
+        if not rule_name or rule_name == '':
+            return {'code': 1002, 'msg': 'rule_name is required.'}
+
+        scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=sid))
+        if not os.path.exists(scan_list_file):
+            return {'code': 1002, 'msg': 'No such sid.'}
+
+        with open(scan_list_file, 'r') as f:
+            scan_list = json.load(f)
+
+        search_data = [
+            {
+                'target': {s_sid: scan_list.get('sids').get(s_sid)},
+                'rule_name': rule_name,
+                'vul_num': search_rule(s_sid, rule_name)
+            }
+            for s_sid in scan_list.get('sids').keys()
+        ]
+
+        return {
+            'code': 1001,
+            'result': search_data,
+        }
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -461,6 +501,24 @@ def guess_type(fn):
     return extension.lower()
 
 
+def search_rule(sid, rule_name):
+    scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+    if not os.path.exists(scan_data_file):
+        return 0
+
+    with open(scan_data_file, 'r') as f:
+        scan_data = json.load(f)
+
+    if scan_data.get('code') == 1001 and len(scan_data.get('result').get('vulnerabilities')) > 0:
+        count = 0
+        for vul in scan_data.get('result').get('vulnerabilities'):
+            if vul.get('rule_name') == rule_name:
+                count += 1
+        return count
+    else:
+        return 0
+
+
 def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
     api = Api(app)
@@ -470,6 +528,7 @@ def start(host, port, debug):
     api.add_resource(FileUpload, '/api/upload')
     api.add_resource(ResultData, '/api/list')
     api.add_resource(ResultDetail, '/api/detail')
+    api.add_resource(Search, '/api/search')
 
     # consumer
     threads = []
