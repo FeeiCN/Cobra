@@ -3,7 +3,7 @@
     <name value="未经验证的任意链接跳转"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[header]]></match>
-    <repair block="in-function-up"><![CDATA[in_array\s*\(\s*{{PARAM}}\s*,]]></repair>
+    <repair block="in-function-up"><![CDATA[in_array]]></repair>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[header("Location: ".$_GET["url"]);]]></case>
