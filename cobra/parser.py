@@ -18,6 +18,7 @@ from .log import logger
 
 with_line = True
 scan_results = []  # 结果存放列表初始化
+repairs = []  # 用于存放修复函数
 
 
 def export(items):
@@ -134,7 +135,7 @@ def get_binaryop_params(node):  # 当为BinaryOp类型时，分别对left和righ
         if isinstance(node.right, php.Variable):
             params.append(node.right.name)
 
-    elif not isinstance(node.right, php.Variable) or not isinstance(node.left, php.Variable):  # right不为变量时
+    if not isinstance(node.right, php.Variable) or not isinstance(node.left, php.Variable):  # right不为变量时
         params_right = get_binaryop_deep_params(node.right, params)
         params_left = get_binaryop_deep_params(node.left, params)
 
@@ -213,8 +214,10 @@ def is_repair(expr):
     :return:
     """
     is_re = False  # 是否修复，默认值是未修复
-    if expr == 'escapeshellcmd':
-        is_re = True
+    for repair in repairs:
+        if expr == repair:
+            is_re = True
+            return is_re
     return is_re
 
 
@@ -661,16 +664,19 @@ def analysis(nodes, vul_function, back_node, vul_lineo, function_params=None):
         back_node.append(node)
 
 
-def scan_parser(code_content, sensitive_func, vul_lineno):
+def scan_parser(code_content, sensitive_func, vul_lineno, repair):
     """
     开始检测函数
     :param code_content: 要检测的文件内容
     :param sensitive_func: 要检测的敏感函数,传入的为函数列表
     :param vul_lineno: 漏洞函数所在行号
+    :param repair: 对应漏洞的修复函数列表
     :return:
     """
     try:
+        global repairs
         global scan_results
+        repairs = repair
         scan_results = []
         parser = make_parser()
         all_nodes = parser.parse(code_content, debug=False, lexer=lexer.clone(), tracking=with_line)

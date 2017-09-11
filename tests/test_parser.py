@@ -21,8 +21,9 @@ with open(target_projects, 'r') as fi:
     code_contents = fi.read()
 
 sensitive_func = ['system']
+repairs = []
 lineno = 7
 
 
 def test_scan_parser():
-    assert scan_parser(code_contents, sensitive_func, lineno)
+    assert scan_parser(code_contents, sensitive_func, lineno, repairs)
