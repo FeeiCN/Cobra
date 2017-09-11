@@ -3,7 +3,7 @@
     <name value="extract导致变量覆盖漏洞"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[extract]]></match>
-    <repair mode="in-current-line"><![CDATA[extract\s*\(\s*{{PARAM}}\s*,\s*(?:EXTR_SKIP|EXTR_PREFIX_SAME|EXTR_PREFIX_ALL|EXTR_PREFIX_IF_EXISTS|EXTR_IF_EXISTS)\s*[,\)]]]></repair>
+    <repair mode="in-current-line"><![CDATA[extract\s*\(\s*\w*\s*,\s*(?:EXTR_SKIP|EXTR_PREFIX_SAME|EXTR_PREFIX_ALL|EXTR_PREFIX_IF_EXISTS|EXTR_IF_EXISTS)\s*[,\)]]]></repair>
     <level value="4"/>
     <test>
          <case assert="true"><![CDATA[extract($_GET['var']);]]></case>
@@ -18,12 +18,12 @@
         ## 举例
         ```php
         <?php
-        $a = '0';
-        extract($_GET)；
-        if($a==1){echo "true!";}
-        else{echo "false!";}
+            $a = '0';
+            extract($_GET)；
+            if($a==1){echo "true!";}
+            else{echo "false!";}
         ?>
-
+        ```
         构造 http://www.test.com/test.php?a=1时，会打印出true
 
     </solution>

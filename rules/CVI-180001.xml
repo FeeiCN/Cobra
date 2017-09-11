@@ -2,7 +2,7 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="远程代码执行"/>
     <language value="php"/>
-    <match mode="function-param-controllable"><![CDATA[(array_map|create_function|call_user_func|call_user_func_array|assert|eval|dl|register_tick_function|register_shutdown_function|preg_replace)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(array_map|create_function|call_user_func|call_user_func_array|assert|eval|dl|register_tick_function|register_shutdown_function|array_filter|array_reduce|array_diff_ukey|array_udiff|array_walk|array_walk_recursive|uasort|uksort|usort)]]></match>
     <level value="10"/>
     <test>
         <case assert="true"><![CDATA[array_map($_GET['pass'],$array);]]></case>
