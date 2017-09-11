@@ -6,8 +6,8 @@
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[
-        $host = $_GET['host'];
-        $fp = fsockopen($host, intval($port), $errno, $errstr, 30);
+            $host = $_GET['host'];
+            $fp = fsockopen($host, intval($port), $errno, $errstr, 30);
         ]]></case>
     </test>
     <solution>

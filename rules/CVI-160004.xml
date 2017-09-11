@@ -2,7 +2,7 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="SQL Execute Functions可能导致SQL注入"/>
     <language value="php"/>
-    <match mode="function-param-controllable"><![CDATA[(mysqli_query|pg_execute|pg_insert|pg_query|pg_select|pg_update|sqlite_query|msql_query|mssql_query|odbc_exec|fbsql_query|sybase_query|ibase_query|dbx_query|ingres_query|ifx_query|oci_parse|sqlsrv_query|maxdb_query|db2_exec)\s?\(]]></match>
+    <match mode="function-param-controllable"><![CDATA[(mysqli_query|pg_execute|pg_insert|pg_query|pg_select|pg_update|sqlite_query|msql_query|mssql_query|odbc_exec|fbsql_query|sybase_query|ibase_query|dbx_query|ingres_query|ifx_query|oci_parse|sqlsrv_query|maxdb_query|db2_exec)]]></match>
     <level value="8"/>
     <test>
         <case assert="true"><![CDATA[
