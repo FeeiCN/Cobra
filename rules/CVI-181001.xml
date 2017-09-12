@@ -3,7 +3,7 @@
     <name value="远程命令执行"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[(system|passthru|exec|pcntl_exec|shell_exec|popen|proc_open|ob_start|expect_popen|mb_send_mail|w32api_register_function|w32api_invoke_function|ssh2_exec)]]></match>
-    <repair block="in-function"><![CDATA[escapeshellcmd\s*\(\s*(.+?)\s*\)|escapeshellarg\s*\(\s*(.+?)\s*\)]]></repair>
+    <repair block="in-function"><![CDATA[(escapeshellcmd|escapeshellarg)]]></repair>
     <level value="10"/>
     <test>
         <case assert="true"><![CDATA[system($_GET['pass']);]]></case>

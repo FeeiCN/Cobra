@@ -3,7 +3,7 @@
     <name value="MySQL Execute Functions可能导致SQL注入"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[(mysql_query|mysql_db_query)]]></match>
-    <repair block="in-function"><![CDATA[(?:mysql_real_escape_string|addslashes)\s*\(\s*{{PARAM}}\s*[\),]]]></repair>
+    <repair block="in-function"><![CDATA[(mysql_real_escape_string|addslashes)]]></repair>
     <level value="8"/>
     <test>
         <case assert="true"><![CDATA[

@@ -26,6 +26,7 @@
 | 320 | VO | Variables Override | 变量覆盖漏洞 |
 | 350 | WF | Weak Function | 不安全的函数 |
 | 355 | WE |Weak Encryption | 不安全的加密 |
+| 360 | WS | WebShell | WebShell |
 | 970 | AV | Android Vulnerabilities | Android漏洞 |
 | 980 | IV | iOS Vulnerabilities | iOS漏洞 |
 | 999 | IC | Insecure Components| 引用了存在漏洞的三方组件(Maven/Pods/PIP/NPM) |

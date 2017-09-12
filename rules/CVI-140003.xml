@@ -3,7 +3,7 @@
     <name value="直接输出入参可能导致XSS"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[(echo|print|print_r|exit|die|printf|vprintf|trigger_error|user_error|odbc_result_all|ovrimos_result_all|ifx_htmltbl_result)]]></match>
-    <repair block="in-function"><![CDATA[(htmlspecialchars\s*\(\s*{{PARAM}}\s*)]]></repair>
+    <repair block="in-function"><![CDATA[(htmlspecialchars]]></repair>
     <level value="4"/>
     <test>
         <case assert="true"><![CDATA[print_r ($_GET['test']);]]></case>

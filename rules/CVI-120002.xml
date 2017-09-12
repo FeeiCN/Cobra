@@ -6,12 +6,12 @@
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[
-                $url = $_GET['url'];
-                echo file_get_contents($url);
+            $url = $_GET['url'];
+            echo file_get_contents($url);
         ]]></case>
         <case assert="false"><![CDATA[
-                $url = "http://www.example.com";
-                echo file_get_contents($url);
+            $url = "http://www.example.com";
+            echo file_get_contents($url);
         ]]></case>
     </test>
     <solution>

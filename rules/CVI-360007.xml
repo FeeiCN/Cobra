@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell7"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[(array_map|call_user_func|call_user_func_array|register_shutdown_function|register_tick_function)\s*\(+\s*(['\"]\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec|[^'\"]*\x).{0,200})]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[call_user_func('assert', $arr);]]></case>
+        <case assert="true"><![CDATA[@array_map("ass\x65rt", (array) @$cmd);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

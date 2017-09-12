@@ -2,14 +2,12 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="PHP反序列化漏洞"/>
     <language value="php"/>
-    <match mode="function-param-controllable"><![CDATA[is_a|unserialize]]></match>
+    <match mode="function-param-controllable"><![CDATA[unserialize]]></match>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[
-        <?php
             $test = $_POST['test'];
             $test_uns = unserialize($test);
-        ?>
         ]]></case>
     </test>
     <solution>

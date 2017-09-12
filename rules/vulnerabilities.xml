@@ -24,6 +24,7 @@
     <vulnerability name="VO" vid="320"/>
     <vulnerability name="WF" vid="350"/>
     <vulnerability name="WE" vid="355"/>
+    <vulnerability name="WS" vid="360"/>
     <vulnerability name="AV" vid="970"/>
     <vulnerability name="IV" vid="980"/>
     <vulnerability name="IC" vid="999"/>
