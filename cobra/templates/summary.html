@@ -205,10 +205,20 @@
                             <div class="row">
                                 <div class="col-xs-12">
                                     <address>
-                                        <label for="rule_filter"></label>
-                                        <select id="rule_filter" class="form-control" multiple="multiple"></select>
-                                        <button class="btn btn-success" id="submit_search">Search</button>
-                                        <table class="table table-bordered table-striped" id="search_table"></table>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="rule_filter"></label>
+                                                <select id="rule_filter" class="form-control"
+                                                        multiple="multiple"></select>
+                                                <button class="btn btn-success" id="submit_search">Search</button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12" id="search_table_div">
+                                                <table class="table table-bordered table-striped"
+                                                       id="search_table"></table>
+                                            </div>
+                                        </div>
                                     </address>
                                 </div>
                             </div>
@@ -401,14 +411,14 @@
             980: 'iOS漏洞',
             999: '引用了存在漏洞的三方组件'
         };
-        var rules = {};
-        rules = {{ rules | safe }};
+        var rule_ids = {};
+        rule_ids = {{ rules | safe }};
         var $select_list = $('#rule_filter');
-        for (var rule_id in rules) {
-            if (rules.hasOwnProperty(rule_id)) {
+        for (var rule_id in rule_ids) {
+            if (rule_ids.hasOwnProperty(rule_id)) {
                 var $option = $('<option>');
                 $option.val(rule_id);
-                $option.text(rules[rule_id]);
+                $option.text(rule_ids[rule_id]);
 
                 var _class = classes[rule_id.substr(0, 3)];
 

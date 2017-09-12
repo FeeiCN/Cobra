@@ -52,33 +52,37 @@
 
 /* Let's get this party started */
 /*::-webkit-scrollbar {*/
-    /*width: 10px;*/
+/*width: 10px;*/
 /*}*/
 
 /*!* Track *!*/
 /*::-webkit-scrollbar-track {*/
-    /*background: #343f44;*/
+/*background: #343f44;*/
 /*}*/
 
 /*!* Handle *!*/
 /*::-webkit-scrollbar-thumb {*/
-    /*background: #525b5f !important;*/
-    /*border-radius: 5px !important;*/
-    /*border: 1px solid #383e40 !important;*/
+/*background: #525b5f !important;*/
+/*border-radius: 5px !important;*/
+/*border: 1px solid #383e40 !important;*/
 /*}*/
 
 /*::-webkit-scrollbar-thumb:window-inactive {*/
-    /*background: rgba(255, 0, 0, 0.4);*/
+/*background: rgba(255, 0, 0, 0.4);*/
 /*}*/
 
-
 #target_table {
-    overflow-y: auto;
+    overflow: auto;
     max-height: 600px;
 }
 
 #search_table {
     margin-top: 20px;
+}
+
+#search_table_div {
+    overflow: auto;
+    max-height: 600px;
 }
 
 #submit_search {
@@ -152,19 +156,19 @@ ul.v_detail li {
     border-radius: 6px;
 }
 
-.n-o-v tr:nth-child(1) td:nth-child(2){
+.n-o-v tr:nth-child(1) td:nth-child(2) {
     color: red;
 }
 
-.n-o-v tr:nth-child(2) td:nth-child(2){
-    color: 	gold;
+.n-o-v tr:nth-child(2) td:nth-child(2) {
+    color: gold;
 }
 
-.n-o-v tr:nth-child(3) td:nth-child(2){
+.n-o-v tr:nth-child(3) td:nth-child(2) {
     color: green;
 }
 
-.n-o-v tr:nth-child(4) td:nth-child(2){
+.n-o-v tr:nth-child(4) td:nth-child(2) {
     color: #357abd;
 }
 
