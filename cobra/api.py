@@ -317,9 +317,9 @@ class Search(Resource):
         if not sid or sid == '':
             return {'code': 1002, 'msg': 'sid is required.'}
 
-        rule_name = data.get('rule_name')
-        if not rule_name or rule_name == '':
-            return {'code': 1002, 'msg': 'rule_name is required.'}
+        rule_id = data.get('rule_id')
+        if not rule_id or rule_id == '':
+            return {'code': 1002, 'msg': 'rule_id is required.'}
 
         scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=sid))
         if not os.path.exists(scan_list_file):
@@ -328,14 +328,14 @@ class Search(Resource):
         with open(scan_list_file, 'r') as f:
             scan_list = json.load(f)
 
-        if not isinstance(rule_name, list):
-            rule_name = [rule_name]
+        if not isinstance(rule_id, list):
+            rule_id = [rule_id]
 
         search_data = list()
         for s_sid in scan_list.get('sids').keys():
             target, branch = split_branch(scan_list.get('sids').get(s_sid))
-            search_result = search_rule(s_sid, rule_name)
-            if list(search_result.items()).count(0) == len(rule_name):
+            search_result = search_rule(s_sid, rule_id)
+            if list(search_result.items()).count(0) == len(rule_id):
                 continue
             search_data.append({
                 'target_info': {
