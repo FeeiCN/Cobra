@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell22"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\s*(assert|eval|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec|include)\s*\(\s*(file_get_contents\s*\(\s*)?['\"]php://input]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            ini_set('allow_url_include, 1');
+            include('php://input');
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="off"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

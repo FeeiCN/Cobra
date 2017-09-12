@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell30"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[preg_replace\s*\(\s*['\"][^;]*e[^;]*['\"],([^;]{0,30}\x|[^;\)]{200,300})|\$back_connect=\"IyEvdXNyL2Jpbi9wZXJsDQp1c2UgU2|define\('gzip',function_exists\(\"ob_gzhandler\"\)|chr\(112\)\.chr\(97\)\.chr\(115\)\.chr\(115\)|687474703a2f2f377368656c]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+           $back_connect="IyEvdXNyL2Jpbi9wZXJsDQp1c2UgU2...";
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        特征 `$back_connect="IyEvdXNyL2Jpbi9wZXJsDQp1c2UgU2` 对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/138shell/N/NIX%20REMOTE%20WEB-SHELL%20v.0.5%20alpha%20Lite%20Public%20Version.txt)
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

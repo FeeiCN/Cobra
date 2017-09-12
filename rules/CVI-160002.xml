@@ -9,7 +9,7 @@
         <case assert="false"><![CDATA[$query  = "SELECT id FROM products LIMIT 20 ;";]]></case>
         <case assert="true"><![CDATA[$s = "select"  + $v + "from " + $tb + "where id = " + $id;]]></case>
         <case assert="true"><![CDATA[
-        $query  = "SELECT id, name, inserted, size FROM products
+            $query  = "SELECT id, name, inserted, size FROM products
                     WHERE size = '$size'
                     ORDER BY $order
                     LIMIT $limit, $offset;";

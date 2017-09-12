@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell2"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\s*((array_filter|array_reduce|array_diff_ukey|array_udiff|uasort|uksort|usort)\s*\(+\s*.{1,100}),\s*(['\"]\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)\s*['\"]|(base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(].{1,25})\s*\)]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[array_filter($arr, base64_decode("ZXZhbA=="));]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

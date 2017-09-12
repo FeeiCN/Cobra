@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell1"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\s*\b(include|require)(_once)?\b[\s\(]*['\"][^\n'\"]{0,100}((\.(jpg|png|txt|jpeg|log|tmp|db|cache)|\_(tmp|log))|((http|https|file|data|ftp)\://.{0,25}))['\"][\s\)]*[\r\n;/\*]+]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[include "sss.jpg";]]></case>
+        <case assert="true"><![CDATA[include("sss_tmp");]]></case>
+        <case assert="true"><![CDATA[require_once "http://www.test.com/sss.php";]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

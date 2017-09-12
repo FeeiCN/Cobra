@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell32"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\$nofuncs='no\s*exec\s*functions|udf\.dll|\$b374k|POWER-BY\s*WWW.XXDDOS.COM|<title>Safes\s*Mode\s*Shell</title>|Siyanur\.PHP\s*</font>|c999shexit\(\)|\$c99sh_|c99_sess_put\(|Coded\s*by\s*cyb3r|cyb3r_getupdate\(|coded\s*by\s*tjomi4|john\.barker446@gmail\.com|eval\(\"\\\$x=gzin\"|eval\(\"\?>\"\.gzinflate\(base64_decode\(|eval\(gzinflate\(base64_decode\(|eval\(gzuncompress\(base64_decode\(|eval\(gzinflate\(str_rot13\(base64_decode\(|function_exists\(\"zigetwar_buff_prepare\"\)|dQ99shell|r57shell|c99shell|lama's'hell\s*v|Carbylamine\s*PHP\s*Encoder|Safe\s*Mode\s*Shell|\$dI3h=\${'_REQUEST'};|new\s*COM\(\"IIS://localhost/w3svc\"\)|n57http-based\[\s*-\]terminal|Dosya\s*Olu|errorlog\(\"BACKEND:\s*startReDuh,|form\s*name=sh311Form|PHPJackal<br>|Reddragonfly's\s*WebShell|\(\"system\"==\$seletefunc\)\?system\(\$shellcmd\)|eNrsvGmT40iSKPZ5xmz|CrystalShell\s*v\.|Special\s*99\s*Shell|Simple\s*PHP\s*Mysql\s*client|'_de'\.'code'|phpsocks5_encrypt\(|define\('PHPSHELL_VERSION',|ZXZhbCgkX1BPU1RbMV0p|\$__H_H\(\$__C_C"]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            <div class=bartitle><h4>'.sh_name().'</h4>.: r57.biz Dq99Shell :.</div>
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        特征 `dQ99shell` 对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/www-7jyewu-cn/%E5%9B%BD%E5%A4%96%E5%85%8D%E6%9D%80PHP%E5%A4%A7%E9%A9%AC_%E6%9C%AA%E7%BF%BB%E8%AF%91.php)
+
+        特征 `c999shexit` 对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/web-malware-collection-13-06-2012/PHP/c99-bd.txt)
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

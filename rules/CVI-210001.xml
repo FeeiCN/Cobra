@@ -3,6 +3,7 @@
     <name value="未经验证的任意链接跳转"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[header]]></match>
+    <repair block="in-function-up"><![CDATA[in_array]]></repair>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[header("Location: ".$_GET["url"]);]]></case>
@@ -25,7 +26,6 @@
         4. 设置URL跳转白名单。
         5. 当用户跳转离开时，强制跳转到警告页面上，提示用户正在离开当前网站。
 
-        ## 修复方案
         使用白名单判断
         ```php
         <?php if(!in_array($_GET["url"], $whitelist)) exit; ?>

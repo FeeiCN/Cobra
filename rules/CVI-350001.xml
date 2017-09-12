@@ -3,7 +3,7 @@
     <name value="unlink删除文件"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[unlink]]></match>
-    <repair block="in-function-up"><![CDATA[in_array\s*\(\s*{{PARAM}}\s*,]]></repair>
+    <repair block="in-function-up"><![CDATA[in_array]]></repair>
     <level value="3"/>
     <test>
         <case assert="true"><![CDATA[

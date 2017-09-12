@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell9"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[((new\s*SQLite3[\s\S]*->\s*createFunction)\s*\(+\s*.{1,100}|PDO::FETCH_FUNC\s*),\s*(['\"]\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)\s*['\"]|(base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]+.{1,25}|(\$_(GET|POST|REQUEST|COOKIE).{0,25}))\s*\)]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $db = new SQLite3('sqlite.db3');
+            $db->createFunction('myfunc', $_POST['e']);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="off"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

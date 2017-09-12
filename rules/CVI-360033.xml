@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell33"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[PD9waHANCiRzX3ZlciA9ICIxLjAiOw0KJHNfdGl0bGUgPSAiWG5vbnltb3V4IFNoZWxsIC|GFnyF4lgiGXW2N7BNyL5EEyQA42LdZtao2S9f|IyEvdXNyL2Jpbi9wZXJsDQokU0hFTEw9Ii9iaW4vYmFzaCAtaSI7|setcookie\(\"N3tsh_surl\"\);|function\s*Tihuan_Auto|\$_COOKIE\['b374k'\]|function_exists\(\"k1r4_sess_put\"\)|http://www.7jyewu.cn/|scookie\('phpspypass|PHVayv.php\?duzkaydet=|phpRemoteView</a>|define\('envlpass',|KingDefacer_getupdate\(|relative2absolute\(|Host:\s*old.zone-h.org|<h3>PHPKonsole</h3>|\$_SESSION\['hassubdirs'\]\[\$treeroot\]|strtolower\(\$cmd\)\s*==\s*\"canirun\"|\$shell\s*=\s*'uname\s*-a;\s*w;\s*id;|Avrasya\s*Veri\s*ve\s*NetWork|<h1>Linux Shells</h1>|\$MyShellVersion\s*=\s*\"MyShell|<a\s*href=\"http://ihacklog.com/\"|setcookie\(\s*\"mysql_web_admin_username\"\s*\)|<title>PHP\s*Shell\s*[^\n\r]*</title>|\$OOO000000=urldecode|1MSSYowqjzlVVAwAoHHFXzQ5Lc|'xiaoqiwangluo'|EqQC1FhyXxpEi7l2g\+yNjW62S|\$_uU\(83\)\.\$_uU\(84\)|7kyJ7kSKioDTWVWeRB3TiciL1UjcmRiLn4SKiAETs90cuZlTz5mROtHWHdWfRt0ZupmVRNTU2Y2MVZkT8|<title>\s*ARS\s*Terminator\s*Shell</title>|base64_decode\(\"R0lGODdhEgASAKEAAO7u7gAAAJmZmQAAACwAAA|\\x50\\x4b\\x03\\x04\\x0a\\x00\\x00\\x00\\x00|'<title>W3D\s*Shell]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $shver = "Emp3ror Undetectable #18"; //Current version
+            //CONFIGURATION AND SETTINGS
+            if (!empty($unset_surl)) {setcookie("N3tsh_surl"); $surl = "";}
+            elseif (!empty($set_surl)) {$surl = $set_surl; setcookie("N3tsh_surl",$surl);}
+            else {$surl = $_REQUEST["N3tsh_surl"]; //Set this cookie for manual SURL
+            }
+        ]]></case>
+        <case assert="true"><![CDATA[
+            function Tihuan_Auto($tp,$tt,$th,$tca,$tcb,$td,$tb)
+            {
+                if(($h_d = @opendir($tp)) == NULL) return false;
+                while(false !== ($Filename = @readdir($h_d)))
+                ....
+             }
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        特征 `setcookie("N3tsh_surl");` 对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/e2fd7eed0ca27430af65862bdcefd4bc268805f2/web-malware-collection-13-06-2012/PHP/c99.txt)
+
+        特征 `function Tihuan_Auto`  对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/php/ghost_source.php)
+
+        特征 `http://www.7jyewu.cn/`  对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/www-7jyewu-cn/DOC_ZIBSZXBIEG.php)
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

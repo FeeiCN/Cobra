@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell8"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\$\s*(\w+)\s*=[\s\(\{]*(['\"]\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec))[\s\S]{0,200}\b(array_map|call_user_func|call_user_func_array|register_shutdown_function|register_tick_function)\b\s*\(+\s*(\$\s*\1|((base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]*\$\s*\1))[^,;]*,[^;\)]{0,50}\$[^;\)]{0,50}\)]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $a = 'assert';
+            call_user_func($a, $arr);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="off"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

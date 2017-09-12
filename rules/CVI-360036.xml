@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell36"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\$\s*(\w+)\s*=[\s\(\{]*((\$_(GET|POST|REQUEST|COOKIE|SERVER).{0,25})|['\"]\s*(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec))[\s\S]{0,200}\b(new\s*ReflectionFunction|new\s*ArrayObject[\s\S]*->u[ak]sort)\b\s*\(+\s*(\$\s*\1|((base64_decode|gzinflate|gzuncompress|gzdecode|str_rot13)[\s\(]*\$\s*\1))]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $a = 'assert';
+            $arr = new ArrayObject(array('test', $_REQUEST['pass']));
+            $arr->uasort($a);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="off"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

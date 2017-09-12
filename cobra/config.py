@@ -70,7 +70,7 @@ class Config(object):
             value = config.get(level1, level2)
         except Exception as e:
             traceback.print_exc()
-            logger.critical("./configs file configure failed.\nError: {0}".format(e.message))
+            logger.critical("./configs file configure failed. {u}\nError: {e}".format(u='https://wufeifei.github.io/cobra/config', e=e.message))
         self.value = value
 
     @staticmethod

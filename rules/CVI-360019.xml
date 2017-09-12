@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell19"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\$\s*(\w+)\s*=\s*((\$_(GET|POST|REQUEST|COOKIE|SERVER).{3,25})|['\"][^;]*e|[^;]*chr[\s\(]*(101|0x65|0145))[\s\S]{0,200}\b(mb_ereg_replace|mb_eregi_replace)\s*\((.*,){3}\s*\$\1]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $e = "\ise";
+            $data = mb_ereg_replace("/[^A-Za-z0-9\.\-]/","",$data,$e);
+        ]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="off"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

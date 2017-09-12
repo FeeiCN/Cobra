@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/wufeifei/cobra">
+    <name value="webshell29"/>
+    <language value="php"/>
+    <match mode="regex-only-match"><![CDATA[\$_\[\$_|\${\"_P\"\.|a(.)s\1s\1e\1r\1t|'e'\.'v'\.'a'\.'l|687474703a2f2f626c616b696e2e64756170702e636f6d2f7631|python_eval\(\"import os\\nos.system\(|\$bind_pl\s*=\s*\"IyEvdXNyL2Jpbi9lbnYgcGV|phpsocks5_encrypt\s*\(|eNrs/Vmv41iWJgq+ZwH1H7wdAWRksypJihRF3kQ0mvMsihTnuoUA53meeVG/valj5mbuHpF9b6P7se]]></match>
+    <level value="7"/>
+    <test>
+        <case assert="true"><![CDATA[
+            $bind_pl = "IyEvdXNyL2Jpbi9lbnYgcGVybA0KJFNIRUxMPSIvYmluL2Jhc2ggLWkiOw0KaWYgKEBBUkdWIDwg...";
+        ]]></case>
+        <case assert="true"><![CDATA[$result = python_eval("import os\nos.system('$cmd')");]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码中存在webshell
+
+        特征 `$bind_pl="IyEvdXNyL2Jpbi9lbnYgcGV` 对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/web-malware-collection-13-06-2012/PHP/knullsh.txt)
+
+        特征 `python_eval("import os\nos.system(` 对应webshell样例
+        [link](https://github.com/tennc/webshell/blob/4ca96011884b892ec15de130f76eb2a047b77493/web-malware-collection-13-06-2012/PHP/bdotw44shell.txt)
+
+        ## 修复方案
+        删除
+    </solution>
+    <status value="on"/>
+    <author name="Feei" email="feei@feei.cn"/>
+</cobra>

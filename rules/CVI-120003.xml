@@ -3,7 +3,6 @@
     <name value="get_headers导致的SSRF"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[get_headers]]></match>
-    <repair block="in-function-up"><![CDATA[in_array\s*\(\s*{{PARAM}}\s*,|preg_match(?:_all)?\s*\(\s*(?:.+?)\s*,\s*{{PARAM}}\s*[,\)]]]></repair>
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[
@@ -41,5 +40,5 @@
         ```
     </solution>
     <status value="on"/>
-    <author name="Lightless" email="viarus@qq.com"/>
+    <author name="Lightless" email="root@lightless.me"/>
 </cobra>

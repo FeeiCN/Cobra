@@ -7,17 +7,13 @@
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[
-        <?php
             $xml = $_POST['xml'];
             $data = simplexml_load_string($xml);
-        ?>
         ]]></case>
         <case assert="false"><![CDATA[
-        <?php
             $xml = $_POST['xml'];
             libxml_disable_entity_loader(true);
             $data = simplexml_load_string($xml);
-        ?>
         ]]></case>
     </test>
     <solution>
@@ -42,18 +38,15 @@
 
         ## 举例
         ```php
-        <?php
             $xml = $_POST['xml'];
             $data = simplexml_load_string($xml);
-        ?>
         ```
         修改后代码
         ```php
-        <?php
             $xml = $_POST['xml'];
             libxml_disable_entity_loader(true);
             $data = simplexml_load_string($xml);
-        ?>
+        ```
     </solution>
     <status value="on"/>
     <author name="Lightless" email="root@lightless.me "/>
