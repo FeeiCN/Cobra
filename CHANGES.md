@@ -3,6 +3,15 @@ Cobra Changelog
 
 Here you can see the full list of changes between each Cobra release.
 
+Version 2.0.0-alpha.4
+---------------------
+
+Released on Sep 12 2017
+
+- 增加WebShell规则和测试用例 #571
+- 支持FPC模式修复函数 #565 #559
+- 其它细节优化和Bug修复
+
 Version 2.0.0-alpha.3
 ---------------------
 
