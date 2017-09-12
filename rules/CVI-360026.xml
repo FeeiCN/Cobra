@@ -31,6 +31,6 @@
         ## 修复方案
         删除
     </solution>
-    <status value="on"/>
+    <status value="off"/>
     <author name="Feei" email="feei@feei.cn"/>
 </cobra>
