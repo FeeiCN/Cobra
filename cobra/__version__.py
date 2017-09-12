@@ -27,5 +27,5 @@ __epilog__ = """Usage:
   python {m} -t {td} -f json -o /tmp/report.json 
   python {m} -t {tg} -f json -o feei@feei.cn 
   python {m} -t {tg} -f json -o http://push.to.com/api 
-  sudo python {m} -H 127.0.0.1 -P 80
+  python {m} -H 127.0.0.1 -P 8888
 """.format(m='cobra.py', td='tests/vulnerabilities', tg='https://github.com/ethicalhack3r/DVWA')
