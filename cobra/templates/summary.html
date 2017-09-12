@@ -206,11 +206,7 @@
                                 <div class="col-xs-12">
                                     <address>
                                         <label for="rule_filter"></label>
-                                        <select id="rule_filter" class="form-control" multiple="multiple">
-                                            {% for rule in rules | dictsort %}
-                                                <option value="{{ rule[0] }}">{{ rule[1] }}</option>
-                                            {% endfor %}
-                                        </select>
+                                        <select id="rule_filter" class="form-control" multiple="multiple"></select>
                                         <button class="btn btn-success" id="submit_search">Search</button>
                                         <table class="table table-bordered table-striped" id="search_table"></table>
                                     </address>
@@ -258,6 +254,7 @@
                             <ul class="vulnerabilities_list scroll"></ul>
                         </div>
                         <div class='col-md-9 p0 form_code'>
+                            <label for="code" class="sr-only"></label>
                             <textarea id='code'>// This is a demo code</textarea>
                             <div class='cm-loading' style='display:none;'></div>
                         </div>
@@ -306,17 +303,17 @@
         </div>
     </div>
     <script>
+        {#        作图#}
         var types = [];
         var vuls = [];
         {% for type, num in rule_num | dictsort(by='value') %}
-            // 取漏洞数量前十
+            {#            取漏洞数量前十#}
             {% if loop.revindex <= 10 %}
                 types.push('{{ type }}');
                 vuls.push({value: {{ num }}, name: '{{ type }}'});
             {% endif %}
         {% endfor %}
-        var rule_ids = {{ rules | safe }};
-        // 数量大的靠前
+        {#        数量大的靠前#}
         types.reverse();
         vuls.reverse();
         option = {
@@ -372,6 +369,62 @@
             var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
             vul_distributing.setOption(option);
         {% endif %}
+
+
+        {#        搜索#}
+        var classes = {
+            110: '错误的配置',
+            120: '服务端伪造',
+            130: '硬编码密码',
+            140: '跨站脚本',
+            150: '跨站请求伪造',
+            160: 'SQL注入',
+            163: 'Xpath注入',
+            165: 'LDAP注入',
+            167: 'XML实体注入',
+            170: '文件包含漏洞',
+            180: '代码注入',
+            181: '命令注入',
+            190: '信息泄露',
+            200: '可预测的伪随机数生成器',
+            210: '未经验证的任意链接跳转',
+            220: 'HTTP响应拆分',
+            230: 'SESSION固定',
+            260: '反序列化漏洞',
+            280: '废弃的函数',
+            290: '逻辑错误',
+            320: '变量覆盖漏洞',
+            350: '不安全的函数',
+            355: '不安全的加密',
+            360: 'WebShell',
+            970: 'Android漏洞',
+            980: 'iOS漏洞',
+            999: '引用了存在漏洞的三方组件'
+        };
+        var rules = {};
+        rules = {{ rules | safe }};
+        var $select_list = $('#rule_filter');
+        for (var rule_id in rules) {
+            if (rules.hasOwnProperty(rule_id)) {
+                var $option = $('<option>');
+                $option.val(rule_id);
+                $option.text(rules[rule_id]);
+
+                var _class = classes[rule_id.substr(0, 3)];
+
+                var $optgroup = $select_list.find('optgroup').last();
+
+                if ($optgroup.attr('label') !== _class) {
+                    $optgroup = $('<optgroup>');
+                    $optgroup.attr('label', _class);
+                    $optgroup.append($option);
+                    $select_list.append($optgroup);
+                } else {
+                    $optgroup.append($option);
+                }
+            }
+        }
+
     </script>
     <!--CodeMirror-->
     <script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
