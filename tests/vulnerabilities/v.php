@@ -7,8 +7,6 @@ $target = "10.11.2.220";
 
 $cmd = $_REQUEST['a'];
 
-echo ($callback . ";");
-
 extract($cmd);
 eval($cmd);
 
@@ -53,7 +51,9 @@ if (!empty($url)) {
 	echo get_headers($url, 1);
 }
 
-$query = "SELECT id, name, inserted, size FROM products WHERE size = '$size' ORDER BY $order LIMIT $limit, $offset;";
+$size = $_GET['size'];
+$order = $_GET['order'];
+$query = "SELECT id, name, inserted, size FROM products WHERE size = '$size' ORDER BY $order;";
 mysql_query($query);
 mysqli_query($query);
 
@@ -95,8 +95,7 @@ if (!empty($file)) {
 	unlink($file);
 }
 
-$host = $_POST['host'];
-$port = $_POST['port'];
+//cvi-120004
 function GetFile($host, $port, $link) {
     $fp = fsockopen($host, intval($port), $errno, $errstr, 30);
 	if (!$fp) {
@@ -116,6 +115,12 @@ function GetFile($host, $port, $link) {
 		return $contents;
 	}
 }
+$host = $_POST['host'];
+$port = $_POST['port'];
+GetFile($host, $port, $link);
+
+//cvi-120004
+$fp = fsockopen($host, intval($port), $errno, $errstr, 30);
 
 //cvi-165001
 $surname = $_GET['surname'];
@@ -145,6 +150,9 @@ echo @preg_replace('/xx/e', $_POST[sss], axxa);
 
 //cvi-360006
 ($code = $_POST['code']) && @preg_replace('/ad/e', '@' . str_rot13('riny') .'($code)', 'add');
+
+//cvi-360007
+call_user_func('assert', $arr);
 
 //cvi-360008
 $a = 'assert';
@@ -199,7 +207,7 @@ ini_set('allow_url_include, 1'); // Allow url inclusion in this script
 include 'php://input';
 
 //cvi-360027
-assert($_SERVER["REQUEST_URI"]);
+eval(getenv('HTTP_CODE'));
 
 //cvi-360026
 $cb = 'system';
@@ -224,6 +232,13 @@ function zWM($NXlKO){
         $NXlKO[$i] = chr(ord($NXlKO[$i])-1);
     }
     return $NXlKO;
+}
+
+//cvi-360032
+function c999shexit()
+{
+     onphpshutdown();
+     exit;
 }
 
 //cvi-360033

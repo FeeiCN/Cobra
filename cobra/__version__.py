@@ -7,7 +7,7 @@ __url__ = 'https://github.com/wufeifei/cobra'
 __issue_page__ = 'https://github.com/wufeifei/cobra/issues/new'
 __python_version__ = sys.version.split()[0]
 __platform__ = platform.platform()
-__version__ = '2.0.0-alpha.3'
+__version__ = '2.0.0-alpha.4'
 __author__ = 'Feei'
 __author_email__ = 'feei@feei.cn'
 __license__ = 'MIT License'
@@ -27,5 +27,5 @@ __epilog__ = """Usage:
   python {m} -t {td} -f json -o /tmp/report.json 
   python {m} -t {tg} -f json -o feei@feei.cn 
   python {m} -t {tg} -f json -o http://push.to.com/api 
-  sudo python {m} -H 127.0.0.1 -P 80
+  python {m} -H 127.0.0.1 -P 8888
 """.format(m='cobra.py', td='tests/vulnerabilities', tg='https://github.com/ethicalhack3r/DVWA')

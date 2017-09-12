@@ -130,7 +130,7 @@ def write_to_file(target, sid, output_format='', filename=None):
     :return:
     """
     if not filename:
-        logger.info('[EXPORT] No filename given, nothing exported.')
+        logger.debug('[EXPORT] No filename given, nothing exported.')
         return False
 
     scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
