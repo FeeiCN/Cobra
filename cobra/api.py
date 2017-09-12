@@ -510,7 +510,7 @@ def search_rule(sid, rule_id):
     :return: {rule_name1: num1, rule_name2: num2}
     """
     scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
-    search_result = {id: 0 for id in rule_id}
+    search_result = dict.fromkeys(rule_id, 0)
     if not os.path.exists(scan_data_file):
         return search_result
 
