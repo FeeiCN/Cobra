@@ -471,6 +471,18 @@ def secure_filename(filename):
     return filename
 
 
+def split_branch(target_str):
+    split_target = target_str.split(':')
+    if len(split_target) == 3:
+        target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+    elif len(split_target) == 2:
+        target, branch = target_str, 'master'
+    else:
+        target, branch = target_str, 'master'
+
+    return target, branch
+
+
 def unhandled_exception_message():
     """
     Returns detailed message about occurred unhandled exception

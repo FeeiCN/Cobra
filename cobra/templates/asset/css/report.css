@@ -72,9 +72,17 @@
 /*}*/
 
 
-#table {
+#target_table {
     overflow-y: auto;
     max-height: 600px;
+}
+
+#search_table {
+    margin-top: 20px;
+}
+
+#submit_search {
+    margin-left: 20px;
 }
 
 .vulnerabilities_list > li {
@@ -102,20 +110,6 @@
 
 .vulnerabilities_list > li.active {
     background: #1c2427;
-}
-
-.vulnerabilities_list > li.fixed {
-    background-image: url("/asset/img/fixed.png");
-    background-position: right center;
-    background-repeat: no-repeat;
-    background-size: 50px 50px;
-}
-
-.vulnerabilities_list > li.not_fixed {
-    background-image: url("/asset/img/not_fixed.png");
-    background-position: right center;
-    background-repeat: no-repeat;
-    background-size: 50px 50px;
 }
 
 .congratulations {
@@ -281,10 +275,8 @@ ul.v_detail li {
     margin: 225px auto;
     text-align: center;
     position: relative;
-    width: 100%;
     display: block;
     height: 500px;
-    position: relative;
     width: 32px;
 }
 
