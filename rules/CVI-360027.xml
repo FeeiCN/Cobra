@@ -6,6 +6,7 @@
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[assert($_SERVER["REQUEST_URI"]);]]></case>
+        <case assert="true"><![CDATA[eval(getenv('HTTP_CODE'));]]></case>
     </test>
     <solution>
         ## 安全风险
