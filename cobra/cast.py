@@ -286,7 +286,7 @@ class CAST(object):
                 logger.debug("[AST] Not Java/PHP, can't parse ({l})".format(l=self.language))
                 return False, self.data
         else:
-            logger.warning("[AST] Can't get `param`, check built-in rule")
+            logger.debug("[AST] Can't get `param`, check built-in rule")
             return False, self.data
 
     def match(self, rule, block_id):
