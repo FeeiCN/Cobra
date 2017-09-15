@@ -23,7 +23,7 @@ Cobra可运行在以下Python版本
 
 #### macOS系统依赖
 ```
-brew install grep findutils
+brew install grep findutils flex
 ```
 
 #### Ubuntu系统依赖
