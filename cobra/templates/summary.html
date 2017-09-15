@@ -412,7 +412,7 @@
             999: '引用了存在漏洞的三方组件'
         };
         var rule_ids = {};
-        rule_ids = {{ rules | safe }};
+        rule_ids = {{ rules | tojson }};
         var $select_list = $('#rule_filter');
         for (var rule_id in rule_ids) {
             if (rule_ids.hasOwnProperty(rule_id)) {
