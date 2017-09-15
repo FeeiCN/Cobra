@@ -335,16 +335,16 @@ class Search(Resource):
         for s_sid in scan_list.get('sids').keys():
             target, branch = split_branch(scan_list.get('sids').get(s_sid))
             search_result = search_rule(s_sid, rule_id)
-            if list(search_result.items()).count(0) == len(rule_id):
-                continue
-            search_data.append({
-                'target_info': {
-                    'sid': s_sid,
-                    'target': target,
-                    'branch': branch,
-                },
-                'search_result': search_result,
-            })
+            cvi_count = list(search_result.values())
+            if int(cvi_count[0]) > 0:
+                search_data.append({
+                    'target_info': {
+                        'sid': s_sid,
+                        'target': target,
+                        'branch': branch,
+                    },
+                    'search_result': search_result,
+                })
 
         return {
             'code': 1001,

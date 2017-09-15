@@ -36,8 +36,8 @@ function createTable(table, data) {
         for (var j = 0; j < rules.length; j++) {
             trs.append($('<td>' + row_data.search_result[rules[j]] + '</td>'));
         }
+        tbody.append(trs);
     }
-    tbody.append(trs);
     table.append(tbody);
 }
 
