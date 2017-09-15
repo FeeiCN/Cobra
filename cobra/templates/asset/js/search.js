@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $('#rule_filter').multiselect({
-        enableClickableOptGroups: true
+        enableClickableOptGroups: false
     });
 });
 
