@@ -127,6 +127,26 @@ def test_result_detail():
         assert 'No such target' in re.text
 
 
+def test_search():
+    url = 'http://127.0.0.1:5000/api/search'
+    post_data = {
+        'sid': s_sid,
+        'rule_id': ["110001", "110005"],
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    re = requests.post(url=url, data=json.dumps(post_data), headers=headers)
+
+    s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+    if os.path.exists(s_sid_file):
+        assert '1001' in re.text
+        assert 'search_result' in re.text
+    else:
+        assert '1002' in re.text
+        assert 'No such sid' in re.text
+
+
 def test_index():
     url = 'http://127.0.0.1:5000/'
     re = requests.get(url=url)

@@ -175,9 +175,11 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
             return False
         logger.info('[PUSH] {rc} Rules'.format(rc=len(rules)))
         push_rules = []
+        off_rules = 0
         for idx, single_rule in enumerate(rules):
             if single_rule['status'] is False:
-                logger.info('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
+                off_rules += 1
+                logger.debug('[CVI-{cvi}] [STATUS] OFF, CONTINUE...'.format(cvi=single_rule['id']))
                 continue
             # SR(Single Rule)
             logger.debug("""[PUSH] [CVI-{cvi}] {idx}.{name}({language})""".format(
@@ -227,7 +229,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     if vn == 0:
         logger.info('[SCAN] Not found vulnerability!')
     else:
-        logger.info("[SCAN] Trigger Rules: {tr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), vn=len(find_vulnerabilities), table=table))
+        logger.info("[SCAN] Trigger Rules/Not Trigger Rules/Off Rules: {tr}/{ntr}/{fr} Vulnerabilities ({vn})\r\n{table}".format(tr=len(trigger_rules), ntr=len(diff_rules), fr=off_rules, vn=len(find_vulnerabilities), table=table))
         if len(diff_rules) > 0:
             logger.info('[SCAN] Not Trigger Rules ({l}): {r}'.format(l=len(diff_rules), r=','.join(diff_rules)))
 

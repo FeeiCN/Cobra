@@ -27,7 +27,7 @@ var score2level = {
 $(function () {
     var current_tab = '';
     var c_tab = getParameterByName('t');
-    if (c_tab !== null && c_tab !== '' && ['inf', 'tar', 'vul'].indexOf(c_tab) >= 0) {
+    if (c_tab !== null && c_tab !== '' && ['inf', 'tar', 'fil','vul'].indexOf(c_tab) >= 0) {
         current_tab = c_tab;
         $(".nav-tabs li").removeClass('active');
         $("a[data-id=" + c_tab + "]").parent('li').addClass('active');
@@ -191,10 +191,17 @@ $(function () {
             if (s_sid !== null) {
                 s_sid = '&s_sid=' + $('#search_target').val();
             }
-            if (current_tab === '') {
-                current_tab = 'inf';
+
+            var url = '';
+            if (current_tab === '' | current_tab === 'inf') {
+                url = '?t=' + current_tab + sid + s_sid;
+            } else if (current_tab === 'vul') {
+                url = '?t=' + current_tab + sid + s_sid + vulnerabilities_list.filter_url() + v;
+            } else if (current_tab === 'fil') {
+                url = '?t=' + current_tab + sid + s_sid;
+            } else if (current_tab === 'tar') {
+                url = '?t=' + current_tab + sid + s_sid;
             }
-            url = '?t=' + current_tab + sid + s_sid + vulnerabilities_list.filter_url() + v;
             window.history.pushState("CobraState", "Cobra", url);
         },
         get: function (on_filter) {
@@ -275,10 +282,11 @@ $(function () {
                         vul_list_origin = result.result.scan_data;
                         rule_filter = result.result.rule_filter;
                         // rule filter
-                        $('#search_rule').empty();
-                        $('#search_rule').append('<option value="all">All</option>');
+                        $search_rule = $('#search_rule');
+                        $search_rule.empty();
+                        $search_rule.append('<option value="all">All</option>');
                         for (var key in rule_filter) {
-                            $('#search_rule').append('<option value="' + key + '">' + rule_filter[key] + '</option>');
+                            $search_rule.append('<option value="' + key + '">' + rule_filter[key] + '</option>');
                         }
 
                         // Search vulnerability type

@@ -73,7 +73,7 @@ Usage:
   python cobra.py -t tests/vulnerabilities -f json -o /tmp/report.json
   python cobra.py -t https://github.com/ethicalhack3r/DVWA -f json -o feei@feei.cn
   python cobra.py -t https://github.com/ethicalhack3r/DVWA -f json -o http://push.to.com/api
-  sudo python cobra.py -H 127.0.0.1 -P 80
+  python cobra.py -H 127.0.0.1 -P 8888
 ```
 ---
 下一章：[API模式使用方法](https://wufeifei.github.io/cobra/api)

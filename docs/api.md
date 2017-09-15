@@ -59,27 +59,27 @@
 # 完整的例子
 ## 启动HTTP服务
 ```bash
-sudo python cobra.py -H 127.0.0.1 -P 80
+python cobra.py -H 127.0.0.1 -P 8888
 ```
 
 ## 添加扫描任务
 ```bash
 # 添加一条任务
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":"https://github.com/wufeifei/grw.git:master"}' http://127.0.0.1/api/add
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":"https://github.com/wufeifei/grw.git:master"}' http://127.0.0.1:8888/api/add
 
 # 添加多条任务
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":["https://github.com/wufeifei/cobra.git:master", "https://github.com/wufeifei/grw.git:master"]}' http://127.0.0.1/api/add
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":["https://github.com/wufeifei/cobra.git:master", "https://github.com/wufeifei/grw.git:master"]}' http://127.0.0.1:8888/api/add
 ```
 
 ## 查询任务状态
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","sid": "a938e29vdse8"}' http://127.0.0.1/api/status
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","sid": "a938e29vdse8"}' http://127.0.0.1:8888/api/status
 ```
 
 # Web 报告页
 
 ```
-http://127.0.0.1/?sid=afbe69p7dxva
+http://127.0.0.1:8888/?sid=afbe69p7dxva
 ```
 
 ---

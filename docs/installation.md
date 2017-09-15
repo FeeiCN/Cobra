@@ -19,10 +19,16 @@ Cobra可运行在以下Python版本
   - 3.6+
 
 ## 特殊依赖
+> 以下系统需要单独安装依赖。
 
 #### macOS系统依赖
 ```
-brew install grep findutils
+brew install grep findutils flex
+```
+
+#### Ubuntu系统依赖
+```
+apt-get install flex bison
 ```
 
 ## 安装方法

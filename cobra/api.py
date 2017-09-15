@@ -31,7 +31,7 @@ from .cli import get_sid
 from .config import Config, running_path, package_path
 from .engine import Running
 from .log import logger
-from .utils import allowed_file, secure_filename, PY2
+from .utils import allowed_file, secure_filename, PY2, split_branch
 
 try:
     # Python 3
@@ -299,8 +299,57 @@ class ResultDetail(Resource):
         else:
             return {'code': 1002, 'msg': 'No such file.'}
 
-        return {'code': 1001, 'result': {'file_content': file_content,
-                                         'extension': extension}}
+        return {'code': 1001, 'result': {'file_content': file_content, 'extension': extension}}
+
+
+class Search(Resource):
+    @staticmethod
+    def post():
+        """
+        Search specific rule.
+        :return:
+        """
+        data = request.json
+        if not data or data == "":
+            return {'code': 1003, 'msg': 'Only support json, please post json data.'}
+
+        sid = data.get('sid')
+        if not sid or sid == '':
+            return {'code': 1002, 'msg': 'sid is required.'}
+
+        rule_id = data.get('rule_id')
+        if not rule_id or rule_id == '':
+            return {'code': 1002, 'msg': 'rule_id is required.'}
+
+        scan_list_file = os.path.join(running_path, '{sid}_list'.format(sid=sid))
+        if not os.path.exists(scan_list_file):
+            return {'code': 1002, 'msg': 'No such sid.'}
+
+        with open(scan_list_file, 'r') as f:
+            scan_list = json.load(f)
+
+        if not isinstance(rule_id, list):
+            rule_id = [rule_id]
+
+        search_data = list()
+        for s_sid in scan_list.get('sids').keys():
+            target, branch = split_branch(scan_list.get('sids').get(s_sid))
+            search_result = search_rule(s_sid, rule_id)
+            cvi_count = list(search_result.values())
+            if int(cvi_count[0]) > 0:
+                search_data.append({
+                    'target_info': {
+                        'sid': s_sid,
+                        'target': target,
+                        'branch': branch,
+                    },
+                    'search_result': search_result,
+                })
+
+        return {
+            'code': 1001,
+            'result': search_data,
+        }
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -333,13 +382,7 @@ def summary():
         if scan_status.get('result').get('status') == 'running':
             still_running = scan_status.get('result').get('still_running')
             for s_sid, target_str in still_running.items():
-                split_target = target_str.split(':')
-                if len(split_target) == 3:
-                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
-                elif len(split_target) == 2:
-                    target, branch = target_str, 'master'
-                else:
-                    target, branch = target_str, 'master'
+                target, branch = split_branch(target_str)
                 still_running[s_sid] = {'target': target,
                                         'branch': branch}
         else:
@@ -357,7 +400,8 @@ def summary():
         not_finished_number = scan_status.get('result').get('not_finished')
 
         total_vul_number, critical_vul_number, high_vul_number, medium_vul_number, low_vul_number = 0, 0, 0, 0, 0
-        rule_filter = dict()
+        rule_num = dict()
+        rules = dict()
         targets = list()
 
         for s_sid, target_str in scan_list.get('sids').items():
@@ -365,13 +409,7 @@ def summary():
                 target_info = dict()
 
                 # 分割项目地址与分支，默认 master
-                split_target = target_str.split(':')
-                if len(split_target) == 3:
-                    target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
-                elif len(split_target) == 2:
-                    target, branch = target_str, 'master'
-                else:
-                    target, branch = target_str, 'master'
+                target, branch = split_branch(target_str)
 
                 target_info.update({
                     'sid': s_sid,
@@ -403,9 +441,11 @@ def summary():
                         low_vul_number += 1
 
                     try:
-                        rule_filter[vul.get('rule_name')] += 1
+                        rule_num[vul.get('rule_name')] += 1
                     except KeyError:
-                        rule_filter[vul.get('rule_name')] = 1
+                        rule_num[vul.get('rule_name')] = 1
+
+                    rules[vul.get('id')] = vul.get('rule_name')
 
         return render_template(template_name_or_list='summary.html',
                                total_targets_number=total_targets_number,
@@ -418,7 +458,8 @@ def summary():
                                high_vul_number=high_vul_number,
                                medium_vul_number=medium_vul_number,
                                low_vul_number=low_vul_number,
-                               vuls=rule_filter,
+                               rule_num=rule_num,
+                               rules=rules,
                                running=still_running,)
 
 
@@ -461,6 +502,30 @@ def guess_type(fn):
     return extension.lower()
 
 
+def search_rule(sid, rule_id):
+    """
+    Search specific rule name in scan data.
+    :param sid: scan data id
+    :param rule_id: a list of rule name
+    :return: {rule_name1: num1, rule_name2: num2}
+    """
+    scan_data_file = os.path.join(running_path, '{sid}_data'.format(sid=sid))
+    search_result = dict.fromkeys(rule_id, 0)
+    if not os.path.exists(scan_data_file):
+        return search_result
+
+    with open(scan_data_file, 'r') as f:
+        scan_data = json.load(f)
+
+    if scan_data.get('code') == 1001 and len(scan_data.get('result').get('vulnerabilities')) > 0:
+        for vul in scan_data.get('result').get('vulnerabilities'):
+            if vul.get('id') in rule_id:
+                    search_result[vul.get('id')] += 1
+        return search_result
+    else:
+        return search_result
+
+
 def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
     api = Api(app)
@@ -470,6 +535,7 @@ def start(host, port, debug):
     api.add_resource(FileUpload, '/api/upload')
     api.add_resource(ResultData, '/api/list')
     api.add_resource(ResultDetail, '/api/detail')
+    api.add_resource(Search, '/api/search')
 
     # consumer
     threads = []

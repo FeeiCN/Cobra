@@ -406,7 +406,7 @@ def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
         mr.file_path = 'unkown'
     mr.language = '*'
     mr.id = cvi
-    mr.rule_name = cve_id
+    mr.rule_name = '引用了存在漏洞的三方组件'
     mr.level = cve_level
     mr.line_number = 1
     mr.analysis = 'Dependencies Matched(依赖匹配)'

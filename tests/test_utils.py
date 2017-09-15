@@ -66,3 +66,19 @@ def test_percent():
 
 def test_format_gmt():
     assert format_gmt('Wed, 14 Sep 2016 17:57:41 GMT') == '2016-09-14 17:57:41'
+
+
+def test_split_branch():
+    target_str = 'https://github.com/test/test.git:dev'
+    target, branch = split_branch(target_str)
+    assert target == 'https://github.com/test/test.git'
+    assert branch == 'dev'
+    target_str = 'https://github.com/test/test.git'
+    target, branch = split_branch(target_str)
+    assert target == 'https://github.com/test/test.git'
+    assert branch == 'master'
+
+
+def test_secure_filename():
+    assert secure_filename(u'正则.测试.md') == u'正则.测试.md'
+    assert secure_filename('../../../etc/passwd').count('/') == 0
