@@ -59,6 +59,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     d = r.status()
     d['report'] = report
     r.status(d)
+    logger.info('[REPORT] Report URL: {u}'.format(u=report))
 
     # parse target mode and output mode
     pa = ParseArgs(target, formatter, output, special_rules, a_sid=None)
