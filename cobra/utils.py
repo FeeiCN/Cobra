@@ -546,7 +546,7 @@ def create_github_issue(err_msg, exc_msg):
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
         }
-        headers = {"Authorization": "token {t}".format(t='48afbb61693ce187606388842ae1ccaa9a88a10a')}
+        headers = {"Authorization": "token {t}".format(t='f017200c4c93d550c762bdc76e2fa60107d8d515')}
         resp = requests.post(url=url, data=json.dumps(data), headers=headers)
         content = resp.text
     except Exception as ex:
