@@ -31,6 +31,7 @@ from .config import Config, issue_history_path
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .log import logger
 from .pickup import Git, NotExistError, AuthError, Decompress
+from .const import access_token
 
 TARGET_MODE_GIT = 'git'
 TARGET_MODE_FILE = 'file'
@@ -547,7 +548,7 @@ def create_github_issue(err_msg, exc_msg):
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
         }
-        headers = {"Authorization": "token {t}".format(t=base64.b64decode("YzA4YTVhOTA1ZGExYjg5YTc1ZmI4NmE3MmM3ZjUyNzg2NmRmZmRlNA=="))}
+        headers = {"Authorization": "token {t}".format(t=base64.b64decode(access_token))}
         resp = requests.post(url=url, data=json.dumps(data), headers=headers)
         content = resp.text
     except Exception as ex:
