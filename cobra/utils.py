@@ -13,6 +13,7 @@
 """
 import hashlib
 import json
+import base64
 import os
 import random
 import re
@@ -546,7 +547,7 @@ def create_github_issue(err_msg, exc_msg):
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
         }
-        headers = {"Authorization": "token {t}".format(t='f017200c4c93d550c762bdc76e2fa60107d8d515')}
+        headers = {"Authorization": "token {t}".format(t=base64.b64decode("YzA4YTVhOTA1ZGExYjg5YTc1ZmI4NmE3MmM3ZjUyNzg2NmRmZmRlNA=="))}
         resp = requests.post(url=url, data=json.dumps(data), headers=headers)
         content = resp.text
     except Exception as ex:
