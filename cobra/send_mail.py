@@ -22,7 +22,7 @@ def send_mail(target, filename, receiver):
         server = smtplib.SMTP_SSL(host=host, port=port)
     else:
         server = smtplib.SMTP(host=host, port=port)
-
+    server.starttls()
     s_sid = filename.split('.')[0]
     msg = MIMEMultipart()
     msg['From'] = sender
