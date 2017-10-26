@@ -150,7 +150,7 @@ class ParseArgs(object):
                 if clone_ret is False:
                     raise PickupException('Clone Failed ({0})'.format(clone_err), gg)
             except NotExistError:
-                raise NotExistException(4001, 'Repository Does not exist!', gg)
+                raise NotExistException(4001, 'Repository or Branch Does not exist!', gg)
             except AuthError:
                 raise AuthFailedException('Git Authentication Failed')
             target_directory = gg.repo_directory
@@ -404,10 +404,9 @@ class Tool:
         elif os.path.isfile('/usr/bin/grep'):
             self.grep = '/usr/bin/grep'
         elif os.path.isfile('/usr/local/bin/grep'):
-            self.grep='/usr/local/bin/grep'
+            self.grep = '/usr/local/bin/grep'
         else:
             self.grep = 'grep'
-
 
         # `find` (`gfind` on Mac)
         if os.path.isfile('/bin/find'):
@@ -415,10 +414,9 @@ class Tool:
         elif os.path.isfile('/usr/bin/find'):
             self.find = '/usr/bin/find'
         elif os.path.isfile('/usr/local/bin/find'):
-            self.find='/usr/local/bin/find'
+            self.find = '/usr/local/bin/find'
         else:
             self.find = 'find'
-
 
         if 'darwin' == sys.platform:
             ggrep = ''
@@ -450,7 +448,7 @@ def secure_filename(filename):
     try:
         text_type = unicode  # Python 2
     except NameError:
-        text_type = str      # Python 3
+        text_type = str  # Python 3
 
     if isinstance(filename, text_type):
         from unicodedata import normalize

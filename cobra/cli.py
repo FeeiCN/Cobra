@@ -96,7 +96,8 @@ def start(target, formatter, output, special_rules, a_sid=None):
             'msg': 'Repository not exist!'
         }
         Running(s_sid).data(result)
-        raise
+        logger.critical('Repository or branch not exist!')
+        exit()
     except Exception:
         result = {
             'code': 1002,
