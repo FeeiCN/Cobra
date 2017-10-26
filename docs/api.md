@@ -50,6 +50,13 @@
         "not_finished": 0, # 未完成的项目数
         "report": "http://127.0.0.1/?sid=ae3ea90pkoo5", # 扫描报告页
         "sid": "ae3ea90pkoo5", # 扫描的任务ID
+        "allow_deploy": true, # 是否允许发布上线
+        "statistic": { # 高中低危漏洞数量
+            "high": 5,
+            "medium": 18,
+            "critical": 0,
+            "low": 28
+        },
         "status": "done", # 扫描状态
         "still_running": {}, # 正在扫描的项目
         "total_target_num": 1, # 扫描任务的项目总数

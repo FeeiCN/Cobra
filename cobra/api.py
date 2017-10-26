@@ -153,6 +153,8 @@ class JobStatus(Resource):
         else:
             result = running.status()
             r_data = running.list()
+            allow_deploy = True
+            total_vul_number = critical_vul_number = high_vul_number = medium_vul_number = low_vul_number = 0
             if result['status'] == 'running':
                 ret = True
                 result['still_running'] = dict()
@@ -163,6 +165,48 @@ class JobStatus(Resource):
                 if ret:
                     result['status'] = 'done'
                     running.status(result)
+            elif result['status'] == 'done':
+                # 统计各类漏洞数量，并给出上线风险评估
+                targets = list()
+
+                scan_list = Running(sid).list()
+                for s_sid, target_str in scan_list.get('sids').items():
+                    target_info = dict()
+
+                    # 分割项目地址与分支，默认 master
+                    target, branch = split_branch(target_str)
+
+                    target_info.update({
+                        'sid': s_sid,
+                        'target': target,
+                        'branch': branch,
+                    })
+                    s_sid_file = os.path.join(running_path, '{sid}_data'.format(sid=s_sid))
+                    with open(s_sid_file, 'r') as f:
+                        s_sid_data = json.load(f)
+                        if s_sid_data.get('code') != 1001:
+                            continue
+                        else:
+                            s_sid_data = s_sid_data.get('result')
+                    total_vul_number += len(s_sid_data.get('vulnerabilities'))
+
+                    target_info.update({'total_vul_number': len(s_sid_data.get('vulnerabilities'))})
+                    target_info.update(s_sid_data)
+
+                    targets.append(target_info)
+
+                    for vul in s_sid_data.get('vulnerabilities'):
+                        if 9 <= int(vul.get('level')) <= 10:
+                            critical_vul_number += 1
+                        elif 6 <= int(vul.get('level')) <= 8:
+                            high_vul_number += 1
+                        elif 3 <= int(vul.get('level')) <= 5:
+                            medium_vul_number += 1
+                        elif 1 <= int(vul.get('level')) <= 2:
+                            low_vul_number += 1
+                if critical_vul_number > 0:
+                    allow_deploy = False
+
             data = {
                 'msg': 'success',
                 'sid': sid,
@@ -170,6 +214,13 @@ class JobStatus(Resource):
                 'report': request.url_root + result.get('report'),
                 'still_running': result.get('still_running'),
                 'total_target_num': r_data.get('total_target_num'),
+                'statistic': {
+                    'critical': critical_vul_number,
+                    'high': high_vul_number,
+                    'medium': medium_vul_number,
+                    'low': low_vul_number
+                },
+                'allow_deploy': allow_deploy,
                 'not_finished': int(r_data.get('total_target_num')) - len(r_data.get('sids'))
                                 + len(result.get('still_running')),
             }
@@ -460,7 +511,7 @@ def summary():
                                low_vul_number=low_vul_number,
                                rule_num=rule_num,
                                rules=rules,
-                               running=still_running,)
+                               running=still_running, )
 
 
 def key_verify(data):
@@ -520,7 +571,7 @@ def search_rule(sid, rule_id):
     if scan_data.get('code') == 1001 and len(scan_data.get('result').get('vulnerabilities')) > 0:
         for vul in scan_data.get('result').get('vulnerabilities'):
             if vul.get('id') in rule_id:
-                    search_result[vul.get('id')] += 1
+                search_result[vul.get('id')] += 1
         return search_result
     else:
         return search_result
