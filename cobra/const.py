@@ -11,6 +11,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2017 Feei. All rights reserved
 """
+access_token = 'YzA4YTVhOTA1ZGExYjg5YTc1ZmI4NmE3MmM3ZjUyNzg2NmRmZmRlNA=='
 
 # Match-Mode
 mm_find_extension = 'find-extension'

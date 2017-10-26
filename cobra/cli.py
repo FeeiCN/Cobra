@@ -59,6 +59,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     d = r.status()
     d['report'] = report
     r.status(d)
+    logger.info('[REPORT] Report URL: {u}'.format(u=report))
 
     # parse target mode and output mode
     pa = ParseArgs(target, formatter, output, special_rules, a_sid=None)
@@ -95,7 +96,8 @@ def start(target, formatter, output, special_rules, a_sid=None):
             'msg': 'Repository not exist!'
         }
         Running(s_sid).data(result)
-        raise
+        logger.critical('Repository or branch not exist!')
+        exit()
     except Exception:
         result = {
             'code': 1002,

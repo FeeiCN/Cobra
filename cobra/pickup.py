@@ -194,7 +194,11 @@ class Directory(object):
                 self.file_info(directory, filename)
             else:
                 for filename in os.listdir(absolute_path):
-                    directory = os.path.join(absolute_path, filename)
+                    try:
+                        directory = os.path.join(absolute_path, filename)
+                    except UnicodeDecodeError as e:
+                        logger.debug('Exception unicode {e}'.format(e=e))
+                        continue
 
                     # Directory Structure
                     logger.debug('[PICKUP] [FILES] ' + '|  ' * (level - 1) + '|--' + filename)

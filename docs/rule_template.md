@@ -5,7 +5,7 @@
 <cobra document="https://github.com/wufeifei/cobra">
     <name value="硬编码Token/Key"/>
     <language value="*"/>
-    <match><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
+    <match mode="regex-only-match"><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>
     <level value="2"/>
     <test>
         <case assert="true" remark="sha1"><![CDATA["41a6bc4d9a033e1627f448f0b9593f9316d071c1"]]></case>
@@ -37,8 +37,8 @@
 |`name`|规则名称|是|`string`|描述规则名称|`<name value="Logger敏感信息" />`|
 |`language`|规则语言|是|`string`|设置规则针对的开发语言，参见`languages`|`<language value="php" />`|
 |`match`|匹配规则1|是|`string`|匹配规则1|`<match mode="regex-only-match"><![CDATA[regex content]]></match>`|
-|`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 block="in-function-up"><![CDATA[regex content]]></match>`|
-|`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair block=""><![CDATA[regex content]]></match>`|
+|`match2`|匹配规则2|否|`string`|匹配规则2|`<match2 block="in-function-up"><![CDATA[regex content]]></match2>`|
+|`repair`|修复规则|否|`string`|匹配到此规则，则不算做漏洞|`<repair block=""><![CDATA[regex content]]></repair>`|
 |`level`|影响等级|是|`integer`|标记该规则扫到的漏洞危害等级，使用数字1-10。|`<level value="3" />`|
 |`solution`|修复方案|是|`string`|该规则扫描的漏洞对应的**安全风险**和**修复方案**|`<solution>详细的安全风险和修复方案</solution>`|
 |`test`|测试用例|是|`case`|该规则对应的测试用例|`<test><case assert="true"><![CDATA[测试存在漏洞的代码]]></case><case assert="false"><![CDATA[测试不存在漏洞的代码]]></case></test>`|

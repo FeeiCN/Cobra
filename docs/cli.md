@@ -21,7 +21,7 @@ $ python cobra.py -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
 $ python cobra.py -t tests/vulnerabilities -r cvi-190001,cvi-190002
 
 # 开启一个Cobra HTTP Server，然后可以使用API接口来添加扫描任务
-$ python cobra.py -H 127.0.0.1 -P 80
+$ python cobra.py -H 127.0.0.1 -P 8888
 
 # 查看版本
 $ python cobra.py --version

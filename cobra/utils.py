@@ -13,6 +13,7 @@
 """
 import hashlib
 import json
+import base64
 import os
 import random
 import re
@@ -30,6 +31,7 @@ from .config import Config, issue_history_path
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .log import logger
 from .pickup import Git, NotExistError, AuthError, Decompress
+from .const import access_token
 
 TARGET_MODE_GIT = 'git'
 TARGET_MODE_FILE = 'file'
@@ -148,7 +150,7 @@ class ParseArgs(object):
                 if clone_ret is False:
                     raise PickupException('Clone Failed ({0})'.format(clone_err), gg)
             except NotExistError:
-                raise NotExistException(4001, 'Repository Does not exist!', gg)
+                raise NotExistException(4001, 'Repository or Branch Does not exist!', gg)
             except AuthError:
                 raise AuthFailedException('Git Authentication Failed')
             target_directory = gg.repo_directory
@@ -402,10 +404,9 @@ class Tool:
         elif os.path.isfile('/usr/bin/grep'):
             self.grep = '/usr/bin/grep'
         elif os.path.isfile('/usr/local/bin/grep'):
-            self.grep='/usr/local/bin/grep'
+            self.grep = '/usr/local/bin/grep'
         else:
             self.grep = 'grep'
-
 
         # `find` (`gfind` on Mac)
         if os.path.isfile('/bin/find'):
@@ -413,10 +414,9 @@ class Tool:
         elif os.path.isfile('/usr/bin/find'):
             self.find = '/usr/bin/find'
         elif os.path.isfile('/usr/local/bin/find'):
-            self.find='/usr/local/bin/find'
+            self.find = '/usr/local/bin/find'
         else:
             self.find = 'find'
-
 
         if 'darwin' == sys.platform:
             ggrep = ''
@@ -448,7 +448,7 @@ def secure_filename(filename):
     try:
         text_type = unicode  # Python 2
     except NameError:
-        text_type = str      # Python 3
+        text_type = str  # Python 3
 
     if isinstance(filename, text_type):
         from unicodedata import normalize
@@ -546,7 +546,7 @@ def create_github_issue(err_msg, exc_msg):
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
         }
-        headers = {"Authorization": "token {t}".format(t='48afbb61693ce187606388842ae1ccaa9a88a10a')}
+        headers = {"Authorization": "token {t}".format(t=base64.b64decode(access_token))}
         resp = requests.post(url=url, data=json.dumps(data), headers=headers)
         content = resp.text
     except Exception as ex:
