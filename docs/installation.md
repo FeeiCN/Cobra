@@ -31,6 +31,11 @@ brew install grep findutils flex
 apt-get install flex bison
 ```
 
+#### CentOS系统依赖
+```
+yum install flex
+```
+
 ## 安装方法
 ```bash
 git clone https://github.com/wufeifei/cobra.git && cd cobra
