@@ -17,6 +17,7 @@ import time
 import argparse
 import logging
 import traceback
+import platform
 from .log import logger
 from . import cli, api, config
 from .cli import get_sid
@@ -61,6 +62,9 @@ def main():
         if args.host is None and args.port is None and args.target is '' and args.output is '':
             parser.print_help()
             exit()
+
+        if 'windows' in platform.platform().lower():
+            logger.critical('Nonsupport Windows!!!')
 
         if args.host is not None and args.port is not None:
             logger.debug('[INIT] start RESTful Server...')
