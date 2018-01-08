@@ -5,7 +5,7 @@
     cobra
     ~~~~~
 
-    Implements cobra main
+    Tests cobra.parser
 
     :author:    BlBana <635373043@qq.com>
     :homepage:  https://github.com/wufeifei/cobra
