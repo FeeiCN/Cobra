@@ -42,6 +42,7 @@
         <folder value="system/guide/kohanna"/>
     </framework>
     <framework name="Yii" language="php" code="https://github.com/yiisoft/yii2">
+        <file value="yii"/>
         <file value="framework/BaseYii.php"/>
         <file value="tests/framework/BaseYiiTest.php"/>
         <folder value="contrib/completion/bash"/>
@@ -72,6 +73,8 @@
         <folder value="Database/Dialect"/>
     </framework>
     <framework name="Django" language="python" code="https://github.com/django/django">
+        <file name="manage.py"/>
+        <file name="templates"/>
         <dependency value="django"/>
     </framework>
     <framework name="Flask" language="python" code="https://github.com/pallets/flask">
