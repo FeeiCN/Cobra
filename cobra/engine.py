@@ -7,9 +7,9 @@
     Implements scan engine
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/wufeifei/cobra
+    :homepage:  https://github.com/FeeiCN/cobra
     :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2017 Feei. All rights reserved
+    :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import os
 import re
@@ -136,9 +136,7 @@ def score2level(score):
             score_full = '0{s}'.format(s=score)
         else:
             score_full = score
-
-        a = '{s}{e}'.format(s=score * '■', e=(10 - score) * '□')
-        return '{l}-{s}: {ast}'.format(l=level[:1], s=score_full, ast=a)
+        return '{l}-{s}'.format(l=level[:1], s=score_full)
 
 
 def scan_single(target_directory, single_rule):
@@ -202,12 +200,12 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
 
         # print
     data = []
-    table = PrettyTable(['#', 'CVI', 'VUL', 'Rule', 'Lang', 'Level-Score', 'Target', 'Commit(Time, Author)', 'Source Code Content', 'Analysis'])
+    table = PrettyTable(['#', 'CVI', 'Rule', 'Level', 'Target', 'Source Code Content'])
     table.align = 'l'
     trigger_rules = []
     for idx, x in enumerate(find_vulnerabilities):
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
-        commit = u'{time}, @{author}'.format(author=x.commit_author, time=x.commit_time)
+        # commit = u'{time}, @{author}'.format(author=x.commit_author, time=x.commit_time)
         level = score2level(x.level)
         cvi = x.id[0:3]
         if cvi in vulnerabilities:
@@ -218,7 +216,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
             code_content = x.code_content[:50].strip()
         except AttributeError as e:
             code_content = x.code_content.decode('utf-8')[:100].strip()
-        row = [idx + 1, x.id, cvn, x.rule_name, x.language, level, trigger, commit, code_content, x.analysis]
+        row = [idx + 1, x.id, x.rule_name, level, trigger, code_content]
         data.append(row)
         table.add_row(row)
         if x.id not in trigger_rules:

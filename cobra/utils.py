@@ -7,9 +7,9 @@
     Implements utils
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/wufeifei/cobra
+    :homepage:  https://github.com/FeeiCN/cobra
     :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2017 Feei. All rights reserved
+    :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import hashlib
 import json
@@ -550,7 +550,7 @@ def create_github_issue(err_msg, exc_msg):
     except Exception as ex:
         content = None
 
-    issue_url = re.search(r"https://github.com/wufeifei/cobra/issues/\d+", content or "")
+    issue_url = re.search(r"https://github.com/FeeiCN/cobra/issues/\d+", content or "")
     if issue_url:
         info_msg = "created Github issue can been found at the address '{u}'".format(u=issue_url.group(0))
         logger.info(info_msg)

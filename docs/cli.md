@@ -41,7 +41,7 @@ usage: cobra [-h] [-t <target>] [-f <format>] [-o <output>] [-r <rule_id>]
     |    |   ||   ||    ,---|
     `---``---``---``    `---^ v2.0.0
 
-GitHub: https://github.com/wufeifei/cobra
+GitHub: https://github.com/FeeiCN/cobra
 
 Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.
 

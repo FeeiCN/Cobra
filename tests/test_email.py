@@ -7,9 +7,9 @@
     Tests cobra.send_mail
 
     :author:    40huo <git@40huo.cn>
-    :homepage:  https://github.com/wufeifei/cobra
+    :homepage:  https://github.com/FeeiCN/cobra
     :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2017 Feei. All rights reserved
+    :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 from cobra.send_mail import send_mail
 import os

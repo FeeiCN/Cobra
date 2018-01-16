@@ -8,9 +8,9 @@
     Implements cobra main
 
     :author:    BlBana <635373043@qq.com>
-    :homepage:  https://github.com/wufeifei/cobra
+    :homepage:  https://github.com/FeeiCN/cobra
     :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2017 Feei. All rights reserved
+    :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import pytest
 import xml.etree.ElementTree as eT

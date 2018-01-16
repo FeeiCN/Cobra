@@ -1,4 +1,4 @@
-<cobra document="https://github.com/wufeifei/cobra">
+<cobra document="https://github.com/FeeiCN/cobra">
 	<cve id="CVE-2012-3565" level="LOW">
 		<product>opera_browser:7.54</product>
 		<product>opera_browser:7.52</product>

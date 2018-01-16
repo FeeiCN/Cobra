@@ -8,15 +8,16 @@
     Implements cobra main
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/wufeifei/cobra
+    :homepage:  https://github.com/FeeiCN/cobra
     :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2017 Feei. All rights reserved
+    :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import sys
 import time
 import argparse
 import logging
 import traceback
+import platform
 from .log import logger
 from . import cli, api, config
 from .cli import get_sid
@@ -62,7 +63,13 @@ def main():
             parser.print_help()
             exit()
 
+        if 'windows' in platform.platform().lower():
+            logger.critical('Nonsupport Windows!!!')
+
         if args.host is not None and args.port is not None:
+            if not int(args.port) <= 65535:
+                logger.critical('port must be 0-65535.')
+                exit()
             logger.debug('[INIT] start RESTful Server...')
             api.start(args.host, args.port, args.debug)
         else:

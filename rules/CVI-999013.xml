@@ -1,4 +1,4 @@
-<cobra document="https://github.com/wufeifei/cobra">
+<cobra document="https://github.com/FeeiCN/cobra">
 	<cve id="CVE-2013-7181" level="MEDIUM">
 		<product>fortiweb:5.0.3</product>
 	</cve>
