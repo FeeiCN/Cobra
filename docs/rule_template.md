@@ -2,7 +2,7 @@
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/wufeifei/cobra">
+<cobra document="https://github.com/FeeiCN/cobra">
     <name value="硬编码Token/Key"/>
     <language value="*"/>
     <match mode="regex-only-match"><![CDATA[(?![\d]{32})(?![a-fA-F]{32})([a-f\d]{32}|[A-F\d]{32})]]></match>

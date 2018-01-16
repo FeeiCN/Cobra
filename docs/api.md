@@ -76,7 +76,7 @@ python cobra.py -H 127.0.0.1 -P 8888
 curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":"https://github.com/wufeifei/grw.git:master", "rule": "cvi-130003,cvi-130004"}' http://127.0.0.1:8888/api/add
 
 # 添加多条任务
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":["https://github.com/wufeifei/cobra.git:master", "https://github.com/wufeifei/grw.git:master"]}' http://127.0.0.1:8888/api/add
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":["https://github.com/FeeiCN/cobra.git:master", "https://github.com/wufeifei/grw.git:master"]}' http://127.0.0.1:8888/api/add
 ```
 
 ## 查询任务状态

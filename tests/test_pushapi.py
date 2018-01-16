@@ -7,9 +7,9 @@
     Tests cobra.push_to_api
 
     :author:    40huo <git@40huo.cn>
-    :homepage:  https://github.com/wufeifei/cobra
+    :homepage:  https://github.com/FeeiCN/cobra
     :license:   MIT, see LICENSE for more details.
-    :copyright: Copyright (c) 2017 Feei. All rights reserved
+    :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import json
 import os
@@ -25,7 +25,7 @@ if not os.path.exists(scan_data_file):
 
 
 def test_push_to_api():
-    pusher = PushToThird(url='https://github.com/wufeifei/cobra')
+    pusher = PushToThird(url='https://github.com/FeeiCN/cobra')
     pusher.add_data(target='https://github.com/test/test.git', sid='abcdefg')
     assert 'https://' in json.dumps(pusher.post_data, ensure_ascii=False)
     assert '2015-01-31' in json.dumps(pusher.post_data, ensure_ascii=False)

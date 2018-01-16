@@ -3,22 +3,22 @@ import platform
 
 __title__ = 'cobra'
 __description__ = 'Code Security Audit'
-__url__ = 'https://github.com/wufeifei/cobra'
-__issue_page__ = 'https://github.com/wufeifei/cobra/issues/new'
+__url__ = 'https://github.com/FeeiCN/cobra'
+__issue_page__ = 'https://github.com/FeeiCN/cobra/issues/new'
 __python_version__ = sys.version.split()[0]
 __platform__ = platform.platform()
 __version__ = '2.0.0-alpha.5'
 __author__ = 'Feei'
 __author_email__ = 'feei@feei.cn'
 __license__ = 'MIT License'
-__copyright__ = 'Copyright (C) 2017 Feei. All Rights Reserved'
+__copyright__ = 'Copyright (c) 2018 Feei. All rights reserved'
 __introduction__ = """
     ,---.     |
     |    ,---.|---.,---.,---.
     |    |   ||   ||    ,---|
     `---``---``---``    `---^ v{version}
 
-GitHub: https://github.com/wufeifei/cobra
+GitHub: https://github.com/FeeiCN/cobra
 
 Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.""".format(version=__version__)
 __epilog__ = """Usage:
