@@ -588,7 +588,6 @@ class Core(object):
                 is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
                 if is_match:
                     logger.debug('[CVI-{cvi}] [MATCH2] True'.format(cvi=self.cvi))
-                    return True, 'REGEX-ONLY-MATCH+MATCH2(正则仅匹配+二次匹配)'
                 else:
                     logger.debug('[CVI-{cvi}] [MATCH2] False'.format(cvi=self.cvi))
                     return False, 'REGEX-ONLY-MATCH+Not matched2(未匹配到二次规则)'
@@ -656,7 +655,6 @@ class Core(object):
                         is_match, data = ast.match(self.rule_match2, self.rule_match2_block)
                         if is_match:
                             logger.debug('[CVI-{cvi}] [MATCH2] True'.format(cvi=self.cvi))
-                            return True, 'FPC+MATCH2(函数入参可控+二次匹配)'
                         else:
                             logger.debug('[CVI-{cvi}] [MATCH2] False'.format(cvi=self.cvi))
                             return False, 'FPC+NOT-MATCH2(函数入参可控+二次未匹配)'

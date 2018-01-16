@@ -1,10 +1,10 @@
 # Cobra
-[![Build Status](https://travis-ci.org/wufeifei/cobra.svg?branch=master)](https://travis-ci.org/wufeifei/cobra)
-[![Coverage Status](https://coveralls.io/repos/github/wufeifei/cobra/badge.svg?branch=master)](https://coveralls.io/github/wufeifei/cobra?branch=master)
-[![GitHub (pre-)release](https://img.shields.io/github/release/wufeifei/cobra/all.svg)](https://github.com/wufeifei/cobra/releases)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/wufeifei/cobra/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/FeeiCN/cobra.svg?branch=master)](https://travis-ci.org/FeeiCN/cobra)
+[![Coverage Status](https://coveralls.io/repos/github/FeeiCN/cobra/badge.svg?branch=master)](https://coveralls.io/github/FeeiCN/cobra?branch=master)
+[![GitHub (pre-)release](https://img.shields.io/github/release/feeicn/cobra/all.svg)](https://github.com/feeicn/cobra/releases)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/feeicn/cobra/blob/master/LICENSE)
 
-[![asciicast](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_03.jpg)](https://asciinema.org/a/132572)
+[![asciicast](https://raw.githubusercontent.com/feeicn/cobra/master/docs/report_03.jpg)](https://asciinema.org/a/132572)
 
 ## Introduction（介绍）
 Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的**大部分显著**的安全问题和漏洞。
@@ -20,8 +20,8 @@ Cobra是一款**源代码安全审计**工具，支持检测多种开发语言�
 > 提供本地Web Server服务，可使用GUI可视化操作，也可支持本地API接口，方便和其它系统（发布系统、CI等）对接扩展。
 
 ## Screenshot（截图）
-[![report01](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_01.jpg)](https://wufeifei.github.io/cobra/api)
-[![report02](https://raw.githubusercontent.com/wufeifei/cobra/master/docs/report_02.jpg)](https://wufeifei.github.io/cobra/api)
+[![report01](https://raw.githubusercontent.com/feeicn/cobra/master/docs/report_01.jpg)](https://feeicn.github.io/cobra/api)
+[![report02](https://raw.githubusercontent.com/feeicn/cobra/master/docs/report_02.jpg)](https://feeicn.github.io/cobra/api)
 
 ## Links（链接）
-- [Cobra文档](https://wufeifei.github.io/cobra/)
+- [Cobra文档](https://feeicn.github.io/cobra/)
