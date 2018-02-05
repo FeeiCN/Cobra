@@ -6,4 +6,4 @@
 git pull origin master
 ```
 ---
-下一章：[规则模板](https://wufeifei.github.io/cobra/rule_template)
+下一章：[规则模板](http://cobra.feei.cn/rule_template)
