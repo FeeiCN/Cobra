@@ -44,4 +44,4 @@ python cobra.py --help
 ```
 
 ---
-下一章：[CLI模式使用方法](https://wufeifei.github.io/cobra/cli)
+下一章：[CLI模式使用方法](http://cobra.feei.cn/cli)
