@@ -91,4 +91,4 @@ http://127.0.0.1:8888/?sid=afbe69p7dxva
 ```
 
 ---
-下一章：[高级功能配置](https://wufeifei.github.io/cobra/config)
+下一章：[高级功能配置](http://cobra.feei.cn/config)
