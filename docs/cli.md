@@ -76,4 +76,4 @@ Usage:
   python cobra.py -H 127.0.0.1 -P 8888
 ```
 ---
-下一章：[API模式使用方法](https://wufeifei.github.io/cobra/api)
+下一章：[API模式使用方法](http://cobra.feei.cn/api)
