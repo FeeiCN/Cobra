@@ -37,4 +37,4 @@
 - 编辑后请修改对应的`rules/vulnerabilities.xml`
 
 ---
-下一章：[危害等级定义](https://wufeifei.github.io/cobra/level)
+下一章：[危害等级定义](http://cobra.feei.cn/level)
