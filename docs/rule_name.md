@@ -6,4 +6,4 @@
 - 结尾以小写.xml结束
 
 ---
-下一章：[规则开发流程](https://wufeifei.github.io/cobra/rule_flow)
+下一章：[规则开发流程](http://cobra.feei.cn/rule_flow)
