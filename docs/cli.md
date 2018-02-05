@@ -6,16 +6,16 @@
 $ python cobra.py -t tests/vulnerabilities
 
 # 扫描一个Git项目代码
-$ python cobra.py -t https://github.com/wufeifei/grw.git
+$ python cobra.py -t https://github.com/FeeiCN/grw.git
 
 # 扫描一个文件夹，并将扫描结果导出为JSON文件
 $ python cobra.py -t tests/vulnerabilities -f json -o /tmp/report.json
 
 # 扫描一个Git项目，并将扫描结果JSON文件推送到API上
-$ python cobra.py -f json -o http://push.to.com/api -t https://github.com/wufeifei/vc.git
+$ python cobra.py -f json -o http://push.to.com/api -t https://github.com/FeeiCN/vc.git
 
 # 扫描一个Git项目，并将扫描结果JSON文件发送到邮箱中
-$ python cobra.py -f json -o feei@feei.cn -t https://github.com/wufeifei/vc.git
+$ python cobra.py -f json -o feei@feei.cn -t https://github.com/FeeiCN/grw.git
 
 # 扫描一个文件夹代码的某两种漏洞
 $ python cobra.py -t tests/vulnerabilities -r cvi-190001,cvi-190002
