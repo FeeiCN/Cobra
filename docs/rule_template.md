@@ -71,4 +71,4 @@
 | in-file-down | 由第一条规则触发的所在行之下，所在文件之内 |
 
 ---
-下一章：[规则样例](https://wufeifei.github.io/cobra/rule_demo)
+下一章：[规则样例](http://cobra.feei.cn/rule_demo)
