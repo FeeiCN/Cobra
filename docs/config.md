@@ -10,4 +10,4 @@ cp config.template config
 - 变更API Server端口域名
 
 ---
-下一章：[升级框架和规则源](https://wufeifei.github.io/cobra/upgrade)
+下一章：[升级框架和规则源](http://cobra.feei.cn/upgrade)
