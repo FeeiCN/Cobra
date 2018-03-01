@@ -3,7 +3,7 @@ FROM ubuntu:xenial
 COPY . /code/
 WORKDIR /code
 
-RUN apt-get update && apt-get install -y python-pip curl \
+RUN apt-get update && apt-get install -y python-pip curl git \
     && apt-get autoremove \
     && apt-get clean \
     && apt-get autoclean \
