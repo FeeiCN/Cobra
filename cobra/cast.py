@@ -155,7 +155,7 @@ class CAST(object):
             return code
         else:
             block_start = 1
-            block_end = 0
+            block_end = 10000
             functions = self.functions()
             if functions:
                 for function_name, function_value in functions.items():
