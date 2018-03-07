@@ -530,7 +530,8 @@ class Git(object):
         :param length:
         :return: group#1, group#2
         """
-        os.chdir(directory)
+        if os.path.isdir(directory):
+            os.chdir(directory)
         cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path.replace(directory, ''))
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         checkout_out, checkout_err = p.communicate()

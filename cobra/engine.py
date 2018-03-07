@@ -161,7 +161,10 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     def store(result):
         if result is not None and isinstance(result, list) is True:
             for res in result:
-                res.file_path = res.file_path.replace(target_directory, '')
+                if os.path.isdir(target_directory):
+                    res.file_path = res.file_path.replace(target_directory, '')
+                else:
+                    res.file_path = res.file_path.replace(os.path.dirname(target_directory), '')
                 find_vulnerabilities.append(res)
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
@@ -363,8 +366,12 @@ class SingleRule(object):
             # v.php:2:$password 2017:01:01
             # v.exe Binary file
             try:
-                mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
-                mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
+                if os.path.isdir(self.target_directory):
+                    mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
+                    mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
+                else:
+                    mr.line_number, mr.code_content = re.findall(r'(\d+):(.*)', single_match)[0]
+                    mr.file_path = self.target_directory
             except Exception:
                 logger.warning('match line parse exception')
                 mr.file_path = ''
