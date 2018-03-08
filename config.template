@@ -53,6 +53,7 @@ username:
 password:
 
 [git]
+# 拉取gitlab代码时，需要配置username和password
 username:
 password:
 private_token:
