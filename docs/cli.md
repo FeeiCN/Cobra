@@ -28,6 +28,9 @@ $ python cobra.py --version
 
 # 查看帮助
 $ python cobra.py --help
+
+# 扫描gitlab全部项目，配置好config中private_token，gitlab_url，cobra_ip
+$ python git_projects.py
 ```
 
 ## Help（帮助）

@@ -15,8 +15,8 @@ import json
 import requests
 import re
 import threading
-from .log import logger
-from .config import code_path, Config
+from cobra.log import logger
+from cobra.config import code_path, Config
 
 try:
     # Python 3
