@@ -52,7 +52,7 @@ Scan:
   -t <target>, --target <target>
                         file, folder, compress, or repository address
   -f <format>, --format <format>
-                        vulnerability output format (formats: html, json, csv,
+                        vulnerability output format (formats: json, csv,
                         xml)
   -o <output>, --output <output>
                         vulnerability output STREAM, FILE, HTTP API URL, MAIL
