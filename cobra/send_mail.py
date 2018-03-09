@@ -53,4 +53,5 @@ def send_mail(target, filename, receiver):
         return False
     except smtplib.SMTPException as error:
         logger.critical(error)
+        logger.critical('[EMAIL] Please config SMTP Server, port, username, password and sender in config file')
         return False
