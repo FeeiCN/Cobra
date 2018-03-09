@@ -28,6 +28,9 @@ $ python cobra.py --version
 
 # 查看帮助
 $ python cobra.py --help
+
+# 扫描gitlab全部项目，配置好config中private_token，gitlab_url，cobra_ip
+$ python git_projects.py
 ```
 
 ## Help（帮助）
@@ -52,7 +55,7 @@ Scan:
   -t <target>, --target <target>
                         file, folder, compress, or repository address
   -f <format>, --format <format>
-                        vulnerability output format (formats: html, json, csv,
+                        vulnerability output format (formats: json, csv,
                         xml)
   -o <output>, --output <output>
                         vulnerability output STREAM, FILE, HTTP API URL, MAIL
