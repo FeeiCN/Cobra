@@ -67,8 +67,12 @@ def main():
             logger.critical('Nonsupport Windows!!!')
 
         if args.host is not None and args.port is not None:
-            if not int(args.port) <= 65535:
-                logger.critical('port must be 0-65535.')
+            try:
+                if not int(args.port) <= 65535:
+                    logger.critical('port must be 0-65535.')
+                    exit()
+            except ValueError as e:
+                logger.critical('port must be 0-65535')
                 exit()
             logger.debug('[INIT] start RESTful Server...')
             api.start(args.host, args.port, args.debug)
