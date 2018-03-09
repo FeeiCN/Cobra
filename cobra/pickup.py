@@ -355,7 +355,8 @@ class Git(object):
 
         # change work directory back.
         os.chdir(repo_dir)
-        if 'Updating' in pull_out or 'up-to-date' in pull_out or u'最新' in pull_out or 'up to date' in pull_out:
+        pull_out = pull_out.lower()
+        if 'up' in pull_out and 'to' in pull_out and 'date' in pull_out:
             logger.info('[PICKUP] [PULL] pull done.')
             return True, None
         else:
