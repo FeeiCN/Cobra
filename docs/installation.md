@@ -33,7 +33,7 @@ apt-get install flex bison
 
 #### CentOS系统依赖
 ```
-yum install flex
+yum install flex bison
 ```
 
 ## 安装方法
