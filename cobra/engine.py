@@ -558,7 +558,6 @@ class Core(object):
         :return: is_vulnerability, code
         """
         self.method = 0
-        self.code_content = self.code_content
         if len(self.code_content) > 512:
             self.code_content = self.code_content[:500]
         self.status = self.status_init
