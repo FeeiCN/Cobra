@@ -36,8 +36,8 @@ class CAST(object):
         for language in self.languages:
             if self.file_path[-len(language):].lower() == language:
                 self.language = language
-
-        os.chdir(self.target_directory)
+        if os.path.isdir(self.target_directory):
+            os.chdir(self.target_directory)
         # Parse rule
         self.regex = {
             'java': {
