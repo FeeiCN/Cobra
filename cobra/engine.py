@@ -347,6 +347,10 @@ class SingleRule(object):
                 if is_vulnerability:
                     logger.debug('[CVI-{cvi}] [RET] Found {code}'.format(cvi=self.sr['id'], code=reason))
                     vulnerability.analysis = reason
+                    match_result = re.findall(r"^(#|\/\*|\/\/)+", vulnerability.code_content)  # 判断漏洞代码是否在注释中
+                    if len(match_result) > 0:
+                        logger.debug('[CVI-{cvi} [RET] Found vul in annotation]')
+                        vulnerability.code_content = vulnerability.code_content + vulnerability.analysis
                     self.rule_vulnerabilities.append(vulnerability)
                 else:
                     logger.debug('Not vulnerability: {code}'.format(code=reason))
@@ -529,7 +533,7 @@ class Core(object):
                - Java:
         :return: boolean
         """
-        match_result = re.findall(r"^(#|\\\*|\/\/)+", self.code_content)
+        match_result = re.findall(r"^(#|\/\*|\/\/)+", self.code_content)
         # Skip detection only on match
         if self.is_match_only_rule():
             return False
@@ -609,7 +613,11 @@ class Core(object):
                 else:
                     logger.debug('[CVI-{cvi}] [REPAIR] [RET] Not fixed'.format(cvi=self.cvi))
                     return True, 'REGEX-ONLY-MATCH+NOT FIX(未修复)'
+
             else:
+                match_result = re.findall(r"^(#|\/\*|\/\/)+", self.code_content)
+                if len(match_result) > 0:
+                    return True, 'REGEX-ONLY-MATCH(注释中存在漏洞，建议删除漏洞代码)'
                 return True, 'REGEX-ONLY-MATCH(正则仅匹配+无修复规则)'
         else:
             #

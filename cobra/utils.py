@@ -91,8 +91,11 @@ class ParseArgs(object):
 
         if os.path.isfile(self.target):
             target_mode = TARGET_MODE_FILE
-            if self.target.split('.')[-1] in Config('upload', 'extensions').value.split('|'):
-                target_mode = TARGET_MODE_COMPRESS
+            try:
+                if self.target.split('.')[-1] in Config('upload', 'extensions').value.split('|'):
+                    target_mode = TARGET_MODE_COMPRESS
+            except AttributeError as e:
+                logger.critical('Please config the config file copy from the config.template file')
         if os.path.isdir(self.target):
             target_mode = TARGET_MODE_FOLDER
         if target_mode is None:
