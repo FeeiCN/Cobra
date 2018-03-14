@@ -524,7 +524,7 @@ def create_github_issue(err_msg, exc_msg):
     ex = None
 
     try:
-        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:FeeiCN/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
+        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:WhaleShark-Team/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
         logger.debug(url)
         resp = requests.get(url=url)
         content = resp.json()
@@ -542,7 +542,7 @@ def create_github_issue(err_msg, exc_msg):
         pass
 
     try:
-        url = "https://api.github.com/repos/FeeiCN/cobra/issues"
+        url = "https://api.github.com/repos/WhaleShark-Team/cobra/issues"
         data = {
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
