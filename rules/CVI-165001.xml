@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="LDAP注入"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[(ldap_add|ldap_delete|ldap_list|ldap_read|ldap_search|ldap_bind)]]></match>

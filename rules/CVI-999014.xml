@@ -1,4 +1,4 @@
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
 	<cve id="CVE-2014-3548" level="MEDIUM">
 		<product>moodle:2.4.10</product>
 		<product>moodle:2.3.6</product>

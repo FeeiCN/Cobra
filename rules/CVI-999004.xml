@@ -1,4 +1,4 @@
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
 	<cve id="CVE-2004-1657" level="MEDIUM">
 		<product>dasblog:1.3</product>
 		<product>dasblog:1.6</product>

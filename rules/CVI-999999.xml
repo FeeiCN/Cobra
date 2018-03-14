@@ -1,4 +1,4 @@
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
 	<cve id="flask vul" level="HIGH">
         <product>Flask:3.2</product>
         <product>Flask:0.10.1</product>

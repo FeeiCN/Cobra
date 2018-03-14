@@ -7,7 +7,7 @@
     Implements utils
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -524,7 +524,7 @@ def create_github_issue(err_msg, exc_msg):
     ex = None
 
     try:
-        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:FeeiCN/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
+        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:WhaleShark-Team/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
         logger.debug(url)
         resp = requests.get(url=url)
         content = resp.json()
@@ -542,7 +542,7 @@ def create_github_issue(err_msg, exc_msg):
         pass
 
     try:
-        url = "https://api.github.com/repos/FeeiCN/cobra/issues"
+        url = "https://api.github.com/repos/WhaleShark-Team/cobra/issues"
         data = {
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
@@ -553,7 +553,7 @@ def create_github_issue(err_msg, exc_msg):
     except Exception as ex:
         content = None
 
-    issue_url = re.search(r"https://github.com/FeeiCN/cobra/issues/\d+", content or "")
+    issue_url = re.search(r"https://github.com/WhaleShark-Team/cobra/issues/\d+", content or "")
     if issue_url:
         info_msg = "created Github issue can been found at the address '{u}'".format(u=issue_url.group(0))
         logger.info(info_msg)

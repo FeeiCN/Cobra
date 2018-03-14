@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="允许任意证书（CWE-295）"/>
     <language value="java"/>
     <match mode="regex-only-match"><![CDATA[X509Certificate\[\s?\]\s*getAcceptedIssuers\(\s?\)]]></match>
