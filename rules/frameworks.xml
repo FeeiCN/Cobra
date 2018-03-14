@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra/wiki/frameworks">
+<cobra document="https://github.com/WhaleShark-Team/cobra/wiki/frameworks">
     <framework name="WordPress" language="php" code="https://github.com/WordPress/WordPress">
         <file value="wp-cron.php"/>
         <file value="wp-load.php"/>

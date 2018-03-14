@@ -38,7 +38,7 @@ yum install flex bison
 
 ## 安装方法
 ```bash
-git clone https://github.com/FeeiCN/cobra.git && cd cobra
+git clone https://github.com/WhaleShark-Team/cobra.git && cd cobra
 pip install -r requirements.txt
 python cobra.py --help
 ```

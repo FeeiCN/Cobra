@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="硬编码IP"/>
     <language value="*"/>
     <match mode="regex-only-match"><![CDATA[((25[0-5]|2[0-4][0-9]|[01]?[0-9]{2}?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))]]></match>

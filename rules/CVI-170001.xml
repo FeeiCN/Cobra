@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="LFI"/>
     <language value="jsp"/>
     <match mode="regex-only-match"><![CDATA[include[^>]*request\.]]></match>

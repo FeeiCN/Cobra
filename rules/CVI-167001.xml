@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="XXE(XML实体注入)"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[simplexml_load_file|simplexml_load_string]]></match>

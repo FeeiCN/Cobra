@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="SESSION固定攻击"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[setcookie]]></match>

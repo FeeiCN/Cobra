@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="赋值型硬编码密码"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[(?:private\s+|public\s+|protected\s+)?(?:static\s+)?\$\w*(?:passwd|password|pwd)\w*\s*(?:=|=>|->)\s*(?:md5\(|sha1\()?['"][^,]+?['"]]]></match>

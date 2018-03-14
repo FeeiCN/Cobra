@@ -7,7 +7,7 @@
     Implements CVE Rules Parser
 
     :author:    BlBana <635373043@qq.com>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -149,7 +149,7 @@ class CveParse(object):
         logger.info('The rule CVE-999' + str(self.year)[1:] + '.xml are being updated. Please wait for a moment....')
         self.cve_parse()
         cobra = eT.Element('cobra')  # root Ele
-        cobra.set('document', 'https://github.com/FeeiCN/cobra')
+        cobra.set('document', 'https://github.com/WhaleShark-Team/cobra')
         for cve_id in self._result.keys():
             cve_child = eT.Element('cve')  # cve Ele
             cve_child.set('id', cve_id)

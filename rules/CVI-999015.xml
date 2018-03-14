@@ -1,4 +1,4 @@
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
 	<cve id="CVE-2015-3267" level="MEDIUM">
 		<product>jboss_operations_network:3.3.2</product>
 	</cve>

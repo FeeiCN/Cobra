@@ -3,8 +3,8 @@ import platform
 
 __title__ = 'cobra'
 __description__ = 'Code Security Audit'
-__url__ = 'https://github.com/FeeiCN/cobra'
-__issue_page__ = 'https://github.com/FeeiCN/cobra/issues/new'
+__url__ = 'https://github.com/WhaleShark-Team/cobra'
+__issue_page__ = 'https://github.com/WhaleShark-Team/cobra/issues/new'
 __python_version__ = sys.version.split()[0]
 __platform__ = platform.platform()
 __version__ = '2.0.0-alpha.5'
@@ -18,7 +18,7 @@ __introduction__ = """
     |    |   ||   ||    ,---|
     `---``---``---``    `---^ v{version}
 
-GitHub: https://github.com/FeeiCN/cobra
+GitHub: https://github.com/WhaleShark-Team/cobra
 
 Cobra is a static code analysis system that automates the detecting vulnerabilities and security issue.""".format(version=__version__)
 __epilog__ = """Usage:

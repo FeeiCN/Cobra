@@ -1,8 +1,8 @@
 # Cobra
 [![Build Status](https://travis-ci.org/FeeiCN/cobra.svg?branch=master)](https://travis-ci.org/FeeiCN/cobra)
 [![Coverage Status](https://coveralls.io/repos/github/FeeiCN/cobra/badge.svg?branch=master)](https://coveralls.io/github/FeeiCN/cobra?branch=master)
-[![GitHub (pre-)release](https://img.shields.io/github/release/feeicn/cobra/all.svg)](https://github.com/feeicn/cobra/releases)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/feeicn/cobra/blob/master/LICENSE)
+[![GitHub (pre-)release](https://img.shields.io/github/release/feeicn/cobra/all.svg)](https://github.com/WhaleShark-Team/cobra/releases)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/WhaleShark-Team/cobra/blob/master/LICENSE)
 
 [![asciicast](https://raw.githubusercontent.com/feeicn/cobra/master/docs/report_03.jpg)](https://asciinema.org/a/132572)
 
