@@ -484,6 +484,18 @@ def split_branch(target_str):
     return target, branch
 
 
+def unhandled_exception_unicode_message(root, dirs, filenames):
+    err_msg = unhandled_exception_message()
+    dirs = ','.join(dirs)
+    filenames = ','.join(filenames)
+    err_msg_unicode = err_msg + """\nRoot path: {rp}\nDirs: {di}\nFilenames: {fn}""".format(
+        rp=root,
+        di=dirs,
+        fn=filenames
+    )
+    return err_msg_unicode
+
+
 def unhandled_exception_message():
     """
     Returns detailed message about occurred unhandled exception

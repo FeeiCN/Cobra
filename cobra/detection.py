@@ -12,6 +12,7 @@
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import os
+import traceback
 from prettytable import PrettyTable
 import xml.etree.ElementTree as eT
 from .rule import Rule
@@ -19,6 +20,7 @@ from .dependencies import Dependencies
 from .log import logger
 from pip.req import parse_requirements
 from .config import rules_path
+from .utils import unhandled_exception_unicode_message, create_github_issue
 
 file_type = []
 
@@ -166,16 +168,29 @@ class Detection(object):
     @staticmethod
     def project_information(absolute_path, extension, is_cloc=False):
         allfiles = []
+        test_root = ''
+        test_dirs = []
+        test_filenames = []
         if os.path.isdir(absolute_path):
-            for root, dirs, filenames in os.walk(absolute_path):
-                for filename in filenames:
-                    filepath = os.path.join(root, filename)
-                    if is_cloc is True:
-                        fileext = os.path.splitext(filepath)[1][1:]
-                        if fileext in extension:
+            try:
+                for root, dirs, filenames in os.walk(absolute_path):
+                    test_root =root
+                    test_dirs = dirs
+                    test_filenames = filenames
+                    for filename in filenames:
+                        filepath = os.path.join(root, filename)
+                        if is_cloc is True:
+                            fileext = os.path.splitext(filepath)[1][1:]
+                            if fileext in extension:
+                                allfiles.append(filepath)
+                        else:
                             allfiles.append(filepath)
-                    else:
-                        allfiles.append(filepath)
+            except UnicodeDecodeError as e:
+                err_msg = unhandled_exception_unicode_message(test_root, test_dirs, test_filenames)
+                exc_msg = traceback.format_exc()
+                logger.warning(exc_msg)
+                create_github_issue(err_msg, exc_msg)
+
         if os.path.isfile(absolute_path):
             absolute_path = os.path.abspath(absolute_path)
             if is_cloc is True:
