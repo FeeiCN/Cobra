@@ -126,6 +126,7 @@ class ParseArgs(object):
         return output_mode
 
     def target_directory(self, target_mode):
+        reg = '^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$'
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
@@ -133,8 +134,16 @@ class ParseArgs(object):
             split_target = self.target.split(':')
             if len(split_target) == 3:
                 target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                branch = escape(branch)
+                if re.match(reg, target) is None:
+                    logger.critical('Please enter a valid URL')
+                    exit()
             elif len(split_target) == 2:
                 target, branch = self.target, 'master'
+                branch = escape(branch)
+                if re.match(reg, target) is None:
+                    logger.critical('Please enter a valid URL')
+                    exit()
             else:
                 logger.critical('Target url exception: {u}'.format(u=self.target))
             if 'gitlab' in target:
@@ -582,3 +591,27 @@ def create_github_issue(err_msg, exc_msg):
         if "Unauthorized" in warn_msg:
             warn_msg += ". Please update to the latest revision"
         logger.warning(warn_msg)
+
+
+def escape(branch):
+    branch = str(branch)
+    branch = branch.replace('\\', '\\\\')
+    branch = branch.replace('&', '\&')
+    branch = branch.replace('|', '\|')
+    branch = branch.replace(';', '\;')
+    branch = branch.replace('~', '\~')
+    branch = branch.replace('`', '\`')
+    branch = branch.replace('*', '\*')
+    branch = branch.replace('?', '\?')
+    branch = branch.replace('<', '\<')
+    branch = branch.replace('<', '\<')
+    branch = branch.replace('^', '\^')
+    branch = branch.replace('(', '\(')
+    branch = branch.replace(')', '\)')
+    branch = branch.replace('[', '\[')
+    branch = branch.replace(']', '\]')
+    branch = branch.replace('{', '\{')
+    branch = branch.replace('}', '\}')
+    branch = branch.replace('$', '\$')
+    branch = branch.replace('_', '\_')
+    return branch
