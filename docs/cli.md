@@ -29,6 +29,9 @@ $ python cobra.py --version
 # 查看帮助
 $ python cobra.py --help
 
+# 扫描一个Git项目，扫描完毕自动删除缓存
+$ python cobra.py -t http://github.com/xx/xx.git -dels
+
 # 扫描gitlab全部项目，配置好config中private_token，gitlab_url，cobra_ip
 $ python git_projects.py
 ```
@@ -63,6 +66,7 @@ Scan:
                         specifies rules e.g: CVI-100001,cvi-190001
   -d, --debug           open debug mode
   -sid SID, --sid SID   scan id(API)
+  -dels, --dels         del target directory True or False
 
 RESTful:
   -H <host>, --host <host>
@@ -76,6 +80,7 @@ Usage:
   python cobra.py -t tests/vulnerabilities -f json -o /tmp/report.json
   python cobra.py -t https://github.com/ethicalhack3r/DVWA -f json -o feei@feei.cn
   python cobra.py -t https://github.com/ethicalhack3r/DVWA -f json -o http://push.to.com/api
+  python cobra.py -t https://github.com/ethicalhack3r/DVWA -dels
   python cobra.py -H 127.0.0.1 -P 8888
 ```
 ---

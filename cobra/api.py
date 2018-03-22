@@ -70,6 +70,7 @@ class AddJob(Resource):
         formatter = data.get("formatter")
         output = data.get("output")
         rule = data.get("rule")
+        is_del = data.get("dels")
 
         is_valid_key = key_verify(data=data)
 
@@ -85,6 +86,8 @@ class AddJob(Resource):
             output = ''
         if not rule or rule == '':
             rule = ''
+        if not is_del or is_del == '':
+            is_del = False
 
         # Report All Id
         a_sid = get_sid(target, True)
@@ -103,7 +106,7 @@ class AddJob(Resource):
         if isinstance(target, list):
             for t in target:
                 # Scan
-                arg = (t, formatter, output, rule, a_sid)
+                arg = (t, formatter, output, rule, a_sid, is_del)
                 producer(task=arg)
 
             result = {
@@ -112,7 +115,7 @@ class AddJob(Resource):
                 'total_target_num': len(target),
             }
         else:
-            arg = (target, formatter, output, rule, a_sid)
+            arg = (target, formatter, output, rule, a_sid, is_del)
             producer(task=arg)
             result = {
                 'msg': 'Add scan job successfully.',
