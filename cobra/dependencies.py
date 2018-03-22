@@ -13,7 +13,11 @@
 """
 import os
 import xml.etree.cElementTree as eT
-from xml.etree.cElementTree import ParseError
+try:
+    from xml.etree.cElementTree import ParseError
+except ImportError:
+    from xml.parsers.expat import ExpatError
+
 from .log import logger
 
 
