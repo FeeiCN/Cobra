@@ -11,6 +11,7 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
+import shutil
 import hashlib
 import json
 import base64
@@ -592,6 +593,18 @@ def create_github_issue(err_msg, exc_msg):
         if "Unauthorized" in warn_msg:
             warn_msg += ". Please update to the latest revision"
         logger.warning(warn_msg)
+
+
+def clean_dir(filepath):
+    if os.path.isdir(filepath):
+        if os.path.isfile(filepath):
+            try:
+                os.remove(filepath)
+            except OSError:
+                logger.warning('[RM] remove {} fail'.format(filepath))
+        elif os.path.isdir(filepath):
+            shutil.rmtree(filepath, True)
+    return True
 
 
 def escape(branch):
