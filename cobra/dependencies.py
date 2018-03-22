@@ -13,6 +13,7 @@
 """
 import os
 import xml.etree.cElementTree as eT
+from xml.etree.cElementTree import ParseError
 from .log import logger
 
 
@@ -89,20 +90,23 @@ class Dependencies(object):
     def find_java_mvn(self, file_path):
         pom_ns = "{http://maven.apache.org/POM/4.0.0}"
         for pom in file_path:
-            tree = self.parse_xml(pom)
-            root = tree.getroot()
-            childs = root.findall('.//%sdependency' % pom_ns)
-            for child in childs:
-                group_id = child.getchildren()[0].text
-                artifact_id = child.getchildren()[1].text
-                if len(child.getchildren()) > 2:
-                    version = child.getchildren()[2].text
-                else:
-                    version = 'The latest version'
-                module_ = artifact_id
-                self._framework.append(group_id)
-                self._framework.append(artifact_id)
-                self._result[module_] = version
+            try:
+                tree = self.parse_xml(pom)
+                root = tree.getroot()
+                childs = root.findall('.//%sdependency' % pom_ns)
+                for child in childs:
+                    group_id = child.getchildren()[0].text
+                    artifact_id = child.getchildren()[1].text
+                    if len(child.getchildren()) > 2:
+                        version = child.getchildren()[2].text
+                    else:
+                        version = 'The latest version'
+                    module_ = artifact_id
+                    self._framework.append(group_id)
+                    self._framework.append(artifact_id)
+                    self._result[module_] = version
+            except ParseError:
+                logger.warning('[DEP] The {} have invalid token'.format(pom))
 
     @staticmethod
     def parse_xml(file_path):
