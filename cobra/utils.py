@@ -23,6 +23,7 @@ import time
 import urllib
 import requests
 import json
+import pipes
 
 from .log import logger
 from .config import Config, issue_history_path
@@ -134,16 +135,16 @@ class ParseArgs(object):
             split_target = self.target.split(':')
             if len(split_target) == 3:
                 target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
-                branch = escape(branch)
                 if re.match(reg, target) is None:
                     logger.critical('Please enter a valid URL')
                     exit()
+                branch = pipes.quote(branch)
             elif len(split_target) == 2:
                 target, branch = self.target, 'master'
-                branch = escape(branch)
                 if re.match(reg, target) is None:
                     logger.critical('Please enter a valid URL')
                     exit()
+                branch = pipes.quote(branch)
             else:
                 logger.critical('Target url exception: {u}'.format(u=self.target))
             if 'gitlab' in target:
