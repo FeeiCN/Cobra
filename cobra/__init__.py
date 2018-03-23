@@ -8,7 +8,7 @@
     Implements cobra main
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -43,11 +43,12 @@ def main():
 
         parser_group_scan = parser.add_argument_group('Scan')
         parser_group_scan.add_argument('-t', '--target', dest='target', action='store', default='', metavar='<target>', help='file, folder, compress, or repository address')
-        parser_group_scan.add_argument('-f', '--format', dest='format', action='store', default='json', metavar='<format>', choices=['html', 'json', 'csv', 'xml'], help='vulnerability output format (formats: %(choices)s)')
+        parser_group_scan.add_argument('-f', '--format', dest='format', action='store', default='json', metavar='<format>', choices=['json', 'csv', 'xml'], help='vulnerability output format (formats: %(choices)s)')
         parser_group_scan.add_argument('-o', '--output', dest='output', action='store', default='', metavar='<output>', help='vulnerability output STREAM, FILE, HTTP API URL, MAIL')
         parser_group_scan.add_argument('-r', '--rule', dest='special_rules', action='store', default=None, metavar='<rule_id>', help='specifies rules e.g: CVI-100001,cvi-190001')
         parser_group_scan.add_argument('-d', '--debug', dest='debug', action='store_true', default=False, help='open debug mode')
         parser_group_scan.add_argument('-sid', '--sid', dest='sid', action='store', default=None, help='scan id(API)')
+        parser_group_scan.add_argument('-dels', '--dels', dest='dels', action='store_true', default=False, help='del target directory True or False')
 
         parser_group_server = parser.add_argument_group('RESTful')
         parser_group_server.add_argument('-H', '--host', dest='host', action='store', default=None, metavar='<host>', help='REST-JSON API Service Host')
@@ -67,8 +68,12 @@ def main():
             logger.critical('Nonsupport Windows!!!')
 
         if args.host is not None and args.port is not None:
-            if not int(args.port) <= 65535:
-                logger.critical('port must be 0-65535.')
+            try:
+                if not int(args.port) <= 65535:
+                    logger.critical('port must be 0-65535.')
+                    exit()
+            except ValueError as e:
+                logger.critical('port must be 0-65535')
                 exit()
             logger.debug('[INIT] start RESTful Server...')
             api.start(args.host, args.port, args.debug)
@@ -86,7 +91,7 @@ def main():
             else:
                 # API call CLI mode
                 a_sid = args.sid
-            cli.start(args.target, args.format, args.output, args.special_rules, a_sid)
+            cli.start(args.target, args.format, args.output, args.special_rules, a_sid, args.dels)
         t2 = time.time()
         logger.info('[INIT] Done! Consume Time:{ct}s'.format(ct=t2 - t1))
     except Exception as e:

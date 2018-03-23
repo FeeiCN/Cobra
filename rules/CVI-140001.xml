@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="文本框反射型XSS"/>
     <language value="jsp"/>
     <match mode="regex-only-match"><![CDATA[input.*type=(\"|\')?hidden.*=.*request\.get(Parameter|QueryString)]]></match>

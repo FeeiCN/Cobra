@@ -90,4 +90,4 @@
 - 贡献代码
     - [单元测试](http://cobra.feei.cn//test)
     - [贡献者](http://cobra.feei.cn/contributors)
-    - [如何贡献代码？](https://github.com/FeeiCN/cobra/blob/master/CONTRIBUTING.md)
+    - [如何贡献代码？](https://github.com/WhaleShark-Team/cobra/blob/master/CONTRIBUTING.md)

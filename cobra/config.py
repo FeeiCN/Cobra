@@ -7,7 +7,7 @@
     Implements config
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -60,14 +60,14 @@ class Config(object):
     def __init__(self, level1=None, level2=None):
         self.level1 = level1
         self.level2 = level2
-        if level1 is None and level2 is None:
+        if self.level1 is None and self.level2 is None:
             return
         config = ConfigParser()
 
         config.read(config_path)
         value = None
         try:
-            value = config.get(level1, level2)
+            value = config.get(self.level1, self.level2)
         except Exception as e:
             traceback.print_exc()
             logger.critical("./configs file configure failed. {u}\nError: {e}".format(u='http://cobra.feei.cn/config', e=e.message))

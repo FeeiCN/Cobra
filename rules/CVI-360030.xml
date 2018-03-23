@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="webshell30"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[preg_replace\s*\(\s*['\"][^;]*e[^;]*['\"],([^;]{0,30}\x|[^;\)]{200,300})|\$back_connect=\"IyEvdXNyL2Jpbi9wZXJsDQp1c2UgU2|define\('gzip',function_exists\(\"ob_gzhandler\"\)|chr\(112\)\.chr\(97\)\.chr\(115\)\.chr\(115\)|687474703a2f2f377368656c]]></match>

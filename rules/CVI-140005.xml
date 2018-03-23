@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="获取URI或参数未过滤导致的XSS"/>
     <language value="lua"/>
     <match mode="regex-only-match"><![CDATA[ngx.say\s*\(\s*ngx\.(var|req)\.(request_uri|uri|get_uri_args\(\)|get_post_args\(\))]]></match>

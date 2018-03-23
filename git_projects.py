@@ -7,7 +7,7 @@
     Implements cobra main
 
     :author:    BlBana <635373043@qq.com>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -15,8 +15,8 @@ import json
 import requests
 import re
 import threading
-from .log import logger
-from .config import code_path, Config
+from cobra.log import logger
+from cobra.config import code_path, Config
 
 try:
     # Python 3

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="SQL Execute Functions"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[(mysqli_query|pg_execute|pg_insert|pg_query|pg_select|pg_update|sqlite_query|msql_query|mssql_query|odbc_exec|fbsql_query|sybase_query|ibase_query|dbx_query|ingres_query|ifx_query|oci_parse|sqlsrv_query|maxdb_query|db2_exec)]]></match>

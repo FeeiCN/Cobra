@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="webshell28"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[eval\(\"\?>\"\.|gzinflate\(base64_decode\(|eval\(base64_decode\(|cat\s*/etc/passwd|Safe_Mode\s*Bypass]]></match>

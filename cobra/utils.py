@@ -7,10 +7,11 @@
     Implements utils
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
+import shutil
 import hashlib
 import json
 import base64
@@ -23,6 +24,7 @@ import time
 import urllib
 import requests
 import json
+import pipes
 
 from .log import logger
 from .config import Config, issue_history_path
@@ -91,8 +93,11 @@ class ParseArgs(object):
 
         if os.path.isfile(self.target):
             target_mode = TARGET_MODE_FILE
-            if self.target.split('.')[-1] in Config('upload', 'extensions').value.split('|'):
-                target_mode = TARGET_MODE_COMPRESS
+            try:
+                if self.target.split('.')[-1] in Config('upload', 'extensions').value.split('|'):
+                    target_mode = TARGET_MODE_COMPRESS
+            except AttributeError as e:
+                logger.critical('Please config the config file copy from the config.template file')
         if os.path.isdir(self.target):
             target_mode = TARGET_MODE_FOLDER
         if target_mode is None:
@@ -123,6 +128,7 @@ class ParseArgs(object):
         return output_mode
 
     def target_directory(self, target_mode):
+        reg = '^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$'
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
@@ -130,8 +136,16 @@ class ParseArgs(object):
             split_target = self.target.split(':')
             if len(split_target) == 3:
                 target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                if re.match(reg, target) is None:
+                    logger.critical('Please enter a valid URL')
+                    exit()
+                branch = pipes.quote(branch)
             elif len(split_target) == 2:
                 target, branch = self.target, 'master'
+                if re.match(reg, target) is None:
+                    logger.critical('Please enter a valid URL')
+                    exit()
+                branch = pipes.quote(branch)
             else:
                 logger.critical('Target url exception: {u}'.format(u=self.target))
             if 'gitlab' in target:
@@ -481,6 +495,18 @@ def split_branch(target_str):
     return target, branch
 
 
+def unhandled_exception_unicode_message(root, dirs, filenames):
+    err_msg = unhandled_exception_message()
+    dirs = ','.join(dirs)
+    filenames = ','.join(filenames)
+    err_msg_unicode = err_msg + """\nRoot path: {rp}\nDirs: {di}\nFilenames: {fn}""".format(
+        rp=root,
+        di=dirs,
+        fn=filenames
+    )
+    return err_msg_unicode
+
+
 def unhandled_exception_message():
     """
     Returns detailed message about occurred unhandled exception
@@ -521,7 +547,7 @@ def create_github_issue(err_msg, exc_msg):
     ex = None
 
     try:
-        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:FeeiCN/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
+        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:WhaleShark-Team/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
         logger.debug(url)
         resp = requests.get(url=url)
         content = resp.json()
@@ -539,7 +565,7 @@ def create_github_issue(err_msg, exc_msg):
         pass
 
     try:
-        url = "https://api.github.com/repos/FeeiCN/cobra/issues"
+        url = "https://api.github.com/repos/WhaleShark-Team/cobra/issues"
         data = {
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
@@ -550,7 +576,7 @@ def create_github_issue(err_msg, exc_msg):
     except Exception as ex:
         content = None
 
-    issue_url = re.search(r"https://github.com/FeeiCN/cobra/issues/\d+", content or "")
+    issue_url = re.search(r"https://github.com/WhaleShark-Team/cobra/issues/\d+", content or "")
     if issue_url:
         info_msg = "created Github issue can been found at the address '{u}'".format(u=issue_url.group(0))
         logger.info(info_msg)
@@ -567,3 +593,39 @@ def create_github_issue(err_msg, exc_msg):
         if "Unauthorized" in warn_msg:
             warn_msg += ". Please update to the latest revision"
         logger.warning(warn_msg)
+
+
+def clean_dir(filepath):
+    if os.path.isdir(filepath):
+        if os.path.isfile(filepath):
+            try:
+                os.remove(filepath)
+            except OSError:
+                logger.warning('[RM] remove {} fail'.format(filepath))
+        elif os.path.isdir(filepath):
+            shutil.rmtree(filepath, True)
+    return True
+
+
+def escape(branch):
+    branch = str(branch)
+    branch = branch.replace('\\', '\\\\')
+    branch = branch.replace('&', '\&')
+    branch = branch.replace('|', '\|')
+    branch = branch.replace(';', '\;')
+    branch = branch.replace('~', '\~')
+    branch = branch.replace('`', '\`')
+    branch = branch.replace('*', '\*')
+    branch = branch.replace('?', '\?')
+    branch = branch.replace('<', '\<')
+    branch = branch.replace('<', '\<')
+    branch = branch.replace('^', '\^')
+    branch = branch.replace('(', '\(')
+    branch = branch.replace(')', '\)')
+    branch = branch.replace('[', '\[')
+    branch = branch.replace(']', '\]')
+    branch = branch.replace('{', '\{')
+    branch = branch.replace('}', '\}')
+    branch = branch.replace('$', '\$')
+    branch = branch.replace('_', '\_')
+    return branch

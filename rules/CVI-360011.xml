@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="webshell11"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[\$(\w*)\s*=\s*create_function\s*\(+\s*[^;\n\r\)]{1,100},\s*(['\"]\s*[^;\n\r\)]{0,100}(eval|assert|ass\\x65rt|system|exec|shell_exec|passthru|popen|poc_open|pcntl_exec).{1,600}\s*['\"]|[^,\n\r\)]{0,100}file_get_contents.{1,})\s*\)[\s\S]+\$\1\s*\([^\)]*\)]]></match>

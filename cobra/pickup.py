@@ -7,7 +7,7 @@
     Implements pickup git/compress file
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -355,8 +355,8 @@ class Git(object):
 
         # change work directory back.
         os.chdir(repo_dir)
-
-        if 'Updating' in pull_out or 'up-to-date' in pull_out or u'最新' in pull_out:
+        pull_out = pull_out.lower()
+        if 'up' in pull_out and 'to' in pull_out and 'date' in pull_out:
             logger.info('[PICKUP] [PULL] pull done.')
             return True, None
         else:
@@ -530,7 +530,8 @@ class Git(object):
         :param length:
         :return: group#1, group#2
         """
-        os.chdir(directory)
+        if os.path.isdir(directory):
+            os.chdir(directory)
         cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path.replace(directory, ''))
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         checkout_out, checkout_err = p.communicate()

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="信息泄露"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[(print_r|var_dump|show_source|highlight_file)\s*\(]]></match>
