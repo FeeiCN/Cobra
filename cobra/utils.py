@@ -605,27 +605,3 @@ def clean_dir(filepath):
         elif os.path.isdir(filepath):
             shutil.rmtree(filepath, True)
     return True
-
-
-def escape(branch):
-    branch = str(branch)
-    branch = branch.replace('\\', '\\\\')
-    branch = branch.replace('&', '\&')
-    branch = branch.replace('|', '\|')
-    branch = branch.replace(';', '\;')
-    branch = branch.replace('~', '\~')
-    branch = branch.replace('`', '\`')
-    branch = branch.replace('*', '\*')
-    branch = branch.replace('?', '\?')
-    branch = branch.replace('<', '\<')
-    branch = branch.replace('<', '\<')
-    branch = branch.replace('^', '\^')
-    branch = branch.replace('(', '\(')
-    branch = branch.replace(')', '\)')
-    branch = branch.replace('[', '\[')
-    branch = branch.replace(']', '\]')
-    branch = branch.replace('{', '\{')
-    branch = branch.replace('}', '\}')
-    branch = branch.replace('$', '\$')
-    branch = branch.replace('_', '\_')
-    return branch

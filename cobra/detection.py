@@ -174,7 +174,7 @@ class Detection(object):
         if os.path.isdir(absolute_path):
             try:
                 for root, dirs, filenames in os.walk(absolute_path):
-                    test_root =root
+                    test_root = root
                     test_dirs = dirs
                     test_filenames = filenames
                     for filename in filenames:
@@ -185,7 +185,7 @@ class Detection(object):
                                 allfiles.append(filepath)
                         else:
                             allfiles.append(filepath)
-            except UnicodeDecodeError as e:
+            except UnicodeDecodeError:
                 err_msg = unhandled_exception_unicode_message(test_root, test_dirs, test_filenames)
                 exc_msg = traceback.format_exc()
                 logger.warning(exc_msg)
