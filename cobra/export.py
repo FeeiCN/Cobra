@@ -144,24 +144,28 @@ def write_to_file(target, sid, output_format='', filename=None):
         logger.info('Vulnerabilities\n' + str(dict_to_pretty_table(scan_data.get('vulnerabilities'))))
 
     elif output_format == 'json' or output_format == 'JSON':
-        if not os.path.exists(filename):
-            with open(filename, 'w', encoding='utf-8') as f:
-                json_data = {
-                    sid: scan_data,
-                }
-                f.write(dict_to_json(json_data))
-        else:
-            with open(filename, 'r+', encoding='utf-8') as f:
-                try:
-                    json_data = json.load(f)
-                    json_data.update({sid: scan_data})
-                    # 使用 r+ 模式不会覆盖，调整文件指针到开头
-                    f.seek(0)
-                    f.truncate()
+        try:
+            if not os.path.exists(filename):
+                with open(filename, 'w', encoding='utf-8') as f:
+                    json_data = {
+                        sid: scan_data,
+                    }
                     f.write(dict_to_json(json_data))
-                except ValueError:
-                    logger.warning('[EXPORT] The json file have invaild token or None: {}'.format(os.path.join(export_path, filename)))
-                    return False
+            else:
+                with open(filename, 'r+', encoding='utf-8') as f:
+                    try:
+                        json_data = json.load(f)
+                        json_data.update({sid: scan_data})
+                        # 使用 r+ 模式不会覆盖，调整文件指针到开头
+                        f.seek(0)
+                        f.truncate()
+                        f.write(dict_to_json(json_data))
+                    except ValueError:
+                        logger.warning('[EXPORT] The json file have invaild token or None: {}'.format(os.path.join(export_path, filename)))
+                        return False
+        except IOError:
+            logger.warning('[EXPORT] Please input a file path after the -o parameter')
+            return False
 
     elif output_format == 'xml' or output_format == 'XML':
         xml_data = {

@@ -26,6 +26,9 @@ except ImportError:
     import Queue as queue
 
 
+git_urls = []
+
+
 def start():
     url = Config('git', 'gitlab_url').value
     private_token = Config('git', 'private_token').value
@@ -40,34 +43,37 @@ def start():
         q_pages.put(i + 1)
 
     for i in range(10):
-        thread = threading.Thread(target=get_git_urls, args=(url, private_token, cobra_ip, key, q_pages, fi))
+        thread = threading.Thread(target=get_git_urls, args=(url, private_token, q_pages, fi))
         thread.start()
         threads.append(thread)
 
     for thread in threads:
         thread.join()
 
+    res = push_to_api(git_urls, cobra_ip, key, fi)
+
+    if res:
+        logger.info("Git push success: {}".format(len(git_urls)))
+    else:
+        logger.info("Git push fail")
+
     fi.close()
     logger.info("All projects have been pushed")
 
 
-def get_git_urls(url, private_token, cobra_ip, key, q_pages, fi):
+def get_git_urls(url, private_token, q_pages, fi):
     """
     :param url: The gitlab's projects api ,example:http://xxx.gitlab.com/api/v3/projects
     :param private_token: The user's private_token
-    :param cobra_ip: The Cobra server's ip
-    :param key: The Cobra api key
     :param q_pages: The Queue of pages
     :param fi: The result in this file
     :return:
     """
     while not q_pages.empty():
-        git_urls = []
         page = q_pages.get()
         params = {'private_token': private_token, 'page': page}
         url = url
         r = request_target(url, params, method="get")
-
         if r.status_code == 200:
             data = r.json()  # 一个页面中的Json数据，默认20条
             for j in range(len(data)):
@@ -80,12 +86,8 @@ def get_git_urls(url, private_token, cobra_ip, key, q_pages, fi):
                 else:
                     request_url = git_url
 
+                fi.write(request_url + '\n')
                 git_urls.append(request_url)
-            res = push_to_api(git_urls, cobra_ip, key, fi)
-            if res:
-                logger.info("page %d git push success" % page)
-            else:
-                logger.info("page %d git push fail" % page)
 
         elif r.status_code == 404:
             logger.warning("page %d 404" % page)
@@ -107,12 +109,14 @@ def request_target(target_url, params=None, header=None, method="get"):
 def push_to_api(urls, cobra_ip, key, fi):
     headers = {"Content-Type": "application/json"}
     url = cobra_ip + "/api/add"
-    payload = {"key": key, "target": urls}
+    payload = {"key": key, "target": urls, "dels": True, "rule": "cvi-190009"}
     r = request_target(url, payload, headers, method="post")
     if r.status_code == 200:
         fi.write(str(r.json()) + '\n')
         logger.info(r.json())
         return True
+    elif r.status_code == 404:
+        logger.info("The page is 404")
     else:
         logger.info(r.json())
         return False
@@ -126,3 +130,7 @@ def get_pages(url, private_token):
     res = re.search(r"all\?page=(\d*)&per_page=0", res)
     pages = res.group(1)
     return pages
+
+
+if __name__ == '__main__':
+    start()
