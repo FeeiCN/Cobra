@@ -152,12 +152,16 @@ def write_to_file(target, sid, output_format='', filename=None):
                 f.write(dict_to_json(json_data))
         else:
             with open(filename, 'r+', encoding='utf-8') as f:
-                json_data = json.load(f)
-                json_data.update({sid: scan_data})
-                # 使用 r+ 模式不会覆盖，调整文件指针到开头
-                f.seek(0)
-                f.truncate()
-                f.write(dict_to_json(json_data))
+                try:
+                    json_data = json.load(f)
+                    json_data.update({sid: scan_data})
+                    # 使用 r+ 模式不会覆盖，调整文件指针到开头
+                    f.seek(0)
+                    f.truncate()
+                    f.write(dict_to_json(json_data))
+                except ValueError:
+                    logger.warning('[EXPORT] The json file have invaild token or None: {}'.format(os.path.join(export_path, filename)))
+                    return False
 
     elif output_format == 'xml' or output_format == 'XML':
         xml_data = {

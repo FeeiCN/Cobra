@@ -351,7 +351,10 @@ def scan_cve(target_directory):
     if len(cve_files) == 0:
         logger.info("Can't find the rules, please update rules")
         return
-    pool = multiprocessing.Pool()
+    try:
+        pool = multiprocessing.Pool()
+    except IOError:
+        logger.warning('[SCAN] [CVE] IOError Broken pipe')
     logger.info('[PUSH] {rc} CVE Rules'.format(rc=len(cve_files)))
     for cve_file in cve_files:
         cve_path = os.path.join(rule_path, cve_file)
