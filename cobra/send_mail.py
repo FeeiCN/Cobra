@@ -31,10 +31,14 @@ def send_mail(target, filename, receiver):
 
     msg.attach(MIMEText('扫描项目：{t}\n报告见附件'.format(t=target), 'plain', 'utf-8'))
 
-    with open(filename, 'rb') as f:
-        attachment = MIMEApplication(f.read())
-        attachment.add_header('Content-Disposition', 'attachment', filename=os.path.split(filename)[1])
-        msg.attach(attachment)
+    try:
+        with open(filename, 'rb') as f:
+            attachment = MIMEApplication(f.read())
+            attachment.add_header('Content-Disposition', 'attachment', filename=os.path.split(filename)[1])
+            msg.attach(attachment)
+    except IOError:
+        logger.warning('[EMAIL] No such file {}, please check input parameter'.format(filename))
+        return False
 
     try:
         server.login(user=username, password=password)
