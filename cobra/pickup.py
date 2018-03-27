@@ -387,6 +387,10 @@ class Git(object):
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
+
+        clone_out = clone_out.decode('utf-8')
+        clone_err = clone_err.decode('utf-8')
+
         clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
         logger.debug('[PICKUP] [CLONE] ' + clone_out.strip())
@@ -421,6 +425,10 @@ class Git(object):
         cmd = 'git diff ' + old_version + ' ' + new_version
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
+
+        diff_out = diff_out.decode('utf-8')
+        diff_err = diff_err.decode('utf-8')
+
         logger.info(diff_out)
 
         # change the work directory back.
@@ -448,6 +456,10 @@ class Git(object):
         cmd = "git fetch origin && git checkout " + branch
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
+
+        checkout_out = checkout_out.decode('utf-8')
+        checkout_err = checkout_err.decode('utf-8')
+
         logger.info('[PICKUP] [CHECKOUT] ' + checkout_err.strip())
 
         # Already on
@@ -572,6 +584,10 @@ class Subversion(object):
         )
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
+
+        diff_out = diff_out.decode('utf-8')
+        diff_err = diff_err.decode('utf-8')
+
         if len(diff_err) == 0:
             logger.debug("[PICKUP] svn diff success")
         elif 'authorization failed' in diff_err:
@@ -589,6 +605,8 @@ class Subversion(object):
         )
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         log_out = p.communicate()[0]
+        log_out = log_out.decode('utf-8')
+
         return log_out
 
     def diff(self):
@@ -601,6 +619,7 @@ class Subversion(object):
         )
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         diff_out = p.communicate()[0]
+        diff_out = diff_out.decode('utf-8')
 
         added, removed, changed = [], [], []
         diff = {}
