@@ -182,7 +182,7 @@ class Rule(object):
                 if x.tag == 'name':
                     rule_info['name'] = x.get('value')
                 if x.tag == 'language':
-                    rule_info['language'] = x.get('value')
+                    rule_info['language'] = x.get('value').lower()
                 if x.tag == 'status':
                     rule_info['status'] = to_bool(x.get('value'))
                 if x.tag == 'author':

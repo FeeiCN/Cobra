@@ -155,8 +155,11 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     rules = r.rules(special_rules)
     find_vulnerabilities = []
 
-    cve_vuls = scan_cve(target_directory)
-    find_vulnerabilities += cve_vuls
+    try:
+        cve_vuls = scan_cve(target_directory)
+        find_vulnerabilities += cve_vuls
+    except Exception:
+        logger.warning('[SCAN] [CVE] CVE rule is None')
 
     def store(result):
         if result is not None and isinstance(result, list) is True:
