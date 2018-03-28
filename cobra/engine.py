@@ -156,8 +156,9 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     find_vulnerabilities = []
 
     try:
-        cve_vuls = scan_cve(target_directory)
-        find_vulnerabilities += cve_vuls
+        if special_rules is None or len(special_rules) == 0:
+            cve_vuls = scan_cve(target_directory)
+            find_vulnerabilities += cve_vuls
     except Exception:
         logger.warning('[SCAN] [CVE] CVE rule is None')
 
@@ -168,6 +169,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
                     res.file_path = res.file_path.replace(target_directory, '')
                 else:
                     res.file_path = res.file_path.replace(os.path.dirname(target_directory), '')
+
                 find_vulnerabilities.append(res)
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
@@ -237,6 +239,8 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         if len(diff_rules) > 0:
             logger.info('[SCAN] Not Trigger Rules ({l}): {r}'.format(l=len(diff_rules), r=','.join(diff_rules)))
 
+    if os.path.isfile(target_directory):
+        target_directory = os.path.dirname(target_directory)
     # completed running data
     if s_sid is not None:
         Running(s_sid).data({
