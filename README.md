@@ -23,5 +23,8 @@ Cobra是一款**源代码安全审计**工具，支持检测多种开发语言�
 [![report01](https://raw.githubusercontent.com/whaleshark-team/cobra/master/docs/report_01.jpg)](https://whaleshark-team.github.io/cobra/api)
 [![report02](https://raw.githubusercontent.com/whaleshark-team/cobra/master/docs/report_02.jpg)](https://whaleshark-team.github.io/cobra/api)
 
+## Contributors（贡献者）
+项目由[Feei](https://github.com/FeeiCN)发起并主导，核心开发者[LiGhT1EsS](https://github.com/LiGhT1EsS)、[BlBana](https://github.com/BlBana)、[40huo](https://github.com/40huo)、[braveghz](https://github.com/braveghz)，也感谢其他[贡献者](https://github.com/WhaleShark-Team/cobra/graphs/contributors)，欢迎提交PR。
+
 ## Links（链接）
 - [Cobra文档](https://whaleshark-team.github.io/cobra/)
