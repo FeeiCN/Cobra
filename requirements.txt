@@ -7,3 +7,4 @@ pytest==3.0.6
 pip==9.0.1
 phply==1.0.0
 Werkzeug==0.11.9
+ConcurrentLogHandler==0.9.1
