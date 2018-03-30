@@ -16,7 +16,7 @@ import sys
 import re
 import subprocess
 import logging
-from logging import handlers
+import cloghandler
 
 # stream handle
 #
@@ -228,7 +228,7 @@ sh.setFormatter(sh_format)
 logger.addHandler(sh)
 
 # file handle
-fh = handlers.RotatingFileHandler(logfile, maxBytes=(1048576 * 5), backupCount=7)
+fh = cloghandler.ConcurrentRotatingFileHandler(logfile, maxBytes=(1048576 * 5), backupCount=7)
 fh.setFormatter(fh_format)
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
