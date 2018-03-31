@@ -112,7 +112,8 @@ def test_download_rule_gz():
     files = download_rule_gz()
     assert isinstance(files, list)
     for file_ in files:
-        os.remove(file_)
+        if os.path.exists(file_):
+            os.remove(file_)
 
 
 def test_un_gz():
@@ -120,7 +121,8 @@ def test_un_gz():
     res = un_gz(files)
     assert res is True
     for year in range(2002, datetime.datetime.now().year+1):
-        os.remove(project_directory+"/rules/%d.xml" % year)
+        if os.path.exists(project_directory+"/rules/%d.xml" % year):
+            os.remove(project_directory+"/rules/%d.xml" % year)
 
 
 def test_rule_single():
