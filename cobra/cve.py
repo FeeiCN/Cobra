@@ -18,6 +18,7 @@ import threading
 import gzip
 import xml.etree.cElementTree as eT
 import multiprocessing
+import subprocess
 from .config import project_directory, Config, config_path
 from .log import logger
 from .dependencies import Dependencies
@@ -283,6 +284,24 @@ def download_rule_gz():
     for t in threads:
         t.join()
     end_time = datetime.datetime.now()
+    for afile in files:
+        param = ['file', afile]
+        p = subprocess.Popen(param, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        res_out, res_err = p.communicate()
+
+        res_out = res_out.decode('utf-8')
+        res_err = res_err.decode('utf-8')
+
+        if 'HTML' in res_out:
+            os.remove(afile)
+            afile_name = os.path.split(afile)[1]
+            year = afile_name.split('.')[0]
+            url = "https://static.nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-" + str(year) + ".xml.gz"
+            try:
+                urlretrieve(url, afile)
+            except IOError:
+                logger.warning('[CVE] The {} download fail'.format(afile))
+
     logger.info("All CVE xml file already download success, use time:%ds" % (end_time - start_time).seconds)
     return files
 
@@ -292,11 +311,17 @@ def un_gz(gz_files):
     start_time = datetime.datetime.now()
     logger.info("Start decompress rule files, Please wait a moment....")
     for gz_file in gz_files:
-        f_name = gz_file.replace(".gz", "")
-        g_file = gzip.GzipFile(gz_file)
-        open(f_name, "wb+").write(g_file.read())
-        g_file.close()
-        os.remove(gz_file)
+        if os.path.exists(gz_file):
+            f_name = gz_file.replace(".gz", "")
+
+            try:
+                g_file = gzip.GzipFile(gz_file, "rb")
+                open(f_name, "wb+").write(g_file.read())
+                g_file.close()
+            except IOError:
+                logger.warning('[CVE] The {} download fail'.format(gz_file))
+
+            os.remove(gz_file)
     end_time = datetime.datetime.now()
     logger.info("Decompress success, use time:%ds" % (end_time - start_time).seconds)
     return True
