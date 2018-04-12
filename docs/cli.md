@@ -34,6 +34,9 @@ $ python cobra.py -t http://github.com/xx/xx.git -dels
 
 # 扫描gitlab全部项目，配置好config中private_token，gitlab_url，cobra_ip
 $ python git_projects.py
+
+# 自动生成Cobra扫描周报发送至指定邮箱，需要配置好config中的SMTP服务器信息
+$ python cobra.py -rp
 ```
 
 ## Help（帮助）
@@ -67,6 +70,7 @@ Scan:
   -d, --debug           open debug mode
   -sid SID, --sid SID   scan id(API)
   -dels, --dels         del target directory True or False
+  -rp, --report         automation report Cobra data
 
 RESTful:
   -H <host>, --host <host>

@@ -90,5 +90,10 @@ curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","s
 http://127.0.0.1:8888/?sid=afbe69p7dxva
 ```
 
+# Web 指定时间段漏洞统计
+```
+http://127.0.0.1:8888/report
+```
+
 ---
 下一章：[高级功能配置](http://cobra.feei.cn/config)
