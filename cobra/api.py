@@ -20,6 +20,8 @@ import subprocess
 import threading
 import time
 import traceback
+import datetime
+import re
 
 import requests
 from flask import Flask, request, render_template
@@ -406,6 +408,95 @@ class Search(Resource):
         }
 
 
+@app.route('/report', methods=['GET'])
+def report():
+    """
+    get report
+    :return:
+    """
+    data_lists = []
+    total_files = 0
+    total_vul_number = critical_vul_number = high_vul_number = medium_vul_number = low_vul_number = 0
+    rule_num = dict()
+    time_range = {}
+    time_start = request.args.get(key='start')
+    time_end = request.args.get(key='end')
+
+    if time_start is None and time_end is None:
+        time_start = datetime.datetime.today() + datetime.timedelta(days=-7)
+        time_end = datetime.datetime.today().strftime("%Y-%m-%d")
+        time_start = time_start.strftime("%Y-%m-%d")
+
+    if time_start is not None and time_end is not None:
+        time_start = time_start.encode('utf-8')
+        time_end = time_end.encode('utf-8')
+
+    if time_start is not '' and time_end is not '':
+        time_str = "%Y-%m-%d"
+        date_time_str = "%m-%d"
+        t_start = datetime.datetime.strptime(time_start, time_str)
+        t_end = datetime.datetime.strptime(time_end, time_str)
+        t_end += datetime.timedelta(days=1)
+
+        t_start_tuple = t_start.timetuple()
+        t_end_tuple = t_end.timetuple()
+
+        t_start_un = time.mktime(t_start_tuple)
+        t_end_un = time.mktime(t_end_tuple)
+
+        while t_start < t_end:
+            time_range[t_start.strftime(date_time_str)] = 0
+            t_start += datetime.timedelta(days=1)
+
+        for data_file in os.listdir(running_path):
+            data = os.path.join(running_path, data_file)
+            if re.match('.*_data', data):
+                data_time = os.path.getctime(filename=data)
+                if t_start_un < data_time < t_end_un:
+                    data_time = time.strftime(date_time_str, time.localtime(data_time))
+                    data_lists.append(data)
+                    with open(data, 'r') as f:
+                        data_content = json.load(f)
+                    data_results = data_content.get('result')
+                    if data_results:
+                        total_files += data_results.get('file')
+                        total_vul_number += len(data_results.get('vulnerabilities'))
+                        time_range[data_time] += total_vul_number
+
+                        for vul in data_results.get('vulnerabilities'):
+                            if 9 <= int(vul.get('level')) <= 10:
+                                critical_vul_number += 1
+                            elif 6 <= int(vul.get('level')) <= 8:
+                                high_vul_number += 1
+                            elif 3 <= int(vul.get('level')) <= 5:
+                                medium_vul_number += 1
+                            elif 1 <= int(vul.get('level')) <= 2:
+                                low_vul_number += 1
+
+                            try:
+                                rule_num[vul.get('rule_name')] += 1
+                            except KeyError:
+                                rule_num[vul.get('rule_name')] = 1
+
+                    else:
+                        logger.critical('[REPORT] Data file read fail')
+
+        time_range = sorted_dict(time_range)
+
+    return render_template(template_name_or_list='report_my.html',
+                           time_start=time_start,
+                           time_end=time_end,
+                           total=len(data_lists),
+                           total_files=total_files,
+                           critical_vul_number=critical_vul_number,
+                           high_vul_number=high_vul_number,
+                           medium_vul_number=medium_vul_number,
+                           low_vul_number=low_vul_number,
+                           total_vul_number=total_vul_number,
+                           rule_num=rule_num,
+                           time_range=time_range)
+
+
 @app.route('/', methods=['GET', 'POST'])
 def summary():
     a_sid = request.args.get(key='sid')
@@ -578,6 +669,11 @@ def search_rule(sid, rule_id):
         return search_result
     else:
         return search_result
+
+
+def sorted_dict(adict):
+    adict = adict.items()
+    return sorted(adict)
 
 
 def start(host, port, debug):

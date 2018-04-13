@@ -23,6 +23,7 @@ from . import cli, api, config
 from .cli import get_sid
 from .engine import Running
 from .utils import unhandled_exception_message, create_github_issue
+from .report import Report
 
 from .__version__ import __title__, __introduction__, __url__, __version__
 from .__version__ import __author__, __author_email__, __license__
@@ -49,6 +50,7 @@ def main():
         parser_group_scan.add_argument('-d', '--debug', dest='debug', action='store_true', default=False, help='open debug mode')
         parser_group_scan.add_argument('-sid', '--sid', dest='sid', action='store', default=None, help='scan id(API)')
         parser_group_scan.add_argument('-dels', '--dels', dest='dels', action='store_true', default=False, help='del target directory True or False')
+        parser_group_scan.add_argument('-rp', '--report', dest='report', action='store_true', default=False, help='automation report Cobra data')
 
         parser_group_server = parser.add_argument_group('RESTful')
         parser_group_server.add_argument('-H', '--host', dest='host', action='store', default=None, metavar='<host>', help='REST-JSON API Service Host')
@@ -59,6 +61,15 @@ def main():
         if args.debug:
             logger.setLevel(logging.DEBUG)
             logger.debug('[INIT] set logging level: debug')
+
+        if args.report:
+            logger.info('[REPORT] Start report')
+            res = Report().run()
+            if res is False:
+                logger.critical('[REPORT] Cobra Report failed')
+            else:
+                logger.info('[REPORT] Cobra Report Success ')
+            exit()
 
         if args.host is None and args.port is None and args.target is '' and args.output is '':
             parser.print_help()
