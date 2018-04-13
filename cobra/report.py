@@ -61,10 +61,13 @@ class Report(object):
         :return: boolean
         """
         capture = None
+        if os.path.exists(node) is False:
+            logger.critical('[Capture] Please install node.js')
+            return False
         p = subprocess.Popen(self.param, stdout=subprocess.PIPE)
         result, err = p.communicate()
         if 'Critical' in result:
-            logger.critical(result)
+            logger.critical('[Capture] ' + result)
             logger.critical('[Capture] Capture exception')
             return False
         lines = result.split('\n')
@@ -76,6 +79,7 @@ class Report(object):
             logger.critical('[Capture] get capture image file failed')
             return False
         else:
+            logger.info('[Capture] The screenshot capture success: {}'.format(capture))
             return os.path.join(project_directory, capture)
 
     def notification(self, capture_path):
@@ -111,6 +115,6 @@ class Report(object):
             return False
         except smtplib.SMTPException as error:
             logger.critical(error)
-            logger.critical('[EMAIL] Please config SMTP Server, port, username, password and sender in config file')
+            logger.critical('[EMAIL] Please config SMTP Server, port, username, to, password and sender in config file')
             return False
 

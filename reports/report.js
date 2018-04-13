@@ -89,9 +89,7 @@ puppeteer.launch().then(async browser => {
         await browser.close();
         await console.log('Success:' + file)
     } catch (err) {
-        console.log('Critical: Unable to load the address, Please check the address');
+        console.log('Critical: Unable to load the address, Please check the cobra_ip in config');
         process.exit();
     }
 });
-
-
