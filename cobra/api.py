@@ -455,7 +455,6 @@ def report():
                 data_time = os.path.getctime(filename=data)
                 if t_start_un < data_time < t_end_un:
                     data_time = time.strftime(date_time_str, time.localtime(data_time))
-                    data_lists.append(data)
                     with open(data, 'r') as f:
                         data_content = json.load(f)
                     data_results = data_content.get('result')
@@ -466,6 +465,7 @@ def report():
                         else:
                             target_directorys.append(target_directory)
 
+                        data_lists.append(data)
                         total_files += data_results.get('file')
                         total_vul_number += len(data_results.get('vulnerabilities'))
                         time_range[data_time] += len(data_results.get('vulnerabilities'))
