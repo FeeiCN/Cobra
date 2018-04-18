@@ -23,17 +23,17 @@ Cobra可运行在以下Python版本
 
 #### macOS系统依赖
 ```
-brew install grep findutils flex
+brew install grep findutils flex phantomjs
 ```
 
 #### Ubuntu系统依赖
 ```
-apt-get install flex bison
+apt-get install flex bison phantomjs
 ```
 
 #### CentOS系统依赖
 ```
-yum install flex bison
+yum install flex bison phantomjs
 ```
 
 ## 安装方法
@@ -42,6 +42,8 @@ git clone https://github.com/WhaleShark-Team/cobra.git && cd cobra
 pip install -r requirements.txt
 python cobra.py --help
 ```
+
+
 
 ---
 下一章：[CLI模式使用方法](http://cobra.feei.cn/cli)

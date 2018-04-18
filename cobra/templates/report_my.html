@@ -15,7 +15,6 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script src="{{ url_for('static', filename='js/require.min.js') }}"></script>
     <script>
       requirejs.config({
           baseUrl: '.'
@@ -138,43 +137,32 @@
                                     <div class="col-md-12">
                                         <div class="row">
                                             <div class="col-12 col-sm-6 col-lg-6">
-                                                <div class="card p-3">
-                                                    <div class="card-status bg-yellow-dark"></div>
-                                                    <div class="d-flex align-items-center">
-                                                        <span class="stamp stamp-md bg-yellow mr-3">
-                                                            <i class="fe fe-folder"></i>
-                                                        </span>
-                                                        <div>
-                                                            <h4 class="m-0">{{ total_files }}</h4>
-                                                            <small class="text-muted">Files</small>
-                                                        </div>
+                                                <div class="card">
+                                                    <div class="card-status  bg-red"></div>
+                                                    <div class="card-body p-1 text-center">
+                                                        <div class="h1 m-0">{{ total_files }}</div>
+                                                        <div class="text-muted">Files</div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-lg-6">
-                                                <div class="card p-3">
+                                                <div class="card">
                                                     <div class="card-status bg-blue-dark"></div>
-                                                    <div class="d-flex align-items-center">
-                                                        <span class="stamp stamp-md bg-blue mr-3">
-                                                            <i class="fe fe-check-square"></i>
-                                                        </span>
+                                                    <div class="card-body p-1 text-center">
                                                         <div>
-                                                            <h4 class="m-0">{{ total }}</h4>
-                                                            <small class="text-muted">Targets</small>
+                                                            <h4 class="h1 m-0">{{ total }}</h4>
+                                                            <div class="text-muted">Targets</div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6 col-lg-6">
-                                                <div class="card p-3">
+                                                <div class="card">
                                                     <div class="card-status bg-red-dark"></div>
-                                                    <div class="d-flex align-items-center">
-                                                        <span class="stamp stamp-md bg-red mr-3">
-                                                            <i class="fe fe-zap"></i>
-                                                        </span>
+                                                    <div class="card-body p-1 text-center">
                                                         <div>
-                                                            <h4 class="m-0">{{ total_vul_number }}</h4>
-                                                            <small class="text-muted">Vulnerabilities</small>
+                                                            <h4 class="h1 m-0">{{ total_vul_number }}</h4>
+                                                            <div class="text-muted">Vulnerabilities</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -182,17 +170,14 @@
                                             <div class="col-12 col-sm-6 col-lg-6">
                                                 <div class="card p-1 pl-3">
                                                     <div class="card-status bg-green-dark"></div>
-                                                    <div class="d-flex align-items-center">
-                                                        <span class="stamp stamp-md bg-green mr-3">
-                                                            <i class="fe fe-clock"></i>
-                                                        </span>
+                                                    <div class="card-body p-1 text-center">
                                                         <div>
                                                             {% if time_start != '' %}
-                                                            <h4 class="m-0">{{ time_start }}<br>{{ time_end }}</h4>
-                                                            <small class="text-muted">Time</small>
+                                                            <h4 class="h4 m-1">{{ time_start }}~{{ time_end }}</h4>
+                                                            <div class="text-muted">Time</div>
                                                             {% else %}
-                                                            <h4 class="m-0">None<br>None</h4>
-                                                            <small class="text-muted">Time</small>
+                                                            <h4 class="h4 m-1">None<br>None</h4>
+                                                            <div class="text-muted">Time</div>
                                                             {% endif %}
                                                         </div>
                                                     </div>

@@ -42,7 +42,7 @@ def send_mail(target, filename, receiver):
 
     try:
         server.login(user=username, password=password)
-        server.sendmail(from_addr=sender, to_addrs=receiver, msg=msg.as_string())
+        server.sendmail(from_addr=username, to_addrs=receiver, msg=msg.as_string())
         server.quit()
         logger.info('[EMAIL] Email delivered successfully.')
         return True

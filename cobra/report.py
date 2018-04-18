@@ -14,6 +14,7 @@
 import os
 import subprocess
 import datetime
+import base64
 from .log import logger
 from .config import Config, project_directory
 
@@ -21,8 +22,12 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-
-node = '/usr/local/bin/node'
+if os.path.exists('/usr/local/bin/phantomjs'):
+    phantomjs = '/usr/local/bin/phantomjs'
+elif os.path.exists('/usr/bin/phantomjs'):
+    phantomjs = '/usr/bin/phantomjs'
+else:
+    phantomjs = 'phantomjs'
 
 
 class Report(object):
@@ -40,7 +45,7 @@ class Report(object):
         start = datetime.datetime.today() + datetime.timedelta(days=-7)
         end = datetime.datetime.today().strftime("%Y-%m-%d")
         start = start.strftime("%Y-%m-%d")
-        self.param = [node, os.path.join(project_directory, 'reports', 'report.js'), project_directory, start, end]
+        self.param = [phantomjs, os.path.join(project_directory, 'reports', 'report.js'), project_directory, start, end]
 
     def run(self):
         capture = self.capture()
@@ -61,10 +66,13 @@ class Report(object):
         :return: boolean
         """
         capture = None
+        if os.path.exists(phantomjs) is False:
+            logger.critical('[Capture] Please install phantomJS, doc: http://cobra.feei.cn/report')
+            return False
         p = subprocess.Popen(self.param, stdout=subprocess.PIPE)
         result, err = p.communicate()
         if 'Critical' in result:
-            logger.critical(result)
+            logger.critical('[Capture] ' + result)
             logger.critical('[Capture] Capture exception')
             return False
         lines = result.split('\n')
@@ -76,6 +84,7 @@ class Report(object):
             logger.critical('[Capture] get capture image file failed')
             return False
         else:
+            logger.info('[Capture] The screenshot capture success: {}'.format(capture))
             return os.path.join(project_directory, capture)
 
     def notification(self, capture_path):
@@ -89,10 +98,18 @@ class Report(object):
         message['To'] = self.to
         message['Subject'] = self.subject
 
-        att = MIMEText(open(capture_path, 'rb').read(), 'base64', 'utf-8')
-        att['Content-Type'] = 'application/octet-stream'
-        att["Content-Disposition"] = 'attachment; filename="W({0}).png"'.format(self.wd)
-        message.attach(att)
+        # 周报图片以附件的形式发送
+        # att = MIMEText(open(capture_path, 'rb').read(), 'base64', 'utf-8')
+        # att['Content-Type'] = 'application/octet-stream'
+        # att["Content-Disposition"] = 'attachment; filename="W({0}).png"'.format(self.wd)
+        # message.attach(att)
+
+        # 周报图片以在正文中直接显示
+        with open(capture_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+
+        text = MIMEText('<img src="data:image/png;base64,{0}">'.format(encoded_string), 'html')
+        message.attach(text)
 
         try:
             smtp = smtplib.SMTP_SSL(host=self.host, port=self.port)
@@ -111,6 +128,6 @@ class Report(object):
             return False
         except smtplib.SMTPException as error:
             logger.critical(error)
-            logger.critical('[EMAIL] Please config SMTP Server, port, username, password and sender in config file')
+            logger.critical('[EMAIL] Please config SMTP Server, port, username, to, password and sender in config file')
             return False
 

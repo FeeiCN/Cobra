@@ -1,6 +1,37 @@
-const puppeteer = require('puppeteer');
+/**
+ * Use PhantomJS to capture the report page
+ *
+ * @author    Feei <feei#feei.cn>
+ * @homepage  https://github.com/wufeifei/cobra
+ * @license   MIT, see LICENSE for more details.
+ * @copyright Copyright (c) 2017 Feei. All rights reserved
+ */
+"use strict";
+/**
+ * http://phantomjs.org/api/webpage/
+ *
+ * Web page api
+ */
+var page = require('webpage').create();
+/**
+ * http://phantomjs.org/api/fs/
+ *
+ * file system api
+ */
 var fs = require('fs');
+/**
+ * http://phantomjs.org/api/system/
+ *
+ * system
+ */
+var system = require('system');
 
+/**
+ * filename generator helper
+ * @param viewport
+ * @param tt time type
+ * @returns {string}
+ */
 
 /**
  * filename generator helper
@@ -30,68 +61,65 @@ function getFileName(viewport, tt) {
  * Read the Cobra config
  * @type {string}
  */
-if(process.argv.length < 5) {
+if(system.args.length < 4) {
     console.log('Usage: report.js <work_directory> <start_time> <end_time>');
-    process.exit()
+    phantom.exit(1);
 }
-var start = process.argv[3];
-var end = process.argv[4];
+var start = system.args[2];
+var end = system.args[3];
 
-process.chdir(process.argv[2]);
-console.log('PWD:' + process.cwd());
-
-var config = 'config';
-if(!fs.existsSync(config)){
+// change work directory
+fs.changeWorkingDirectory(system.args[1]);
+console.log('PWD: ' + fs.workingDirectory);
+var config_path = 'config';
+// check file exists
+if (!fs.exists(config_path)) {
     console.log('Critical: config not found!');
-    process.exit();
+    phantom.exit(1);
 }
-
-//read config
+// read config
 var secret_key = null;
-var cobra_ip = null;
-var data = fs.readFileSync(config, "utf-8");
-data.split(/\r?\n/).forEach(function (line) {
+var cobra_domain = null;
+var config = fs.read(config_path, 'utf8');
+config.split(/\r?\n/).forEach(function (line) {
+
     if (line.indexOf('secret_key') !== -1) {
         secret_key = line.split('secret_key:')[1].trim();
     }
     if (line.indexOf('cobra_ip') !== -1) {
-        cobra_ip = line.split('cobra_ip:')[1].trim();
+        cobra_domain = line.split('cobra_ip:')[1].trim();
     }
 });
+
 if (secret_key == null) {
     console.log('Critical: Secret key not assignment');
-    process.exit()
+    phantom.exit(1);
 }
 
 /**
+ * View Page size
+ * @type {{width: number, height: number}}
+ */
+page.viewportSize = {width: 1300, height: 1000};
+var tt = 'w';
+console.log('TimeType: ' + tt);
+var domain = 'http://' + cobra_domain + '/report?start=' + start + '&end=' + end;
+var file = 'reports/' + getFileName(page.viewportSize, tt);
+/**
  * Capture
  */
-var viewport = {width: 1300, height: 1000};
-var tt = 'w';
-var domain = 'http://' + cobra_ip + '/report?start=' + start + '&end=' + end;
-var file = 'reports/' + getFileName(viewport, tt);
-
-puppeteer.launch().then(async browser => {
-    var sleep = function (time) {
-    return new Promise(function (resolve, reject) {
-        setTimeout(function () {
-            resolve();
-        }, time);
-    })
-};
-    try {
-        const page = await
-        browser.newPage();
-        await page.setViewport({width: 1300, height: 1000});
-        await page.goto(domain);
-        await sleep(1000);
-        await page.screenshot({path: file});
-        await browser.close();
-        await console.log('Success:' + file)
-    } catch (err) {
-        console.log('Critical: Unable to load the address, Please check the address');
-        process.exit();
+page.open(domain, function (status) {
+    if (status !== 'success') {
+        console.log('Critical: Unable to load the address!');
+        phantom.exit(1);
+    } else {
+        /**
+         * Draw chart need time
+         */
+        window.setTimeout(function () {
+            page.render(file);
+            console.log('Success: ' + file);
+            phantom.exit();
+        }, 1000);
     }
 });
-
-
