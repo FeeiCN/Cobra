@@ -67,7 +67,7 @@ class Report(object):
         """
         capture = None
         if os.path.exists(phantomjs) is False:
-            logger.critical('[Capture] Please install node.js')
+            logger.critical('[Capture] Please install phantomJS, doc: http://cobra.feei.cn/report')
             return False
         p = subprocess.Popen(self.param, stdout=subprocess.PIPE)
         result, err = p.communicate()
