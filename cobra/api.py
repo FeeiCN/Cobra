@@ -418,6 +418,7 @@ def report():
     total_files = 0
     total_vul_number = critical_vul_number = high_vul_number = medium_vul_number = low_vul_number = 0
     rule_num = dict()
+    target_directorys = []
     time_range = {}
     time_start = request.args.get(key='start')
     time_end = request.args.get(key='end')
@@ -459,9 +460,15 @@ def report():
                         data_content = json.load(f)
                     data_results = data_content.get('result')
                     if data_results:
+                        target_directory = data_results.get('target_directory')
+                        if target_directory in target_directorys:
+                            continue
+                        else:
+                            target_directorys.append(target_directory)
+
                         total_files += data_results.get('file')
                         total_vul_number += len(data_results.get('vulnerabilities'))
-                        time_range[data_time] += total_vul_number
+                        time_range[data_time] += len(data_results.get('vulnerabilities'))
 
                         for vul in data_results.get('vulnerabilities'):
                             if 9 <= int(vul.get('level')) <= 10:

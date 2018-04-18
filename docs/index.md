@@ -77,6 +77,7 @@
 - 进阶使用
     - [高级功能配置](http://cobra.feei.cn/config)
     - [升级框架和规则源](http://cobra.feei.cn/upgrade)
+    - [Report模块使用](http://cobra.feei.cn/report)
 - 规则开发规范
     - [规则模板](http://cobra.feei.cn/rule_template)
     - [规则样例](http://cobra.feei.cn/rule_demo)
