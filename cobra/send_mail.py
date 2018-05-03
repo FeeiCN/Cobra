@@ -4,6 +4,7 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
 
 from .config import Config
 from .log import logger
@@ -12,12 +13,11 @@ from .utils import to_bool
 
 def send_mail(target, filename, receiver):
     host = Config('email', 'host').value
-    port = Config('email', 'port').value
+    port = int(Config('email', 'port').value)
     username = Config('email', 'username').value
     password = Config('email', 'password').value
     sender = Config('email', 'sender').value
     is_ssl = to_bool(Config('email', 'ssl').value)
-
     if is_ssl:
         server = smtplib.SMTP_SSL(host=host, port=port)
     else:
@@ -27,7 +27,7 @@ def send_mail(target, filename, receiver):
     msg = MIMEMultipart()
     msg['From'] = sender
     msg['To'] = receiver
-    msg['Subject'] = '编号 {sid} 项目 Cobra 扫描报告'.format(sid=s_sid)
+    msg['Subject'] = Header('编号 {sid} 项目 Cobra 扫描报告'.format(sid=s_sid), 'utf-8').encode()
 
     msg.attach(MIMEText('扫描项目：{t}\n报告见附件'.format(t=target), 'plain', 'utf-8'))
 
