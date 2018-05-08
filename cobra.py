@@ -14,9 +14,14 @@
 """
 import re
 import sys
-
-from cobra import main
+import os
 
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit(main())
+    try:
+        os.system('git pull')
+    except:
+        pass
+    finally:
+        from cobra import main
+        sys.exit(main())
