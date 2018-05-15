@@ -442,7 +442,7 @@ class Tool:
                     if 'gfind' == filename:
                         gfind = os.path.join(root, filename)
             if ggrep == '':
-                logger.critical("brew install ggrep pleases!")
+                logger.critical("brew install grep pleases!")
                 sys.exit(0)
             else:
                 self.grep = ggrep
