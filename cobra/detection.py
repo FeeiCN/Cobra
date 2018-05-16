@@ -13,14 +13,20 @@
 """
 import os
 import traceback
-from prettytable import PrettyTable
 import xml.etree.ElementTree as eT
-from .rule import Rule
+
+from prettytable import PrettyTable
+
+from .config import rules_path
 from .dependencies import Dependencies
 from .log import logger
-from pip.req import parse_requirements
-from .config import rules_path
+from .rule import Rule
 from .utils import unhandled_exception_unicode_message, create_github_issue
+
+try:  # for pip >= 10
+    from pip._internal.req import parse_requirements
+except ImportError:  # for pip <= 9.0.3
+    from pip.req import parse_requirements
 
 file_type = []
 
@@ -50,18 +56,21 @@ class Detection(object):
             for language, language_info in languages.items():
                 if ext in language_info['extensions']:
                     if 'chiefly' in language_info and language_info['chiefly'].lower() == 'true':
-                        logger.debug('[DETECTION] [LANGUAGE] found the chiefly language({language}), maybe have largest, continue...'.format(
-                            language=language))
+                        logger.debug(
+                            '[DETECTION] [LANGUAGE] found the chiefly language({language}), maybe have largest, continue...'.format(
+                                language=language))
                         self.lang = language
                     else:
                         logger.debug('[DETECTION] [LANGUAGE] not chiefly, continue...'.format(language=language))
                         tmp_language = language
             if self.lang is None:
-                logger.debug('[DETECTION] [LANGUAGE] not found chiefly language, use the largest language(language) replace'.format(
-                    language=tmp_language))
+                logger.debug(
+                    '[DETECTION] [LANGUAGE] not found chiefly language, use the largest language(language) replace'.format(
+                        language=tmp_language))
                 self.lang = tmp_language
-        logger.debug('[DETECTION] [LANGUAGE] main language({main_language}), tmp language({tmp_language})'.format(tmp_language=tmp_language,
-                                                                                                                  main_language=self.lang))
+        logger.debug('[DETECTION] [LANGUAGE] main language({main_language}), tmp language({tmp_language})'.format(
+            tmp_language=tmp_language,
+            main_language=self.lang))
         return self.lang
 
     @property
