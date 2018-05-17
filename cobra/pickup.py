@@ -453,7 +453,7 @@ class Git(object):
         current_dir = os.getcwd()
         os.chdir(self.repo_directory)
 
-        cmd = "git fetch origin && git checkout " + branch
+        cmd = "git fetch origin && git reset --hard origin/{branch} && git checkout {branch}".format(branch=branch)
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
 
