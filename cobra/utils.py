@@ -467,9 +467,10 @@ def secure_filename(filename):
         filename = normalize('NFKD', filename).encode('utf-8', 'ignore')
         if not PY2:
             filename = filename.decode('utf-8')
-    for sep in os.path.sep, os.path.altsep:
-        if sep:
-            filename = filename.replace(sep, ' ')
+
+    if filename in (os.path.sep, os.path.altsep, os.path.pardir):
+        return ""
+
     if PY2:
         filename = filename.decode('utf-8')
     filename = _filename_utf8_strip_re.sub('', '_'.join(filename.split()))
