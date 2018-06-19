@@ -354,7 +354,7 @@ def is_update():
     return False
 
 
-def scan_cve(target_directory):
+def scan_cve(target_directory, specific_rule=None):
     cve_vuls = []
     cve_files = []
 
@@ -370,9 +370,13 @@ def scan_cve(target_directory):
 
     rule_path = os.path.join(project_directory, 'rules')
     files = os.listdir(rule_path)
-    for cvi_file in files:
-        if cvi_file.startswith('CVI-999'):
-            cve_files.append(cvi_file)
+    if specific_rule:
+        if specific_rule in files:
+            cve_files.append(specific_rule)
+    else:
+        for cvi_file in files:
+            if cvi_file.startswith('CVI-999'):
+                cve_files.append(cvi_file)
     if len(cve_files) == 0:
         logger.info("Can't find the rules, please update rules")
         return
