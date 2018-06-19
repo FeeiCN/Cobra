@@ -2758,6 +2758,26 @@
 	</cve>
 	<cve id="CVE-2016-4437" level="MEDIUM">
 		<product>shiro:1.2.4</product>
+		<product>shiro-core:1.2.4</product>
+		<product>shiro-web:1.2.4</product>
+		<product>shiro-ehcache:1.2.4</product>
+		<product>shiro-spring:1.2.4</product>
+        <product>shiro-core:1.2.3</product>
+		<product>shiro-web:1.2.3</product>
+		<product>shiro-ehcache:1.2.3</product>
+		<product>shiro-spring:1.2.3</product>
+        <product>shiro-core:1.2.2</product>
+		<product>shiro-web:1.2.2</product>
+		<product>shiro-ehcache:1.2.2</product>
+		<product>shiro-spring:1.2.2</product>
+        <product>shiro-core:1.2.1</product>
+		<product>shiro-web:1.2.1</product>
+		<product>shiro-ehcache:1.2.1</product>
+		<product>shiro-spring:1.2.1</product>
+        <product>shiro-core:1.2.0</product>
+		<product>shiro-web:1.2.0</product>
+		<product>shiro-ehcache:1.2.0</product>
+		<product>shiro-spring:1.2.0</product>
 	</cve>
 	<cve id="CVE-2016-8317" level="MEDIUM">
 		<product>flexcube_investor_servicing:12.0.2</product>

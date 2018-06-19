@@ -404,11 +404,11 @@ class SingleRule(object):
         mr.level = self.sr['level']
 
         # committer
-        from .pickup import Git
-        c_ret, c_author, c_time = Git.committer(self.target_directory, mr.file_path, mr.line_number)
-        if c_ret:
-            mr.commit_author = c_author
-            mr.commit_time = c_time
+        # from .pickup import Git
+        # c_ret, c_author, c_time = Git.committer(self.target_directory, mr.file_path, mr.line_number)
+        # if c_ret:
+        #     mr.commit_author = c_author
+        #     mr.commit_time = c_time
         return mr
 
 
@@ -495,6 +495,9 @@ class Core(object):
             '/node_modules/',
             '/bower_components/',
             '.min.js',
+            '.log',
+            '.log.',
+            'nohup.out',
         ]
         for path in special_paths:
             if path in self.file_path:
