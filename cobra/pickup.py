@@ -194,11 +194,14 @@ class Directory(object):
                 self.file_info(directory, filename)
             else:
                 for filename in os.listdir(absolute_path):
-                    try:
-                        directory = os.path.join(absolute_path, filename)
-                    except UnicodeDecodeError as e:
-                        logger.debug('Exception unicode {e}'.format(e=e))
+                    if self.is_pickup_whitelist(filename):
                         continue
+                    else:
+                        try:
+                            directory = os.path.join(absolute_path, filename)
+                        except UnicodeDecodeError as e:
+                            logger.debug('Exception unicode {e}'.format(e=e))
+                            continue
 
                     # Directory Structure
                     logger.debug('[PICKUP] [FILES] ' + '|  ' * (level - 1) + '|--' + filename)
@@ -209,6 +212,15 @@ class Directory(object):
         except OSError as e:
             logger.critical('[PICKUP] {msg}'.format(msg=e))
             exit()
+
+    def is_pickup_whitelist(self, filename):
+        whitelist = [
+            'node_modules',
+        ]
+        if filename in whitelist:
+            return True
+        else:
+            return False
 
     def file_info(self, path, filename):
         # Statistic File Type Count
