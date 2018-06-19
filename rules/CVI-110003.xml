@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="硬编码HTTP地址"/>
+    <language value="*"/>
+    <match mode="regex-only-match"><![CDATA[http:\/\/.*((mogujie|meilishuo)\.com|(mogujie)\.cn).*]]></match>
+    <level value="2"/>
+    <test>
+        <case assert="true"><![CDATA[http://www.mogujie.com]]></case>
+        <case assert="false"><![CDATA[http://www.google.com]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        硬编码HTTP地址
+        使用HTTP明文传输可能存在流量劫持等风险。
+
+        ## 修复方案
+        使用HTTPS协议。
+    </solution>
+    <status value="on"/>
+    <author name="40huo" email="i@40huo.cn"/>
+</cobra>

@@ -159,6 +159,11 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         if special_rules is None or len(special_rules) == 0:
             cve_vuls = scan_cve(target_directory)
             find_vulnerabilities += cve_vuls
+        else:
+            for rule in rules:
+                if rule.get('id').lower()[0:3] == '999':
+                    cve_vuls = scan_cve(target_directory, 'CVI-{num}.xml'.format(num=rule.get('id')))
+                    find_vulnerabilities += cve_vuls
     except Exception:
         logger.warning('[SCAN] [CVE] CVE rule is None')
 

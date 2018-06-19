@@ -47,3 +47,7 @@ out.println(request.getParameter("test"))
 
 # CVI-160001
 String hql = "select max(detailLineNo) from TWmsSoreturnAsnDetailEntity where isDel = 0 and asnId="+headId;
+
+# CVI-110003
+String url = "http://www.google.com"
+String url2 = "http://www.mogujie.com"
