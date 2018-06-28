@@ -216,6 +216,7 @@ class Directory(object):
     def is_pickup_whitelist(self, filename):
         whitelist = [
             'node_modules',
+            'vendor',
         ]
         if filename in whitelist:
             return True
