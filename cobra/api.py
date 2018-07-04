@@ -501,8 +501,9 @@ def report():
         time_start = time_start.strftime("%Y-%m-%d")
 
     if time_start is not None and time_end is not None:
-        time_start = time_start.encode('utf-8')
-        time_end = time_end.encode('utf-8')
+        if PY2:
+            time_start = time_start.encode('utf-8')
+            time_end = time_end.encode('utf-8')
 
     if time_start is not '' and time_end is not '':
         time_str = "%Y-%m-%d"
@@ -528,7 +529,12 @@ def report():
                 if t_start_un < data_time < t_end_un:
                     data_time = time.strftime(date_time_str, time.localtime(data_time))
                     with open(data, 'r') as f:
-                        data_content = json.load(f)
+                        try:
+                            data_content = json.load(f)
+                        except json.JSONDecodeError:
+                            logger.debug('[REPORT] Delete empty data file')
+                            os.remove(data)
+                            continue
                     data_results = data_content.get('result')
                     if data_results:
                         target_directory = data_results.get('target_directory')
@@ -558,7 +564,7 @@ def report():
                                 rule_num[vul.get('rule_name')] = 1
 
                     else:
-                        logger.critical('[REPORT] Data file read fail')
+                        logger.debug('[REPORT] Empty result')
 
         time_range = sorted_dict(time_range)
 
