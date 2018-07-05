@@ -1,14 +1,38 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
-	<cve id="flask vul" level="HIGH">
+    <cve id="flask vul" level="HIGH">
         <product>Flask:3.2</product>
         <product>Flask:0.10.1</product>
-	</cve>
+    </cve>
     <cve id="flask vul1" level="HIGH">
         <product>Flask:3.2</product>
         <product>Flask:0.10.1</product>
-	</cve>
+    </cve>
     <cve id="flask vul2" level="HIGH">
         <product>Flask:3.2</product>
         <product>Flask:0.10.1</product>
-	</cve>
+    </cve>
+    <cve id="Fastjson vul" level="HIGH">
+        <product>fastjson:1.2.24</product>
+        <product>fastjson:1.2.25</product>
+        <product>fastjson:1.2.26</product>
+        <product>fastjson:1.2.27</product>
+        <product>fastjson:1.2.28</product>
+        <product>fastjson:1.2.29</product>
+        <product>fastjson:1.2.30</product>
+        <product>fastjson:1.2.31</product>
+        <product>fastjson:1.2.32</product>
+        <product>fastjson:1.2.33</product>
+        <product>fastjson:1.2.34</product>
+        <product>fastjson:1.2.35</product>
+        <product>fastjson:1.2.36</product>
+        <product>fastjson:1.2.37</product>
+        <product>fastjson:1.2.38</product>
+        <product>fastjson:1.2.39</product>
+        <product>fastjson:1.2.40</product>
+        <product>fastjson:1.2.41</product>
+        <product>fastjson:1.2.42</product>
+        <product>fastjson:1.2.43</product>
+        <product>fastjson:1.2.44</product>
+        <product>fastjson:1.2.45</product>
+    </cve>
 </cobra>

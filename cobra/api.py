@@ -11,21 +11,21 @@
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
+import datetime
 import errno
 import json
 import multiprocessing
 import os
+import re
 import socket
 import subprocess
 import threading
 import time
 import traceback
-import datetime
-import re
 
 import requests
-from flask import Flask, request, render_template
-from flask_restful import Api, Resource
+from flask import Flask, request, render_template, Blueprint
+from flask_restful import Api, Resource, reqparse
 from werkzeug.urls import url_unquote
 
 from . import cli
@@ -38,9 +38,12 @@ from .utils import allowed_file, secure_filename, PY2, split_branch
 try:
     # Python 3
     import queue
+    from urllib.parse import urlparse, quote_plus
 except ImportError:
     # Python 2
     import Queue as queue
+    from urlparse import urlparse
+    from urllib import quote_plus
 
 q = queue.Queue()
 app = Flask(__name__, static_folder='templates/asset')
@@ -226,8 +229,7 @@ class JobStatus(Resource):
                     'low': low_vul_number
                 },
                 'allow_deploy': allow_deploy,
-                'not_finished': int(r_data.get('total_target_num')) - len(r_data.get('sids'))
-                                + len(result.get('still_running')),
+                'not_finished': int(r_data.get('total_target_num')) - len(r_data.get('sids')) + len(result.get('still_running')),
             }
         return {"code": 1001, "result": data}
 
@@ -408,6 +410,76 @@ class Search(Resource):
         }
 
 
+class GetMemeber(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('repo-url', type=str, required=True, help='repo-url 不能为空，格式为 http://xxx.xxx.com/user/reponame.git')
+
+    def get(self):
+        """
+        从 GitLab API 获取项目负责人
+        :return:
+        """
+        data = self.parser.parse_args()
+        repo_url = data.get('repo-url')
+        url_parser = urlparse(repo_url)
+
+        if 'gitlab' in url_parser.netloc:
+            _, members = self.get_member(url_parser=url_parser)
+            if _:
+                if members:
+                    return {
+                        'code': 1001,
+                        'result': {
+                            'members': members,
+                        },
+                    }
+                else:
+                    return {
+                        'code': 1002,
+                        'msg': 'Empty members',
+                    }
+            else:
+                return {
+                    'code': 1002,
+                    'msg': members
+                }
+        else:
+            return {
+                'code': 1002,
+                'msg': 'Not support repo type'
+            }
+
+    @staticmethod
+    def get_member(url_parser):
+        """
+        请求 GitLab API
+        :param url_parser: urlparse(repo_url)
+        :return:
+        """
+        domain = url_parser.netloc
+        scheme = url_parser.scheme
+        repo = re.sub(r"\.git.*", "", url_parser.path)
+        # 去掉 repo 开头的 /
+        repo = repo[1:] if repo.startswith('/') else repo
+        api_url = scheme + '://' + domain + '/api/v3/projects/' + quote_plus(repo) + '/members'
+
+        try:
+            private_token = Config(level1="git", level2="private_token").value
+            if private_token == '':
+                return False, 'No private token specified'
+
+            header = {
+                'PRIVATE-TOKEN': private_token
+            }
+            data = requests.get(url=api_url, headers=header, timeout=3).json()
+            members = []
+            for m in data:
+                members.append(m.get('username'))
+            return True, members
+        except Exception as e:
+            return False, str(e)
+
+
 @app.route('/report', methods=['GET'])
 def report():
     """
@@ -429,8 +501,9 @@ def report():
         time_start = time_start.strftime("%Y-%m-%d")
 
     if time_start is not None and time_end is not None:
-        time_start = time_start.encode('utf-8')
-        time_end = time_end.encode('utf-8')
+        if PY2:
+            time_start = time_start.encode('utf-8')
+            time_end = time_end.encode('utf-8')
 
     if time_start is not '' and time_end is not '':
         time_str = "%Y-%m-%d"
@@ -450,13 +523,18 @@ def report():
             t_start += datetime.timedelta(days=1)
 
         for data_file in os.listdir(running_path):
-            data = os.path.join(running_path, data_file)
-            if re.match('.*_data', data):
+            if re.match(r'.*_data', data_file):
+                data = os.path.join(running_path, data_file)
                 data_time = os.path.getctime(filename=data)
                 if t_start_un < data_time < t_end_un:
                     data_time = time.strftime(date_time_str, time.localtime(data_time))
                     with open(data, 'r') as f:
-                        data_content = json.load(f)
+                        try:
+                            data_content = json.load(f)
+                        except json.JSONDecodeError:
+                            logger.warning('[REPORT] Delete empty data file: {}'.format(data_file))
+                            os.remove(data)
+                            continue
                     data_results = data_content.get('result')
                     if data_results:
                         target_directory = data_results.get('target_directory')
@@ -486,7 +564,7 @@ def report():
                                 rule_num[vul.get('rule_name')] = 1
 
                     else:
-                        logger.critical('[REPORT] Data file read fail')
+                        logger.debug('[REPORT] Empty result in {}'.format(data_file))
 
         time_range = sorted_dict(time_range)
 
@@ -685,14 +763,18 @@ def sorted_dict(adict):
 
 def start(host, port, debug):
     logger.info('Start {host}:{port}'.format(host=host, port=port))
-    api = Api(app)
+    api = Blueprint("api", __name__)
+    resource = Api(api)
 
-    api.add_resource(AddJob, '/api/add')
-    api.add_resource(JobStatus, '/api/status')
-    api.add_resource(FileUpload, '/api/upload')
-    api.add_resource(ResultData, '/api/list')
-    api.add_resource(ResultDetail, '/api/detail')
-    api.add_resource(Search, '/api/search')
+    resource.add_resource(AddJob, '/api/add')
+    resource.add_resource(JobStatus, '/api/status')
+    resource.add_resource(FileUpload, '/api/upload')
+    resource.add_resource(ResultData, '/api/list')
+    resource.add_resource(ResultDetail, '/api/detail')
+    resource.add_resource(Search, '/api/search')
+    resource.add_resource(GetMemeber, '/api/members')
+
+    app.register_blueprint(api)
 
     # consumer
     threads = []
