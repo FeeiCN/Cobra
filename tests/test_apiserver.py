@@ -147,6 +147,24 @@ def test_search():
         assert 'No such sid' in re.text
 
 
+def test_get_member():
+    url = 'http://127.0.0.1:5000/api/members'
+    param1 = '?repo-url=https://github.com/WhaleShark-Team/cobra.git'
+    param2 = '?repo-url=gitlab.com/xxxxx/iiiddd.git'
+    req1 = requests.get(url=url + param1)
+    req2 = requests.get(url=url + param2)
+
+    assert '1002' in req1.text
+    assert '1002' in req2.text
+
+
+def test_report():
+    url = 'http://127.0.0.1:5000/report'
+    req = requests.get(url=url, timeout=3)
+
+    assert 'Cobra Report' in req.text
+
+
 def test_index():
     url = 'http://127.0.0.1:5000/'
     re = requests.get(url=url)
