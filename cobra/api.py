@@ -523,8 +523,8 @@ def report():
             t_start += datetime.timedelta(days=1)
 
         for data_file in os.listdir(running_path):
-            data = os.path.join(running_path, data_file)
-            if re.match('.*_data', data):
+            if re.match(r'.*_data', data_file):
+                data = os.path.join(running_path, data_file)
                 data_time = os.path.getctime(filename=data)
                 if t_start_un < data_time < t_end_un:
                     data_time = time.strftime(date_time_str, time.localtime(data_time))
@@ -532,7 +532,7 @@ def report():
                         try:
                             data_content = json.load(f)
                         except json.JSONDecodeError:
-                            logger.debug('[REPORT] Delete empty data file')
+                            logger.warning('[REPORT] Delete empty data file: {}'.format(data_file))
                             os.remove(data)
                             continue
                     data_results = data_content.get('result')
@@ -564,7 +564,7 @@ def report():
                                 rule_num[vul.get('rule_name')] = 1
 
                     else:
-                        logger.debug('[REPORT] Empty result')
+                        logger.debug('[REPORT] Empty result in {}'.format(data_file))
 
         time_range = sorted_dict(time_range)
 
