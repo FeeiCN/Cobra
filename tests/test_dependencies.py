@@ -40,13 +40,13 @@ def test_get_path():
 def test_find_python_pip():
     dependencies = Dependencies(requirements)
     dependencies.dependencies()
-    assert 'Flask' in dependencies.get_result
+    assert 'Flask' in str(dependencies.get_result)
 
 
 def test_find_java_mvn():
     dependencies = Dependencies(pom)
     dependencies.dependencies()
-    assert 'pom-manipulation-io' in dependencies.get_result
+    assert 'pom-manipulation-io' in str(dependencies.get_result)
 
 
 def test_parse_xml():
@@ -60,7 +60,7 @@ def test_get_version():
     dependencies = Dependencies(requirements)
     dependencies.dependencies()
     version = dependencies.get_version('Flask')
-    assert version == '0.10.1'
+    assert '0.10.1' in version
 
 
 def test_get_result():

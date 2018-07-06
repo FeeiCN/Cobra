@@ -12,16 +12,18 @@
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import datetime
-import os
-import requests
-import threading
 import gzip
-import xml.etree.cElementTree as eT
 import multiprocessing
+import os
 import subprocess
+import threading
+import xml.etree.cElementTree as eT
+
+import requests
+
 from .config import project_directory, Config, config_path
+from .dependencies import Dependencies, Comparator
 from .log import logger
-from .dependencies import Dependencies
 from .result import VulnerabilityResult
 
 try:
@@ -202,7 +204,12 @@ class CveParse(object):
         cpe_list = []
         products = cve_child.findall('.//product')
         for product in products:
-            cpe_list.append(product.text.lower())
+            cpe_list.append(
+                {
+                    'name': product.text.lower().split(':')[0],
+                    'version': product.text.lower().split(':')[1],
+                }
+            )
         rule_info['cpe'] = cpe_list
         return rule_info
 
@@ -221,22 +228,29 @@ class CveParse(object):
         dependency = Dependencies(self.pro_file)
         project_info = dependency.get_result
         for pro_info in project_info:
-            module_version = pro_info.lower() + ':' + project_info[pro_info]
+            module_version = {
+                'name': pro_info.lower(),
+                'version': project_info.get(pro_info).get('version'),
+                'format': project_info.get(pro_info).get('format'),
+            }
             self.set_scan_result(cve, module_version)
         self.log_result()
 
     def set_scan_result(self, cves, module_version):
         """
         :param cves:
-        :param module_version:
+        :param module_version: {"name": "flask", "version": "==0.10.1", "format": "python"}
         :return:set the scan result
         """
         scan_cves = {}
         for cve_child in cves:
-            if module_version in cves[cve_child]['cpe']:
-                scan_cves[cve_child] = cves[cve_child]['level']
+            for v in cves[cve_child]['cpe']:
+                if module_version.get('name') in v.get('name'):
+                    comparator = Comparator(rule_version=v.get('version'), dep_version=module_version.get('version'), fmt=module_version.get('format'))
+                    if comparator.compare():
+                        scan_cves[cve_child] = cves[cve_child]['level']
         if len(scan_cves):
-            self._scan_result[module_version] = scan_cves
+            self._scan_result[module_version.get('name') + ':' + module_version.get('version')] = scan_cves
 
     def log_result(self):
         for module_ in self._scan_result:
@@ -430,6 +444,10 @@ def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
                 file_path = os.path.join(root, filename)
                 file_path = file_path.replace(target_directory, '')
                 flag = 2
+
+            elif file_path == 'package.json':
+                file_path = os.path.join(root, filename)
+                file_path = file_path.replace(target_directory, '')
 
     if flag != 0:
         mr.file_path = file_path
