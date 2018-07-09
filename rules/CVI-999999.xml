@@ -12,10 +12,13 @@
         <product>Flask:0.10.1</product>
     </cve>
     <cve id="nodejs vul1" level="HIGH">
-        <product>antd:^3.3.0</product>
-        <product>dva:^2.1.0</product>
+        <product>antd:3.3.0</product>
+        <product>dva:2.1.0</product>
     </cve>
     <cve id="Fastjson vul" level="HIGH">
         <product><![CDATA[fastjson:>=1.2.24,<=1.2.45]]></product>
+    </cve>
+    <cve id="maven vul" level="HIGH">
+        <product>apache-maven:3.0.4</product>
     </cve>
 </cobra>

@@ -245,7 +245,7 @@ class CveParse(object):
         scan_cves = {}
         for cve_child in cves:
             for v in cves[cve_child]['cpe']:
-                if module_version.get('name') in v.get('name'):
+                if module_version.get('name') == v.get('name'):
                     comparator = Comparator(rule_version=v.get('version'), dep_version=module_version.get('version'), fmt=module_version.get('format'))
                     if comparator.compare():
                         scan_cves[cve_child] = cves[cve_child]['level']
@@ -377,7 +377,7 @@ def scan_cve(target_directory, specific_rule=None):
             for module_ in results[0]:
                 for cve_id, cve_level in results[0][module_].items():
                     cve_path = results[1]
-                    cve_vul = parse_math(cve_path, cve_id, cve_level, module_, target_directory)
+                    cve_vul = parse_match(cve_path, cve_id, cve_level, module_, target_directory)
                     cve_vuls.append(cve_vul)
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
@@ -418,7 +418,7 @@ def scan_single(target_directory, cve_path):
     return cve.get_scan_result(), cve_path
 
 
-def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
+def parse_match(cve_path, cve_id, cve_level, module_, target_directory):
     flag = 0
     file_path = 'unkown'
     mr = VulnerabilityResult()

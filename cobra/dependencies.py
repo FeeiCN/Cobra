@@ -239,14 +239,6 @@ class Dependencies(object):
     def find_python_pip(self, file_path):
         for requirement in file_path:
             if 'requirements.txt' in requirement:
-                # with open(requirement) as fi:
-                #     for line in fi.readlines():
-                #         flag = line.find("==")
-                #         if flag != -1:
-                #             module_ = line[:flag]
-                #             version = line[flag + 2:].strip()
-                #             self._framework.append(module_)
-                #             self._result[module_] = version
                 reqs = parse_requirements(filename=requirement, session=False)
                 for r in reqs:
                     module_ = r.name
@@ -256,7 +248,7 @@ class Dependencies(object):
                         {
                             module_: {
                                 'version': str(version_),
-                                'format': 'nodejs',
+                                'format': 'python',
                             }
                         }
                     )
@@ -276,8 +268,14 @@ class Dependencies(object):
                         artifact_id = child.getchildren()[1].text
                         if len(child.getchildren()) > 2:
                             version = child.getchildren()[2].text
+                            version_match = re.match(r'\$\{(.*)\}', version)
+                            if version_match:
+                                version_var = version_match.group(1)
+                                ver_num = root.findall('.//{pom}{ver}'.format(pom=pom_ns, ver=version_var))[0].text
+                                version = ver_num
                         else:
-                            version = 'The latest version'
+                            # 不确定版本，需要自查
+                            version = '0.0.0'
                         module_ = artifact_id
                         self._framework.append(group_id)
                         self._framework.append(artifact_id)
@@ -285,7 +283,7 @@ class Dependencies(object):
                             {
                                 module_: {
                                     'version': str(version),
-                                    'format': 'nodejs',
+                                    'format': 'java',
                                 }
                             }
                         )
