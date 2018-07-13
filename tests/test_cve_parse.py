@@ -93,13 +93,13 @@ def test_get_rule():
 def test_scan_cve():
     cve = CveParse(rule_path, target_directory)
     cve.scan_cve(rule_cve_path)
-    assert 'flask:0.10.1' in cve.get_scan_result()
+    assert 'flask:==0.10.1' in cve.get_scan_result()
 
 
 def test_get_scan_result():
     cve = CveParse(rule_path, target_directory)
     cve.scan_cve(rule_cve_path)
-    assert 'flask:0.10.1' in cve.get_scan_result()
+    assert 'flask:==0.10.1' in cve.get_scan_result()
 
 
 def test_rule_parse_fun():
