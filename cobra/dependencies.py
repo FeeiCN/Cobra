@@ -38,7 +38,7 @@ class Version(LooseVersion):
     def __init__(self, vstring=None):
         self.vstring = vstring
         self.version = []
-        super(LooseVersion, self).__init__(vstring=vstring)
+        LooseVersion.__init__(self, vstring=vstring)
 
     def parse(self, vstring):
         """
