@@ -134,7 +134,10 @@ class ParseArgs(object):
                 target, branch = self.target, 'master'
             else:
                 logger.critical('Target url exception: {u}'.format(u=self.target))
-            if 'gitlab' in target:
+            # 只判断gitlab的关键字，不能适合所有的情况
+            # 建议把这里设置为变量，从配置文件里面读取
+            domain = Config('git', 'domain').value
+            if domain in target:
                 username = Config('git', 'username').value
                 password = Config('git', 'password').value
             else:
