@@ -261,6 +261,8 @@ class Dependencies(object):
 
     def find_java_mvn(self, file_path):
         pom_ns = "{http://maven.apache.org/POM/4.0.0}"
+        properties = {}
+
         for pom in file_path:
             if 'pom.xml' in pom:
                 try:
@@ -272,11 +274,19 @@ class Dependencies(object):
                         artifact_id = child.getchildren()[1].text
                         if len(child.getchildren()) > 2:
                             version = child.getchildren()[2].text
-                            version_match = re.match(r'\$\{(.*)\}', version)
+                            version_match = re.match(r'\${(.*)}', version)
                             if version_match:
                                 version_var = version_match.group(1)
-                                ver_num = root.findall('.//{pom}{ver}'.format(pom=pom_ns, ver=version_var))[0].text
-                                version = ver_num
+                                ver_num = root.findall('.//{pom}{ver}'.format(pom=pom_ns, ver=version_var))
+                                if ver_num:
+                                    version = ver_num[0].text
+                                    properties.update({
+                                        version_var: version
+                                    })
+                                elif version_var in properties:
+                                    version = properties.get(version_var)
+                                else:
+                                    version = '0.0.0'
                         else:
                             # 不确定版本，需要自查
                             version = '0.0.0'
@@ -294,7 +304,6 @@ class Dependencies(object):
                 except ParseError:
                     logger.warning('[DEP] The {} have invalid token'.format(pom))
             elif 'package.json' in pom:
-                logger.critical(pom)
                 self.find_nodejs_npm([pom])
 
     def find_nodejs_npm(self, file_path):
@@ -309,18 +318,19 @@ class Dependencies(object):
                     try:
                         package = json.load(fi)
                         deps = package.get('dependencies')
-                        for dep in deps:
-                            module_ = dep
-                            version = deps.get(dep)
-                            self._framework.append(module_)
-                            self._result.update(
-                                {
+                        if deps:
+                            for dep in deps:
+                                module_ = dep
+                                version = deps.get(dep)
+                                self._framework.append(module_)
+                                self._result.update({
                                     module_: {
                                         'version': str(version),
                                         'format': 'nodejs',
                                     }
-                                }
-                            )
+                                })
+                        else:
+                            logger.info('[DEP] {} has no dependencies'.format(npm))
                     except json.JSONDecodeError:
                         logger.warning('[DEP] {} is not a valid json file'.format(npm))
 
