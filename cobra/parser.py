@@ -583,12 +583,12 @@ def analysis_file_inclusion(node, vul_function, back_node, vul_lineno, function_
 def set_scan_results(is_co, cp, expr_lineno, sink, param, vul_lineno):
     """
     获取结果信息-->输出结果
-    :param is_co:
-    :param cp:
-    :param expr_lineno:
-    :param sink:
-    :param param:
-    :param vul_lineno:
+    :param is_co: 扫描结果标识符
+    :param cp: Source函数名
+    :param expr_lineno: Source函数所在行
+    :param sink: Sink函数名
+    :param param: Sink函数参数
+    :param vul_lineno: Sink函数所在行
     :return:
     """
     results = []

@@ -128,7 +128,7 @@ class ParseArgs(object):
         return output_mode
 
     def target_directory(self, target_mode):
-        reg = '^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$'
+        reg = '^(https?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.?\/]*)?$'
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
