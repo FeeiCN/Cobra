@@ -26,7 +26,6 @@ from .config import running_path
 from .result import VulnerabilityResult
 from .cast import CAST
 from .parser import scan_parser
-from .java_parser import java_scan_parser
 from .cve import scan_cve
 from prettytable import PrettyTable
 
@@ -357,7 +356,6 @@ class SingleRule(object):
             is_test = False
             try:
                 is_vulnerability, reason = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
-
                 if is_vulnerability:
                     logger.debug('[CVI-{cvi}] [RET] Found {code}'.format(cvi=self.sr['id'], code=reason))
                     vulnerability.analysis = reason
@@ -709,35 +707,3 @@ class Core(object):
                 except Exception as e:
                     logger.debug(traceback.format_exc())
                     return False, 'Exception'
-
-            if self.file_path[-4:].lower() == 'java':
-                if self.rule_match_mode == const.mm_function_param_controllable:
-                    rule_match = self.rule_match.strip('()').split('|')
-                    logger.debug('[RULE_MATCH] {r}'.format(r=rule_match))
-                    try:
-                        with open(self.file_path, 'r') as fi:
-                            code_contents = fi.read()
-                            result = java_scan_parser(code_contents, rule_match, self.line_number)
-                            logger.debug('[AST] [RET] {c}'.format(c=result))
-
-                            if len(result) > 0:
-                                if result[0]['code'] == 1:  # 函数参数可控
-                                    return True, 'FUNCTION-PARAM-CONTROLLABLE(函数入参可控)'
-
-                                if result[0]['code'] == 2:  # 函数为敏感函数
-                                    return False, 'FUNCTION-PARAM-CONTROLLABLE(函数入参来自所在函数)'
-
-                                if result[0]['code'] == 0:  # 漏洞修复
-                                    return False, 'FUNCTION-PARAM-CONTROLLABLE+Vulnerability-Fixed(漏洞已修复)'
-
-                                if result[0]['code'] == -1:  # 函数参数不可控
-                                    return False, 'FUNCTION-PARAM-CONTROLLABLE(入参不可控)'
-
-                                logger.debug('[AST] [CODE] {code}'.format(code=result[0]['code']))
-                            else:
-                                logger.debug('[AST] Parser failed / vulnerability parameter is not controllable {r}'.format(r=result))
-                                return False, 'FUNCTION-PARAM-CONTROLLABLE(入参不可控)'
-
-                    except Exception as e:
-                        logger.warning(traceback.format_exc())
-                        return False, 'Exception'
