@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="远程命令执行"/>
+    <language value="java"/>
+    <match mode="function-param-controllable"><![CDATA[(runtime.exec|Class.forName|ognl.parseExpression|Ognl.parseExpression)]]></match>
+    <level value="10"/>
+    <test>
+        <case assert="true"><![CDATA[runtime.exec(request.getParameter("name"));]]></case>
+        <case assert="true"><![CDATA[Class.forName(request.getParameter("name"));]]></case>
+        <case assert="true"><![CDATA[ognl.parseExpression(request.getParameter("name"));]]></case>
+        <case assert="true"><![CDATA[Ognl.parseExpression(request.getParameter("name"));]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        当应用需要调用一些外部程序去处理内容的情况下，就会用到一些执行系统命令的函数。
+        当用户可以控制命令执行函数中的参数时，将可以注入恶意系统命令到正常命令中，造成命令执行攻击。
+
+        ## 修复方案
+        1.尽量不用执行命令的函数.
+        2.外部可控制参数进入执行命令函数要进行严格的过滤
+        3.升级ImageMagick到最新版本
+
+        ## 代码样例
+
+        ```
+            string name = request.getParameter("name");
+            runtime.exec(name);
+
+        ```
+        name参数传入"id"即可引发命令执行
+
+    </solution>
+    <status value="on"/>
+    <author name="BlBana" email="blbana@qq.com"/>
+</cobra>

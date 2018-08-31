@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="远程代码执行"/>
+    <language value="java"/>
+    <match mode="function-param-controllable"><![CDATA[(engine.eval|exp.getValue|expressionFactory.createValueExpression|ognlUtil.getValue|BeanUtils.populate)]]></match>
+    <level value="10"/>
+    <test>
+        <case assert="true"><![CDATA[engine.eval(script);]]></case>
+        <case assert="true"><![CDATA[exp.getValue(testContext, Boolean.class);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        代码注入(Code Injection)
+        没有对用户输入的参数进行足够的过滤，可能导致攻击者传入的恶意代码执行。
+        因此危险函数应该尽量避免在开发中使用。
+
+        ## 修复方案
+        禁用以下危险函数
+        - engine.eval
+        - exp.getValue
+        - expressionFactory.createValueExpression
+        - ognlUtil.getValue
+        - BeanUtils.populate
+
+    </solution>
+    <status value="on"/>
+    <author name="BlBana" email="blbana@qq.com"/>
+</cobra>

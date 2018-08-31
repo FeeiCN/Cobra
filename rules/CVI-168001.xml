@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="CRLF注入"/>
+    <language value="java"/>
+    <match mode="function-param-controllable"><![CDATA[(response.addCookie)]]></match>
+    <level value="5"/>
+    <test>
+        <case assert="true"><![CDATA[response.addCookie(cookie);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        CRLF Injection (CRLF注入)
+
+        ### 形成原因
+        在HTTP协议中，HTTP头是通过"\r\n"来分隔的。因此如果服务端没有过滤"\r\n"，而又把用户输入的数据放在HTTP头中，则有可能导致安全隐患。
+
+        ### 风险
+        CRLF常被用做不同语义之间的分隔符。因此通过"注入CRLF字符"，就有可能改变原有的语义，达到误导用户的目的。
+
+        ### 示例
+        ```
+            String author = request.getParameter(AUTHOR_PARAM);
+            ...
+            Cookie cookie = new Cookie("author", author);
+            cookie.setMaxAge(cookieExpiration);
+            response.addCookie(cookie);
+        ```
+
+        ### 修复
+        1. 过滤"%0d%0a";
+        2. 对需要set到HTTP响应头的输入、输出进行URL-encode处理。
+
+    </solution>
+    <status value="on"/>
+    <author name="Lightless" email="root@lightless.me "/>
+</cobra>
+
