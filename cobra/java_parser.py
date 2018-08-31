@@ -13,10 +13,13 @@
     :copyright: Copyright (c) 2018 BlBana. All rights reserved
 """
 
+import sys
 import javalang
-import logging
 from javalang.tree import *
 from cobra.log import logger
+
+
+sys.setrecursionlimit(2000)
 
 
 class JavaAst(object):
@@ -76,14 +79,17 @@ class JavaAst(object):
             if self.analysis_sink(node.expression, sink_list, vul_lineno):
                 params = self.analysis_node(node.expression)
 
-                if isinstance(params, list):
-                    for param in params:
-                        is_controllable = self.back_statement_expression(param, back_node)
-                        self.set_scan_results(is_controllable, sink)
+                try:
+                    if isinstance(params, list):
+                        for param in params:
+                            is_controllable = self.back_statement_expression(param, back_node)
+                            self.set_scan_results(is_controllable, sink)
 
-                else:
-                    is_controllable = self.back_statement_expression(params, back_node)
-                    self.set_scan_results(is_controllable, sink)
+                    else:
+                        is_controllable = self.back_statement_expression(params, back_node)
+                        self.set_scan_results(is_controllable, sink)
+                except RuntimeError:
+                    logger.debug('Maximum recursion depth exceeded')
 
         else:
             logger.warning('[Java-AST] The sink function list index out of range')
@@ -95,14 +101,17 @@ class JavaAst(object):
             if self.analysis_sink(node.declarators, sink_list, vul_lineno):
                 params = self.analysis_node(node)
 
-                if isinstance(params, list):
-                    for param in params:
-                        is_controllable = self.back_statement_expression(param, back_node)
-                        self.set_scan_results(is_controllable, sink)
+                try:
+                    if isinstance(params, list):
+                        for param in params:
+                            is_controllable = self.back_statement_expression(param, back_node)
+                            self.set_scan_results(is_controllable, sink)
 
-                else:
-                    is_controllable = self.back_statement_expression(params, back_node)
-                    self.set_scan_results(is_controllable, sink)
+                    else:
+                        is_controllable = self.back_statement_expression(params, back_node)
+                        self.set_scan_results(is_controllable, sink)
+                except RuntimeError:
+                    logger.debug('Maximum recursion depth exceeded')
 
         else:
             logger.warning('[Java-AST] The sink function list index out of range')
@@ -229,16 +238,8 @@ class JavaAst(object):
             return param
 
         else:
-            lineno = self.get_node_lineno(node)
-            logger.warning("[Java-AST] Can't analysis node --> {n} in line {l}".format(n=node, l=lineno))
-        # for declarator in node.declarators:
-        #     if isinstance(declarator, VariableDeclarator):
-        #         if isinstance(declarator.initializer, MethodInvocation):
-        #             for argument in declarator.initializer.arguments:
-        #                 if isinstance(argument, BinaryOperation):
-        #                     if isinstance(argument.operandr, MemberReference):
-        #                         param = self.get_member_reference_name(argument.operandr)
-        #                         return param
+            logger.debug("[Java-AST] Can't analysis node --> {n} in analysis_node method".format(n=node))
+            return ''
 
     def analysis_method_invocation(self, nodes):
         for node in nodes:
@@ -267,8 +268,7 @@ class JavaAst(object):
             return param
 
         else:
-            lineno = self.get_node_lineno(node)
-            logger.warning("[Java-AST] Can't analysis node --> {n} in line {l}".format(n=node, l=lineno))
+            logger.debug("[Java-AST] Can't analysis node --> {n} in analysis_assignment method".format(n=node))
 
     def get_method_invocation_params(self, node):
         params = ''
@@ -317,7 +317,7 @@ class JavaAst(object):
             param_right = self.get_deep_binary_operation_params(node.operandr)
             param_left = self.get_deep_binary_operation_params(node.operandl)
 
-            params = param_right + param_left + params
+            params = list(param_right) + list(param_left) + list(params)
 
         params = self.export_list(params, [])
         return params
@@ -376,17 +376,28 @@ class JavaAst(object):
         :param node:
         :return:  expr_node(用于判断是否可控)，sink(用于跟踪参数传递)
         """
+        expr_param = ''
+        sink = ''
+
         if isinstance(nodes, MethodInvocation):  # 当赋值表达式为方法调用
             sink = self.get_method_invocation_params(nodes)
             expr_param = self.get_method_invocation_member(nodes)
             return expr_param, sink
 
-        if isinstance(nodes, list):
+        elif isinstance(nodes, list):
             for node in nodes:
                 if isinstance(node.initializer, MethodInvocation):
                     sink = self.get_method_invocation_params(node.initializer)
                     expr_param = self.get_method_invocation_member(node.initializer)
                     return expr_param, sink
+
+                else:
+                    logger.debug("Can't analysis node --> {} in get_expr_name method".format(node))
+                    return expr_param, sink
+
+        else:
+            logger.debug("Can't analysis node --> {} in get_expr_name method".format(nodes))
+            return expr_param, sink
 
     def get_node_lineno(self, node):
         lineno = 0
@@ -409,7 +420,34 @@ class JavaAst(object):
     # ####################### 分析语法结构 #############################
     def is_controllable(self, expr, lineno=0):
         controlled_params = [
-            'request.getParameter'
+            'request.getParameter',
+            'request.getQueryString',
+            'request.getRemoteAddr',
+            'request.getHeaderNames',
+            'request.getHeader',
+            'request.getParameterValues',
+            'request.getParameterMap',
+            'httpServletRequest.getParameter',
+            'httpServletRequest.getQueryString',
+            'httpServletRequest.getRemoteAddr',
+            'httpServletRequest.getHeaderNames',
+            'httpServletRequest.getHeader',
+            'httpServletRequest.getParameterValues',
+            'httpServletRequest.getParameterMap',
+            'req.getParameter',
+            'req.getQueryString',
+            'req.getRemoteAddr',
+            'req.getHeaderNames',
+            'req.getHeader',
+            'req.getParameterValues',
+            'req.getParameterMap',
+            'servletRequest.getParameter',
+            'servletRequest.getQueryString',
+            'servletRequest.getRemoteAddr',
+            'servletRequest.getHeaderNames',
+            'servletRequest.getHeader',
+            'servletRequest.getParameterValues',
+            'servletRequest.getParameterMap'
         ]
         if str(expr) in controlled_params:
             logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,

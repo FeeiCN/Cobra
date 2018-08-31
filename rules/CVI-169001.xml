@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="模板引擎注入"/>
+    <language value="java"/>
+    <match mode="function-param-controllable"><![CDATA[(Velocity.evaluate|template.process)]]></match>
+    <level value="5"/>
+    <test>
+        <case assert="true"><![CDATA[Velocity.evaluate(context, swOut, "test", userInput);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        模板引擎直接引入用户的输入会导致恶意用户在服务器上运行恶意代码。
+
+        ### 形成原因
+        模板引擎中使用的数据来自于外部用户输入，并且没有进行过任何过滤
+
+    </solution>
+    <status value="on"/>
+    <author name="BlBana" email="blbana@qq.com"/>
+</cobra>
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="XXE(XML实体注入)"/>
+    <language value="java"/>
+    <match mode="function-param-controllable"><![CDATA[(factory.createXMLStreamReader|xPathExpr.evaluate|parser.parse|reader.parse|DocumentBuilder.parse|transformer.transform)]]></match>
+    <level value="5"/>
+    <test>
+        <case assert="true"><![CDATA[Document doc = DocumentBuilder.parse(input);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        XXE(XML实体注入)
+
+        ### 形成原因
+        输入的XML中包含外部实体 + 解析程序没有正确过滤 -->
+        这种攻击会造成敏感信息泄露，DoS攻击，SSRF攻击，端口扫描等等。
+
+        ### 风险
+        敏感信息泄露
+        探测内网，获取服务器权限
+        进行拒绝服务攻击，影响正常业务
+        敏感数据被盗取。
+        造成服务宕机。
+
+    </solution>
+    <status value="on"/>
+    <author name="Lightless" email="root@lightless.me "/>
+</cobra>
+

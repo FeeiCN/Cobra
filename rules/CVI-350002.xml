@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="任意文件读取"/>
+    <language value="java"/>
+    <match mode="function-param-controllable"><![CDATA[(Source.fromFile)]]></match>
+    <level value="3"/>
+    <test>
+        <case assert="true"><![CDATA[val result = Source.fromFile("public/lists/" + value).getLines().mkString // Weak point]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        任意文件读取漏洞是一种由攻击者构造，通过目录穿越等方式传入特定文件名，从而读取服务器上重要文件或其他敏感信息的漏洞。
+
+        ## 修复方案
+        1. 过滤"../"等特殊字符或通过函数取文件名;
+        2. 将用户可控的文件名限制在特定目录下，最好以白名单的形式指定文件名。
+
+    </solution>
+    <status value="on"/>
+    <author name="BlBana" email="blbana@qq.com"/>
+</cobra>

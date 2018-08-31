@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value="文件信息泄露"/>
+    <language value="java"/>
+    <match mode="regex-only-match"><![CDATA[(request.getRequestDispatcher)]]></match>
+    <level value="2"/>
+    <test>
+        <case assert="true"><![CDATA[request.getRequestDispatcher("/WEB-INF/jsps/" + jspFile + ".jsp").include(request, response);]]></case>
+    </test>
+    <solution>
+        ## 安全风险
+        可能导致文件信息泄露
+
+        ## 修复方案
+        1. 对文件类型进行判断
+        2. 使用白名单进行限制
+    </solution>
+    <status value="on"/>
+    <author name="BlBana" email="blbana@qq.com"/>
+</cobra>
