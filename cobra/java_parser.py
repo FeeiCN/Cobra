@@ -420,7 +420,34 @@ class JavaAst(object):
     # ####################### 分析语法结构 #############################
     def is_controllable(self, expr, lineno=0):
         controlled_params = [
-            'request.getParameter'
+            'request.getParameter',
+            'request.getQueryString',
+            'request.getRemoteAddr',
+            'request.getHeaderNames',
+            'request.getHeader',
+            'request.getParameterValues',
+            'request.getParameterMap',
+            'httpServletRequest.getParameter',
+            'httpServletRequest.getQueryString',
+            'httpServletRequest.getRemoteAddr',
+            'httpServletRequest.getHeaderNames',
+            'httpServletRequest.getHeader',
+            'httpServletRequest.getParameterValues',
+            'httpServletRequest.getParameterMap',
+            'req.getParameter',
+            'req.getQueryString',
+            'req.getRemoteAddr',
+            'req.getHeaderNames',
+            'req.getHeader',
+            'req.getParameterValues',
+            'req.getParameterMap',
+            'servletRequest.getParameter',
+            'servletRequest.getQueryString',
+            'servletRequest.getRemoteAddr',
+            'servletRequest.getHeaderNames',
+            'servletRequest.getHeader',
+            'servletRequest.getParameterValues',
+            'servletRequest.getParameterMap'
         ]
         if str(expr) in controlled_params:
             logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
