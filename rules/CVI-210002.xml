@@ -2,7 +2,7 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="未经验证的任意链接跳转"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(RequestDispatcher|getRequestDispatcher|request.sendRedirect|response.sendRedirect|response.setHeader|response.forward)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(request.RequestDispatcher|request.getRequestDispatcher|request.sendRedirect|response.sendRedirect|response.setHeader|response.forward)]]></match>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[resp.sendRedirect(req.getParameter("redirectUrl"));]]></case>
