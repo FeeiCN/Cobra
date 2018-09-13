@@ -427,6 +427,7 @@ class JavaAst(object):
             'request.getHeader',
             'request.getParameterValues',
             'request.getParameterMap',
+            'request.getCookies',
             'httpServletRequest.getParameter',
             'httpServletRequest.getQueryString',
             'httpServletRequest.getRemoteAddr',
@@ -434,6 +435,7 @@ class JavaAst(object):
             'httpServletRequest.getHeader',
             'httpServletRequest.getParameterValues',
             'httpServletRequest.getParameterMap',
+            'httpServletRequest.getCookies',
             'req.getParameter',
             'req.getQueryString',
             'req.getRemoteAddr',
@@ -441,13 +443,15 @@ class JavaAst(object):
             'req.getHeader',
             'req.getParameterValues',
             'req.getParameterMap',
+            'req.getCookies',
             'servletRequest.getParameter',
             'servletRequest.getQueryString',
             'servletRequest.getRemoteAddr',
             'servletRequest.getHeaderNames',
             'servletRequest.getHeader',
             'servletRequest.getParameterValues',
-            'servletRequest.getParameterMap'
+            'servletRequest.getParameterMap',
+            'servletRequest.getCookies'
         ]
         if str(expr) in controlled_params:
             logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
