@@ -111,8 +111,12 @@ class AddJob(Resource):
         if isinstance(target, list):
             for t in target:
                 # Scan
-                arg = (t, formatter, output, rule, a_sid, is_del)
-                producer(task=arg)
+                if re.match(r'http://|https://', t):
+                    arg = (t, formatter, output, rule, a_sid, is_del)
+                    producer(task=arg)
+
+                else:
+                    return {"code": 1004, "msg": "Please input a valid URL"}
 
             result = {
                 'msg': 'Add scan job successfully.',
@@ -120,8 +124,13 @@ class AddJob(Resource):
                 'total_target_num': len(target),
             }
         else:
-            arg = (target, formatter, output, rule, a_sid, is_del)
-            producer(task=arg)
+            if re.match(r'http://|https://', target):
+                arg = (target, formatter, output, rule, a_sid, is_del)
+                producer(task=arg)
+
+            else:
+                return {"code": 1004, "msg": "Please input a valid URL"}
+
             result = {
                 'msg': 'Add scan job successfully.',
                 'sid': a_sid,
