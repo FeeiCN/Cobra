@@ -573,7 +573,7 @@ def report():
                                 rule_num[vul.get('rule_name')] = 1
 
                     else:
-                        logger.debug('[REPORT] Empty result in {}'.format(data_file))
+                        logger.debug('[REPORT] Empty result in {0}'.format(data_file))
 
         time_range = sorted_dict(time_range)
 
