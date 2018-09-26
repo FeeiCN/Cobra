@@ -25,6 +25,9 @@ from .log import logger
 from .config import package_path, source_path
 from shutil import copyfile
 from werkzeug.utils import secure_filename
+from zipfile import BadZipfile
+from rarfile import NotRarFile, BadRarFile
+from tarfile import ReadError
 
 try:
     from urllib import quote
@@ -101,41 +104,55 @@ class Decompress(object):
 
     def __decompress_zip(self):
         """unzip a file."""
-        zip_file = zipfile.ZipFile(self.filepath)
-        # check if there is a filename directory
-        self.__check_filename_dir()
+        try:
+            zip_file = zipfile.ZipFile(self.filepath)
+            # check if there is a filename directory
+            self.__check_filename_dir()
 
-        # create the file directory to store the extract file.
-        os.mkdir(os.path.join(self.package_path, self.dir_name))
+            # create the file directory to store the extract file.
+            os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        zip_file.extractall(os.path.join(self.package_path, self.dir_name))
-        zip_file.close()
+            zip_file.extractall(os.path.join(self.package_path, self.dir_name))
+            zip_file.close()
+        except BadZipfile:
+            logger.error('File is not a zip file or is bad zip file')
+            exit()
 
         return True
 
     def __decompress_rar(self):
         """extract a rar file."""
-        rar_file = rarfile.RarFile(self.filepath)
-        # check if there is a filename directory
-        self.__check_filename_dir()
+        try:
+            rar_file = rarfile.RarFile(self.filepath)
+            # check if there is a filename directory
+            self.__check_filename_dir()
 
-        os.mkdir(os.path.join(self.package_path, self.dir_name))
+            os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        rar_file.extractall(os.path.join(self.package_path, self.dir_name))
-        rar_file.close()
+            rar_file.extractall(os.path.join(self.package_path, self.dir_name))
+            rar_file.close()
+        except (BadRarFile, NotRarFile):
+            logger.error('File is not a rar file or is bad rar file')
+            exit()
+
         return True
 
     def __decompress_tar_gz(self):
         """extract a tar.gz file"""
-        tar_file = tarfile.open(self.filepath)
-        # check if there is a filename directory
-        self.__check_filename_dir()
+        try:
+            tar_file = tarfile.open(self.filepath)
+            # check if there is a filename directory
+            self.__check_filename_dir()
 
-        os.mkdir(os.path.join(self.package_path, self.dir_name))
+            os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        tar_file.extractall(os.path.join(self.package_path, self.dir_name))
-        tar_file.close()
-        return True
+            tar_file.extractall(os.path.join(self.package_path, self.dir_name))
+            tar_file.close()
+        except ReadError:
+            logger.error('File is not a tar file or is bad tar file')
+            exit()
+
+            return True
 
     def __check_filename_dir(self):
         if os.path.isdir(os.path.join(self.package_path, self.dir_name)):
