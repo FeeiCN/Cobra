@@ -27,7 +27,7 @@ import json
 import pipes
 
 from .log import logger
-from .config import Config, issue_history_path
+from .config import Config, issue_history_path, core_path
 from .__version__ import __version__, __python_version__, __platform__, __url__
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, Decompress
@@ -516,7 +516,7 @@ def unhandled_exception_message():
         cv=__version__,
         pv=__python_version__,
         os=__platform__,
-        cl=re.sub(r".+?\bcobra.py\b", "cobra.py", " ".join(sys.argv).encode('utf-8'))
+        cl=re.sub(r".+?\bcobra.py\b", "cobra.py", " ".join(sys.argv))
     )
     return err_msg
 
@@ -539,6 +539,7 @@ def create_github_issue(err_msg, exc_msg):
     _ = re.sub(r"\s+line \d+", "", _)
     _ = re.sub(r'File ".+?/(\w+\.py)', "\g<1>", _)
     _ = re.sub(r".+\Z", "", _)
+    _ = _.encode('utf-8')
     key = hashlib.md5(_).hexdigest()[:8]
 
     if key in issues:
@@ -548,7 +549,10 @@ def create_github_issue(err_msg, exc_msg):
     ex = None
 
     try:
-        url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:WhaleShark-Team/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
+        if PY2:  # python2用urllib.quote, python3用urllib.parse.quote
+            url = "https://api.github.com/search/issues?q={q}".format(q=urllib.quote("repo:WhaleShark-Team/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
+        else:
+            url = "https://api.github.com/search/issues?q={q}".format(q=urllib.parse.quote("repo:WhaleShark-Team/cobra [AUTO] Unhandled exception (#{k})".format(k=key)))
         logger.debug(url)
         resp = requests.get(url=url)
         content = resp.json()
@@ -571,7 +575,7 @@ def create_github_issue(err_msg, exc_msg):
             "title": "[AUTO] Unhandled exception (#{k})".format(k=key),
             "body": "## Environment\n```\n{err}\n```\n## Traceback\n```\n{exc}\n```\n".format(err=err_msg, exc=exc_msg)
         }
-        headers = {"Authorization": "token {t}".format(t=base64.b64decode(access_token))}
+        headers = {"Authorization": "token {t}".format(t=base64.b64decode(access_token).decode('utf-8'))}
         resp = requests.post(url=url, data=json.dumps(data), headers=headers)
         content = resp.text
     except Exception as ex:
@@ -606,3 +610,50 @@ def clean_dir(filepath):
         elif os.path.isdir(filepath):
             shutil.rmtree(filepath, True)
     return True
+
+
+def create_projects_hash():
+    """
+    用于获取Cobra主要文件的md5值
+    :return:
+    """
+    hash_list = []
+    for fi in os.listdir(core_path):  # 遍历所有文件，并记录md5到列表中
+        if os.path.splitext(fi)[1] == '.py':
+            file_path = os.path.join(core_path, fi)
+            with open(file_path, 'r') as file_handler:
+                data = file_handler.read()
+                md5_data = md5(data)
+                hash_list.append(md5_data)
+
+    project_hash = md5(''.join(hash_list))
+    return project_hash
+
+
+def set_config_hash():
+    """
+    保存项目md5到config文件中
+    :return:
+    """
+    project_hash = create_projects_hash()
+    result = Config('hash', 'modified').set(project_hash)  # 修改config文件的MD5，用于本地代码校验
+
+    if result is True:
+        logger.info('[HASH] Projects hash save success')
+        return True
+    return False
+
+
+def get_config_hash():
+    """
+    读取项目md5并生成新md5进行比较，相同则项目未改变；否则，项目已被修改
+    :return: Bool，True，项目未修改；False，项目已被修改
+    """
+    new_md5 = create_projects_hash()
+    old_md5 = Config('hash', 'modified').value
+    if new_md5 == old_md5:
+        logger.info('[HASH] Projects is\'t modified')
+        return True
+    else:
+        logger.info('[HASH] Projects is modified')
+        return False
