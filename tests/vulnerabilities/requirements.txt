@@ -1,6 +1,5 @@
 alembic==0.8.6
 dominate==2.2.0
-Flask==0.10.1
 Flask-Bootstrap==3.3.6.0
 Flask-Migrate==1.8.0
 flask-paginate==0.4.5
