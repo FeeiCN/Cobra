@@ -11,6 +11,10 @@
         <product>Flask:3.2</product>
         <product>Flask:0.10.1</product>
     </cve>
+    <cve id="flask vul3" level="HIGH">
+        <product>Flask-Migrate:1.8.0</product>
+        <product>Flask-Migrate:1.8.1</product>
+    </cve>
     <cve id="nodejs vul1" level="HIGH">
         <product>antd:3.3.0</product>
         <product>dva:2.1.0</product>
