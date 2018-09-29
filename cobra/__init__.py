@@ -72,7 +72,7 @@ def main():
                 logger.info('[REPORT] Cobra Report Success ')
             exit()
 
-        if args.md5:
+        if args.md5 and args.port is None and args.host is None and args.target is '':
             set_config_hash()
             exit()
 
