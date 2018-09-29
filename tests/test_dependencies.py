@@ -59,8 +59,8 @@ def test_parse_xml():
 def test_get_version():
     dependencies = Dependencies(requirements)
     dependencies.dependencies()
-    version = dependencies.get_version('Flask')
-    assert '0.10.1' in version
+    version = dependencies.get_version('Flask-Migrate')
+    assert '1.8.0' in version
 
 
 def test_get_result():
