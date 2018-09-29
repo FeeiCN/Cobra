@@ -218,12 +218,37 @@ class JavaAst(object):
                         if _is_controllable != -1:
                             is_controllable = _is_controllable
 
+            if isinstance(node, FormalParameter):
+                node_param = self.get_node_name(node)  # 获取被赋值变量
+                expr_param, sink = self.get_expr_name(node)  # 取出赋值表达式中的内容
+
+                if node_param == param and not isinstance(sink, list):
+                    logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=sink, l=lineno))
+                    param = sink
+                    is_controllable = self.is_controllable(expr_param, lineno)
+
+                if node_param == param and isinstance(sink, list):
+                    is_controllable = self.is_controllable(expr_param, lineno)
+
+                    for s in sink:
+                        logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=s,
+                                                                                           l=lineno))
+                        param = s
+
+                        if is_controllable == 1:
+                            return is_controllable
+
+                        _is_controllable = self.back_statement_expression(param, back_node[:-1])
+
+                        if _is_controllable != -1:
+                            is_controllable = _is_controllable
+
             if is_controllable == -1:
                 is_controllable = self.back_statement_expression(param, back_node[:-1])
 
         return is_controllable
 
-    # ####################### 提取参数内容 #############################
+    # ####################### 分析节点类型 #############################
     def analysis_node(self, node):
         if isinstance(node, MethodInvocation):
             param = self.analysis_method_invocation(node.arguments)
@@ -270,6 +295,7 @@ class JavaAst(object):
         else:
             logger.debug("[Java-AST] Can't analysis node --> {n} in analysis_assignment method".format(n=node))
 
+    # ####################### 提取参数内容 #############################
     def get_method_invocation_params(self, node):
         params = ''
         for argument in node.arguments:
@@ -333,6 +359,17 @@ class JavaAst(object):
 
         return param
 
+    def get_annotations_name(self, nodes):
+        """
+        提取Spring框架中annotations的类型
+        :param nodes:
+        :return:
+        """
+        if isinstance(nodes, list):
+            for node in nodes:
+                if isinstance(node, Annotation):
+                    return node.name
+
     def get_member_reference_name(self, node):
         """
         提取MemberReference语法中的参数
@@ -365,6 +402,9 @@ class JavaAst(object):
             if isinstance(nodes, MemberReference):  # 取出Assinment结构的变量名
                 param_node = self.get_member_reference_name(nodes)
 
+            if isinstance(nodes, FormalParameter):  # 取出Spring框架注解的入参
+                param_node = nodes.name
+
         except IndexError as e:
             logger.warning(e.message)
 
@@ -382,6 +422,11 @@ class JavaAst(object):
         if isinstance(nodes, MethodInvocation):  # 当赋值表达式为方法调用
             sink = self.get_method_invocation_params(nodes)
             expr_param = self.get_method_invocation_member(nodes)
+            return expr_param, sink
+
+        elif isinstance(nodes, FormalParameter):  # 取出Spring框架注解类型 和 参数
+            sink = nodes.name
+            expr_param = self.get_annotations_name(nodes.annotations)
             return expr_param, sink
 
         elif isinstance(nodes, list):
@@ -451,7 +496,8 @@ class JavaAst(object):
             'servletRequest.getHeader',
             'servletRequest.getParameterValues',
             'servletRequest.getParameterMap',
-            'servletRequest.getCookies'
+            'servletRequest.getCookies',
+            'RequestParam'  # Spring框架注解入参
         ]
         if str(expr) in controlled_params:
             logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
@@ -485,6 +531,7 @@ class JavaAst(object):
                 export_params.append(param)
 
         return export_params
+
 
 def java_scan_parser(code_content, sensitive_func, vul_lineno):
     back_node = []
