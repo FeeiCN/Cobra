@@ -15,9 +15,12 @@
 
 import sys
 import javalang
+import logging
 from javalang.tree import *
 from cobra.log import logger
 
+
+logger.setLevel(logging.DEBUG)
 
 sys.setrecursionlimit(2000)
 
@@ -78,14 +81,17 @@ class JavaAst(object):
         if len(sink_list) == 2:
             if self.analysis_sink(node.expression, sink_list, vul_lineno):
                 params = self.analysis_node(node.expression)
+                logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
 
                 try:
                     if isinstance(params, list):
                         for param in params:
+                            logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(param))
                             is_controllable = self.back_statement_expression(param, back_node)
                             self.set_scan_results(is_controllable, sink)
 
                     else:
+                        logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(params))
                         is_controllable = self.back_statement_expression(params, back_node)
                         self.set_scan_results(is_controllable, sink)
                 except RuntimeError:
@@ -100,14 +106,17 @@ class JavaAst(object):
         if len(sink_list) == 2:
             if self.analysis_sink(node.declarators, sink_list, vul_lineno):
                 params = self.analysis_node(node)
+                logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
 
                 try:
                     if isinstance(params, list):
                         for param in params:
+                            logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(param))
                             is_controllable = self.back_statement_expression(param, back_node)
                             self.set_scan_results(is_controllable, sink)
 
                     else:
+                        logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(params))
                         is_controllable = self.back_statement_expression(params, back_node)
                         self.set_scan_results(is_controllable, sink)
                 except RuntimeError:
@@ -161,7 +170,6 @@ class JavaAst(object):
 
     # ####################### 回溯参数传递 #############################
     def back_statement_expression(self, param, back_node):
-
         is_controllable = self.is_controllable(param)
 
         if len(back_node) != 0 and is_controllable == -1:
@@ -173,7 +181,8 @@ class JavaAst(object):
                 expr_param, sink = self.get_expr_name(node.declarators)  # 取出赋值表达式中的内容
 
                 if node_param == param and not isinstance(sink, list):
-                    logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=sink, l=lineno))
+                    logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
+                                                                                                   l=lineno))
                     param = sink
                     is_controllable = self.is_controllable(expr_param, lineno)
 
@@ -181,7 +190,7 @@ class JavaAst(object):
                     is_controllable = self.is_controllable(expr_param, lineno)
 
                     for s in sink:
-                        logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=s,
+                        logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
                                                                                            l=lineno))
                         param = s
 
@@ -198,7 +207,8 @@ class JavaAst(object):
                 expr_param, sink = self.get_expr_name(node.value)  # expr_param为方法名, sink为回溯变量
 
                 if node_param == param and not isinstance(sink, list):
-                    logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=sink, l=lineno))
+                    logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
+                                                                                                   l=lineno))
                     param = sink
                     is_controllable = self.is_controllable(expr_param, lineno)
 
@@ -206,8 +216,8 @@ class JavaAst(object):
                     is_controllable = self.is_controllable(expr_param, lineno)
 
                     for s in sink:
-                        logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=s,
-                                                                                           l=lineno))
+                        logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
+                                                                                                       l=lineno))
                         param = s
 
                         if is_controllable == 1:
@@ -223,7 +233,8 @@ class JavaAst(object):
                 expr_param, sink = self.get_expr_name(node)  # 取出赋值表达式中的内容
 
                 if node_param == param and not isinstance(sink, list):
-                    logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=sink, l=lineno))
+                    logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
+                                                                                                   l=lineno))
                     param = sink
                     is_controllable = self.is_controllable(expr_param, lineno)
 
@@ -231,8 +242,8 @@ class JavaAst(object):
                     is_controllable = self.is_controllable(expr_param, lineno)
 
                     for s in sink:
-                        logger.debug('[Java-AST] analysis sink --> {s} in line {l}'.format(s=s,
-                                                                                           l=lineno))
+                        logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
+                                                                                                       l=lineno))
                         param = s
 
                         if is_controllable == 1:
@@ -267,18 +278,21 @@ class JavaAst(object):
             return ''
 
     def analysis_method_invocation(self, nodes):
+        params_list = []
         for node in nodes:
             if isinstance(node, MemberReference):
                 param = self.get_member_reference_name(node)
-                return param
+                params_list.append(param)
 
             if isinstance(node, BinaryOperation):
                 params = self.get_binary_operation_params(node)
-                return params
+                params_list.append(params)
 
             if isinstance(node, MethodInvocation):
                 params = self.get_method_invocation_params(node)
-                return params
+                params_list.append(params)
+
+        return self.export_list(params_list, [])
 
     def analysis_variable_declaration(self, nodes):
         for node in nodes:
@@ -297,22 +311,30 @@ class JavaAst(object):
 
     # ####################### 提取参数内容 #############################
     def get_method_invocation_params(self, node):
-        params = ''
+        params_list = []
+        qualifier = self.get_method_object_name(node)
+        if qualifier is not '':
+            params_list.append(qualifier)
+
         for argument in node.arguments:
             if isinstance(argument, MethodInvocation):
                 params = self.get_method_invocation_params(argument)
+                params_list.append(params)
 
             else:
                 if isinstance(argument, MemberReference):
                     params = self.get_member_reference_name(argument)
+                    params_list.append(params)
 
                 if isinstance(argument, BinaryOperation):
                     params = self.get_binary_operation_params(argument)
+                    params_list.append(params)
 
                 if isinstance(argument, Literal):
                     params = self.get_literal_params(argument)
+                    params_list.append(params)
 
-        return params
+        return self.export_list(params_list, [])
 
     def get_method_invocation_member(self, node):
         """
@@ -369,6 +391,14 @@ class JavaAst(object):
             for node in nodes:
                 if isinstance(node, Annotation):
                     return node.name
+
+    def get_method_object_name(self, node):
+        """
+        提取调用方法的实例化对象的变量名
+        :param node:
+        :return:
+        """
+        return node.qualifier
 
     def get_member_reference_name(self, node):
         """
@@ -497,7 +527,10 @@ class JavaAst(object):
             'servletRequest.getParameterValues',
             'servletRequest.getParameterMap',
             'servletRequest.getCookies',
-            'RequestParam'  # Spring框架注解入参
+            'RequestParam',  # Spring框架注解入参
+            'RequestBody',
+            'RequestHeader',
+            'PathVariable'
         ]
         if str(expr) in controlled_params:
             logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
