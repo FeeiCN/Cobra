@@ -36,6 +36,7 @@ class JavaAst(object):
         :param nodes: 语法树
         :param sink: 敏感函数
         :param back_node: 回溯节点
+        :param vul_lineno: Sink函数所在行号
         :return:
         """
         for path, node in nodes:
@@ -262,7 +263,7 @@ class JavaAst(object):
     # ####################### 分析节点类型 #############################
     def analysis_node(self, node):
         if isinstance(node, MethodInvocation):
-            param = self.analysis_method_invocation(node.arguments)
+            param = self.get_node_arguments(node.arguments)
             return param
 
         elif isinstance(node, LocalVariableDeclaration):
@@ -276,23 +277,6 @@ class JavaAst(object):
         else:
             logger.debug("[Java-AST] Can't analysis node --> {n} in analysis_node method".format(n=node))
             return ''
-
-    def analysis_method_invocation(self, nodes):
-        params_list = []
-        for node in nodes:
-            if isinstance(node, MemberReference):
-                param = self.get_member_reference_name(node)
-                params_list.append(param)
-
-            if isinstance(node, BinaryOperation):
-                params = self.get_binary_operation_params(node)
-                params_list.append(params)
-
-            if isinstance(node, MethodInvocation):
-                params = self.get_method_invocation_params(node)
-                params_list.append(params)
-
-        return self.export_list(params_list, [])
 
     def analysis_variable_declaration(self, nodes):
         for node in nodes:
@@ -310,6 +294,28 @@ class JavaAst(object):
             logger.debug("[Java-AST] Can't analysis node --> {n} in analysis_assignment method".format(n=node))
 
     # ####################### 提取参数内容 #############################
+    def get_node_arguments(self, nodes):
+        """
+        用于获取node.arguments中的所有参数
+        :param nodes:
+        :return: list
+        """
+        params_list = []
+        for node in nodes:
+            if isinstance(node, MemberReference):
+                param = self.get_member_reference_name(node)
+                params_list.append(param)
+
+            if isinstance(node, BinaryOperation):
+                params = self.get_binary_operation_params(node)
+                params_list.append(params)
+
+            if isinstance(node, MethodInvocation):
+                params = self.get_method_invocation_params(node)
+                params_list.append(params)
+
+        return self.export_list(params_list, [])
+
     def get_method_invocation_params(self, node):
         params_list = []
         qualifier = self.get_method_object_name(node)
@@ -464,6 +470,10 @@ class JavaAst(object):
                 if isinstance(node.initializer, MethodInvocation):
                     sink = self.get_method_invocation_params(node.initializer)
                     expr_param = self.get_method_invocation_member(node.initializer)
+                    return expr_param, sink
+
+                if isinstance(node.initializer, ClassCreator):
+                    sink = self.get_node_arguments(node.initializer.arguments)
                     return expr_param, sink
 
                 else:
