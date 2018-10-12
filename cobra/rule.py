@@ -131,6 +131,22 @@ class Rule(object):
             vulnerabilities_info[str(v_id)] = v_name
         return vulnerabilities_info
 
+    @property
+    def sources(self):
+        """
+        Read all sources function rule
+        :return:
+        """
+        source_rule = []
+        xml_sources = self._read_xml('sources.xml')
+        if xml_sources is None:
+            logger.critical('sources read failed !!!')
+        for source in xml_sources:
+            for rule in source:
+                s_rule = rule.get('value')
+                source_rule.append(s_rule)
+        return source_rule
+
     def rules(self, rules=None):
         """
         Get all rules

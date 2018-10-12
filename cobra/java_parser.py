@@ -18,6 +18,7 @@ import javalang
 import logging
 from javalang.tree import *
 from cobra.log import logger
+from cobra.rule import Rule
 
 
 logger.setLevel(logging.DEBUG)
@@ -28,6 +29,9 @@ sys.setrecursionlimit(2000)
 class JavaAst(object):
     def __init__(self):
         self.scan_results = []
+        self.sources = []
+        r = Rule()
+        self.sources = r.sources
 
     # ####################### 分析语法结构 #############################
     def analysis(self, nodes, sink, back_node, vul_lineno):
@@ -355,6 +359,19 @@ class JavaAst(object):
         logger.debug('[Java-AST] analysis method --> {r} in line {l}'.format(r=result, l=lineno))
         return result
 
+    @staticmethod
+    def get_class_creator_type(node):
+        """
+        用于获取ClassCreator类型的type类型
+        :param node:
+        :return:
+        """
+        if isinstance(node, ReferenceType):
+            return node.name
+
+        else:
+            return ''
+
     def get_binary_operation_params(self, node):  # 当为BinaryOp类型时，分别对left和right进行处理，取出需要的变量
         params = []
 
@@ -460,6 +477,11 @@ class JavaAst(object):
             expr_param = self.get_method_invocation_member(nodes)
             return expr_param, sink
 
+        if isinstance(nodes, ClassCreator):
+            sink = self.get_node_arguments(nodes.arguments)
+            expr_param = self.get_class_creator_type(nodes.type)
+            return expr_param, sink
+
         elif isinstance(nodes, FormalParameter):  # 取出Spring框架注解类型 和 参数
             sink = nodes.name
             expr_param = self.get_annotations_name(nodes.annotations)
@@ -474,6 +496,7 @@ class JavaAst(object):
 
                 if isinstance(node.initializer, ClassCreator):
                     sink = self.get_node_arguments(node.initializer.arguments)
+                    expr_param = self.get_class_creator_type(node.initializer.type)
                     return expr_param, sink
 
                 else:
@@ -504,45 +527,13 @@ class JavaAst(object):
 
     # ####################### 分析语法结构 #############################
     def is_controllable(self, expr, lineno=0):
-        controlled_params = [
-            'request.getParameter',
-            'request.getQueryString',
-            'request.getRemoteAddr',
-            'request.getHeaderNames',
-            'request.getHeader',
-            'request.getParameterValues',
-            'request.getParameterMap',
-            'request.getCookies',
-            'httpServletRequest.getParameter',
-            'httpServletRequest.getQueryString',
-            'httpServletRequest.getRemoteAddr',
-            'httpServletRequest.getHeaderNames',
-            'httpServletRequest.getHeader',
-            'httpServletRequest.getParameterValues',
-            'httpServletRequest.getParameterMap',
-            'httpServletRequest.getCookies',
-            'req.getParameter',
-            'req.getQueryString',
-            'req.getRemoteAddr',
-            'req.getHeaderNames',
-            'req.getHeader',
-            'req.getParameterValues',
-            'req.getParameterMap',
-            'req.getCookies',
-            'servletRequest.getParameter',
-            'servletRequest.getQueryString',
-            'servletRequest.getRemoteAddr',
-            'servletRequest.getHeaderNames',
-            'servletRequest.getHeader',
-            'servletRequest.getParameterValues',
-            'servletRequest.getParameterMap',
-            'servletRequest.getCookies',
-            'RequestParam',  # Spring框架注解入参
-            'RequestBody',
-            'RequestHeader',
-            'PathVariable'
-        ]
-        if str(expr) in controlled_params:
+        """
+        用于判断是否调用了外部传参
+        :param expr:
+        :param lineno:
+        :return:
+        """
+        if str(expr) in self.sources:
             logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
                                                                                            l=lineno))
             return 1

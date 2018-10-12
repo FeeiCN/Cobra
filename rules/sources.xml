@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cobra document="http://cobra.feei.cn">
+    <Source type="HTTP">
+        <rule value="request.getParameter" class="javax.servlet.HttpServletRequest"/>
+        <rule value="request.getQueryString" class="javax.servlet.HttpServletRequest"/>
+        <rule value="request.getRemoteAddr" class="javax.servlet.HttpServletRequest"/>
+        <rule value="request.getHeaderNames" class="javax.servlet.HttpServletRequest"/>
+        <rule value="request.getHeader" class="javax.servlet.HttpServletRequest"/>
+        <rule value="request.getParameterValues" class="javax.servlet.HttpServletRequest"/>
+        <rule value="request.getParameterMap" class="javax.servlet.HttpServletRequest"/>
+        <rule value="request.getCookies" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getParameter" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getQueryString" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getRemoteAddr" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getHeaderNames" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getHeader" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getParameterValues" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getParameterMap" class="javax.servlet.HttpServletRequest"/>
+        <rule value="httpServletRequest.getCookies" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getParameter" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getQueryString" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getRemoteAddr" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getHeaderNames" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getHeader" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getParameterValues" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getParameterMap" class="javax.servlet.HttpServletRequest"/>
+        <rule value="req.getCookies" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getParameter" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getQueryString" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getRemoteAddr" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getHeaderNames" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getHeader" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getParameterValues" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getParameterMap" class="javax.servlet.HttpServletRequest"/>
+        <rule value="servletRequest.getCookies" class="javax.servlet.HttpServletRequest"/>
+        <rule value="RequestParam" class="org.springframework.web.bind.annotation.RequestParam"/>
+        <rule value="RequestBody" class="org.springframework.web.bind.annotation.RequestBody"/>
+        <rule value="RequestHeader" class="org.springframework.web.bind.annotation.RequestHeader"/>
+        <rule value="PathVariable" class="org.springframework.web.bind.annotation.PathVariable"/>
+    </Source>
+
+    <Source type="FILE">
+        <rule value="File" class="java.io.File"/>
+        <rule value="FileInputStream" class="java.io.FileInputStream"/>
+        <rule value="FileReader" class="java.io.FileReader"/>
+        <rule value="RandomAccessFile" class="java.io.RandomAccessFile"/>
+        <rule value="BufferedReader" class="java.io.BufferedReader"/>
+        <rule value="InputStreamReader" class="java.io.InputStreamReader"/>
+    </Source>
+
+    <Source type="DB">
+        <rule value="ResultSet.getInt" class="java.sql.ResultSet"/>
+        <rule value="ResultSet.getDate" class="java.sql.ResultSet"/>
+        <rule value="ResultSet.getString" class="java.sql.ResultSet"/>
+    </Source>
+
+</cobra>
+
+
+
