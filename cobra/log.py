@@ -120,6 +120,8 @@ class ColorizingStreamHandler(logging.StreamHandler):
             if not self.is_tty:
                 if message and message[0] == "\r":
                     message = message[1:]
+                if sys.version > '3':
+                    message = message.decode()
                 stream.write(message)
             else:
                 self.output_colorized(message)
