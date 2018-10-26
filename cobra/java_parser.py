@@ -60,10 +60,10 @@ class JavaAst(object):
                 pass
 
             elif isinstance(node, StatementExpression):
-                self.analysis_statement_expression(node, sink, back_node, vul_lineno)
+                self.analysis_nodes(node, sink, back_node, vul_lineno)
 
             elif isinstance(node, LocalVariableDeclaration):
-                self.analysis_local_variable_declaration(node, sink, back_node, vul_lineno)
+                self.analysis_nodes(node, sink, back_node, vul_lineno)
 
             elif isinstance(node, MethodInvocation):
                 pass
@@ -73,59 +73,29 @@ class JavaAst(object):
 
             back_node.append(node)
 
-    def analysis_statement_expression(self, node, sink, back_node, vul_lineno):
+    def analysis_nodes(self, node, sink, back_node, vul_lineno):
         """
-        用于定位statementExpression类型结构的sink点
+        用于定位不同语法类型的Sink函数位置，并进行参数的提取操作
         :param node:
         :param sink:
         :param back_node:
+        :param vul_lineno:
         :return:
         """
         sink_list = sink.split('.')
 
         if len(sink_list) == 2:
-            if self.analysis_sink(node.expression, sink_list, vul_lineno):
-                params = self.analysis_node(node.expression)
-                logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
+            if isinstance(node, StatementExpression):
+                if self.analysis_sink(node.expression, sink_list, vul_lineno):  # 判断是否为Sink函数
+                    params = self.analysis_node(node.expression)  # 提取Sink函数的所有参数
+                    logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
+                    self.start_analysis_params(params, sink, back_node)  # 开始回溯参数的来源
 
-                try:
-                    if isinstance(params, list):
-                        for param in params:
-                            logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(param))
-                            is_controllable = self.back_statement_expression(param, back_node)
-                            self.set_scan_results(is_controllable, sink)
-
-                    else:
-                        logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(params))
-                        is_controllable = self.back_statement_expression(params, back_node)
-                        self.set_scan_results(is_controllable, sink)
-                except RuntimeError:
-                    logger.debug('Maximum recursion depth exceeded')
-
-        else:
-            logger.warning('[Java-AST] The sink function list index out of range')
-
-    def analysis_local_variable_declaration(self, node, sink, back_node, vul_lineno):
-        sink_list = sink.split('.')
-
-        if len(sink_list) == 2:
-            if self.analysis_sink(node.declarators, sink_list, vul_lineno):
-                params = self.analysis_node(node)
-                logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
-
-                try:
-                    if isinstance(params, list):
-                        for param in params:
-                            logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(param))
-                            is_controllable = self.back_statement_expression(param, back_node)
-                            self.set_scan_results(is_controllable, sink)
-
-                    else:
-                        logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(params))
-                        is_controllable = self.back_statement_expression(params, back_node)
-                        self.set_scan_results(is_controllable, sink)
-                except RuntimeError:
-                    logger.debug('Maximum recursion depth exceeded')
+            if isinstance(node, LocalVariableDeclaration):
+                if self.analysis_sink(node.declarators, sink_list, vul_lineno):
+                    params = self.analysis_node(node)
+                    logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
+                    self.start_analysis_params(params, sink, back_node)
 
         else:
             logger.warning('[Java-AST] The sink function list index out of range')
@@ -174,7 +144,35 @@ class JavaAst(object):
             return False
 
     # ####################### 回溯参数传递 #############################
+    def start_analysis_params(self, params, sink, back_node):
+        """
+        用于开始对Sink函数的参数进行回溯，并收集记录回溯结果
+        :param params:
+        :param sink:
+        :param back_node:
+        :return:
+        """
+        try:
+            if isinstance(params, list):
+                for param in params:
+                    logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(param))
+                    is_controllable = self.back_statement_expression(param, back_node)
+                    self.set_scan_results(is_controllable, sink)
+
+            else:
+                logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(params))
+                is_controllable = self.back_statement_expression(params, back_node)
+                self.set_scan_results(is_controllable, sink)
+        except RuntimeError:
+            logger.debug('Maximum recursion depth exceeded')
+
     def back_statement_expression(self, param, back_node):
+        """
+        开始回溯Sink函数参数
+        :param param:
+        :param back_node:
+        :return:
+        """
         is_controllable = self.is_controllable(param)
 
         if len(back_node) != 0 and is_controllable == -1:
@@ -185,82 +183,59 @@ class JavaAst(object):
                 node_param = self.get_node_name(node.declarators)  # 获取被赋值变量
                 expr_param, sink = self.get_expr_name(node.declarators)  # 取出赋值表达式中的内容
 
-                if node_param == param and not isinstance(sink, list):
-                    logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
-                                                                                                   l=lineno))
-                    param = sink
-                    is_controllable = self.is_controllable(expr_param, lineno)
-
-                if node_param == param and isinstance(sink, list):
-                    is_controllable = self.is_controllable(expr_param, lineno)
-
-                    for s in sink:
-                        logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
-                                                                                           l=lineno))
-                        param = s
-
-                        if is_controllable == 1:
-                            return is_controllable
-
-                        _is_controllable = self.back_statement_expression(param, back_node[:-1])
-
-                        if _is_controllable != -1:
-                            is_controllable = _is_controllable
+                is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno, back_node)
 
             if isinstance(node, Assignment):
                 node_param = self.get_node_name(node.expressionl)
                 expr_param, sink = self.get_expr_name(node.value)  # expr_param为方法名, sink为回溯变量
 
-                if node_param == param and not isinstance(sink, list):
-                    logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
-                                                                                                   l=lineno))
-                    param = sink
-                    is_controllable = self.is_controllable(expr_param, lineno)
-
-                if node_param == param and isinstance(sink, list):
-                    is_controllable = self.is_controllable(expr_param, lineno)
-
-                    for s in sink:
-                        logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
-                                                                                                       l=lineno))
-                        param = s
-
-                        if is_controllable == 1:
-                            return is_controllable
-
-                        _is_controllable = self.back_statement_expression(param, back_node[:-1])
-
-                        if _is_controllable != -1:
-                            is_controllable = _is_controllable
+                is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno, back_node)
 
             if isinstance(node, FormalParameter):
                 node_param = self.get_node_name(node)  # 获取被赋值变量
                 expr_param, sink = self.get_expr_name(node)  # 取出赋值表达式中的内容
 
-                if node_param == param and not isinstance(sink, list):
-                    logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
-                                                                                                   l=lineno))
-                    param = sink
-                    is_controllable = self.is_controllable(expr_param, lineno)
-
-                if node_param == param and isinstance(sink, list):
-                    is_controllable = self.is_controllable(expr_param, lineno)
-
-                    for s in sink:
-                        logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
-                                                                                                       l=lineno))
-                        param = s
-
-                        if is_controllable == 1:
-                            return is_controllable
-
-                        _is_controllable = self.back_statement_expression(param, back_node[:-1])
-
-                        if _is_controllable != -1:
-                            is_controllable = _is_controllable
+                is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno, back_node)
 
             if is_controllable == -1:
                 is_controllable = self.back_statement_expression(param, back_node[:-1])
+
+        return is_controllable
+
+    def back_node_is_controllable(self, node_param, param, sink, expr_param, lineno, back_node):
+        """
+        对回溯的节点进行可控判断，并对多参数的
+        :param node_param:
+        :param param:
+        :param sink:
+        :param expr_param:
+        :param lineno:
+        :param back_node:
+        :return:
+        """
+        is_controllable = -1
+
+        if node_param == param and not isinstance(sink, list):
+            logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
+                                                                                           l=lineno))
+            param = sink
+            is_controllable = self.is_controllable(expr_param, lineno)
+
+        if node_param == param and isinstance(sink, list):
+            is_controllable = self.is_controllable(expr_param, lineno)
+
+            for s in sink:
+                logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
+                                                                                               l=lineno))
+                param = s
+
+                if is_controllable == 1:
+                    return is_controllable
+
+                _is_controllable = self.back_statement_expression(param, back_node[:-1])
+
+                if _is_controllable != -1:
+                    is_controllable = _is_controllable
 
         return is_controllable
 
