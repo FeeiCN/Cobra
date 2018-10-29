@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cobra document="https://github.com/WhaleShark-Team/cobra">
-    <name value="fsockopen造成的SSRF"/>
+    <name value="SSRF"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[url.openConnection|url.openStream|url.getContent|get.setQueryString]]></match>
+    <match mode="function-param-controllable"><![CDATA[openConnection|openStream|getContent|smartGetImg|HttpGet|requestGet|getImage|sendGetRequest|get]]></match>
+    <rules>
+        <rule value="openConnection" class="java.net.URL"/>
+        <rule value="openStream" class="java.net.URL"/>
+        <rule value="getContent" class="java.net.URL"/>
+        <rule value="smartGetImg" class="com.mogujie.dragon.bigdata.CDNBalance.CDNBalance"/>
+        <rule value="HttpGet" class="org.apache.http.client.methods.HttpGet"/>
+        <rule value="requestGet" class="com.mogujie.common.utils.HttpUtils"/>
+        <rule value="getImage" class="javax.swing.ImageIcon"/>
+        <rule value="sendGetRequest" class="com.snob.qa.web.util.httpUtil.HttpClient"/>
+        <rule value="get" class="com.snob.qa.web.util.httpUtil.HttpClient"/>
+    </rules>
     <level value="7"/>
     <test>
         <case assert="true"><![CDATA[

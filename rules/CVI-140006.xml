@@ -2,7 +2,11 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="直接输出入参可能导致XSS"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(request.setAttribute)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(setAttribute|getWriter)]]></match>
+    <rules>
+        <rule value="setAttribute" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getWriter" class="javax.servlet.http.HttpServletResponse"/>
+    </rules>
     <level value="4"/>
     <test>
         <case assert="true"><![CDATA[request.setAttribute("test")]]></case>

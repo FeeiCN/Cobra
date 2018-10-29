@@ -2,7 +2,14 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="远程代码执行"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(engine.eval|exp.getValue|expressionFactory.createValueExpression|ognlUtil.getValue|BeanUtils.populate)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(eval|parseExpression|createValueExpression|getValue|populate)]]></match>
+    <rules>
+        <rule value="eval" class="javax.script.ScriptEngine"/>
+        <rule value="parseExpression" class="org.springframework.expression.ExpressionParser"/>
+        <rule value="createValueExpression" class="javax.el.ExpressionFactory"/>
+        <rule value="getValue" class="com.opensymphony.xwork2.ognl.OgnlUtil"/>
+        <rule value="populate" class="org.apache.commons.beanutils.BeanUtils"/>
+    </rules>
     <level value="10"/>
     <test>
         <case assert="true"><![CDATA[engine.eval(script);]]></case>

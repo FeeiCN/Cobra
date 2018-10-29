@@ -28,6 +28,7 @@ Random r = new Random();
 ```
 
 ## 3. 参数可控：只要判定参数是用户可控的则算作漏洞
+### PHP
 **例子：反射型XSS（直接输出入参）**
 ```php
 $content = $_GET['content'];
@@ -39,6 +40,29 @@ print("Text: " + $content);
 ```xml
 <match mode="function-param-controllable"><![CDATA[print]]></match>
 ```
+
+### JAVA
+**例子：任意URL跳转**
+```java
+import javax.servlet.http.HttpServletResponse;
+
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    [...]
+    url = req.getParameter("redirectUrl");
+    resp.sendRedirect(url);
+    [...]
+}
+```
+
+```xml
+<match mode="function-param-controllable"><![CDATA[(sendRedirect|forward|)]]></match>
+    <rules>
+        <rule value="sendRedirect" class="javax.servlet.http.HttpServletResponse"/>
+        <rule value="forward" class="javax.servlet.http.HttpServletResponse"/>
+    </rules>
+```
+
+> match中的规则需要和rules中保持一致，match用于第一步正则匹配漏洞函数，rules用于第二步进行漏洞确认，value为漏洞方法，class为漏洞方法所在包
 
 ### 4. 依赖安全：当依赖了某个不安全版本的三方组件
 > 依赖安全的规则固定配置在`CVI-999999.xml`中。

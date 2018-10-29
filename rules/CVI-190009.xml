@@ -2,7 +2,10 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="文件信息泄露"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(request.getRequestDispatcher)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(getRequestDispatcher)]]></match>
+    <rules>
+        <rule value="getRequestDispatcher" class="javax.servlet.http.HttpServletRequest"/>
+    </rules>
     <level value="2"/>
     <test>
         <case assert="true"><![CDATA[request.getRequestDispatcher("/WEB-INF/jsps/" + jspFile + ".jsp").include(request, response);]]></case>
