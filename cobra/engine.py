@@ -443,6 +443,7 @@ class Core(object):
         self.rule_match_mode = single_rule['match-mode']
         self.rule_match2 = single_rule['match2']
         self.rule_match2_block = single_rule['match2-block']
+        self.java_rules = single_rule['java-rules']
         self.rule_repair = single_rule['repair']
         self.repair_block = single_rule['repair-block']
         self.cvi = single_rule['id']
@@ -712,12 +713,12 @@ class Core(object):
 
             if self.file_path[-4:].lower() == 'java':
                 if self.rule_match_mode == const.mm_function_param_controllable:
-                    rule_match = self.rule_match.strip('()').split('|')
-                    logger.debug('[RULE_MATCH] {r}'.format(r=rule_match))
+                    # rule_match = self.rule_match.strip('()').split('|')  # [方法名：包名，方法名：包名]
+                    logger.debug('[RULE_MATCH] {r}'.format(r=self.java_rules))
                     try:
                         with open(self.file_path, 'r') as fi:
                             code_contents = fi.read()
-                            result = java_scan_parser(code_contents, rule_match, self.line_number)
+                            result = java_scan_parser(code_contents, self.java_rules, self.line_number)
                             logger.debug('[AST] [RET] {c}'.format(c=result))
 
                             if len(result) > 0:

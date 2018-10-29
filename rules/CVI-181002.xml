@@ -2,7 +2,12 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="远程命令执行"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(runtime.exec|Class.forName|ognl.parseExpression|Ognl.parseExpression)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(exec|forName|parseExpression)]]></match>
+    <rules>
+        <rule value="exec" class="java.lang.Runtime"/>
+        <rule value="forName" class="java.lang.Class"/>
+        <rule value="parseExpression" class="org.apache.commons.ognl.Ognl"/>
+    </rules>
     <level value="10"/>
     <test>
         <case assert="true"><![CDATA[runtime.exec(request.getParameter("name"));]]></case>

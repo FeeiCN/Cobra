@@ -134,7 +134,7 @@ class JavaAst(object):
         """
         判断Sink函数是否存在
         :param node:
-        :param sink:
+        :param sink: list, [方法名，包名]
         :return:
         """
         qualifier = node.qualifier  # 对象名

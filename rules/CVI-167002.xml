@@ -2,7 +2,15 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="XXE(XML实体注入)"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(factory.createXMLStreamReader|xPathExpr.evaluate|parser.parse|reader.parse|DocumentBuilder.parse|transformer.transform)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(createXMLStreamReader|evaluate|parse|transform)]]></match>
+    <rules>
+        <rule value="createXMLStreamReader" class="javax.xml.stream.XMLInputFactory"/>
+        <rule value="evaluate" class="javax.xml.xpath.XPathExpression"/>
+        <rule value="parse" class="javax.xml.parsers.DocumentBuilderFactory"/>
+        <rule value="parse" class="org.xml.sax.helpers.XMLReaderFactory"/>
+        <rule value="parse" class="javax.xml.parsers.SAXParserFactory"/>
+        <rule value="transform" class="javax.xml.transform.TransformerFactory"/>
+    </rules>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[Document doc = DocumentBuilder.parse(input);]]></case>

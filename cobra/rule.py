@@ -180,6 +180,7 @@ class Rule(object):
                 'match-mode': 'regex-only-match',
                 'match2': None,
                 'match2-block': None,
+                'java-rules': [],
                 'repair': None,
                 'repair-block': None,
                 'level': None,
@@ -221,6 +222,11 @@ class Rule(object):
                         rule_info['repair-block'] = block(x.get('block'))
                     elif x.tag == 'match2':
                         rule_info['match2-block'] = block(x.get('block'))
+                if x.tag == 'rules':
+                    for rule in x:
+                        method_name = rule.get('value')
+                        class_name = rule.get('class')
+                        rule_info['java-rules'].append(method_name + ':' + class_name)
                 if x.tag == 'level':
                     rule_info['level'] = x.get('value')
                 if x.tag == 'solution':
