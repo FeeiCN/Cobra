@@ -30,6 +30,7 @@ class JavaAst(object):
     def __init__(self):
         self.scan_results = []
         self.sources = []
+        self.import_package = []
         r = Rule()
         self.sources = r.sources
 
@@ -59,6 +60,9 @@ class JavaAst(object):
             elif isinstance(node, ReferenceType):
                 pass
 
+            elif isinstance(node, Import):
+                self.analysis_import(node)
+
             elif isinstance(node, StatementExpression):
                 self.analysis_nodes(node, sink, back_node, vul_lineno)
 
@@ -82,7 +86,7 @@ class JavaAst(object):
         :param vul_lineno:
         :return:
         """
-        sink_list = sink.split('.')
+        sink_list = sink.split(':')  # ['方法名', '包名']
 
         if len(sink_list) == 2:
             if isinstance(node, StatementExpression):
@@ -105,6 +109,7 @@ class JavaAst(object):
         用于判断node节点中是否存在Sink函数
         :param node:
         :param sink:
+        :param vul_lineno:
         :return:
         """
         if isinstance(node, MethodInvocation):
@@ -132,11 +137,11 @@ class JavaAst(object):
         :param sink:
         :return:
         """
-        qualifier = node.qualifier
-        member = node.member
+        qualifier = node.qualifier  # 对象名
+        member = node.member  # 方法名
         lineno = self.get_node_lineno(node)
 
-        if sink[0] == qualifier and sink[1] == member and int(lineno) == int(vul_lineno):  # 判断方法是否为Sink点
+        if int(lineno) == int(vul_lineno) and sink[0] == member and sink[1] in self.import_package:  # 判断方法是否为Sink点
             logger.debug('[Java-AST] Found the sink function --> {q}.{m} in line {l}'.format(q=sink[0], m=sink[1], l=lineno))
             return True
 
@@ -173,7 +178,8 @@ class JavaAst(object):
         :param back_node:
         :return:
         """
-        is_controllable = self.is_controllable(param)
+        # is_controllable = self.is_controllable(param)
+        is_controllable = -1
 
         if len(back_node) != 0 and is_controllable == -1:
             node = back_node[len(back_node)-1]
@@ -272,6 +278,10 @@ class JavaAst(object):
         else:
             logger.debug("[Java-AST] Can't analysis node --> {n} in analysis_assignment method".format(n=node))
 
+    def analysis_import(self, node):
+        if hasattr(node, 'path'):
+            self.import_package.append(node.path)
+
     # ####################### 提取参数内容 #############################
     def get_node_arguments(self, nodes):
         """
@@ -329,7 +339,8 @@ class JavaAst(object):
         """
         qualifier = node.qualifier
         member = node.member
-        result = qualifier + '.' + member
+        # result = qualifier + '.' + member
+        result = member
         lineno = self.get_node_lineno(node)
         logger.debug('[Java-AST] analysis method --> {r} in line {l}'.format(r=result, l=lineno))
         return result
@@ -508,10 +519,12 @@ class JavaAst(object):
         :param lineno:
         :return:
         """
-        if str(expr) in self.sources:
-            logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
-                                                                                           l=lineno))
-            return 1
+        for key in self.sources:
+            if str(expr) in self.sources[key]:
+                if key in self.import_package:
+                    logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
+                                                                                                   l=lineno))
+                    return 1
         return -1
 
     # ####################### 保存扫描结果 #############################

@@ -135,17 +135,19 @@ class Rule(object):
     def sources(self):
         """
         Read all sources function rule
-        :return:
+        :return: Dict, {package1: [method1, method2, method3], package2: [method1, method2, method3]}
         """
-        source_rule = []
+        source_rules = {}
         xml_sources = self._read_xml('sources.xml')
         if xml_sources is None:
             logger.critical('sources read failed !!!')
         for source in xml_sources:
             for rule in source:
                 s_rule = rule.get('value')
-                source_rule.append(s_rule)
-        return source_rule
+                s_class = rule.get('class')
+                source_rules.setdefault(s_class, []).append(s_rule)
+
+        return source_rules
 
     def rules(self, rules=None):
         """
