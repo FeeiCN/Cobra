@@ -2,7 +2,7 @@ Flask==0.12.4
 Flask-RESTful==0.3.6
 rarfile==2.7
 prettytable==0.7.2
-requests==2.6.2
+requests==2.20.0
 pytest==3.0.6
 pip==9.0.1
 phply==1.0.0
