@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <name value=""/>
+    <language value=""/>
+    <match mode="function-param-controllable"><![CDATA[(NewRule)]]></match>
+    <rules>
+        <rule value="NewRule" class="NewRule-Package"/>
+    </rules>
+    <level value="0"/>
+    <solution>
+        ### NewRule
+    </solution>
+    <status value="on"/>
+    <author name="BlBana" email="blbana@qq.com"/>
+</cobra>

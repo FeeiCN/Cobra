@@ -21,7 +21,6 @@ from cobra.log import logger
 from cobra.rule import Rule
 
 
-logger.setLevel(logging.DEBUG)
 
 sys.setrecursionlimit(2000)
 
@@ -31,6 +30,7 @@ class JavaAst(object):
         self.scan_results = []
         self.sources = []
         self.import_package = []
+        self.method_name = ''  # 用于正在存放正在回溯的方法名
         r = Rule()
         self.sources = r.sources
 
@@ -143,7 +143,7 @@ class JavaAst(object):
         lineno = self.get_node_lineno(node)
 
         if int(lineno) == int(vul_lineno) and sink[0] == member and sink[1] in self.import_package:  # 判断方法是否为Sink点
-            logger.debug('[Java-AST] Found the sink function --> {q}.{m} in line {l}'.format(q=sink[0], m=sink[1], l=lineno))
+            logger.debug('[Java-AST] Found the sink function --> {q}:{m} in line {l}'.format(q=sink[0], m=sink[1], l=lineno))
             return True
 
         else:
@@ -156,6 +156,7 @@ class JavaAst(object):
         :param params:
         :param sink:
         :param back_node:
+        :param method_params:
         :return:
         """
         try:
@@ -209,13 +210,17 @@ class JavaAst(object):
                                                                  back_node, method_params)
 
             if isinstance(node, StatementExpression):
-                node_param = self.get_node_name(node.expression.expressionl)
-                expr_param, sink = self.get_expr_name(node.expression.value)
-                is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno,
-                                                                 back_node, method_params)
+                if isinstance(node.expression, Assignment):
+                    node_param = self.get_node_name(node.expression.expressionl)
+                    expr_param, sink = self.get_expr_name(node.expression.value)
+                    is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno,
+                                                                     back_node, method_params)
 
             if is_controllable == -1:
                 is_controllable = self.back_statement_expression(param, back_node[:-1], method_params)
+
+        elif len(back_node) == 0 and is_controllable == -1:
+            is_controllable = self.is_sink_method(param, method_params)
 
         return is_controllable
 
@@ -232,11 +237,6 @@ class JavaAst(object):
         :return:
         """
         is_controllable = -1
-        if method_params is not None:
-            is_controllable = self.is_sink_method(sink, method_params)
-
-            if is_controllable == 4:
-                return is_controllable
 
         if node_param == param and not isinstance(sink, list) and is_controllable == -1:
             logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
@@ -244,7 +244,7 @@ class JavaAst(object):
             param = sink
             is_controllable = self.is_controllable(sink, lineno)
 
-            if is_controllable != 1:
+            if is_controllable == -1:
                 is_controllable = self.is_sink_method(sink, method_params)
 
         if node_param == param and isinstance(sink, list) and is_controllable == -1:
@@ -259,6 +259,9 @@ class JavaAst(object):
                     return is_controllable
 
                 _is_controllable = self.back_statement_expression(param, back_node[:-1])
+
+                if _is_controllable == -1:
+                    is_controllable = self.is_sink_method(param, method_params)
 
                 if _is_controllable != -1:
                     is_controllable = _is_controllable
@@ -313,6 +316,7 @@ class JavaAst(object):
         method_body = []
         nodes = []
         method_params = self.get_method_declaration(node)
+        self.method_name = node.name
         for n in node.body:  # analysis分析节点为元组类型，整理数据结构
             body = ('', n)
             nodes.append(body)
@@ -582,24 +586,44 @@ class JavaAst(object):
     @staticmethod
     def is_sink_method(sinks, method_params):
         is_controllable = -1
-        if isinstance(sinks, list):
+
+        if isinstance(sinks, list) and method_params is not None:
             for sink in sinks:
                 for method_param in method_params:
                     if sink == method_param:
                         is_controllable = 4
                         logger.debug('[Java-AST] [METHOD] Found the user sink function --> {e}'.format(e=sink))
 
+        if not isinstance(sinks, list) and method_params is not None:
+            for method_param in method_params:
+                if sinks == method_param:
+                    is_controllable = 4
+                    logger.debug('[Java-AST] [METHOD] Found the user sink function --> {e}'.format(e=sinks))
+
         return is_controllable
 
     # ####################### 保存扫描结果 #############################
     def set_scan_results(self, is_controllable, sink):
         result = {
-            'code': is_controllable,
-            'sink': sink
+            'code': -1,  # AST检测status code： 漏洞不存在-->-1，函数可控-->1，自定义敏感函数-->4
+            'sink': ''  # 敏感函数名
         }
 
-        if result['code'] != -1:
-            self.scan_results.append(result)
+        if is_controllable == 1:
+            result = {
+                'code': is_controllable,
+                'sink': sink
+            }
+
+        elif is_controllable == 4:
+            result = {
+                'code': is_controllable,
+                'sink': sink,
+                'u_sink': self.method_name
+            }
+
+        # if result['code'] != -1:
+        self.scan_results.append(result)
 
     # ####################### 保存扫描结果 #############################
     def export_list(self, params, export_params):
