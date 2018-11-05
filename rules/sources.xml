@@ -10,6 +10,16 @@
         <rule value="getParameterValues" class="javax.servlet.HttpServletRequest"/>
         <rule value="getParameterMap" class="javax.servlet.HttpServletRequest"/>
         <rule value="getCookies" class="javax.servlet.HttpServletRequest"/>
+
+        <rule value="getParameter" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getQueryString" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getRemoteAddr" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getHeaderNames" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getHeader" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getParameterValues" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getParameterMap" class="javax.servlet.http.HttpServletRequest"/>
+        <rule value="getCookies" class="javax.servlet.http.HttpServletRequest"/>
+
         <rule value="RequestParam" class="org.springframework.web.bind.annotation.RequestParam"/>
         <rule value="RequestBody" class="org.springframework.web.bind.annotation.RequestBody"/>
         <rule value="RequestHeader" class="org.springframework.web.bind.annotation.RequestHeader"/>

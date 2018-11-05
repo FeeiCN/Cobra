@@ -30,6 +30,8 @@ class JavaAst(object):
         self.scan_results = []
         self.sources = []
         self.import_package = []
+        self.package_name = ''
+        self.class_name = ''
         self.method_name = ''  # 用于正在存放正在回溯的方法名
         r = Rule()
         self.sources = r.sources
@@ -49,8 +51,11 @@ class JavaAst(object):
             if isinstance(node, CompilationUnit):
                 pass
 
+            elif isinstance(node, PackageDeclaration):
+                self.package_name = node.name  # 获取package名
+
             elif isinstance(node, ClassDeclaration):
-                pass
+                self.class_name = node.name  # 获取Class名
 
             elif isinstance(node, FormalParameter):
                 pass
@@ -142,9 +147,23 @@ class JavaAst(object):
         member = node.member  # 方法名
         lineno = self.get_node_lineno(node)
 
-        if int(lineno) == int(vul_lineno) and sink[0] == member and sink[1] in self.import_package:  # 判断方法是否为Sink点
-            logger.debug('[Java-AST] Found the sink function --> {q}:{m} in line {l}'.format(q=sink[0], m=sink[1], l=lineno))
-            return True
+        if sink[1] != '':  # 包名不为空
+            # 单文件检测，包名未被import，根据package和class判断
+            if sink[1].strip() == (self.package_name + '.' + self.class_name).strip():
+                if int(lineno) == int(vul_lineno) and sink[0] == member:
+                    logger.debug('[Java-AST] Found the sink function --> {q} in line {l}'.format(q=sink[0], l=lineno))
+                    return True
+
+            # 多文件检测，包名直接被import，根据import的类进行判断
+            else:
+                if int(lineno) == int(vul_lineno) and sink[0] == member and sink[1] in self.import_package:  # 判断方法是否为Sink点
+                    logger.debug('[Java-AST] Found the sink function --> {q}:{m} in line {l}'.format(q=sink[0], m=sink[1], l=lineno))
+                    return True
+
+        elif sink[1] == '':  # 包名为空
+            if int(lineno) == int(vul_lineno) and sink[0] == member:
+                logger.debug('[Java-AST] Found the sink function --> {q} in line {l}'.format(q=sink[0], l=lineno))
+                return True
 
         else:
             return False
@@ -317,9 +336,10 @@ class JavaAst(object):
         nodes = []
         method_params = self.get_method_declaration(node)
         self.method_name = node.name
-        for n in node.body:  # analysis分析节点为元组类型，整理数据结构
-            body = ('', n)
-            nodes.append(body)
+        if node.body is not None:
+            for n in node.body:  # analysis分析节点为元组类型，整理数据结构
+                body = ('', n)
+                nodes.append(body)
 
         self.analysis(nodes, sink, method_body, vul_lineno, method_params)
 
@@ -604,10 +624,17 @@ class JavaAst(object):
 
     # ####################### 保存扫描结果 #############################
     def set_scan_results(self, is_controllable, sink):
-        result = {
-            'code': -1,  # AST检测status code： 漏洞不存在-->-1，函数可控-->1，自定义敏感函数-->4
-            'sink': ''  # 敏感函数名
-        }
+        """
+        用于获取扫描结果
+        :param is_controllable:
+        :param sink:
+        :return:
+        """
+        if self.package_name != '' and self.class_name != '':
+            u_sink = self.method_name + ':' + self.package_name + '.' + self.class_name
+
+        else:
+            u_sink = self.method_name + ':'
 
         if is_controllable == 1:
             result = {
@@ -619,11 +646,17 @@ class JavaAst(object):
             result = {
                 'code': is_controllable,
                 'sink': sink,
-                'u_sink': self.method_name
+                'u_sink': u_sink
             }
 
-        # if result['code'] != -1:
-        self.scan_results.append(result)
+        else:
+            result = {
+                'code': -1,
+                'sink': ''
+            }
+
+        if result['code'] != -1:
+            self.scan_results.append(result)
 
     # ####################### 保存扫描结果 #############################
     def export_list(self, params, export_params):
@@ -647,6 +680,10 @@ def java_scan_parser(code_content, sensitive_func, vul_lineno):
     back_node = []
     tree = javalang.parse.parse(code_content)
     java_ast = JavaAst()
-    for sink in sensitive_func:
-        java_ast.analysis(tree, sink, back_node, vul_lineno)
+    if isinstance(sensitive_func, list):
+        for sink in sensitive_func:
+            java_ast.analysis(tree, sink, back_node, vul_lineno)
+    else:
+        java_ast.analysis(tree, sensitive_func, back_node, vul_lineno)
+
     return java_ast.scan_results
