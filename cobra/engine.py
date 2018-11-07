@@ -750,7 +750,8 @@ class Core(object):
                     try:
                         with open(self.file_path, 'r') as fi:
                             code_contents = fi.read()
-                            result = java_scan_parser(code_contents, self.java_rules, self.line_number)
+                            result = java_scan_parser(code_contents, self.java_rules, self.line_number,
+                                                      self.target_directory)
                             logger.debug('[AST] [RET] {c}'.format(c=result))
 
                             if len(result) > 0:

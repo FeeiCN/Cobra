@@ -15,24 +15,28 @@
 
 import sys
 import javalang
-import logging
+
 from javalang.tree import *
 from cobra.log import logger
 from cobra.rule import Rule
-
 
 
 sys.setrecursionlimit(2000)
 
 
 class JavaAst(object):
-    def __init__(self):
+    def __init__(self, target_directory):
+        self.target_directory = target_directory
+
         self.scan_results = []
         self.sources = []
         self.import_package = []
+        self.class_path = []
+
         self.package_name = ''
         self.class_name = ''
         self.method_name = ''  # 用于正在存放正在回溯的方法名
+
         r = Rule()
         self.sources = r.sources
 
@@ -48,40 +52,44 @@ class JavaAst(object):
         :return:
         """
         for path, node in nodes:
-            if isinstance(node, CompilationUnit):
-                pass
+            try:
+                if isinstance(node, CompilationUnit):
+                    pass
 
-            elif isinstance(node, PackageDeclaration):
-                self.package_name = node.name  # 获取package名
+                elif isinstance(node, PackageDeclaration):
+                    self.package_name = node.name  # 获取package名
 
-            elif isinstance(node, ClassDeclaration):
-                self.class_name = node.name  # 获取Class名
+                elif isinstance(node, ClassDeclaration):
+                    self.class_name = node.name  # 获取Class名
 
-            elif isinstance(node, FormalParameter):
-                pass
+                elif isinstance(node, FormalParameter):
+                    pass
 
-            elif isinstance(node, ReferenceType):
-                pass
+                elif isinstance(node, ReferenceType):
+                    pass
 
-            elif isinstance(node, Import):
-                self.analysis_import(node)
+                elif isinstance(node, Import):
+                    self.analysis_import(node)
 
-            elif isinstance(node, StatementExpression):
-                self.analysis_nodes(node, sink, back_node, vul_lineno, method_params)
+                elif isinstance(node, StatementExpression):
+                    self.analysis_nodes(node, sink, back_node, vul_lineno, method_params)
 
-            elif isinstance(node, LocalVariableDeclaration):
-                self.analysis_nodes(node, sink, back_node, vul_lineno, method_params)
+                elif isinstance(node, LocalVariableDeclaration):
+                    self.analysis_nodes(node, sink, back_node, vul_lineno, method_params)
 
-            elif isinstance(node, MethodDeclaration):
-                self.analysis_method_declaration(node, sink, vul_lineno)
+                elif isinstance(node, MethodDeclaration):
+                    self.analysis_method_declaration(node, sink, vul_lineno)
 
-            elif isinstance(node, MethodInvocation):
-                pass
+                elif isinstance(node, MethodInvocation):
+                    pass
 
-            elif isinstance(node, Literal):
-                pass
+                elif isinstance(node, Literal):
+                    pass
 
-            back_node.append(node)
+                back_node.append(node)
+
+            except Exception as e:
+                logger.debug('[Java-AST] [EXCEPTION] {e}'.format(e=e.message))
 
     def analysis_nodes(self, node, sink, back_node, vul_lineno, method_params=None):
         """
@@ -90,6 +98,7 @@ class JavaAst(object):
         :param sink:
         :param back_node:
         :param vul_lineno:
+        :param method_params:
         :return:
         """
         sink_list = sink.split(':')  # ['方法名', '包名']
@@ -676,10 +685,10 @@ class JavaAst(object):
         return export_params
 
 
-def java_scan_parser(code_content, sensitive_func, vul_lineno):
+def java_scan_parser(code_content, sensitive_func, vul_lineno, target_directory):
     back_node = []
     tree = javalang.parse.parse(code_content)
-    java_ast = JavaAst()
+    java_ast = JavaAst(target_directory)
     if isinstance(sensitive_func, list):
         for sink in sensitive_func:
             java_ast.analysis(tree, sink, back_node, vul_lineno)
