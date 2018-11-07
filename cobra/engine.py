@@ -356,7 +356,17 @@ class SingleRule(object):
                 continue
             is_test = False
             try:
-                is_vulnerability, reason = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+                # is_vulnerability, reason = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+                vul_results = Core(self.target_directory, vulnerability, self.sr, 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+
+                data = ""
+
+                if len(vul_results) == 3:
+                    is_vulnerability, reason, data = vul_results
+                elif len(vul_results) == 2:
+                    is_vulnerability, reason = vul_results
+                else:
+                    is_vulnerability, reason = False, 'Error'
 
                 if is_vulnerability:
                     logger.debug('[CVI-{cvi}] [RET] Found {code}'.format(cvi=self.sr['id'], code=reason))
@@ -366,10 +376,27 @@ class SingleRule(object):
                         logger.debug('[CVI-{cvi} [RET] Found vul in annotation]')
                         vulnerability.code_content = vulnerability.code_content + vulnerability.analysis
                     self.rule_vulnerabilities.append(vulnerability)
+
                 else:
-                    logger.debug('Not vulnerability: {code}'.format(code=reason))
+                    if reason == 'FUNCTION-PARAM-CONTROLLABLE':
+                        logger.debug('[CVI-{cvi}] [NEW-RULE] Start scan with new rule --> {u_sink}'
+                                     .format(cvi=self.sr['id'], u_sink=data))
+
+                        new_vul_results = NewCore(self.sr, self.target_directory, data, count=0).scan()
+                        if not new_vul_results:
+                            return self.rule_vulnerabilities
+
+                        if len(new_vul_results) > 0:
+                            self.rule_vulnerabilities.append(vulnerability)
+                            logger.debug('[New-Rule] [RET] Vulnerabilities: {count}'.format(count=len(new_vul_results)))
+
+                    else:
+                        logger.debug('Not vulnerability: {code}'.format(code=reason))
+
             except Exception:
-                raise
+                traceback.print_exc()
+                logger.warning('[CVI-{cvi}] [RET] {v}'.format(cvi=self.sr['id'], v=vulnerability))
+
         logger.debug('[CVI-{cvi}] {vn} Vulnerabilities: {count}'.format(cvi=self.sr['id'], vn=self.sr['name'], count=len(self.rule_vulnerabilities)))
         return self.rule_vulnerabilities
 
@@ -471,6 +498,11 @@ class Core(object):
         self.repair_code_third_party = 4008
 
         self.method = None
+        if os.path.isdir(self.target_directory):
+            file_path = self.file_path.replace(self.target_directory, '')
+        else:
+            file_path = os.path.basename(self.file_path)
+
         logger.debug("""[CVI-{cvi}] [VERIFY-VULNERABILITY] ({index})
         > File: `{file}:{line}`
         > Code: `{code}`
@@ -478,7 +510,7 @@ class Core(object):
         > Repair: `{r}({rb})`""".format(
             cvi=single_rule['id'],
             index=index,
-            file=self.file_path.replace(self.target_directory, ''),
+            file=file_path,
             line=self.line_number,
             code=self.code_content,
             m2=self.rule_match2,
@@ -725,14 +757,16 @@ class Core(object):
                                 if result[0]['code'] == 1:  # 函数参数可控
                                     return True, 'FUNCTION-PARAM-CONTROLLABLE(函数入参可控)'
 
-                                if result[0]['code'] == 2:  # 函数为敏感函数
-                                    return False, 'FUNCTION-PARAM-CONTROLLABLE(函数入参来自所在函数)'
-
                                 if result[0]['code'] == 0:  # 漏洞修复
                                     return False, 'FUNCTION-PARAM-CONTROLLABLE+Vulnerability-Fixed(漏洞已修复)'
 
                                 if result[0]['code'] == -1:  # 函数参数不可控
                                     return False, 'FUNCTION-PARAM-CONTROLLABLE(入参不可控)'
+
+                                if result[0]['code'] == 4:  # 函数为敏感函数
+                                    logger.debug('[AST] [U_SINK] FUNCTION-PARAM-CONTROLLABLE --> {u}'.format(
+                                        u=result[0]['u_sink']))
+                                    return False, 'FUNCTION-PARAM-CONTROLLABLE', result[0]['u_sink']
 
                                 logger.debug('[AST] [CODE] {code}'.format(code=result[0]['code']))
                             else:
@@ -742,3 +776,107 @@ class Core(object):
                     except Exception as e:
                         logger.warning(traceback.format_exc())
                         return False, 'Exception'
+
+
+class NewCore(object):
+    def __init__(self, old_rule, target_directory, new_rule, count=0):
+        """
+        用于初始化新规则信息，以及漏洞返回结果预处理
+        :param old_rule:
+        :param target_directory:
+        :param new_rule:
+        :param count:
+        """
+        r = Rule()
+        new_rule_info = r.rules(['CVI-100001.xml'])
+        self.new_single_rule = self.init_new_rule(old_rule, new_rule, new_rule_info)
+        self.target_directory = target_directory
+        self.rule_vulnerabilities = []
+        self.count = count
+
+    def scan(self):
+        """
+        用于主要扫描工作
+        :return:
+        """
+        self.count += 1
+        if self.count >= 10:
+            logger.debug('[New-Rule] Its too big in deep, auto exit...')
+            return False
+
+        sr = SingleRule(self.target_directory, self.new_single_rule[0])
+        origin_results = sr.origin_results()
+
+        if origin_results == '' or origin_results is None:
+            logger.debug('[New-Rule] [ORIGIN] NOT FOUND!')
+            return False
+
+        origin_vulnerabilities = origin_results.strip().split("\n")
+        for index, origin_vulnerability in enumerate(origin_vulnerabilities):
+            origin_vulnerability = origin_vulnerability.strip()
+            logger.debug('[New-Rule] [ORIGIN] {line}'.format(line=origin_vulnerability))
+            if origin_vulnerability == '':
+                logger.debug(' > continue...')
+                continue
+            vulnerability = sr.parse_match(origin_vulnerability)
+            if vulnerability is None:
+                logger.debug('Not vulnerability, continue...')
+                continue
+            is_test = False
+
+            try:
+                vul_results = Core(self.target_directory, vulnerability, self.new_single_rule[0], 'project name', ['whitelist1', 'whitelist2'], test=is_test, index=index).scan()
+
+                data = ""
+
+                if len(vul_results) == 3:
+                    is_vulnerability, reason, data = vul_results
+                elif len(vul_results) == 2:
+                    is_vulnerability, reason = vul_results
+                else:
+                    is_vulnerability, reason = False, 'Error'
+
+                if is_vulnerability:
+                    logger.debug('[New-Rule] [RET] Found {code}'.format(code=reason))
+                    vulnerability.analysis = reason
+                    self.rule_vulnerabilities.append(vulnerability)
+
+                else:
+                    if reason == 'FUNCTION-PARAM-CONTROLLABLE':
+                        logger.debug('[New-Rule] Start scan with new rule --> {u_sink}'
+                                     .format(u_sink=data))
+
+                        new_vul_results = NewCore(self.new_single_rule[0], self.target_directory, data, self.count).scan()
+
+                        if not new_vul_results:
+                            return self.rule_vulnerabilities
+
+                        if len(new_vul_results) > 0:
+                            self.rule_vulnerabilities.append(vulnerability)
+
+            except Exception:
+                traceback.print_exc()
+                logger.warning('[New-Rule] [RET] {v}'.format(v=vulnerability))
+
+        return self.rule_vulnerabilities
+
+    @staticmethod
+    def init_new_rule(old_rule, new_rule, new_rule_info):
+        """
+        :param old_rule:
+        :param new_rule:
+        :param new_rule_info:
+        :return:
+        """
+        pattern = new_rule.split(':')[0]
+
+        new_rule_info[0]['java-rules'] = new_rule  # 新规则
+        new_rule_info[0]['match'] = pattern  # 新正则
+        new_rule_info[0]['name'] = old_rule['name']
+        new_rule_info[0]['repair'] = old_rule['repair']
+        new_rule_info[0]['language'] = old_rule['language']
+        new_rule_info[0]['level'] = old_rule['level']
+        new_rule_info[0]['solution'] = old_rule['solution']
+        new_rule_info[0]['extensions'] = old_rule['extensions']
+
+        return new_rule_info
