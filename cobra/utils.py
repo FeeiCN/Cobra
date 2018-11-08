@@ -128,14 +128,23 @@ class ParseArgs(object):
         return output_mode
 
     def target_directory(self, target_mode):
-        reg = '^(https?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.?\/]+)?$'
+        reg = '^(https?):\/\/[\w\-]+(\.[\w\-:]+)+([\w\-\.?\/]+)?$'
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
             # branch or tag
             split_target = self.target.split(':')
+            if len(split_target) == 4:
+                target, branch = '{p}:{u}:{f}'.format(p=split_target[0], u=split_target[1], f=split_target[2]), \
+                                 split_target[-1]
+                if re.match(reg, target) is None:
+                    logger.critical('Please enter a valid URL')
+                    exit()
+                branch = pipes.quote(branch)
             if len(split_target) == 3:
                 target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                if '/' in branch:
+                    target, branch = '{t}:{b}'.format(t=target, b=branch), 'master'
                 if re.match(reg, target) is None:
                     logger.critical('Please enter a valid URL')
                     exit()
