@@ -27,7 +27,7 @@ import json
 import pipes
 
 from .log import logger
-from .config import Config, issue_history_path, core_path
+from .config import Config, issue_history_path
 from .__version__ import __version__, __python_version__, __platform__, __url__
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, Decompress
@@ -128,14 +128,23 @@ class ParseArgs(object):
         return output_mode
 
     def target_directory(self, target_mode):
-        reg = '^(https?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.?\/]+)?$'
+        reg = '^(https?):\/\/[\w\-]+(\.[\w\-:]+)+([\w\-\.?\/]+)?$'
         target_directory = None
         if target_mode == TARGET_MODE_GIT:
             logger.debug('GIT Project')
             # branch or tag
             split_target = self.target.split(':')
+            if len(split_target) == 4:
+                target, branch = '{p}:{u}:{f}'.format(p=split_target[0], u=split_target[1], f=split_target[2]), \
+                                 split_target[-1]
+                if re.match(reg, target) is None:
+                    logger.critical('Please enter a valid URL')
+                    exit()
+                branch = pipes.quote(branch)
             if len(split_target) == 3:
                 target, branch = '{p}:{u}'.format(p=split_target[0], u=split_target[1]), split_target[-1]
+                if '/' in branch:
+                    target, branch = '{t}:{b}'.format(t=target, b=branch), 'master'
                 if re.match(reg, target) is None:
                     logger.critical('Please enter a valid URL')
                     exit()
@@ -405,6 +414,37 @@ def get_safe_ex_string(ex, encoding=None):
         ret = ex.msg
 
     return get_unicode(ret or "", encoding=encoding).strip()
+
+
+def class_to_path(target_projects, class_name):
+    """
+    转换Java class名为绝对路径，用于跨文件的检测
+    :param target_projects: 项目根目录
+    :param class_name: import类名
+    :return:
+    """
+    class_path = ''
+
+    if class_name and '.' in class_name:
+        class_rpath = class_name.replace('.', '/') + '.java'  # 转换类名为相对路径
+    else:
+        class_rpath = ''
+        logger.warning("[UNTIL] Class_name can't None, False or empty !")
+
+    if target_projects:
+        for root, dirs, files in os.walk(target_projects):
+            for f in files:
+                if f.endswith('.java'):
+                    class_new_path = os.path.join(root, f)
+                    if class_rpath in class_new_path:
+                        class_path = class_new_path
+
+        if class_path != '':
+            logger.debug("[UNTIL] The class {c} path {p}".format(c=class_name, p=class_path))
+    else:
+        logger.warning("[UNTIL] Target_projects can't None, False or empty !")
+
+    return class_path
 
 
 class Tool:
