@@ -27,7 +27,7 @@ import json
 import pipes
 
 from .log import logger
-from .config import Config, issue_history_path
+from .config import Config, issue_history_path, core_path
 from .__version__ import __version__, __python_version__, __platform__, __url__
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, Decompress
