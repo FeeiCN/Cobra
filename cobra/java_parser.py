@@ -16,12 +16,12 @@
 import sys
 import javalang
 import logging
+
 from javalang.tree import *
 from cobra.log import logger
 from cobra.rule import Rule
 
-
-
+logger.setLevel(logging.DEBUG)
 sys.setrecursionlimit(2000)
 
 
@@ -67,13 +67,10 @@ class JavaAst(object):
                 self.analysis_import(node)
 
             elif isinstance(node, StatementExpression):
-                self.analysis_nodes(node, sink, back_node, vul_lineno, method_params)
+                self.analysis_nodes(node, sink, back_node, vul_lineno)
 
             elif isinstance(node, LocalVariableDeclaration):
-                self.analysis_nodes(node, sink, back_node, vul_lineno, method_params)
-
-            elif isinstance(node, MethodDeclaration):
-                self.analysis_method_declaration(node, sink, vul_lineno)
+                self.analysis_nodes(node, sink, back_node, vul_lineno)
 
             elif isinstance(node, MethodInvocation):
                 pass
@@ -81,9 +78,12 @@ class JavaAst(object):
             elif isinstance(node, Literal):
                 pass
 
+            elif isinstance(node, ReturnStatement):
+                pass
+
             back_node.append(node)
 
-    def analysis_nodes(self, node, sink, back_node, vul_lineno, method_params=None):
+    def analysis_nodes(self, node, sink, back_node, vul_lineno):
         """
         用于定位不同语法类型的Sink函数位置，并进行参数的提取操作
         :param node:
@@ -96,57 +96,115 @@ class JavaAst(object):
 
         if len(sink_list) == 2:
             if isinstance(node, StatementExpression):
-                if self.analysis_sink(node.expression, sink_list, vul_lineno):  # 判断是否为Sink函数
+                node_line = self.get_node_lineno(node)
+                if self.analysis_sink(node.expression, sink_list, vul_lineno, node_line):  # 判断是否为Sink函数
                     params = self.analysis_node(node.expression)  # 提取Sink函数的所有参数
                     logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
-                    self.start_analysis_params(params, sink, back_node, method_params)  # 开始回溯参数的来源
+                    self.start_analysis_params(params, sink, back_node)  # 开始回溯参数的来源
 
             if isinstance(node, LocalVariableDeclaration):
-                if self.analysis_sink(node.declarators, sink_list, vul_lineno):
+                node_line = self.get_node_lineno(node)
+                if self.analysis_sink(node.declarators, sink_list, vul_lineno, node_line):
                     params = self.analysis_node(node)
                     logger.debug('[Java-AST] [SINK] Sink function param(s): {0}'.format(params))
-                    self.start_analysis_params(params, sink, back_node, method_params)
+                    self.start_analysis_params(params, sink, back_node)
 
         else:
             logger.warning('[Java-AST] The sink function list index out of range')
 
-    def analysis_sink(self, node, sink, vul_lineno):
+    def analysis_sink(self, node, sink, vul_lineno, node_line):
         """
         用于判断node节点中是否存在Sink函数
         :param node:
         :param sink:
-        :param vul_lineno:
+        :param vul_lineno: Sink函数行号
+        :param node_line: 当前节点行号
         :return:
         """
         if isinstance(node, MethodInvocation):
             result = self.analysis_sink_method_invocation(node, sink, vul_lineno)
             return result
 
-        if isinstance(node, Assignment):
+        if isinstance(node, ClassCreator):
+            result = self.analysis_sink_method_invocation(node.type, sink, vul_lineno, node_line)
+            return result
+
+        if isinstance(node, BinaryOperation):
+            result = self.analysis_sink_method_invocation(node, sink, vul_lineno, node_line)
+            return result
+
+        if isinstance(node, Assignment):  # 分析StatementExpression语法
             if isinstance(node.value, MethodInvocation):
                 result = self.analysis_sink_method_invocation(node.value, sink, vul_lineno)
                 return result
 
-        if isinstance(node, list):
+            if isinstance(node.value, ClassCreator):
+                result = self.analysis_sink_method_invocation(node.value.type, sink, vul_lineno, node_line)
+                return result
+
+            if isinstance(node.value, BinaryOperation):
+                result = self.analysis_sink_method_invocation(node.value, sink, vul_lineno, node_line)
+                return result
+
+        if isinstance(node, list):  # 分析LocalVariableDeclaration语法
             for n in node:
                 if isinstance(n, VariableDeclarator):
-                    if isinstance(n.initializer, MethodInvocation):
-                        result = self.analysis_sink(n.initializer, sink, vul_lineno)
+                    if isinstance(n.initializer, MethodInvocation) or isinstance(n.initializer, ClassCreator):
+                        result = self.analysis_sink(n.initializer, sink, vul_lineno, node_line)
+                        return result
+
+                    if isinstance(n.initializer, BinaryOperation):
+                        result = self.analysis_sink(n.initializer, sink, vul_lineno, node_line)
                         return result
 
         return False
 
-    def analysis_sink_method_invocation(self, node, sink, vul_lineno):
+    def analysis_sink_method_invocation(self, node, sink, vul_lineno, node_line=0):
         """
-        判断Sink函数是否存在
+        判断Sink函数是否存在 --> MethodInvocation
         :param node:
         :param sink: list, [方法名，包名]
+        :param vul_lineno:
+        :param node_line:
         :return:
         """
-        qualifier = node.qualifier  # 对象名
-        member = node.member  # 方法名
-        lineno = self.get_node_lineno(node)
+        if isinstance(node, MethodInvocation):
+            qualifier = node.qualifier  # 对象名
+            member = node.member  # 方法名
+        elif isinstance(node, ReferenceType):
+            member = node.name
+        elif isinstance(node, BinaryOperation):
+            member = self.get_deep_binary_operation_params(node, code=2)
+        else:
+            member = None
 
+        if node_line == 0:
+            lineno = self.get_node_lineno(node)
+        else:
+            lineno = node_line
+
+        if isinstance(member, list):
+            for m in member:
+                result = self.analysis_sink_member(sink, vul_lineno, lineno, m)
+                if result is True:
+                    return result
+
+        else:
+            result = self.analysis_sink_member(sink, vul_lineno, lineno, member)
+            if result is True:
+                return result
+
+        return False
+
+    def analysis_sink_member(self, sink, vul_lineno, lineno, member):
+        """
+        判断member是否为Sink
+        :param sink:
+        :param vul_lineno:
+        :param lineno:
+        :param member:
+        :return:
+        """
         if sink[1] != '':  # 包名不为空
             # 单文件检测，包名未被import，根据package和class判断
             if sink[1].strip() == (self.package_name + '.' + self.class_name).strip():
@@ -169,35 +227,33 @@ class JavaAst(object):
             return False
 
     # ####################### 回溯参数传递 #############################
-    def start_analysis_params(self, params, sink, back_node, method_params=None):
+    def start_analysis_params(self, params, sink, back_node):
         """
         用于开始对Sink函数的参数进行回溯，并收集记录回溯结果
         :param params:
         :param sink:
         :param back_node:
-        :param method_params:
         :return:
         """
         try:
             if isinstance(params, list):
                 for param in params:
                     logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(param))
-                    is_controllable = self.back_statement_expression(param, back_node, method_params)
+                    is_controllable = self.back_statement_expression(param, back_node)
                     self.set_scan_results(is_controllable, sink)
 
             else:
                 logger.debug('[Java-AST] [SINK] Start back param --> {0}'.format(params))
-                is_controllable = self.back_statement_expression(params, back_node, method_params)
+                is_controllable = self.back_statement_expression(params, back_node)
                 self.set_scan_results(is_controllable, sink)
         except RuntimeError:
             logger.debug('Maximum recursion depth exceeded')
 
-    def back_statement_expression(self, param, back_node, method_params=None):
+    def back_statement_expression(self, param, back_node):
         """
         开始回溯Sink函数参数
         :param param:
         :param back_node:
-        :param method_params:
         :return:
         """
         # is_controllable = self.is_controllable(param)
@@ -212,38 +268,43 @@ class JavaAst(object):
                 expr_param, sink = self.get_expr_name(node.declarators)  # 取出赋值表达式中的内容
 
                 is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno,
-                                                                 back_node, method_params)
+                                                                 back_node)
 
             if isinstance(node, Assignment):
                 node_param = self.get_node_name(node.expressionl)
                 expr_param, sink = self.get_expr_name(node.value)  # expr_param为方法名, sink为回溯变量
 
                 is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno,
-                                                                 back_node, method_params)
+                                                                 back_node)
 
             if isinstance(node, FormalParameter):
                 node_param = self.get_node_name(node)  # 获取被赋值变量
                 expr_param, sink = self.get_expr_name(node)  # 取出赋值表达式中的内容
 
                 is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno,
-                                                                 back_node, method_params)
+                                                                 back_node)
 
             if isinstance(node, StatementExpression):
                 if isinstance(node.expression, Assignment):
                     node_param = self.get_node_name(node.expression.expressionl)
                     expr_param, sink = self.get_expr_name(node.expression.value)
                     is_controllable = self.back_node_is_controllable(node_param, param, sink, expr_param, lineno,
-                                                                     back_node, method_params)
+                                                                     back_node)
+
+            if isinstance(node, MethodDeclaration):
+                self.method_name = node.name
+                method_params = self.get_method_declaration(node)
+                is_controllable = self.is_sink_method(param, method_params)
 
             if is_controllable == -1:
-                is_controllable = self.back_statement_expression(param, back_node[:-1], method_params)
+                is_controllable = self.back_statement_expression(param, back_node[:-1])
 
-        elif len(back_node) == 0 and is_controllable == -1:
-            is_controllable = self.is_sink_method(param, method_params)
+        # elif len(back_node) == 0 and is_controllable == -1:
+        #     is_controllable = self.is_sink_method(param, method_params)
 
         return is_controllable
 
-    def back_node_is_controllable(self, node_param, param, sink, expr_param, lineno, back_node, method_params=None):
+    def back_node_is_controllable(self, node_param, param, sink, expr_param, lineno, back_node):
         """
         对回溯的节点进行可控判断，并对多参数的
         :param node_param:
@@ -252,7 +313,6 @@ class JavaAst(object):
         :param expr_param:
         :param lineno:
         :param back_node:
-        :param method_params:
         :return:
         """
         is_controllable = -1
@@ -261,10 +321,7 @@ class JavaAst(object):
             logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=sink,
                                                                                            l=lineno))
             param = sink
-            is_controllable = self.is_controllable(sink, lineno)
-
-            if is_controllable == -1:
-                is_controllable = self.is_sink_method(sink, method_params)
+            is_controllable = self.is_controllable(expr_param, lineno)
 
         if node_param == param and isinstance(sink, list) and is_controllable == -1:
             is_controllable = self.is_controllable(expr_param, lineno)
@@ -279,9 +336,6 @@ class JavaAst(object):
 
                 _is_controllable = self.back_statement_expression(param, back_node[:-1])
 
-                if _is_controllable == -1:
-                    is_controllable = self.is_sink_method(param, method_params)
-
                 if _is_controllable != -1:
                     is_controllable = _is_controllable
 
@@ -289,6 +343,11 @@ class JavaAst(object):
 
     # ####################### 分析节点类型 #############################
     def analysis_node(self, node):
+        """
+        获取Sink函数参数
+        :param node:
+        :return:
+        """
         if isinstance(node, MethodInvocation):
             param = self.get_node_arguments(node.arguments)
             return param
@@ -308,13 +367,21 @@ class JavaAst(object):
     def analysis_variable_declaration(self, nodes):
         for node in nodes:
             if isinstance(node, VariableDeclarator):
-                if isinstance(node.initializer, MethodInvocation):
+                if isinstance(node.initializer, MethodInvocation) or isinstance(node.initializer, ClassCreator):
                     params = self.get_method_invocation_params(node.initializer)
                     return params
 
+                if isinstance(node.initializer, BinaryOperation):
+                    params = self.get_binary_operation_params(node.initializer)
+                    return params
+
     def analysis_assignment(self, node):
-        if isinstance(node, MethodInvocation):
+        if isinstance(node, MethodInvocation) or isinstance(node, ClassCreator):
             param = self.get_method_invocation_params(node)
+            return param
+
+        if isinstance(node, BinaryOperation):
+            param = self.get_binary_operation_params(node)
             return param
 
         else:
@@ -375,20 +442,25 @@ class JavaAst(object):
                 params = self.get_binary_operation_params(node)
                 params_list.append(params)
 
-            if isinstance(node, MethodInvocation):
+            if isinstance(node, MethodInvocation) or isinstance(node, ClassCreator):
                 params = self.get_method_invocation_params(node)
                 params_list.append(params)
 
         return self.export_list(params_list, [])
 
     def get_method_invocation_params(self, node):
+        """
+        获取MethodInvocation和ClassCreator两种语法类型的参数
+        :param node:
+        :return:
+        """
         params_list = []
         qualifier = self.get_method_object_name(node)
-        if qualifier is not '':
+        if qualifier is not '' and qualifier is not None:
             params_list.append(qualifier)
 
         for argument in node.arguments:
-            if isinstance(argument, MethodInvocation):
+            if isinstance(argument, MethodInvocation) or isinstance(argument, ClassCreator):
                 params = self.get_method_invocation_params(argument)
                 params_list.append(params)
 
@@ -424,7 +496,7 @@ class JavaAst(object):
     @staticmethod
     def get_class_creator_type(node):
         """
-        用于获取ClassCreator类型的type类型
+        用于获取ClassCreator类型的type类型，类名
         :param node:
         :return:
         """
@@ -434,7 +506,13 @@ class JavaAst(object):
         else:
             return ''
 
-    def get_binary_operation_params(self, node):  # 当为BinaryOp类型时，分别对left和right进行处理，取出需要的变量
+    def get_binary_operation_params(self, node, code=1):  # 当为BinaryOp类型时，分别对left和right进行处理，取出需要的变量
+        """
+
+        :param node:
+        :param code: code==1取BinaryOp中的参数，code==2时取方法名，默认为1
+        :return:
+        """
         params = []
 
         if isinstance(node.operandr, MemberReference) or isinstance(node.operandl, MemberReference):
@@ -447,22 +525,28 @@ class JavaAst(object):
                 params.append(param)
 
         if not isinstance(node.operandr, MemberReference) or not isinstance(node.operandl, MemberReference):
-            param_right = self.get_deep_binary_operation_params(node.operandr)
-            param_left = self.get_deep_binary_operation_params(node.operandl)
+            param_right = self.get_deep_binary_operation_params(node.operandr, code)
+            param_left = self.get_deep_binary_operation_params(node.operandl, code)
 
-            params = list(param_right) + list(param_left) + list(params)
+            if code == 1:
+                params = list(param_right) + list(param_left) + list(params)
+            else:
+                params = [param_right, param_left, params]
 
         params = self.export_list(params, [])
         return params
 
-    def get_deep_binary_operation_params(self, node):
+    def get_deep_binary_operation_params(self, node, code=1):
         param = []
 
         if isinstance(node, BinaryOperation):
-            param = self.get_binary_operation_params(node)
+            param = self.get_binary_operation_params(node, code)
 
-        if isinstance(node, MethodInvocation):
+        if (isinstance(node, MethodInvocation) or isinstance(node, ClassCreator)) and code == 1:
             param = self.get_method_invocation_params(node)
+
+        if (isinstance(node, MethodInvocation) or isinstance(node, ClassCreator)) and code == 2:
+            param = self.get_method_invocation_member(node)
 
         return param
 
@@ -549,6 +633,11 @@ class JavaAst(object):
             expr_param = self.get_annotations_name(nodes.annotations)
             return expr_param, sink
 
+        if isinstance(nodes, BinaryOperation):
+            sink = self.get_binary_operation_params(nodes)
+            expr_param = self.get_deep_binary_operation_params(nodes, code=2)
+            return expr_param, sink
+
         elif isinstance(nodes, list):
             for node in nodes:
                 if isinstance(node.initializer, MethodInvocation):
@@ -559,6 +648,11 @@ class JavaAst(object):
                 if isinstance(node.initializer, ClassCreator):
                     sink = self.get_node_arguments(node.initializer.arguments)
                     expr_param = self.get_class_creator_type(node.initializer.type)
+                    return expr_param, sink
+
+                if isinstance(node.initializer, BinaryOperation):
+                    sink = self.get_binary_operation_params(node.initializer)
+                    expr_param = self.get_deep_binary_operation_params(node, code=2)
                     return expr_param, sink
 
                 else:
@@ -579,6 +673,9 @@ class JavaAst(object):
             if isinstance(node.value, MethodInvocation):
                 lineno = node.value._position[0]
 
+            if isinstance(node.expressionl, MemberReference):
+                lineno = node.expressionl._position[0]
+
         elif isinstance(node, StatementExpression):
             lineno = self.get_node_lineno(node.expression)
 
@@ -595,12 +692,21 @@ class JavaAst(object):
         :param lineno:
         :return:
         """
-        for key in self.sources:
-            if str(expr) in self.sources[key]:
-                if key in self.import_package:
-                    logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
-                                                                                                   l=lineno))
-                    return 1
+        if isinstance(expr, list):
+            for e in expr:
+                for key in self.sources:
+                    if str(e) in self.sources[key]:
+                        if key in self.import_package:
+                            logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=e,
+                                                                                                           l=lineno))
+                            return 1
+        else:
+            for key in self.sources:
+                if str(expr) in self.sources[key]:
+                    if key in self.import_package:
+                        logger.debug('[Java-AST] Found the source function --> {e} in line {l}'.format(e=expr,
+                                                                                                       l=lineno))
+                        return 1
         return -1
 
     @staticmethod
