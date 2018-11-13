@@ -15,13 +15,11 @@
 
 import sys
 import javalang
-import logging
 
 from javalang.tree import *
 from cobra.log import logger
 from cobra.rule import Rule
 
-logger.setLevel(logging.DEBUG)
 sys.setrecursionlimit(2000)
 
 
@@ -79,7 +77,7 @@ class JavaAst(object):
                 pass
 
             elif isinstance(node, ReturnStatement):
-                pass
+                self.analysis_nodes(node, sink, back_node, vul_lineno)
 
             back_node.append(node)
 
@@ -95,7 +93,7 @@ class JavaAst(object):
         sink_list = sink.split(':')  # ['方法名', '包名']
 
         if len(sink_list) == 2:
-            if isinstance(node, StatementExpression):
+            if isinstance(node, StatementExpression) or isinstance(node, ReturnStatement):
                 node_line = self.get_node_lineno(node)
                 if self.analysis_sink(node.expression, sink_list, vul_lineno, node_line):  # 判断是否为Sink函数
                     params = self.analysis_node(node.expression)  # 提取Sink函数的所有参数
@@ -296,6 +294,9 @@ class JavaAst(object):
                 method_params = self.get_method_declaration(node)
                 is_controllable = self.is_sink_method(param, method_params)
 
+                if is_controllable == -1:  # 以方法定义为界限，回溯到一个方法体结束仍然没有结果，则直接返回结果，漏洞不存在
+                    return is_controllable
+
             if is_controllable == -1:
                 is_controllable = self.back_statement_expression(param, back_node[:-1])
 
@@ -327,13 +328,12 @@ class JavaAst(object):
             is_controllable = self.is_controllable(expr_param, lineno)
 
             for s in sink:
-                logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
-                                                                                               l=lineno))
                 param = s
-
-                if is_controllable == 1:
+                if is_controllable != -1:
                     return is_controllable
 
+                logger.debug('[Java-AST] [BACK] analysis sink  {s} --> {t} in line {l}'.format(s=param, t=s,
+                                                                                               l=lineno))
                 _is_controllable = self.back_statement_expression(param, back_node[:-1])
 
                 if _is_controllable != -1:
