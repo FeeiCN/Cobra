@@ -80,9 +80,6 @@ class JavaAst(object):
                     pass
 
                 elif isinstance(node, ReturnStatement):
-                    pass
-
-                elif isinstance(node, ReturnStatement):
                     self.analysis_nodes(node, sink, back_node, vul_lineno)
 
             except Exception as e:
