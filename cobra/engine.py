@@ -384,7 +384,7 @@ class SingleRule(object):
 
                         new_vul_results = NewCore(self.sr, self.target_directory, data, count=0).scan()
                         if not new_vul_results:
-                            return self.rule_vulnerabilities
+                            continue
 
                         if len(new_vul_results) > 0:
                             self.rule_vulnerabilities.append(vulnerability)
@@ -850,7 +850,7 @@ class NewCore(object):
                         new_vul_results = NewCore(self.new_single_rule[0], self.target_directory, data, self.count).scan()
 
                         if not new_vul_results:
-                            return self.rule_vulnerabilities
+                            continue
 
                         if len(new_vul_results) > 0:
                             self.rule_vulnerabilities.append(vulnerability)
