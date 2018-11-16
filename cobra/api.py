@@ -111,6 +111,9 @@ class AddJob(Resource):
         if isinstance(target, list):
             for t in target:
                 # Scan
+                if t.encode('utf-8') is '' or t is None:
+                    continue
+
                 if re.match(r'http://|https://', t):
                     arg = (t, formatter, output, rule, a_sid, is_del)
                     producer(task=arg)
