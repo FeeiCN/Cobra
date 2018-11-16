@@ -301,6 +301,13 @@ class JavaAst(object):
                 method_params = self.get_method_declaration(node)
                 is_controllable = self.is_sink_method(param, method_params)
 
+                if is_controllable == 4:  # 参数来自于自定义函数，判断是否为Spring框架的HTTP入参
+                    annotations = self.get_annotations_name(node.annotations)
+                    for annotation in annotations:
+                        if annotation == 'RequestMapping':
+                            is_controllable = 1
+                            return is_controllable
+
                 if is_controllable == -1:  # 以方法定义为界限，回溯到一个方法体结束仍然没有结果，则直接返回结果，漏洞不存在
                     return is_controllable
 
@@ -563,10 +570,13 @@ class JavaAst(object):
         :param nodes:
         :return:
         """
+        annotations = []
         if isinstance(nodes, list):
             for node in nodes:
                 if isinstance(node, Annotation):
-                    return node.name
+                    annotations.append(node.name)
+
+        return annotations
 
     def get_method_object_name(self, node):
         """
