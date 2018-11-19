@@ -211,13 +211,13 @@ class JavaAst(object):
         :return:
         """
         if sink[1] != '':  # 包名不为空
-            # 单文件检测，包名未被import，根据package和class判断
+            # Sink所在文件检测，包名未被import，根据package和class判断
             if sink[1].strip() == (self.package_name + '.' + self.class_name).strip():
                 if int(lineno) == int(vul_lineno) and sink[0] == member:
                     logger.debug('[Java-AST] Found the sink function --> {q} in line {l}'.format(q=sink[0], l=lineno))
                     return True
 
-            # 多文件检测，包名直接被import，根据import的类进行判断
+            # Sink所在文件外检测，包名直接被import，根据import的类进行判断
             else:
                 if int(lineno) == int(vul_lineno) and sink[0] == member and sink[1] in self.import_package:  # 判断方法是否为Sink点
                     logger.debug('[Java-AST] Found the sink function --> {q}:{m} in line {l}'.format(q=sink[0], m=sink[1], l=lineno))
@@ -766,6 +766,12 @@ class JavaAst(object):
             }
 
         elif is_controllable == 4:
+            if sink == u_sink:
+                is_controllable = -1
+                logger.debug('[Java-AST] Sink is u_sink, exit analysis...')
+            else:
+                is_controllable = 4
+
             result = {
                 'code': is_controllable,
                 'sink': sink,

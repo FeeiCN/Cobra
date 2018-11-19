@@ -850,7 +850,7 @@ class NewCore(object):
                         new_vul_results = NewCore(self.new_single_rule[0], self.target_directory, data, self.count).scan()
 
                         if not new_vul_results:
-                            continue
+                            return False
 
                         if len(new_vul_results) > 0:
                             self.rule_vulnerabilities.append(vulnerability)
