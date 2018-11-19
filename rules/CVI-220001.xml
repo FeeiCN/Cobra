@@ -22,11 +22,11 @@
 
         ### 示例
         ```
-            String author = request.getParameter(AUTHOR_PARAM);
-            ...
-            Cookie cookie = new Cookie("author", author);
-            cookie.setMaxAge(cookieExpiration);
-            response.addCookie(cookie);
+        String author = request.getParameter(AUTHOR_PARAM);
+        ...
+        Cookie cookie = new Cookie("author", author);
+        cookie.setMaxAge(cookieExpiration);
+        response.addCookie(cookie);
         ```
 
         ### 修复
