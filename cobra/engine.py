@@ -20,7 +20,7 @@ import subprocess
 import multiprocessing
 from . import const
 from .rule import Rule
-from .utils import Tool
+from .utils import Tool, vul_hash
 from .log import logger
 from .config import running_path
 from .result import VulnerabilityResult
@@ -217,6 +217,7 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     table = PrettyTable(['#', 'CVI', 'Rule', 'Level', 'Target', 'Source Code Content'])
     table.align = 'l'
     trigger_rules = []
+    find_vulnerabilities = vul_hash(find_vulnerabilities)
     for idx, x in enumerate(find_vulnerabilities):
         trigger = '{fp}:{ln}'.format(fp=x.file_path, ln=x.line_number)
         # commit = u'{time}, @{author}'.format(author=x.commit_author, time=x.commit_time)

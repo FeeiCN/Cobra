@@ -27,7 +27,7 @@ import json
 import pipes
 
 from .log import logger
-from .config import Config, issue_history_path
+from .config import Config, issue_history_path, vul_hash_path
 from .__version__ import __version__, __python_version__, __platform__, __url__
 from .exceptions import PickupException, NotExistException, AuthFailedException
 from .pickup import Git, NotExistError, AuthError, Decompress
@@ -646,3 +646,39 @@ def clean_dir(filepath):
         elif os.path.isdir(filepath):
             shutil.rmtree(filepath, True)
     return True
+
+
+def vul_hash(find_vulnerabilities):
+    """
+    去除扫描过的漏洞，每次只上报新发现的漏洞
+    :return:
+    """
+    vuls_results = []
+    vuls_hash = []
+    try:
+        f = open(vul_hash_path, 'r')
+        for line in f.readlines():
+            vuls_hash.append(line.strip())
+    except Exception:
+        logger.info('[UNTIL] Make vul hash file: /tmp/cobra/export/vul.hash')
+
+    for find_vulnerabilitie in find_vulnerabilities:
+        code_content = find_vulnerabilitie.code_content.strip()
+        file_path = find_vulnerabilitie.file_path.strip()
+        line_number = str(find_vulnerabilitie.line_number).strip()
+        ids = str(find_vulnerabilitie.id).strip()
+        key = code_content + file_path + line_number + ids
+        key_hash = hashlib.md5(key).hexdigest()
+
+        if key_hash in vuls_hash:
+            logger.debug('[UNTIL] Vul {k} already existing'.format(k=key_hash))
+            continue
+        else:
+            vuls_results.append(find_vulnerabilitie)
+            try:
+                with open(vul_hash_path, 'a+b') as f:
+                    f.write("{k}\n".format(k=key_hash))
+            except Exception as e:
+                logger.warning(e.message)
+
+    return vuls_results
