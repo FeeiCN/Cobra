@@ -55,6 +55,7 @@ rules_path = os.path.join(project_directory, 'rules')
 config_path = os.path.join(project_directory, 'config')
 rule_path = os.path.join(project_directory, 'rule.cobra')
 vul_hash_path = os.path.join(export_path, 'vul.hash')
+plugins_path = os.path.join(project_directory, 'plugins')
 
 
 class Config(object):

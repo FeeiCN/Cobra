@@ -13,7 +13,7 @@
 """
 import os
 from . import const
-from .config import rules_path
+from .config import rules_path, plugins_path
 from .log import logger
 from .utils import to_bool
 from xml.etree import ElementTree
@@ -50,6 +50,7 @@ def block(index):
 class Rule(object):
     def __init__(self):
         self.rules_path = rules_path
+        self.plugins_path = plugins_path
 
     @property
     def languages(self):
@@ -239,6 +240,76 @@ class Rule(object):
                             case_test = case.text.strip()
                         if case_ret in ['true', 'false']:
                             rule_info['test'][case_ret].append(case_test)
+            vulnerabilities.append(rule_info)
+        return vulnerabilities
+
+    def plugins(self):
+        """
+        Get all plugins
+        :return:
+        """
+        vulnerabilities = []
+        files = os.listdir(self.plugins_path)
+        for vulnerability_name in files:
+            v_path = os.path.join(self.plugins_path, vulnerability_name)
+            if os.path.isfile(v_path) is not True or '.py' not in v_path.lower() or '__init__' in v_path.lower() or \
+                    '.pyc' in v_path.lower():
+                if '__init__' in v_path.lower() or '.pyc' in v_path.lower():
+                    continue
+                logger.warning('Not regular plugin file {f}'.format(f=v_path))
+                continue
+
+            # rule information
+            rule_info = {
+                'id': None,
+                'file': v_path,
+                'name': None,
+                'language': None,
+                'match': None,
+                'match-mode': 'regex-only-match',
+                'match2': None,
+                'match2-block': None,
+                'java-rules': [],
+                'repair': None,
+                'repair-block': None,
+                'level': None,
+                'solution': None,
+                'test': {
+                    'true': [],
+                    'false': []
+                },
+                'status': False,
+                'author': None
+            }
+            plugins_name = os.path.splitext(os.path.basename(v_path))[0]
+            plugins_file = 'plugins.' + plugins_name
+            plugins = __import__(plugins_file, fromlist=[plugins_name])
+            plugin = plugins.CobraScan()
+            if plugin is None:
+                logger.critical('Plugin read failed!!! ({file})'.format(file=v_path))
+                continue
+            rule_info['id'] = str(plugin.id)
+
+            if hasattr(plugin, 'name'):
+                rule_info['name'] = plugin.name
+            if hasattr(plugin, 'language'):
+                rule_info['language'] = plugin.language.lower()
+            if hasattr(plugin, 'status'):
+                rule_info['status'] = to_bool(plugin.status)
+            if hasattr(plugin, 'author') and hasattr(plugin, 'email'):
+                name = plugin.author.encode('utf-8')
+                email = plugin.email
+                rule_info['author'] = '{name}<{email}>'.format(name=name, email=email)
+            if hasattr(plugin, 'java_rule'):
+                rule_info['java-rules'] = plugin.java_rule
+            if hasattr(plugin, 'level'):
+                rule_info['level'] = plugin.level
+            if hasattr(plugin, 'solution'):
+                rule_info['solution'] = plugin.solution.strip()
+            if hasattr(plugin, 'match'):
+                rule_info['match'] = plugin.match
+            if hasattr(plugin, 'match_mode'):
+                rule_info['match-mode'] = plugin.match_mode
             vulnerabilities.append(rule_info)
         return vulnerabilities
 
