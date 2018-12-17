@@ -310,6 +310,8 @@ class Rule(object):
                 rule_info['match'] = plugin.match
             if hasattr(plugin, 'match_mode'):
                 rule_info['match-mode'] = plugin.match_mode
+            if hasattr(plugin, 'match_block'):
+                rule_info['match-block'] = block(plugin.match_block)
             vulnerabilities.append(rule_info)
         return vulnerabilities
 

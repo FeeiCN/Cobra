@@ -471,6 +471,7 @@ class Core(object):
 
         self.rule_match = single_rule['match']
         self.rule_match_mode = single_rule['match-mode']
+        self.match_block = single_rule['match-block']
         self.rule_match2 = single_rule['match2']
         self.rule_match2_block = single_rule['match2-block']
         self.java_rules = single_rule['java-rules']
@@ -673,7 +674,7 @@ class Core(object):
                 if len(match_result) > 0:
                     return True, 'REGEX-ONLY-MATCH(注释中存在漏洞，建议删除漏洞代码)'
                 return True, 'REGEX-ONLY-MATCH(正则仅匹配+无修复规则)'
-        elif self.rule_match_mode == const.mm_plugins_ast:
+        elif self.rule_match_mode == const.mm_plugins_ast or self.rule_match_mode == const.mm_plugins:
             plugin_name = os.path.splitext(os.path.basename(self.file))[0]
             plugin_file = 'plugins.' + plugin_name
             logger.debug('[PLUGINS] [CVI-{cvi}] match-mode {mm}: plugin-->[{plugin}]'.format(cvi=self.cvi,
@@ -681,9 +682,9 @@ class Core(object):
                                                                                              plugin=plugin_name))
             plugin = __import__(plugin_file, fromlist=[plugin_name])  # 动态加载插件代码
             p = plugin.CobraScan()
-            if hasattr(p, 'java_rule'):  # 进入plugins-ast模式，plugins + ast检测
+            if self.rule_match_mode == const.mm_plugins_ast:  # 进入plugins-ast模式，plugins + ast检测
                 logger.debug('[Plugin-Ast]  {plugin} start verify'.format(plugin=plugin_name))
-                res = p.verify()
+                res = p.verify(self)
                 if res['status'] is True:  # verify验证通过，进入AST模式分析
                     logger.debug('[Plugin-Ast] {plugin} verify success, start AST'.format(plugin=plugin_name))
                     vul_results = self.scan_ast()  # 进入AST分析
@@ -694,7 +695,7 @@ class Core(object):
 
             else:  # 进入plugins模式，仅plugins检测
                 logger.debug('[Plugin] {plugin} start verify'.format(plugin=plugin_name))
-                res = p.verify()
+                res = p.verify(self)
                 if res['status'] is True:
                     logger.debug('[Plugin] {plugin} verify success'.format(plugin=plugin_name))
                     return True, 'PLUGINS(检测通过)'
