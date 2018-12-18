@@ -33,4 +33,4 @@ http://127.0.0.1:8080/report进入Cobra Report页面，选择start 和 end时间
 6. start时间，end时间
 7. 每日漏洞数量折线图展示
 
-下一章：[规则模板](http://cobra.feei.cn/rule_template)
+下一章：[规则模板](http://cobra.feei.cn/plugins)

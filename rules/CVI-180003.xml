@@ -2,7 +2,11 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="模板引擎注入"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(Velocity.evaluate|template.process)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(evaluate|process)]]></match>
+    <rules>
+        <rule value="evaluate" class="org.apache.velocity.app.Velocity"/>
+        <rule value="process" class="freemarker.template.Template"/>
+    </rules>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[Velocity.evaluate(context, swOut, "test", userInput);]]></case>

@@ -2,7 +2,10 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="CRLF注入"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(response.addCookie)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(addCookie)]]></match>
+    <rules>
+        <rule value="addCookie" class="javax.servlet.http.HttpServletResponse"/>
+    </rules>
     <level value="5"/>
     <test>
         <case assert="true"><![CDATA[response.addCookie(cookie);]]></case>
@@ -19,11 +22,11 @@
 
         ### 示例
         ```
-            String author = request.getParameter(AUTHOR_PARAM);
-            ...
-            Cookie cookie = new Cookie("author", author);
-            cookie.setMaxAge(cookieExpiration);
-            response.addCookie(cookie);
+        String author = request.getParameter(AUTHOR_PARAM);
+        ...
+        Cookie cookie = new Cookie("author", author);
+        cookie.setMaxAge(cookieExpiration);
+        response.addCookie(cookie);
         ```
 
         ### 修复

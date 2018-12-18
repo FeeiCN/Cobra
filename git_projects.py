@@ -30,7 +30,7 @@ except ImportError:
 git_urls = []
 
 
-def start(target, format, output, rules, dels, all):
+def start(target, format, output, rules, dels, all, online):
     """
     start push target to api
     :param target:
@@ -44,13 +44,15 @@ def start(target, format, output, rules, dels, all):
     url = Config('git', 'gitlab_url').value
     private_token = Config('git', 'private_token').value
     cobra_ip = Config('git', 'cobra_ip').value
+    online_url = Config('git', 'online_api').value
     key = Config('cobra', 'secret_key').value
+
     threads = []
     result_path = code_path + '/result_sid'
     fi = open(result_path, 'a+')
 
     try:
-        if all is False and target is not '':
+        if all is False and online is False and target is not '':
             if isinstance(target, list):
                 for tar in target:
                     fi.write(tar + '\n')
@@ -59,7 +61,11 @@ def start(target, format, output, rules, dels, all):
 
             res = push_to_api(target, cobra_ip, key, fi, format, output, rules, dels)
 
-        elif all is True and target is '':
+        elif all is False and online is True and target is '':
+            urls = git_online_urls(online_url)
+            res = push_to_api(urls, cobra_ip, key, fi, format, output, rules, dels)
+
+        elif all is True and online is False and target is '':
             pages = get_pages(url, private_token)
             q_pages = queue.Queue(pages)
 
@@ -98,6 +104,17 @@ def start(target, format, output, rules, dels, all):
 
     except Exception as e:
         logger.warning('[GIT-PRO] {}'.format(e.message))
+
+
+def git_online_urls(online_url):
+    urls = []
+    r = request_target(online_url, method="get")
+    result = r.json()
+    data = result['data']
+    url_list = data['list']
+    for url in url_list:
+        urls.append(url['gitUrl'])
+    return urls
 
 
 def get_git_urls(url, private_token, q_pages, fi):
@@ -215,9 +232,10 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--rule', dest='rules', action='store', default=None, metavar='<rule_id>', help='specifies rules e.g: CVI-100001,cvi-190001')
     parser.add_argument('-d', '--dels', dest='dels', action='store_true', default=False, help='del target directory True or False')
     parser.add_argument('-a', '--all', dest='all', action='store_true', default=False, help='Git push all git-projects from gitlab')
+    parser.add_argument('-ol', '--online', dest='online', action='store_true', default=False, help='Git push all online projects')
     args = parser.parse_args()
 
-    if args.target == '' and args.all is False:
+    if args.target == '' and args.all is False and args.online is False:
         parser.print_help()
         exit()
 
@@ -239,4 +257,4 @@ if __name__ == '__main__':
     except TypeError:
         logger.info('[GIT-PRO] The rules is None, Cobra will use all rules to scan')
 
-    start(targets, args.format, args.output, args.rules, args.dels, args.all)
+    start(targets, args.format, args.output, args.rules, args.dels, args.all, args.online)

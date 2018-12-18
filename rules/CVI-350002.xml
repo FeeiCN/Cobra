@@ -2,7 +2,10 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="任意文件读取"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(Source.fromFile)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(fromFile)]]></match>
+    <rules>
+        <rule value="fromFile" class="scala.io.Source"/>
+    </rules>
     <level value="3"/>
     <test>
         <case assert="true"><![CDATA[val result = Source.fromFile("public/lists/" + value).getLines().mkString // Weak point]]></case>

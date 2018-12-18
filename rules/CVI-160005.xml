@@ -2,7 +2,16 @@
 <cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="拼接SQL注入"/>
     <language value="java"/>
-    <match mode="function-param-controllable"><![CDATA[(statement.executeQuery|SqlUtil.execQuery|stmt.createQuery|BasePeer.executeQuery|session.createQuery|pm.newQuery|em.createQuery|jdbc.queryForObject|stmt.executeQuery|db.run)]]></match>
+    <match mode="function-param-controllable"><![CDATA[(executeQuery|execQuery|createQuery|newQuery|createQuery|queryForObject)]]></match>
+    <rules>
+        <rule value="executeQuery" class="java.sql.PreparedStatement"/>
+        <rule value="execQuery" class="com.ga.riskfeed.db.SqlUtil.execQuery"/>
+        <rule value="createQuery" class="java.sql.PreparedStatement"/>
+        <rule value="createQuery" class="org.hibernate.Session"/>
+        <rule value="newQuery" class="javax.jdo.PersistenceManager"/>
+        <rule value="createQuery" class="javax.persistence.EntityManager"/>
+        <rule value="queryForObject" class="org.springframework.jdbc.core.JdbcTemplate"/>
+    </rules>
     <level value="8"/>
     <solution>
         ## 安全风险
