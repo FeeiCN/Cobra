@@ -42,10 +42,9 @@ class CobraScan(object):
                           'write:javax.servlet.http.HttpServletResponse',
                           'append:javax.servlet.http.HttpServletResponse']
 
-    def verify(self):
+    def verify(self, info):
         """
         regex string input
-        :regex_string: regex match string
         :return:
         """
         status = False
