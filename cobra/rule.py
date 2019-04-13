@@ -16,7 +16,7 @@ from . import const
 from .config import rules_path
 from .log import logger
 from .utils import to_bool
-from xml.etree import ElementTree
+from xml.etree import cElementTree as ElementTree
 
 
 def block(index):
