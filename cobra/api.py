@@ -111,7 +111,7 @@ class AddJob(Resource):
         if isinstance(target, list):
             for t in target:
                 # Scan
-                if re.match(r'http://|https://', t):
+                if re.match(r'http://|https://', t) or os.path.exists(t):
                     arg = (t, formatter, output, rule, a_sid, is_del)
                     producer(task=arg)
 
@@ -124,7 +124,7 @@ class AddJob(Resource):
                 'total_target_num': len(target),
             }
         else:
-            if re.match(r'http://|https://', target):
+            if re.match(r'http://|https://', target) or os.path.exists(target):
                 arg = (target, formatter, output, rule, a_sid, is_del)
                 producer(task=arg)
 
