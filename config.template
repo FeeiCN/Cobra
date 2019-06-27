@@ -52,6 +52,7 @@ password:
 [git]
 username:
 password:
+domain:
 private_token:
 # http://xxx.gitlab.com/api/v3/projects/all
 gitlab_url:
