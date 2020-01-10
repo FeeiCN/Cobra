@@ -179,6 +179,7 @@ class Rule(object):
                 'language': None,
                 'match': None,
                 'match-mode': 'regex-only-match',
+                'match-block': None,
                 'match2': None,
                 'match2-block': None,
                 'java-rules': [],
@@ -254,7 +255,8 @@ class Rule(object):
             v_path = os.path.join(self.plugins_path, vulnerability_name)
             if os.path.isfile(v_path) is not True or '.py' not in v_path.lower() or '__init__' in v_path.lower() or \
                     '.pyc' in v_path.lower():
-                if '__init__' in v_path.lower() or '.pyc' in v_path.lower():
+                ignore_list = ['__init__','.pyc','__pycache__']
+                if any(x in v_path.lower() for x in ignore_list):
                     continue
                 logger.warning('Not regular plugin file {f}'.format(f=v_path))
                 continue
@@ -267,6 +269,7 @@ class Rule(object):
                 'language': None,
                 'match': None,
                 'match-mode': 'regex-only-match',
+                'match-block': None,
                 'match2': None,
                 'match2-block': None,
                 'java-rules': [],
