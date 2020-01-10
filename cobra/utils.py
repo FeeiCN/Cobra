@@ -668,7 +668,7 @@ def vul_hash(find_vulnerabilities):
         line_number = str(find_vulnerabilitie.line_number).strip()
         ids = str(find_vulnerabilitie.id).strip()
         key = code_content + file_path + line_number + ids
-        key_hash = hashlib.md5(key).hexdigest()
+        key_hash = hashlib.md5(key.encode('utf-8')).hexdigest()
 
         if key_hash in vuls_hash:
             logger.debug('[UNTIL] Vul {k} already existing'.format(k=key_hash))
@@ -677,7 +677,7 @@ def vul_hash(find_vulnerabilities):
             vuls_results.append(find_vulnerabilitie)
             try:
                 with open(vul_hash_path, 'a+b') as f:
-                    f.write("{k}\n".format(k=key_hash))
+                    f.write(str.encode("{k}\n".format(k=key_hash)))
             except Exception as e:
                 logger.warning(e.message)
 
