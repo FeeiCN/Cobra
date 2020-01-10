@@ -53,6 +53,7 @@ tests_path = os.path.join(project_directory, 'tests')
 examples_path = os.path.join(tests_path, 'examples')
 rules_path = os.path.join(project_directory, 'rules')
 config_path = os.path.join(project_directory, 'config')
+template_path = os.path.join(project_directory, 'config.template')
 rule_path = os.path.join(project_directory, 'rule.cobra')
 vul_hash_path = os.path.join(export_path, 'vul.hash')
 plugins_path = os.path.join(project_directory, 'plugins')
@@ -65,6 +66,13 @@ class Config(object):
         if self.level1 is None and self.level2 is None:
             return
         config = ConfigParser()
+
+        #Create default if config not exist
+        if os.path.isfile(config_path):
+            #do nothing if exist
+            pass
+        else:
+            self.copy(template_path,config_path)
 
         config.read(config_path)
         value = None
