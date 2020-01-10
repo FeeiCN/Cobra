@@ -204,10 +204,17 @@ class CveParse(object):
         cpe_list = []
         products = cve_child.findall('.//product')
         for product in products:
+            #There is a problem there
+            #Some people use crawler to crawl CVEs from the database, but some products such as hardware do not have a version number
+            #this will cause a index of out bound error when getting version in line 217
+            #This tempfix just ignore these products without a version number
+            product_info = product.text.lower().split(':')[0]
+            if(len(product_info)<2):
+                continue
             cpe_list.append(
                 {
-                    'name': product.text.lower().split(':')[0],
-                    'version': product.text.lower().split(':')[1],
+                    'name': product_info[0],
+                    'version': product_info[1],
                 }
             )
         rule_info['cpe'] = cpe_list
