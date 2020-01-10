@@ -65,11 +65,11 @@ class Decompress(object):
             dir_name: decompressed directory name. Usually, the directory name is the filename without file extension.
         """
 
-        if '.zip' in self.filename:
+        if self.filename.endswith('.zip'):
             return self.__decompress_zip(), self.get_real_directory()
-        elif '.rar' in self.filename:
+        elif self.filename.endswith('.rar'):
             return self.__decompress_rar(), self.get_real_directory()
-        elif '.tgz' in self.filename or '.tar' in self.filename or '.gz' in self.filename:
+        elif self.filename.endswith(('.tgz','.tar','.gz')):
             """
             Support Tar Extension
             .tar: .tar | .tar.gz | .tar.bz2
