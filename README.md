@@ -6,6 +6,8 @@
 
 [![asciicast](https://raw.githubusercontent.com/WhaleShark-Team/cobra/master/docs/report_03.jpg)](https://asciinema.org/a/132572)
 
+**该项目设计已无法实现当前白盒扫描要求，已不在维护，仅做研究使用，请勿在生产环境使用**
+
 ## Introduction（介绍）
 Cobra是一款**源代码安全审计**工具，支持检测多种开发语言源代码中的**大部分显著**的安全问题和漏洞。
 
