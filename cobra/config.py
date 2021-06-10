@@ -14,6 +14,7 @@
 import os
 import traceback
 from .log import logger
+import sys
 
 try:
     from configparser import ConfigParser
@@ -22,7 +23,10 @@ except ImportError:
 
 project_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
-code_path = '/tmp/cobra'
+if sys.platform == 'win32':
+    code_path = sys.path[0]+'/tmp'#在cobra项目文件夹下创建目录
+else:
+    code_path = '/tmp/cobra'
 if os.path.isdir(code_path) is not True:
     os.mkdir(code_path)
 
