@@ -9,4 +9,4 @@
 | 低危 | 1-2 | 1.CSRF; 2.JSONP劫持; 3.异常堆栈信息; 3.PHPINFO; 4.路径泄露; 5.硬编码密码; 6.硬编码内网IP域名; 7.不安全的加密方法; 8.不安全的随机数; 9.日志敏感记录;|
 
 ---
-下一章：[程序目录结构](https://wufeifei.github.io/cobra/tree)
+下一章：[程序目录结构](http://cobra.feei.cn/tree)

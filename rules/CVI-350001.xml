@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="unlink删除文件"/>
     <language value="php"/>
     <match mode="function-param-controllable"><![CDATA[unlink]]></match>

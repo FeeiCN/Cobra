@@ -1,14 +1,28 @@
-<cobra document="https://github.com/FeeiCN/cobra">
-	<cve id="flask vul" level="HIGH">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
+    <cve id="flask vul" level="HIGH">
         <product>Flask:3.2</product>
         <product>Flask:0.10.1</product>
-	</cve>
+    </cve>
     <cve id="flask vul1" level="HIGH">
         <product>Flask:3.2</product>
-        <product>Flask:0.10.1</product>
-	</cve>
+        <product>Flask:>=0.10.1</product>
+    </cve>
     <cve id="flask vul2" level="HIGH">
         <product>Flask:3.2</product>
         <product>Flask:0.10.1</product>
-	</cve>
+    </cve>
+    <cve id="flask vul3" level="HIGH">
+        <product>Flask-Migrate:1.8.0</product>
+        <product>Flask-Migrate:1.8.1</product>
+    </cve>
+    <cve id="nodejs vul1" level="HIGH">
+        <product>antd:3.3.0</product>
+        <product>dva:2.1.0</product>
+    </cve>
+    <cve id="Fastjson vul" level="HIGH">
+        <product><![CDATA[fastjson:>=1.2.24,<=1.2.45]]></product>
+    </cve>
+    <cve id="maven vul" level="HIGH">
+        <product>apache-maven:3.0.4</product>
+    </cve>
 </cobra>

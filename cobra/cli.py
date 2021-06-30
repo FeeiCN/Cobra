@@ -7,11 +7,12 @@
     Implements CLI mode
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import re
+import os
 
 from .detection import Detection
 from .engine import scan, Running
@@ -21,7 +22,7 @@ from .log import logger
 from .pickup import Directory
 from .send_mail import send_mail
 from .utils import ParseArgs
-from .utils import md5, random_generator
+from .utils import md5, random_generator, clean_dir
 from .push_to_api import PushToThird
 
 
@@ -38,7 +39,7 @@ def get_sid(target, is_a_sid=False):
     return sid.lower()
 
 
-def start(target, formatter, output, special_rules, a_sid=None):
+def start(target, formatter, output, special_rules, a_sid=None, is_del=False):
     """
     Start CLI
     :param target: File, FOLDER, GIT
@@ -46,6 +47,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     :param output:
     :param special_rules:
     :param a_sid: all scan id
+    :param is_del: del target directory
     :return:
     """
     # generate single scan id
@@ -69,6 +71,7 @@ def start(target, formatter, output, special_rules, a_sid=None):
     # target directory
     try:
         target_directory = pa.target_directory(target_mode)
+        target_directory = target_directory.rstrip("/")
         logger.info('[CLI] Target directory: {d}'.format(d=target_directory))
 
         # static analyse files info
@@ -86,10 +89,17 @@ def start(target, formatter, output, special_rules, a_sid=None):
 
         if pa.special_rules is not None:
             logger.info('[CLI] [SPECIAL-RULE] only scan used by {r}'.format(r=','.join(pa.special_rules)))
-
         # scan
         scan(target_directory=target_directory, a_sid=a_sid, s_sid=s_sid, special_rules=pa.special_rules,
              language=main_language, framework=main_framework, file_count=file_count, extension_count=len(files))
+
+        if target_mode == 'git' and '/tmp/cobra/git/' in target_directory and is_del is True:
+            res = clean_dir(target_directory)
+            if res is True:
+                logger.info('[CLI] Target directory remove success')
+            else:
+                logger.info('[CLI] Target directory remove fail')
+
     except PickupException:
         result = {
             'code': 1002,

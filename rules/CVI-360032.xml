@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="webshell32"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[\$nofuncs='no\s*exec\s*functions|udf\.dll|\$b374k|POWER-BY\s*WWW.XXDDOS.COM|<title>Safes\s*Mode\s*Shell</title>|Siyanur\.PHP\s*</font>|c999shexit\(\)|\$c99sh_|c99_sess_put\(|Coded\s*by\s*cyb3r|cyb3r_getupdate\(|coded\s*by\s*tjomi4|john\.barker446@gmail\.com|eval\(\"\\\$x=gzin\"|eval\(\"\?>\"\.gzinflate\(base64_decode\(|eval\(gzinflate\(base64_decode\(|eval\(gzuncompress\(base64_decode\(|eval\(gzinflate\(str_rot13\(base64_decode\(|function_exists\(\"zigetwar_buff_prepare\"\)|dQ99shell|r57shell|c99shell|lama's'hell\s*v|Carbylamine\s*PHP\s*Encoder|Safe\s*Mode\s*Shell|\$dI3h=\${'_REQUEST'};|new\s*COM\(\"IIS://localhost/w3svc\"\)|n57http-based\[\s*-\]terminal|Dosya\s*Olu|errorlog\(\"BACKEND:\s*startReDuh,|form\s*name=sh311Form|PHPJackal<br>|Reddragonfly's\s*WebShell|\(\"system\"==\$seletefunc\)\?system\(\$shellcmd\)|eNrsvGmT40iSKPZ5xmz|CrystalShell\s*v\.|Special\s*99\s*Shell|Simple\s*PHP\s*Mysql\s*client|'_de'\.'code'|phpsocks5_encrypt\(|define\('PHPSHELL_VERSION',|ZXZhbCgkX1BPU1RbMV0p|\$__H_H\(\$__C_C"]]></match>

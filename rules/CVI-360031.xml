@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="webshell31"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[ini_get\s*\(\s*\"disable_functions\"\s*\)|gzuncompress\(base64_decode\(|crypt\(\$_SERVER\['HTTP_H0ST'\],\d+\)==|if\(file_exists\(\$settings\['STOPFILE'\]\)\)]]></match>

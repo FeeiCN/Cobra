@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="webshell19"/>
     <language value="php"/>
     <match mode="regex-only-match"><![CDATA[\$\s*(\w+)\s*=\s*((\$_(GET|POST|REQUEST|COOKIE|SERVER).{3,25})|['\"][^;]*e|[^;]*chr[\s\(]*(101|0x65|0145))[\s\S]{0,200}\b(mb_ereg_replace|mb_eregi_replace)\s*\((.*,){3}\s*\$\1]]></match>

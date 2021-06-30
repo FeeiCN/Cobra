@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra/wiki/vulnerabilities">
+<cobra document="https://github.com/WhaleShark-Team/cobra/wiki/vulnerabilities">
     <vulnerability name="MC" vid="110"/>
     <vulnerability name="SSRF" vid="120"/>
     <vulnerability name="HCP" vid="130"/>

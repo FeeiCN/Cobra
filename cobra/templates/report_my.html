@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-multiselect.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-multiselect.js') }}"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+    <script>
+      requirejs.config({
+          baseUrl: '.'
+      });
+    </script>
+    <!-- Dashboard Core -->
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet" />
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <!-- Input Mask Plugin -->
+    <script src="{{ url_for('static', filename='plugins/input-mask/plugin.js') }}"></script>
+    <title>Cobra Report</title>
+
+    <!--[if lt IE 9]>
+    <script src="asset/js/html5shiv.min.js"></script>
+    <script src="asset/js/respond.min.js"></script>
+    <![endif]-->
+
+    <title>Cobra Report</title>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div class="container mt-lg-3">
+                <div class="col-md-6">
+                    <div class="header-brand d-flex">
+                        <h1 class="title">Cobra Report</h1>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="main_title">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <form action="report" method="get" name="time">
+                                    <div class="col-md-5">
+                                        <input type="date" name="start" class="form-control" placeholder="start">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="date" name="end" class="form-control" placeholder="end">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="submit" class="form-control" value="查询">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-main">
+            <div style="margin-top: 10px"  class="container">
+                <div class="row row-cards">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="card">
+                                    <div class="card-status  bg-red"></div>
+                                    <div class="card-body p-3 text-center">
+                                        <div class="h1 m-1">{{ critical_vul_number }}</div>
+                                        <div class="text-muted mb-4">Critical</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="card">
+                                    <div class="card-status  bg-yellow"></div>
+                                    <div class="card-body p-3 text-center">
+                                        <div class="h1 m-1">{{ high_vul_number }}</div>
+                                        <div class="text-muted mb-4">High</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="card">
+                                    <div class="card-status  bg-green"></div>
+                                    <div class="card-body p-3 text-center">
+                                        <div class="h1 m-1">{{ medium_vul_number }}</div>
+                                        <div class="text-muted mb-4">Medium</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="card">
+                                    <div class="card-status  bg-blue"></div>
+                                    <div class="card-body p-3 text-center">
+                                        <div class="h1 m-1">{{ low_vul_number }}</div>
+                                        <div class="text-muted mb-4">Low</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="card">
+                                    <div class="card-status bg-dark"></div>
+                                    <div class="card-header mt-2">
+                                        <h4>Top 10 vulnerability distribution statistics</h4>
+                                    </div>
+                                    <div class="card-body p-5">
+                                        <div id="vul_distributing" style="height:500px;">
+                                            {% if rule_num | length == 0 %}
+                                                <img src="{{ url_for('static', filename='img/congratulations.jpg') }}"
+                                                     class="congratulations"
+                                                     alt="">
+                                                <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no
+                                                    vulnerability was detected :)</h3>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-12 col-sm-6 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-status  bg-red"></div>
+                                                    <div class="card-body p-1 text-center">
+                                                        <div class="h1 m-0">{{ total_files }}</div>
+                                                        <div class="text-muted">Files</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-status bg-blue-dark"></div>
+                                                    <div class="card-body p-1 text-center">
+                                                        <div>
+                                                            <h4 class="h1 m-0">{{ total }}</h4>
+                                                            <div class="text-muted">Targets</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-status bg-red-dark"></div>
+                                                    <div class="card-body p-1 text-center">
+                                                        <div>
+                                                            <h4 class="h1 m-0">{{ total_vul_number }}</h4>
+                                                            <div class="text-muted">Vulnerabilities</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-lg-6">
+                                                <div class="card p-1 pl-3">
+                                                    <div class="card-status bg-green-dark"></div>
+                                                    <div class="card-body p-1 text-center">
+                                                        <div>
+                                                            {% if time_start != '' %}
+                                                            <h4 class="h4 m-1">{{ time_start }}~{{ time_end }}</h4>
+                                                            <div class="text-muted">Time</div>
+                                                            {% else %}
+                                                            <h4 class="h4 m-1">None<br>None</h4>
+                                                            <div class="text-muted">Time</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-status bg-azure"></div>
+                                            <div class="card-header mt-2">
+                                                <h4>Everyday vulnerability</h4>
+                                            </div>
+                                            <div class="card-body p-5">
+                                                <div id="vul_date" style="height:315px"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                {% include 'simple-footer.html' %}
+            </div>
+        </footer>
+    </div>
+    <script>
+        {% if rule_num | length == 0 %}
+            document.getElementById('vul_distributing').style = 'height: 418px';
+        {% endif %}
+        {#        作图#}
+        var types = [];
+        var vuls = [];
+        {% for type, num in rule_num | dictsort(by='value') %}
+            {#            取漏洞数量前十#}
+            {% if loop.revindex <= 10 %}
+                types.push('{{ type }}');
+                vuls.push({value: {{ num }}, name: '{{ type }}'});
+            {% endif %}
+        {% endfor %}
+        {#        数量大的靠前#}
+        types.reverse();
+        vuls.reverse();
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                type: 'scroll',
+                orient: 'horizontal',
+                top: 10,
+                data: types
+            },
+            series: [
+                {
+                    name: 'Vulnerability hazard ratio',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    radius: [0, '30%'],
+                    center: ['50%', '60%'],
+                    label: {
+                        normal: {
+                            position: 'inner'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: [
+                        {%  if critical_vul_number != 0 %}
+                            {value: {{ critical_vul_number }}, name: 'Critical'},
+                        {% endif %}
+                        {%  if high_vul_number != 0 %}
+                            {value: {{ high_vul_number }}, name: 'High', selected: true},
+                        {% endif %}
+                        {%  if medium_vul_number != 0 %}
+                            {value: {{ medium_vul_number }}, name: 'Medium'},
+                        {% endif %}
+                        {%  if low_vul_number != 0 %}
+                            {value: {{ low_vul_number }}, name: 'Low'},
+                        {% endif %}
+                    ]
+                },
+                {
+                    name: 'Vulnerability type accounting',
+                    type: 'pie',
+                    radius: ['40%', '55%'],
+                    center: ['50%', '60%'],
+                    label: {
+                        normal: {
+                            show: true,
+                            formatter: "{b} \n{c} ({d}%)"
+                        }
+                    },
+                    itemstyle: {
+
+                    },
+                    data: vuls
+                }
+            ]
+        };
+        {% if rule_num | length > 0 %}
+            var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+            vul_distributing.setOption(option);
+        {% endif %}
+
+        var dates = [];
+        var nums = [];
+
+        {% for date, num in time_range %}
+            dates.push('{{ date }}');
+            nums.push('{{ num }}');
+        {% endfor %}
+
+        option = {
+            toolbox: {
+                show: true,
+                feature: {
+                    dataView: {readOnly: false},
+                    magicType: {type: ['line', 'bar']},
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            legend: {
+                data:['每日漏洞数量']
+            },
+            xAxis: {
+                type: 'category',
+                data: dates,
+                axisLabel: {
+                    rotate: 20,
+                    interval: 'auto'
+                }
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                name: 'Today vulnerability accounting',
+                data: nums,
+                type: 'line',
+                label: {
+                    normal: {
+                        show: true
+                    }
+                }
+            }]
+        };
+        var vul_date = echarts.init(document.getElementById('vul_date'))
+        vul_date.setOption(option)
+    </script>
+
+</body>
+
+</html>

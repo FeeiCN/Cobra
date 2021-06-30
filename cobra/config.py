@@ -7,7 +7,7 @@
     Implements config
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -60,17 +60,17 @@ class Config(object):
     def __init__(self, level1=None, level2=None):
         self.level1 = level1
         self.level2 = level2
-        if level1 is None and level2 is None:
+        if self.level1 is None and self.level2 is None:
             return
-        config = ConfigParser()
+        self.config = ConfigParser()
 
-        config.read(config_path)
+        self.config.read(config_path)
         value = None
         try:
-            value = config.get(level1, level2)
+            value = self.config.get(self.level1, self.level2)
         except Exception as e:
             traceback.print_exc()
-            logger.critical("./configs file configure failed. {u}\nError: {e}".format(u='https://wufeifei.github.io/cobra/config', e=e.message))
+            logger.critical("./configs file configure failed. {u}\nError: {e}".format(u='http://cobra.feei.cn/config', e=e.message))
         self.value = value
 
     @staticmethod
@@ -84,6 +84,18 @@ class Config(object):
             logger.info('Config file set success(~/.cobra/{source})'.format(source=source))
         else:
             return
+
+    def set(self, value):
+        self.config.set(self.level1, self.level2, value)
+        try:
+            with open(config_path, 'w') as config_file:
+                self.config.write(config_file)
+
+        except IOError as e:
+            traceback.print_exc()
+            logger.warning('[CONFIG] ' + e.message)
+            return False
+        return True
 
 
 class Vulnerabilities(object):

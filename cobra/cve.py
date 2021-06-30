@@ -7,20 +7,23 @@
     Implements CVE Rules Parser
 
     :author:    BlBana <635373043@qq.com>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
 import datetime
-import os
-import requests
-import threading
 import gzip
-import xml.etree.cElementTree as eT
 import multiprocessing
+import os
+import subprocess
+import threading
+import xml.etree.cElementTree as eT
+
+import requests
+
 from .config import project_directory, Config, config_path
+from .dependencies import Dependencies, Comparator
 from .log import logger
-from .dependencies import Dependencies
 from .result import VulnerabilityResult
 
 try:
@@ -149,7 +152,7 @@ class CveParse(object):
         logger.info('The rule CVE-999' + str(self.year)[1:] + '.xml are being updated. Please wait for a moment....')
         self.cve_parse()
         cobra = eT.Element('cobra')  # root Ele
-        cobra.set('document', 'https://github.com/FeeiCN/cobra')
+        cobra.set('document', 'https://github.com/WhaleShark-Team/cobra')
         for cve_id in self._result.keys():
             cve_child = eT.Element('cve')  # cve Ele
             cve_child.set('id', cve_id)
@@ -201,7 +204,12 @@ class CveParse(object):
         cpe_list = []
         products = cve_child.findall('.//product')
         for product in products:
-            cpe_list.append(product.text.lower())
+            cpe_list.append(
+                {
+                    'name': product.text.lower().split(':')[0],
+                    'version': product.text.lower().split(':')[1],
+                }
+            )
         rule_info['cpe'] = cpe_list
         return rule_info
 
@@ -220,22 +228,29 @@ class CveParse(object):
         dependency = Dependencies(self.pro_file)
         project_info = dependency.get_result
         for pro_info in project_info:
-            module_version = pro_info.lower() + ':' + project_info[pro_info]
+            module_version = {
+                'name': pro_info.lower(),
+                'version': project_info.get(pro_info).get('version'),
+                'format': project_info.get(pro_info).get('format'),
+            }
             self.set_scan_result(cve, module_version)
         self.log_result()
 
     def set_scan_result(self, cves, module_version):
         """
         :param cves:
-        :param module_version:
+        :param module_version: {"name": "flask", "version": "==0.10.1", "format": "python"}
         :return:set the scan result
         """
         scan_cves = {}
         for cve_child in cves:
-            if module_version in cves[cve_child]['cpe']:
-                scan_cves[cve_child] = cves[cve_child]['level']
+            for v in cves[cve_child]['cpe']:
+                if module_version.get('name') == v.get('name'):
+                    comparator = Comparator(rule_version=v.get('version'), dep_version=module_version.get('version'), fmt=module_version.get('format'))
+                    if comparator.compare():
+                        scan_cves[cve_child] = cves[cve_child]['level']
         if len(scan_cves):
-            self._scan_result[module_version] = scan_cves
+            self._scan_result[module_version.get('name') + ':' + module_version.get('version')] = scan_cves
 
     def log_result(self):
         for module_ in self._scan_result:
@@ -283,6 +298,24 @@ def download_rule_gz():
     for t in threads:
         t.join()
     end_time = datetime.datetime.now()
+    for afile in files:
+        param = ['file', afile]
+        p = subprocess.Popen(param, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        res_out, res_err = p.communicate()
+
+        res_out = res_out.decode('utf-8')
+        res_err = res_err.decode('utf-8')
+
+        if 'HTML' in res_out:
+            os.remove(afile)
+            afile_name = os.path.split(afile)[1]
+            year = afile_name.split('.')[0]
+            url = "https://static.nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-" + str(year) + ".xml.gz"
+            try:
+                urlretrieve(url, afile)
+            except IOError:
+                logger.warning('[CVE] The {} download fail'.format(afile))
+
     logger.info("All CVE xml file already download success, use time:%ds" % (end_time - start_time).seconds)
     return files
 
@@ -292,11 +325,17 @@ def un_gz(gz_files):
     start_time = datetime.datetime.now()
     logger.info("Start decompress rule files, Please wait a moment....")
     for gz_file in gz_files:
-        f_name = gz_file.replace(".gz", "")
-        g_file = gzip.GzipFile(gz_file)
-        open(f_name, "wb+").write(g_file.read())
-        g_file.close()
-        os.remove(gz_file)
+        if os.path.exists(gz_file):
+            f_name = gz_file.replace(".gz", "")
+
+            try:
+                g_file = gzip.GzipFile(gz_file, "rb")
+                open(f_name, "wb+").write(g_file.read())
+                g_file.close()
+            except IOError:
+                logger.warning('[CVE] The {} download fail'.format(gz_file))
+
+            os.remove(gz_file)
     end_time = datetime.datetime.now()
     logger.info("Decompress success, use time:%ds" % (end_time - start_time).seconds)
     return True
@@ -329,7 +368,7 @@ def is_update():
     return False
 
 
-def scan_cve(target_directory):
+def scan_cve(target_directory, specific_rule=None):
     cve_vuls = []
     cve_files = []
 
@@ -338,20 +377,27 @@ def scan_cve(target_directory):
             for module_ in results[0]:
                 for cve_id, cve_level in results[0][module_].items():
                     cve_path = results[1]
-                    cve_vul = parse_math(cve_path, cve_id, cve_level, module_, target_directory)
+                    cve_vul = parse_match(cve_path, cve_id, cve_level, module_, target_directory)
                     cve_vuls.append(cve_vul)
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
 
     rule_path = os.path.join(project_directory, 'rules')
     files = os.listdir(rule_path)
-    for cvi_file in files:
-        if cvi_file.startswith('CVI-999'):
-            cve_files.append(cvi_file)
+    if specific_rule:
+        if specific_rule in files:
+            cve_files.append(specific_rule)
+    else:
+        for cvi_file in files:
+            if cvi_file.startswith('CVI-999'):
+                cve_files.append(cvi_file)
     if len(cve_files) == 0:
         logger.info("Can't find the rules, please update rules")
         return
-    pool = multiprocessing.Pool()
+    try:
+        pool = multiprocessing.Pool()
+    except IOError:
+        logger.warning('[SCAN] [CVE] IOError Broken pipe')
     logger.info('[PUSH] {rc} CVE Rules'.format(rc=len(cve_files)))
     for cve_file in cve_files:
         cve_path = os.path.join(rule_path, cve_file)
@@ -372,7 +418,7 @@ def scan_single(target_directory, cve_path):
     return cve.get_scan_result(), cve_path
 
 
-def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
+def parse_match(cve_path, cve_id, cve_level, module_, target_directory):
     flag = 0
     file_path = 'unkown'
     mr = VulnerabilityResult()
@@ -398,6 +444,10 @@ def parse_math(cve_path, cve_id, cve_level, module_, target_directory):
                 file_path = os.path.join(root, filename)
                 file_path = file_path.replace(target_directory, '')
                 flag = 2
+
+            elif file_path == 'package.json':
+                file_path = os.path.join(root, filename)
+                file_path = file_path.replace(target_directory, '')
 
     if flag != 0:
         mr.file_path = file_path

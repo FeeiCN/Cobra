@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
     <name value="ECB加密模式"/>
     <language value="java"/>
     <match mode="regex-only-match"><![CDATA[Cipher....Instance\s?\(\s?\".*ECB]]></match>

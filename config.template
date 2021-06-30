@@ -32,12 +32,15 @@ api:
 key:
 
 [email]
-# SMTP Host
+# SMTP Host, example: smtp.qq.com, SMTP服务器地址
 host:
-# SMTP Port
+# SMTP Port, example: 465, SMTP服务器开放端口
 port:
+# email login, 邮箱登陆账户
 username:
+# email password, 邮箱登陆密码（QQ邮箱为独立秘钥）
 password:
+# email 发送邮箱
 sender:
 # use ssl, True / False
 ssl:
@@ -50,6 +53,7 @@ username:
 password:
 
 [git]
+# 拉取gitlab代码时，需要配置username和password
 username:
 password:
 private_token:
@@ -60,3 +64,6 @@ cobra_ip:
 
 [cve]
 modified = 00B6A630D5515C9D6F61B2FC97ED7EE689A787AC52E1654D1E991BC26F4647CD
+
+[hash]
+modified = 14362b50e394c915c83c392cd626ebfe

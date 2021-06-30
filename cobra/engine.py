@@ -7,7 +7,7 @@
     Implements scan engine
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -155,13 +155,26 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
     rules = r.rules(special_rules)
     find_vulnerabilities = []
 
-    cve_vuls = scan_cve(target_directory)
-    find_vulnerabilities += cve_vuls
+    try:
+        if special_rules is None or len(special_rules) == 0:
+            cve_vuls = scan_cve(target_directory)
+            find_vulnerabilities += cve_vuls
+        else:
+            for rule in rules:
+                if rule.get('id').lower()[0:3] == '999':
+                    cve_vuls = scan_cve(target_directory, 'CVI-{num}.xml'.format(num=rule.get('id')))
+                    find_vulnerabilities += cve_vuls
+    except Exception:
+        logger.warning('[SCAN] [CVE] CVE rule is None')
 
     def store(result):
         if result is not None and isinstance(result, list) is True:
             for res in result:
-                res.file_path = res.file_path.replace(target_directory, '')
+                if os.path.isdir(target_directory):
+                    res.file_path = res.file_path.replace(target_directory, '')
+                else:
+                    res.file_path = res.file_path.replace(os.path.dirname(target_directory), '')
+
                 find_vulnerabilities.append(res)
         else:
             logger.debug('[SCAN] [STORE] Not found vulnerabilities on this rule!')
@@ -231,6 +244,8 @@ def scan(target_directory, a_sid=None, s_sid=None, special_rules=None, language=
         if len(diff_rules) > 0:
             logger.info('[SCAN] Not Trigger Rules ({l}): {r}'.format(l=len(diff_rules), r=','.join(diff_rules)))
 
+    if os.path.isfile(target_directory):
+        target_directory = os.path.dirname(target_directory)
     # completed running data
     if s_sid is not None:
         Running(s_sid).data({
@@ -344,6 +359,10 @@ class SingleRule(object):
                 if is_vulnerability:
                     logger.debug('[CVI-{cvi}] [RET] Found {code}'.format(cvi=self.sr['id'], code=reason))
                     vulnerability.analysis = reason
+                    match_result = re.findall(r"^(#|\/\*|\/\/)+", vulnerability.code_content)  # 判断漏洞代码是否在注释中
+                    if len(match_result) > 0:
+                        logger.debug('[CVI-{cvi} [RET] Found vul in annotation]')
+                        vulnerability.code_content = vulnerability.code_content + vulnerability.analysis
                     self.rule_vulnerabilities.append(vulnerability)
                 else:
                     logger.debug('Not vulnerability: {code}'.format(code=reason))
@@ -363,8 +382,12 @@ class SingleRule(object):
             # v.php:2:$password 2017:01:01
             # v.exe Binary file
             try:
-                mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
-                mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
+                if os.path.isdir(self.target_directory):
+                    mr.line_number, mr.code_content = re.findall(r':(\d+):(.*)', single_match)[0]
+                    mr.file_path = single_match.split(u':{n}:'.format(n=mr.line_number))[0]
+                else:
+                    mr.line_number, mr.code_content = re.findall(r'(\d+):(.*)', single_match)[0]
+                    mr.file_path = self.target_directory
             except Exception:
                 logger.warning('match line parse exception')
                 mr.file_path = ''
@@ -386,11 +409,11 @@ class SingleRule(object):
         mr.level = self.sr['level']
 
         # committer
-        from .pickup import Git
-        c_ret, c_author, c_time = Git.committer(self.target_directory, mr.file_path, mr.line_number)
-        if c_ret:
-            mr.commit_author = c_author
-            mr.commit_time = c_time
+        # from .pickup import Git
+        # c_ret, c_author, c_time = Git.committer(self.target_directory, mr.file_path, mr.line_number)
+        # if c_ret:
+        #     mr.commit_author = c_author
+        #     mr.commit_time = c_time
         return mr
 
 
@@ -477,6 +500,9 @@ class Core(object):
             '/node_modules/',
             '/bower_components/',
             '.min.js',
+            '.log',
+            '.log.',
+            'nohup.out',
         ]
         for path in special_paths:
             if path in self.file_path:
@@ -522,7 +548,7 @@ class Core(object):
                - Java:
         :return: boolean
         """
-        match_result = re.findall(r"^(#|\\\*|\/\/)+", self.code_content)
+        match_result = re.findall(r"^(#|\/\*|\/\/)+", self.code_content)
         # Skip detection only on match
         if self.is_match_only_rule():
             return False
@@ -551,7 +577,6 @@ class Core(object):
         :return: is_vulnerability, code
         """
         self.method = 0
-        self.code_content = self.code_content
         if len(self.code_content) > 512:
             self.code_content = self.code_content[:500]
         self.status = self.status_init
@@ -603,7 +628,11 @@ class Core(object):
                 else:
                     logger.debug('[CVI-{cvi}] [REPAIR] [RET] Not fixed'.format(cvi=self.cvi))
                     return True, 'REGEX-ONLY-MATCH+NOT FIX(未修复)'
+
             else:
+                match_result = re.findall(r"^(#|\/\*|\/\/)+", self.code_content)
+                if len(match_result) > 0:
+                    return True, 'REGEX-ONLY-MATCH(注释中存在漏洞，建议删除漏洞代码)'
                 return True, 'REGEX-ONLY-MATCH(正则仅匹配+无修复规则)'
         else:
             #

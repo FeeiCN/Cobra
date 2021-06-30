@@ -1,4 +1,4 @@
-<cobra document="https://github.com/FeeiCN/cobra">
+<cobra document="https://github.com/WhaleShark-Team/cobra">
 	<cve id="CVE-2017-9994">
 			<product>ffmpeg:3.2</product>
 			<product>ffmpeg:3.2.3</product>

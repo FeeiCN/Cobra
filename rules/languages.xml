@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cobra document="https://github.com/FeeiCN/cobra/wiki/languages">
+<cobra document="https://github.com/WhaleShark-Team/cobra/wiki/languages">
     <language name="*">
         <extension value=".*"/>
     </language>

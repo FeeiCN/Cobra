@@ -7,7 +7,7 @@
     Implements pickup git/compress file
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -25,6 +25,9 @@ from .log import logger
 from .config import package_path, source_path
 from shutil import copyfile
 from werkzeug.utils import secure_filename
+from zipfile import BadZipfile
+from rarfile import NotRarFile, BadRarFile
+from tarfile import ReadError
 
 try:
     from urllib import quote
@@ -101,41 +104,55 @@ class Decompress(object):
 
     def __decompress_zip(self):
         """unzip a file."""
-        zip_file = zipfile.ZipFile(self.filepath)
-        # check if there is a filename directory
-        self.__check_filename_dir()
+        try:
+            zip_file = zipfile.ZipFile(self.filepath)
+            # check if there is a filename directory
+            self.__check_filename_dir()
 
-        # create the file directory to store the extract file.
-        os.mkdir(os.path.join(self.package_path, self.dir_name))
+            # create the file directory to store the extract file.
+            os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        zip_file.extractall(os.path.join(self.package_path, self.dir_name))
-        zip_file.close()
+            zip_file.extractall(os.path.join(self.package_path, self.dir_name))
+            zip_file.close()
+        except BadZipfile:
+            logger.error('File is not a zip file or is bad zip file')
+            exit()
 
         return True
 
     def __decompress_rar(self):
         """extract a rar file."""
-        rar_file = rarfile.RarFile(self.filepath)
-        # check if there is a filename directory
-        self.__check_filename_dir()
+        try:
+            rar_file = rarfile.RarFile(self.filepath)
+            # check if there is a filename directory
+            self.__check_filename_dir()
 
-        os.mkdir(os.path.join(self.package_path, self.dir_name))
+            os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        rar_file.extractall(os.path.join(self.package_path, self.dir_name))
-        rar_file.close()
+            rar_file.extractall(os.path.join(self.package_path, self.dir_name))
+            rar_file.close()
+        except (BadRarFile, NotRarFile):
+            logger.error('File is not a rar file or is bad rar file')
+            exit()
+
         return True
 
     def __decompress_tar_gz(self):
         """extract a tar.gz file"""
-        tar_file = tarfile.open(self.filepath)
-        # check if there is a filename directory
-        self.__check_filename_dir()
+        try:
+            tar_file = tarfile.open(self.filepath)
+            # check if there is a filename directory
+            self.__check_filename_dir()
 
-        os.mkdir(os.path.join(self.package_path, self.dir_name))
+            os.mkdir(os.path.join(self.package_path, self.dir_name))
 
-        tar_file.extractall(os.path.join(self.package_path, self.dir_name))
-        tar_file.close()
-        return True
+            tar_file.extractall(os.path.join(self.package_path, self.dir_name))
+            tar_file.close()
+        except ReadError:
+            logger.error('File is not a tar file or is bad tar file')
+            exit()
+
+            return True
 
     def __check_filename_dir(self):
         if os.path.isdir(os.path.join(self.package_path, self.dir_name)):
@@ -159,7 +176,13 @@ class Directory(object):
     """
 
     def collect_files(self):
-        t1 = time.clock()
+
+        version = sys.version
+
+        if version[:3] == '3.7':
+            t1 = time.clock()
+        else:
+            t1 = time.perf_counter()
         self.files(self.absolute_path)
         self.result['no_extension'] = {'count': 0, 'list': []}
         for extension, values in self.type_nums.items():
@@ -180,7 +203,10 @@ class Directory(object):
                     self.result['no_extension']['list'].append(f)
         if self.result['no_extension']['count'] == 0:
             del self.result['no_extension']
-        t2 = time.clock()
+        if version[:3] == "3.7":
+            t2 = time.clock()
+        else:
+            t2 = time.perf_counter()
         # reverse list count
         self.result = sorted(self.result.items(), key=lambda t: t[0], reverse=False)
         return self.result, self.file_sum, t2 - t1
@@ -194,11 +220,14 @@ class Directory(object):
                 self.file_info(directory, filename)
             else:
                 for filename in os.listdir(absolute_path):
-                    try:
-                        directory = os.path.join(absolute_path, filename)
-                    except UnicodeDecodeError as e:
-                        logger.debug('Exception unicode {e}'.format(e=e))
+                    if self.is_pickup_whitelist(filename):
                         continue
+                    else:
+                        try:
+                            directory = os.path.join(absolute_path, filename)
+                        except UnicodeDecodeError as e:
+                            logger.debug('Exception unicode {e}'.format(e=e))
+                            continue
 
                     # Directory Structure
                     logger.debug('[PICKUP] [FILES] ' + '|  ' * (level - 1) + '|--' + filename)
@@ -209,6 +238,16 @@ class Directory(object):
         except OSError as e:
             logger.critical('[PICKUP] {msg}'.format(msg=e))
             exit()
+
+    def is_pickup_whitelist(self, filename):
+        whitelist = [
+            'node_modules',
+            'vendor',
+        ]
+        if filename in whitelist:
+            return True
+        else:
+            return False
 
     def file_info(self, path, filename):
         # Statistic File Type Count
@@ -355,8 +394,8 @@ class Git(object):
 
         # change work directory back.
         os.chdir(repo_dir)
-
-        if 'Updating' in pull_out or 'up-to-date' in pull_out or u'最新' in pull_out:
+        pull_out = pull_out.lower()
+        if 'up' in pull_out and 'to' in pull_out and 'date' in pull_out:
             logger.info('[PICKUP] [PULL] pull done.')
             return True, None
         else:
@@ -387,6 +426,10 @@ class Git(object):
 
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (clone_out, clone_err) = p.communicate()
+
+        clone_out = clone_out.decode('utf-8')
+        clone_err = clone_err.decode('utf-8')
+
         clone_err = clone_err.replace('{0}:{1}'.format(self.repo_username, self.repo_password), '')
 
         logger.debug('[PICKUP] [CLONE] ' + clone_out.strip())
@@ -421,6 +464,10 @@ class Git(object):
         cmd = 'git diff ' + old_version + ' ' + new_version
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
+
+        diff_out = diff_out.decode('utf-8')
+        diff_err = diff_err.decode('utf-8')
+
         logger.info(diff_out)
 
         # change the work directory back.
@@ -445,9 +492,13 @@ class Git(object):
         current_dir = os.getcwd()
         os.chdir(self.repo_directory)
 
-        cmd = "git fetch origin && git checkout " + branch
+        cmd = "git fetch origin && git reset --hard origin/{branch} && git checkout {branch}".format(branch=branch)
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (checkout_out, checkout_err) = p.communicate()
+
+        checkout_out = checkout_out.decode('utf-8')
+        checkout_err = checkout_err.decode('utf-8')
+
         logger.info('[PICKUP] [CHECKOUT] ' + checkout_err.strip())
 
         # Already on
@@ -530,7 +581,8 @@ class Git(object):
         :param length:
         :return: group#1, group#2
         """
-        os.chdir(directory)
+        if os.path.isdir(directory):
+            os.chdir(directory)
         cmd = "git blame -L{0},+{1} -- {2}".format(line_number, length, file_path.replace(directory, ''))
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         checkout_out, checkout_err = p.communicate()
@@ -571,6 +623,10 @@ class Subversion(object):
         )
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         (diff_out, diff_err) = p.communicate()
+
+        diff_out = diff_out.decode('utf-8')
+        diff_err = diff_err.decode('utf-8')
+
         if len(diff_err) == 0:
             logger.debug("[PICKUP] svn diff success")
         elif 'authorization failed' in diff_err:
@@ -588,6 +644,8 @@ class Subversion(object):
         )
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         log_out = p.communicate()[0]
+        log_out = log_out.decode('utf-8')
+
         return log_out
 
     def diff(self):
@@ -600,6 +658,7 @@ class Subversion(object):
         )
         p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         diff_out = p.communicate()[0]
+        diff_out = diff_out.decode('utf-8')
 
         added, removed, changed = [], [], []
         diff = {}

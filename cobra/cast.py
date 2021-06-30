@@ -7,7 +7,7 @@
     Implements CAST(Cross Abstract Syntax Tree)
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -36,8 +36,8 @@ class CAST(object):
         for language in self.languages:
             if self.file_path[-len(language):].lower() == language:
                 self.language = language
-
-        os.chdir(self.target_directory)
+        if os.path.isdir(self.target_directory):
+            os.chdir(self.target_directory)
         # Parse rule
         self.regex = {
             'java': {
@@ -155,7 +155,7 @@ class CAST(object):
             return code
         else:
             block_start = 1
-            block_end = 0
+            block_end = 10000
             functions = self.functions()
             if functions:
                 for function_name, function_value in functions.items():

@@ -12,7 +12,7 @@
 |参数|类型|必填|描述|例子|
 |---|---|---|---|---|
 |key|string|是|`config`文件中配置的`secret_key`|`{"key":"your_secret_key"}`|
-|target|string或list|是|需要扫描的git地址，默认为master分支，如需指定分支或tag可在git地址末尾加上`:master`|单个项目扫描：`{"target": "https://github.com/wufeifei/dict.git:master"}`；<br>多个项目扫描：`{"target": ["https://github.com/wufeifei/dict.git:master", "https://github.com/wufeifei/autossh.git:master"]}`|
+|target|string或list|是|需要扫描的git地址，默认为master分支，如需指定分支或tag可在git地址末尾加上`:master`|单个项目扫描：`{"target": "https://github.com/FeeiCN/dict.git:master"}`；<br>多个项目扫描：`{"target": ["https://github.com/FeeiCN/dict.git:master", "https://github.com/FeeiCN/autossh.git:master"]}`|
 |rule|string|否|仅扫描指定规则，以,分隔|`{"rule": "cvi-130003,cvi-130004"}`|
 
 #### 响应例子
@@ -73,10 +73,10 @@ python cobra.py -H 127.0.0.1 -P 8888
 ## 添加扫描任务
 ```bash
 # 添加一条任务
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":"https://github.com/wufeifei/grw.git:master", "rule": "cvi-130003,cvi-130004"}' http://127.0.0.1:8888/api/add
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":"https://github.com/FeeiCN/grw.git:master", "rule": "cvi-130003,cvi-130004"}' http://127.0.0.1:8888/api/add
 
 # 添加多条任务
-curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":["https://github.com/FeeiCN/cobra.git:master", "https://github.com/wufeifei/grw.git:master"]}' http://127.0.0.1:8888/api/add
+curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key", "target":["https://github.com/WhaleShark-Team/cobra.git:master", "https://github.com/FeeiCN/grw.git:master"]}' http://127.0.0.1:8888/api/add
 ```
 
 ## 查询任务状态
@@ -90,5 +90,10 @@ curl -H "Content-Type: application/json" -X POST -d '{"key":"your_secret_key","s
 http://127.0.0.1:8888/?sid=afbe69p7dxva
 ```
 
+# Web 指定时间段漏洞统计
+```
+http://127.0.0.1:8888/report
+```
+
 ---
-下一章：[高级功能配置](https://wufeifei.github.io/cobra/config)
+下一章：[高级功能配置](http://cobra.feei.cn/config)

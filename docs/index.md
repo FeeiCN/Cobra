@@ -19,10 +19,10 @@
 - 专业支持，持续维护（由白帽子、开发工程师和安全工程师一起持续维护更新，并在多家企业内部使用）
 
 ## Cobra支持哪些开发语言？
-> 目前Cobra主要支持PHP、Java等主要开发语言及其它数十种文件类型，并持续更新规则和引擎以支持更多开发语言，具体见支持的[开发语言和文件类型](https://wufeifei.github.io/cobra/languages)。
+> 目前Cobra主要支持PHP、Java等主要开发语言及其它数十种文件类型，并持续更新规则和引擎以支持更多开发语言，具体见支持的[开发语言和文件类型](http://cobra.feei.cn/languages)。
 
 ## Cobra能发现哪些漏洞？
-> 覆盖大部分Web端常见漏洞和一些移动端（Android、iOS）通用漏洞，具体见支持的[漏洞类型](https://wufeifei.github.io/cobra/labels)。
+> 覆盖大部分Web端常见漏洞和一些移动端（Android、iOS）通用漏洞，具体见支持的[漏洞类型](http://cobra.feei.cn/labels)。
 
 | ID | Label | Description(EN) | Description(CN) |
 |---|---|---|---|
@@ -70,24 +70,25 @@
 
 # Cobra文档
 - 安装
-    - [Cobra安装](https://wufeifei.github.io/cobra/installation)
+    - [Cobra安装](http://cobra.feei.cn/installation)
 - 基础使用
-    - [CLI模式使用方法](https://wufeifei.github.io/cobra/cli)
-    - [API模式使用方法](https://wufeifei.github.io/cobra/api)
+    - [CLI模式使用方法](http://cobra.feei.cn/cli)
+    - [API模式使用方法](http://cobra.feei.cn/api)
 - 进阶使用
-    - [高级功能配置](https://wufeifei.github.io/cobra/config)
-    - [升级框架和规则源](https://wufeifei.github.io/cobra/upgrade)
+    - [高级功能配置](http://cobra.feei.cn/config)
+    - [升级框架和规则源](http://cobra.feei.cn/upgrade)
+    - [Report模块使用](http://cobra.feei.cn/report)
 - 规则开发规范
-    - [规则模板](https://wufeifei.github.io/cobra/rule_template)
-    - [规则样例](https://wufeifei.github.io/cobra/rule_demo)
-    - [规则文件命名规范](https://wufeifei.github.io/cobra/rule_name)
-    - [规则开发流程](https://wufeifei.github.io/cobra/rule_flow)
+    - [规则模板](http://cobra.feei.cn/rule_template)
+    - [规则样例](http://cobra.feei.cn/rule_demo)
+    - [规则文件命名规范](http://cobra.feei.cn/rule_name)
+    - [规则开发流程](http://cobra.feei.cn/rule_flow)
 - 框架引擎
-    - [开发语言和文件类型定义](https://wufeifei.github.io/cobra/languages)
-    - [漏洞类型定义](https://wufeifei.github.io/cobra/labels)
-    - [危害等级定义](https://wufeifei.github.io/cobra/level)
-    - [程序目录结构](https://wufeifei.github.io/cobra/tree)
+    - [开发语言和文件类型定义](http://cobra.feei.cn/languages)
+    - [漏洞类型定义](http://cobra.feei.cn/labels)
+    - [危害等级定义](http://cobra.feei.cn/level)
+    - [程序目录结构](http://cobra.feei.cn/tree)
 - 贡献代码
-    - [单元测试](https://wufeifei.github.io/cobra/test)
-    - [贡献者](https://wufeifei.github.io/cobra/contributors)
-    - [如何贡献代码？](https://github.com/FeeiCN/cobra/blob/master/CONTRIBUTING.md)
+    - [单元测试](http://cobra.feei.cn//test)
+    - [贡献者](http://cobra.feei.cn/contributors)
+    - [如何贡献代码？](https://github.com/WhaleShark-Team/cobra/blob/master/CONTRIBUTING.md)

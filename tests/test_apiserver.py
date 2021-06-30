@@ -7,7 +7,7 @@
     Tests cobra.api
 
     :author:    40huo <git@40huo.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -40,7 +40,7 @@ def test_add_job():
     url = "http://127.0.0.1:5000/api/add"
     post_data = {
         "key": "your_secret_key",
-        "target": [os.path.join(project_directory, 'tests/vulnerabilities')]
+        "target": "https://github.com/BlBana/Cobra_tests.git"
     }
     headers = {
         "Content-Type": "application/json",
@@ -145,6 +145,24 @@ def test_search():
     else:
         assert '1002' in re.text
         assert 'No such sid' in re.text
+
+
+def test_get_member():
+    url = 'http://127.0.0.1:5000/api/members'
+    param1 = '?repo-url=https://github.com/WhaleShark-Team/cobra.git'
+    param2 = '?repo-url=gitlab.com/xxxxx/iiiddd.git'
+    req1 = requests.get(url=url + param1)
+    req2 = requests.get(url=url + param2)
+
+    assert '1002' in req1.text
+    assert '1002' in req2.text
+
+
+def test_report():
+    url = 'http://127.0.0.1:5000/report'
+    req = requests.get(url=url, timeout=3)
+
+    assert 'Cobra Report' in req.text
 
 
 def test_index():

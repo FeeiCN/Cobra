@@ -8,7 +8,7 @@
     Implements cobra main
 
     :author:    BlBana <635373043@qq.com>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -93,13 +93,13 @@ def test_get_rule():
 def test_scan_cve():
     cve = CveParse(rule_path, target_directory)
     cve.scan_cve(rule_cve_path)
-    assert 'flask:0.10.1' in cve.get_scan_result()
+    assert 'flask-migrate:==1.8.0' in cve.get_scan_result()
 
 
 def test_get_scan_result():
     cve = CveParse(rule_path, target_directory)
     cve.scan_cve(rule_cve_path)
-    assert 'flask:0.10.1' in cve.get_scan_result()
+    assert 'flask-migrate:==1.8.0' in cve.get_scan_result()
 
 
 def test_rule_parse_fun():
@@ -112,7 +112,8 @@ def test_download_rule_gz():
     files = download_rule_gz()
     assert isinstance(files, list)
     for file_ in files:
-        os.remove(file_)
+        if os.path.exists(file_):
+            os.remove(file_)
 
 
 def test_un_gz():
@@ -120,7 +121,8 @@ def test_un_gz():
     res = un_gz(files)
     assert res is True
     for year in range(2002, datetime.datetime.now().year+1):
-        os.remove(project_directory+"/rules/%d.xml" % year)
+        if os.path.exists(project_directory+"/rules/%d.xml" % year):
+            os.remove(project_directory+"/rules/%d.xml" % year)
 
 
 def test_rule_single():

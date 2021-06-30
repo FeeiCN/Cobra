@@ -54,4 +54,4 @@ print("Text: " + $content);
 ```
 
 ---
-下一章：[规则文件命名规范](https://wufeifei.github.io/cobra/rule_name)
+下一章：[规则文件命名规范](http://cobra.feei.cn/rule_name)

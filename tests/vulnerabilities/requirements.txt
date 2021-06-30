@@ -1,6 +1,5 @@
 alembic==0.8.6
 dominate==2.2.0
-Flask==0.10.1
 Flask-Bootstrap==3.3.6.0
 Flask-Migrate==1.8.0
 flask-paginate==0.4.5
@@ -15,7 +14,7 @@ MySQL-python==1.2.5
 python-editor==1.0
 python-magic==0.4.11
 rarfile==2.7
-requests==2.6.2
+requests==2.20.0
 smmap==0.9.0
 SQLAlchemy==1.0.13
 visitor==0.1.3

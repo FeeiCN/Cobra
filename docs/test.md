@@ -9,4 +9,4 @@ $ py.test --cov cobra cobra/tests
 ```
 
 ---
-下一章：[贡献者](https://wufeifei.github.io/cobra/contributors)
+下一章：[贡献者](http://cobra.feei.cn/contributors)

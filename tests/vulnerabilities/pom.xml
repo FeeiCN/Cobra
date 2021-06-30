@@ -279,36 +279,30 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>2.7.3</version>
+        <version>[2.8.11.3,)</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.7.3</version>
+        <version>[2.8.11.3,)</version>
       </dependency>
 
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>2.7.0</version>
+        <version>[2.8.11.3,)</version>
       </dependency>
         <dependency>
 
       <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>org.springframework</artifactId>
-        <version>2.7.0</version>
+        <version>[2.8.11.3,)</version>
       </dependency>
 
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path</artifactId>
         <version>2.2.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>8.1.17.v20150415</version>
       </dependency>
 
       <dependency>
@@ -401,6 +395,12 @@
         <artifactId>snakeyaml</artifactId>
         <version>1.17</version>
       </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.44</version>
+        </dependency>
 
     </dependencies>
   </dependencyManagement>

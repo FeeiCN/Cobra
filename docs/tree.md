@@ -65,4 +65,4 @@
 ```
 
 ---
-下一章：[单元测试](https://wufeifei.github.io/cobra/test)
+下一章：[单元测试](http://cobra.feei.cn/test)

@@ -7,7 +7,7 @@
     Implements rule(languages/frameworks/vulnerabilities/rules)
 
     :author:    Feei <feei@feei.cn>
-    :homepage:  https://github.com/FeeiCN/cobra
+    :homepage:  https://github.com/WhaleShark-Team/cobra
     :license:   MIT, see LICENSE for more details.
     :copyright: Copyright (c) 2018 Feei. All rights reserved
 """
@@ -144,8 +144,9 @@ class Rule(object):
         for vulnerability_name in files:
             # VN: CVI-190001.xml
             v_path = os.path.join(self.rules_path, vulnerability_name.replace('cvi', 'CVI'))
-            if vulnerability_name.lower()[0:7] == 'cvi-999' or 'cvi' not in v_path.lower():
-                logger.debug('filter dep rules')
+            if vulnerability_name.lower()[0:7] == 'cvi-999':
+                logger.debug('filter dependency rules')
+            elif 'cvi' not in v_path.lower():
                 continue
             if os.path.isfile(v_path) is not True or '.xml' not in v_path.lower():
                 logger.warning('Not regular rule file {f}'.format(f=v_path))
@@ -182,7 +183,7 @@ class Rule(object):
                 if x.tag == 'name':
                     rule_info['name'] = x.get('value')
                 if x.tag == 'language':
-                    rule_info['language'] = x.get('value')
+                    rule_info['language'] = x.get('value').lower()
                 if x.tag == 'status':
                     rule_info['status'] = to_bool(x.get('value'))
                 if x.tag == 'author':
