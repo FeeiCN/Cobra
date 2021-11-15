@@ -23,4 +23,4 @@ ConcurrentLogHandler==0.9.1
 celery==3.1.23
 pytest==3.0.6
 prettytable==0.7.2
-pip==9.0.1
+pip==21.1
