@@ -8,7 +8,7 @@ Flask-SQLAlchemy==2.1
 Flask-Cache==0.13.1
 itsdangerous==0.24
 Jinja2==2.8
-Mako==1.0.4
+Mako==1.2.2
 MarkupSafe==0.23
 MySQL-python==1.2.5
 python-editor==1.0
